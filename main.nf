@@ -89,7 +89,7 @@ Channel
      .groupTuple(sort: true)
      .set { read_files }
  
-read_files.into  { read_files_fastqc; read_files_trimming; name_for_star }
+read_files.into  { read_files_fastqc; read_files_trimming }
 
 
 /*
@@ -152,13 +152,13 @@ process trim_galore {
 
     script:
     single = reads instanceof Path
-    if( !single ) {
+    if( single ) {
         """
-        trim_galore --paired --gzip --fastqc_args "-q" $reads
+        trim_galore --gzip --fastqc_args "-q" $reads
         """
     } else {
         """
-        trim_galore --gzip --fastqc_args "-q" $reads
+        trim_galore --paired --gzip --fastqc_args "-q" $reads
         """
     }
 }
@@ -189,9 +189,15 @@ process bismark_align {
     file '*.bam' into bam
     file '*.{txt,png,gz}'
     
-    """
-    bismark --bam $index $trimmed_reads
-    """
+    if( single ) {
+        """
+        bismark --bam $index $trimmed_reads
+        """
+    } else {
+        """
+        bismark --bam $index -1 $trimmed_reads[0] -2 $trimmed_reads[1]
+        """
+    }
     
 }
 
@@ -221,10 +227,15 @@ process bismark_deduplicate {
     file '*.{txt,png,gz}'
  
     script:
-
-    """
-    deduplicate_bismark -p --bam $bam
-    """
+    if( single ) {
+        """
+        deduplicate_bismark -s --bam $bam
+        """
+    } else {
+        """
+        deduplicate_bismark -p --bam $bam
+        """
+    }
 }
 
 /*
@@ -253,21 +264,34 @@ process bismark_methXtract {
     file '*.{txt,png,gz}'
  
     script:
-
-    """
-    bismark_methylation_extractor \\
-        --multi ${task.cpus} \\
-        --buffer_size $(task.memory} \\
-        --ignore_r2 1 \\
-        --ignore_3prime_r2 2 \\
-        --bedGraph \\
-        --counts \\
-        --gzip \\
-        -p \\
-        --no_overlap \\
-        --report \\
-        $bam_dedup
-    """
+    if( single ) {
+        """
+        bismark_methylation_extractor \\
+            --multi ${task.cpus} \\
+            --buffer_size $(task.memory} \\
+            --bedGraph \\
+            --counts \\
+            --gzip \\
+            -s \\
+            --report \\
+            $bam_dedup
+        """
+    } else {
+        """
+        bismark_methylation_extractor \\
+            --multi ${task.cpus} \\
+            --buffer_size $(task.memory} \\
+            --ignore_r2 1 \\
+            --ignore_3prime_r2 2 \\
+            --bedGraph \\
+            --counts \\
+            --gzip \\
+            -p \\
+            --no_overlap \\
+            --report \\
+            $bam_dedup
+        """
+    }
 }
 
 
@@ -291,10 +315,10 @@ process bismark_summary {
     file '*{html,txt}' into bismark_summary_done
     
     output:
-    file 'multiqc_report.html'  
+    file '*{html,txt}'  
    
     """
-    multiqc -f  $PWD/results
+    bismark2summary $PWD/results/bismark
     """
 }
 
