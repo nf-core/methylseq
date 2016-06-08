@@ -2,24 +2,24 @@
 
 /*
 ========================================================================================
-                    R N A - S E Q    T W O    P O I N T    Z E R O
+             B S - S E Q   M E T H Y L A T I O N   B E S T - P R A C T I C E
 ========================================================================================
- New RNA-Seq Best Practice Analysis Pipeline. Started March 2016.
+ New Methylation (BS-Seq) Best Practice Analysis Pipeline. Started June 2016.
  @Authors
  Phil Ewels <phil.ewels@scilifelab.se>
- Rickard Hammarén <rickard.hammaren@scilifelab.se>
 ----------------------------------------------------------------------------------------
  Basic command:
  $ nextflow main.nf
  
  Pipeline variables can be configured with the following command line options:
- --genome [GRCh37 | GRCm38]
- --index [path to STAR index]
- --gtf [path to GTF file]
- --reads [path to input files]
+ --genome [ID] (default: GRCh37)
+ --index [path] (default: set by genome ID in config)
+ --reads [path] (default: data/*{_1,_2}*.fastq.gz)
+ --outdir [path] (default: ./results)
+ --name [str] (default: BS-Seq Best Practice)
  
  For example:
- $ nextflow main.nf --reads 'path/to/data/sample_*_{1,2}.fq.gz'
+ $ nextflow main.nf --reads 'path/to/data/sample_*_{1,2}.fq.gz' --genome GRCm38
 ---------------------------------------------------------------------------------------
 The pipeline can determine whether the input data is single or paired end. This relies on 
 specifying the input files correctly. For paired en data us the example above, i.e. 
@@ -28,27 +28,13 @@ as single end.
 ----------------------------------------------------------------------------------------
  Pipeline overview:
  - FastQC - read quility control
- - cutadapt - trimming
- - STAR - align
- - RSeQC
-   - bam_stat
-   - infer_experiment
-   - splice junction saturation
-   - RPKM saturation
-   - read duplication
-   - inner distance
-   - gene body coverage
-   - read distribution
-   - junction annotation
- - dupRadar
- - preseq
- - subread featureCounts - gene counts, biotype counts, rRNA estimation.
- - String Tie - FPKMs for genes and transcripts
- - edgeR - create MDS plot and sample pairwise distance heatmap / dendrogram
+ - Trim Galore! - trimming
+ - Bismark - align
+ - Bismark - deduplication
+ - Bismark - methylation extraction
+ - Bismark - sample report
+ - Bismark - summary report
  - MultiQC
-----------------------------------------------------------------------------------------
- GA project GA_14_20 RNA-Seq Pipeline. See planning document:
- https://docs.google.com/document/d/1_I4r-yYLl_nA5SzMKtABjDKxQxHSb5N9FMWyomVSWVU/edit#heading=h.uc2543wvne80
 ----------------------------------------------------------------------------------------
 */
 
@@ -61,25 +47,14 @@ as single end.
 // Pipeline version
 version = 0.1
 
-// Reference genome index
+// Configurable variables
 params.genome = 'GRCh37'
-params.index = params.genomes[ params.genome ].star
-params.gtf   = params.genomes[ params.genome ].gtf
-params.bed12 = params.genomes[ params.genome ].bed12
+params.index = params.genomes[ params.genome ].bismark
+params.name = "BS-Seq Best practice"
+params.reads = "data/*{_1,_2}*.fastq.gz"
+params.outdir = './results'
 
 single='null'
-
-params.name = "RNA-Seq Best practice"
-
-// Input files
-params.reads = "data/*.fastq.gz"
-
-// Output path
-params.out = "$PWD"
-
-// R library locations
-params.rlocation = "$HOME/R/nxtflow_libs/"
-nxtflow_libs=file(params.rlocation)
 
 log.info "===================================="
 log.info " RNAbp : RNA-Seq Best Practice v${version}"
@@ -91,27 +66,14 @@ log.info "Annotation   : ${params.gtf}"
 log.info "Current home : $HOME"
 log.info "Current user : $USER"
 log.info "Current path : $PWD"
-log.info "R libraries  : ${params.rlocation}"
 log.info "Script dir   : $baseDir"
 log.info "Working dir  : $workDir"
-log.info "Output dir   : ${params.out}"
+log.info "Output dir   : ${params.outdir}"
 log.info "===================================="
 
-// Create R library directories if not already existing
-nxtflow_libs.mkdirs()
-
-// Set up nextflow objects
-index = file(params.index)
-gtf   = file(params.gtf)
-bed12 = file(params.bed12)
-
 // Validate inputs
-if( !index.exists() ) exit 1, "Missing STAR index: ${index}"
-if( !gtf.exists() )   exit 2, "Missing GTF annotation: ${gtf}"
-if( !bed12.exists() ) exit 2, "Missing BED12 annotation: ${bed12}"
-
-//Setting up a directory to save results to 
-results_path = './results'
+index = file(params.index)
+if( !index.exists() ) exit 1, "Missing Bismark index: ${index}"
 
 /*
  * Create a channel for read files 
@@ -127,7 +89,7 @@ Channel
      .groupTuple(sort: true)
      .set { read_files }
  
-read_files.into  { read_files_fastqc; read_files_trimming;name_for_star }
+read_files.into  { read_files_fastqc; read_files_trimming; name_for_star }
 
 
 /*
@@ -146,7 +108,7 @@ process fastqc {
     errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
     maxRetries 3
   
-    publishDir "$results_path/fastqc"
+    publishDir "$params.outdir/fastqc"
 
     input:
     set val(name), file(reads:'*') from read_files_fastqc
@@ -179,12 +141,11 @@ process trim_galore {
     
     errorStrategy { task.exitStatus == 140 ? 'retry' : 'terminate' }
     maxRetries 3
-    publishDir "$results_path/trim_galore"
+    publishDir "$params.outdir/trim_galore"
 
     input:
     set val(name), file(reads:'*') from read_files_trimming
     
-
     output:
     file '*fq.gz' into trimmed_reads
     file '*trimming_report.txt' 
@@ -192,13 +153,10 @@ process trim_galore {
     script:
     single = reads instanceof Path
     if( !single ) {
-
         """
         trim_galore --paired --gzip --fastqc_args "-q" $reads
         """
-
-    }
-    else {
+    } else {
         """
         trim_galore --gzip --fastqc_args "-q" $reads
         """
@@ -206,438 +164,143 @@ process trim_galore {
 }
 
 /*
- * STEP 3 - align with STAR
- * Inspired by https://github.com/AveraSD/nextflow-rnastar
+ * STEP 3 - align with Bismark
  */
 
-process star {
-    tag "$prefix"
+process bismark_align {
+    tag "$trimmed_reads"
     
     module 'bioinfo-tools'
-    module 'star'
+    module 'bismark'
     
     cpus 8
     memory { 32.GB * task.attempt }
-    time  { 5.h * task.attempt }
+    time  { 8.h * task.attempt }
     errorStrategy { task.exitStatus == 140 ? 'retry' : 'terminate' }
     maxRetries 3
     
- 
-    publishDir "$results_path/STAR"
+    publishDir "$params.outdir/bismark"
     
     input:
     file index
-    file gtf
-    file (reads:'*') from trimmed_reads
-    set val(prefix) from name_for_star 
+    file trimmed_reads
+    
     output:
-    file '*.bam' into bam_rseqc, bam_preseq, bam_markduplicates, bam_featurecounts, bam_stringtieFPKM
-    file '*Log.final.out' 
-    file '*Log.out' 
-    file '*Log.progress.out' 
-    file '*SJ.out.tab' 
+    file '*.bam' into bam
+    file '*.{txt,png,gz}'
     
     """
-    STAR --genomeDir $index \\
-         --sjdbGTFfile $gtf \\
-         --readFilesIn ${reads}  \\
-         --runThreadN ${task.cpus} \\
-         --twopassMode Basic \\
-         --outWigType bedGraph \\
-         --outSAMtype BAM SortedByCoordinate\\
-         --readFilesCommand zcat\\
-         --outFileNamePrefix $prefix
+    bismark --bam $index $trimmed_reads
     """
     
 }
 
 
 /*
- * STEP 4 - RSeQC analysis
+ * STEP 4 - Bismark deduplicate
  */
 
-process rseqc {
-    tag "$bam_rseqc"
+process bismark_deduplicate {
+    tag "$bam"
     
     module 'bioinfo-tools'
-    module 'rseqc'
-    module 'samtools'
+    module 'bismark'
     memory { 32.GB * task.attempt }
-    time  {7.h * task.attempt }
+    time  {4.h * task.attempt }
     
     errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
     maxRetries 3
    
-    publishDir "$results_path/rseqc" 
-    input:
-    file bam_rseqc
-    file bed12 from bed12
+    publishDir "$params.outdir/bismark" 
     
-    def STRAND_RULE
-    if (!single){
-        STRAND_RULE='1+-,1-+,2++,2--'
-    } else {
-        STRAND_RULE='++,--'
-    }
-  /*  The following files are being generated by this process:
-    * .bam_stat.txt'                          // bam_stat
-    * .splice_events.{txt,pdf}'               // junction_annotation
-    * .splice_junction.{txt,pdf}'             // junction_annotation
-    * .junctionSaturation_plot.{txt,pdf}'     // junction_saturation
-    * .inner_distance.{txt,pdf}'              // inner_distance
-    * .curves.{txt,pdf}'                      // geneBody_coverage
-    * .geneBodyCoverage.txt'                  // geneBody_coverag
-    * .heatMap.{txt,pdf}'                     // geneBody_coverage
-    * .infer_experiment.txt'                  // infer_experiment
-    * .read_distribution.txt'                 // read_distribution
-    * DupRate.xls'                            // read_duplication
-    * DupRate_plot.pdf'                       // read_duplication
-    *file '*.saturation.{txt,pdf}'            // RPKM_saturation
-    *file '*.junctionSaturation_plot.r' 
-    */
+    input:
+    file bam
     
     output:
-    file '*.{txt,pdf}' 
+    file '*deduplicated.bam' into bam_dedup
+    file '*.{txt,png,gz}'
  
     script:
 
     """
-    samtools index $bam_rseqc  
-    bam_stat.py -i $bam_rseqc 2> ${bam_rseqc}.bam_stat.txt
-    junction_annotation.py -i $bam_rseqc -o ${bam_rseqc}.rseqc -r $bed12
-    junction_saturation.py -i $bam_rseqc -o ${bam_rseqc}.rseqc -r $bed12
-    inner_distance.py -i $bam_rseqc -o ${bam_rseqc}.rseqc -r $bed12
-    geneBody_coverage.py -i ${bam_rseqc} -o ${bam_rseqc}.rseqc -r $bed12
-    infer_experiment.py -i $bam_rseqc -r $bed12 > ${bam_rseqc}.infer_experiment.txt
-    read_distribution.py -i $bam_rseqc -r $bed12 > ${bam_rseqc}.read_distribution.txt
-    read_duplication.py -i $bam_rseqc -o ${bam_rseqc}.read_duplication
-    RPKM_saturation.py -i $bam_rseqc -r $bed12 -d $STRAND_RULE -o ${bam_rseqc}.RPKM_saturation
+    deduplicate_bismark -p --bam $bam
     """
 }
 
 /*
- * STEP 5 - preseq analysis
+ * STEP 5 - Bismark methylation extraction
  */
 
-process preseq {
-    tag "$bam_preseq"
+process bismark_methXtract {
+    tag "$bam_dedup"
     
     module 'bioinfo-tools'
-    module 'preseq'
-    
-    memory { 4.GB * task.attempt }
-    time { 2.h * task.attempt }
-    
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' } 
-    maxRetries 3
-
-    publishDir "$results_path/preseq"    
-    input:
-    file bam_preseq
-    
-    output:
-    file '*.ccurve.txt' 
-    
-    """
-    preseq lc_extrap -v -B $bam_preseq -o ${bam_preseq}.ccurve.txt
-    """
-}
-
-
-/*
-* STEP 6 Mark duplicates
-*/
-
-process markDuplicates {
-    tag "$bam_markduplicates"
-
-    module 'bioinfo-tools'
-    module 'picard/2.0.1'
-    
-    memory { 16.GB * task.attempt }
-    time { 2.h * task.attempt }
+    module 'bismark'
+    cpus 4
+    memory { 8.GB * task.attempt }
+    time  {6.h * task.attempt }
     
     errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
     maxRetries 3
+   
+    publishDir "$params.outdir/bismark" 
+    
+    input:
+    file bam_dedup
+    
+    output:
+    file '*splitting_report.txt' into methXtract_done
+    file '*.{txt,png,gz}'
+ 
+    script:
+
+    """
+    bismark_methylation_extractor \\
+        --multi ${task.cpus} \\
+        --buffer_size $(task.memory} \\
+        --ignore_r2 1 \\
+        --ignore_3prime_r2 2 \\
+        --bedGraph \\
+        --counts \\
+        --gzip \\
+        -p \\
+        --no_overlap \\
+        --report \\
+        $bam_dedup
+    """
+}
+
+
+
+/*
+ * STEP 6 - Bismark Summary
+ */
+
+process bismark_summary { 
+    module 'bioinfo-tools'
+    module 'bismark'
+    
+    memory '2GB'   
+    time '1h'
+
+    publishDir "$params.outdir/bismark"    
   
-    publishDir "$results_path/markDuplicates"  
+    errorStrategy 'ignore'
+ 
     input:
-    file bam_markduplicates
+    file '*{html,txt}' into bismark_summary_done
     
-    output: 
-    file '*.markDups.bam' into bam_md
-    file '*markDups_metrics.txt' 
-
+    output:
+    file 'multiqc_report.html'  
+   
     """
-    echo \$PICARD_HOME
-    java -Xmx2g -jar \$PICARD_HOME/picard.jar MarkDuplicates INPUT=${bam_markduplicates} OUTPUT=${bam_markduplicates}.markDups.bam METRICS_FILE=${bam_markduplicates}.markDups_metrics.txt REMOVE_DUPLICATES=false ASSUME_SORTED=true PROGRAM_RECORD_ID='null' VALIDATION_STRINGENCY=LENIENT 
+    multiqc -f  $PWD/results
     """
 }
 
 
 /*
-STEP 7 - dupRadar
- */
-
-process dupradar {
-    tag "$bam_md"
-    
-    module 'bioinfo-tools'
-    module 'R/3.2.3'
-    
-    memory { 16.GB * task.attempt }
-    time { 2.h * task.attempt }
-   
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
-    maxRetries 3
- 
-    publishDir "$results_path/dupradar", pattern: '*.{pdf,txt}'
-
-    input:
-    file bam_md 
-    file gtf from gtf
-    
-    output:
-    file '*_duprateExpDens.pdf' 
-    file '*_intercept_slope.txt' 
-    file '*_expressionHist.pdf' 
-    file 'dup.done' into done
-    
-    def paired 
-    if( !single ) { 
-       paired = 'TRUE'
-    }else{
-        paired= 'FALSE'
-    }   
-    """
-    #!/usr/bin/env Rscript
-    
-    # Load / install dupRadar package
-    .libPaths( c( "${params.rlocation}", .libPaths() ) )
-    if (!require("dupRadar")){
-      source("http://bioconductor.org/biocLite.R")
-      biocLite("dupRadar", suppressUpdates=TRUE, lib="${params.rlocation}")
-      library("dupRadar")
-    }
-
-    # Duplicate stats
-    stranded <- 2
-    threads <- 8
-    dm <- analyzeDuprates("${bam_md}", "${gtf}", stranded, $paired, threads)
-    write.table(dm, file=paste("${bam_md}", "_dupMatrix.txt", sep=""), quote=F, row.name=F, sep="\t")
-    
-    # 2D density scatter plot
-    pdf(paste0("${bam_md}", "_duprateExpDens.pdf"))
-    duprateExpDensPlot(DupMat=dm)
-    title("Density scatter plot")
-    dev.off()
-    fit <- duprateExpFit(DupMat=dm)
-    cat("duprate at low read counts: ", fit\$intercept, "progression of the duplication rate: ", fit\$slope, "\n", fill=TRUE, labels="${bam_md}", file=paste0("${bam_md}", "_intercept_slope.txt"), append=FALSE)
-   
-    # Distribution of RPK values per gene
-    pdf(paste0("${bam_md}", "_expressionHist.pdf"))
-                         expressionHist(DupMat=dm)
-    title("Distribution of RPK values per gene")
-    dev.off()
-    file.create("dup.done")
-    """
-
-}
-
- /*
- * STEP 8 Feature counts
- */
-
-
-process featureCounts {
-    tag "$bam_featurecounts"
-    
-    module 'bioinfo-tools'
-    module 'subread'
-    
-    memory { 4.GB * task.attempt }
-    time { 2.h * task.attempt }
-   
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
-    maxRetries 3
- 
-    publishDir "$results_path/featureCounts"
-    input:
-    file bam_featurecounts
-    file gtf from gtf
-    
-    output:
-    file '*_gene.featureCounts.txt' into geneCounts
-    file '*_biotype.featureCounts.txt' 
-    file '*_rRNA_counts.txt' 
-    file '*.summary' 
-    """
-    featureCounts -a $gtf -g gene_id -o ${bam_featurecounts}_gene.featureCounts.txt -p -s 2 $bam_featurecounts
-    featureCounts -a $gtf -g gene_biotype -o ${bam_featurecounts}_biotype.featureCounts.txt -p -s 2 $bam_featurecounts
-    cut -f 1,7 ${bam_featurecounts}_biotype.featureCounts.txt | sed '1,2d' | grep 'rRNA' > ${bam_featurecounts}_rRNA_counts.txt
-    """
-}
-
-
-/*
- * STEP 9 - stringtie FPKM
- */
-
-process stringtieFPKM {
-    tag "$bam_stringtieFPKM"
-    
-    module 'bioinfo-tools'
-    module 'StringTie'
-    
-    memory { 4.GB * task.attempt }
-    time { 2.h * task.attempt }
-    
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
-    maxRetries 3
- 
-    publishDir "$results_path/stringtieFPKM"
-   
-    input:
-    file bam_stringtieFPKM
-    file gtf from gtf
-    
-    output:
-    file '*_transcripts.gtf' 
-    file '*.gene_abund.txt' 
-    file '*.cov_refs.gtf' 
-    
-    """
-    stringtie $bam_stringtieFPKM -o ${bam_stringtieFPKM}_transcripts.gtf -v -G $gtf -A ${bam_stringtieFPKM}.gene_abund.txt -C ${bam_stringtieFPKM}.cov_refs.gtf -e -b ${bam_stringtieFPKM}_ballgown
-    """
-}
-
-
-/*
- * STEP 10 - edgeR MDS and heatmap
- */
-
-process sample_correlation {
-    
-    module 'bioinfo-tools'
-    module 'R/3.2.3'
-    
-    memory { 16.GB * task.attempt }
-    time { 2.h * task.attempt }
-    
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
-    maxRetries 3
-    
-    publishDir "$results_path/sample_correlation", pattern: '*.{pdf,txt}'
-    
-    input:
-    file input_files from geneCounts.toList()
-    
-    output:
-    file 'edgeR_MDS_plot.pdf' 
-    file 'edgeR_MDS_distance_matrix.txt' 
-    file 'edgeR_MDS_plot_coordinates.txt' 
-    file 'log2CPM_sample_distances_heatmap.pdf' 
-    file 'log2CPM_sample_distances_dendrogram.pdf' 
-    file 'log2CPM_sample_distances.txt' 
-    file 'corr.done' into corr_done
-    
-    """
-    #!/usr/bin/env Rscript
- 
-    # Load / install required packages
-    .libPaths( c( "${params.rlocation}", .libPaths() ) )
-    if (!require("limma")){
-      source("http://bioconductor.org/biocLite.R")
-      biocLite("limma", suppressUpdates=TRUE, lib="${params.rlocation}")
-      library("limma")
-    }
- 
-    if (!require("edgeR")){
-      source("http://bioconductor.org/biocLite.R")
-      biocLite("edgeR", suppressUpdates=TRUE, lib="${params.rlocation}")
-      library("edgeR")
-    }
- 
-    if (!require("data.table")){
-      install.packages("data.table", dependencies=TRUE, repos='http://cloud.r-project.org/', lib="${params.rlocation}")
-      library("data.table")
-    }
- 
-    if (!require("gplots")) {
-      install.packages("gplots", dependencies=TRUE, repos='http://cloud.r-project.org/', lib="${params.rlocation}")
-      library("gplots")
-    }
- 
-    # Load input counts data
-    datafiles = c( "${(input_files as List).join('", "')}" )
-    
-    # Load count column from all files into a list of data frames
-    # Use data.tables fread as much much faster than read.table
-    # Row names are GeneIDs
-    temp <- lapply(datafiles, fread, skip="Geneid", header=TRUE, colClasses=c(NA, rep("NULL", 5), NA))
- 
-    # Merge into a single data frame
-    merge.all <- function(x, y) {
-      merge(x, y, all=TRUE, by="Geneid")
-    }
-    data <- data.frame(Reduce(merge.all, temp))
- 
-    # Clean sample name headers
-    colnames(data) <- gsub("Aligned.sortedByCoord.out.bam", "", colnames(data))
- 
-    # Set GeneID as row name
-    rownames(data) <- data[,1]
-    data[,1] <- NULL
- 
-    # Convert data frame to edgeR DGE object
-    dataDGE <- DGEList( counts=data.matrix(data) )
- 
-    # Normalise counts
-    dataNorm <- calcNormFactors(dataDGE)
- 
-    # Make MDS plot
-    pdf('edgeR_MDS_plot.pdf')
-    MDSdata <- plotMDS(dataNorm)
-    dev.off()
- 
-    # Print distance matrix to file
-    write.table(MDSdata\$distance.matrix, 'edgeR_MDS_distance_matrix.txt', quote=FALSE, sep="\t")
- 
-    # Print plot x,y co-ordinates to file
-    MDSxy = MDSdata\$cmdscale.out
-    colnames(MDSxy) = c(paste(MDSdata\$axislabel, '1'), paste(MDSdata\$axislabel, '2'))
-    write.table(MDSxy, 'edgeR_MDS_plot_coordinates.txt', quote=FALSE, sep="\t")
- 
-    # Get the log counts per million values
-    logcpm <- cpm(dataNorm, prior.count=2, log=TRUE)
- 
-    # Calculate the euclidean distances between samples
-    dists = dist(t(logcpm))
- 
-    # Plot a heatmap of correlations
-    pdf('log2CPM_sample_distances_heatmap.pdf')
-    hmap <- heatmap.2(as.matrix(dists),
-      main="Sample Correlations", key.title="Distance", trace="none",
-      dendrogram="row", margin=c(9, 9)
-    )
-    dev.off()
- 
-    # Plot the heatmap dendrogram
-    pdf('log2CPM_sample_distances_dendrogram.pdf')
-    plot(hmap\$rowDendrogram, main="Sample Dendrogram")
-    dev.off()
- 
-    # Write clustered distance values to file
-    write.table(hmap\$carpet, 'log2CPM_sample_distances.txt', quote=FALSE, sep="\t")
-    
-    file.create("corr.done")
-    """
-
-}
-
-
-/*
- * STEP 11 MultiQC
+ * STEP 7 - MultiQC
  */
 
 process multiqc { 
@@ -647,19 +310,19 @@ process multiqc {
     memory '4GB'   
     time '4h'
 
-    publishDir "$results_path/MultiQC"    
+    publishDir "$params.outdir/MultiQC"    
   
     errorStrategy 'ignore'
  
     input:
-    file 'dup.done' from done
-    file 'corr.done' from corr_done
+    file bismark_summary_done
     
     output:
-    file 'multiqc_report.html'  
+    file 'multiqc_report.html'
+    file '*multiqc_data'
    
-     """
-    multiqc -f  $PWD/results
+    """
+    multiqc -f $PWD/results
     """
 }
 

@@ -1,5 +1,6 @@
-# RNA-BP
-Pipeline for RNA sequencing best practice abalysis at the NGI at Scilifelab Stockholm, Sweden
+# Methylation (BS-Seq) Best Practice
+Pipeline for bisulfite sequencing best practice analysis at the National Genomics Infrastructure,
+part of SciLifeLab Stockholm, Sweden.
 
 Authors:
 Phil Ewels (@ewels)
@@ -25,7 +26,7 @@ module load nextflow
 ### NextFlow configuration
 Next, you need to set up a config file so that NextFlow knows how to run and where to find reference
 indexes. You can find an example configuration file for UPPMAX (milou) with this repository:
-[`example_uppmax_config`](https://github.com/SciLifeLab/NGI-RNAseq/blob/master/example_uppmax_config).
+[`example_uppmax_config`](https://github.com/SciLifeLab/NGI-MethylSeq/blob/master/example_uppmax_config).
 
 Copy this file to `~/.nextflow/config` and edit the line `'-A b2013064'` to contain your own UPPMAX project
 identifier instead.
@@ -36,18 +37,18 @@ files.
 
 ### Pipeline installation
 This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub when run if
-`SciLifeLab/NGI-RNAseq` is specified as the pipeline name.
+`SciLifeLab/NGI-MethylSeq` is specified as the pipeline name.
 
 If you prefer, you can download the files yourself from GitHub and run them directly:
 ```
-git clone https://github.com/SciLifeLab/NGI-RNAseq.git
-nextflow NGI-RNAseq/main.nf
+git clone https://github.com/SciLifeLab/NGI-MethylSeq.git
+nextflow NGI-MethylSeq/main.nf
 ```
 
 ## Running the pipeline
 The typical command for running the pipeline is as follows:
 ```
-nextflow SciLifeLab/NGI-RNAseq --reads '*_R{1,2}.fastq.gz' --genome 'GRCm38'
+nextflow SciLifeLab/NGI-MethylSeq --reads '*_R{1,2}.fastq.gz' --genome GRCm38
 ```
 
 ### `--reads` 
