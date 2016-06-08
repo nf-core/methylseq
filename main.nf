@@ -189,6 +189,7 @@ process bismark_align {
     file '*.bam' into bam
     file '*.{txt,png,gz}'
     
+    script:
     if( single ) {
         """
         bismark --bam $index $trimmed_reads
@@ -198,7 +199,6 @@ process bismark_align {
         bismark --bam $index -1 $trimmed_reads[0] -2 $trimmed_reads[1]
         """
     }
-    
 }
 
 
@@ -268,7 +268,7 @@ process bismark_methXtract {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
-            --buffer_size $(task.memory} \\
+            --buffer_size ${task.memory} \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -280,7 +280,7 @@ process bismark_methXtract {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
-            --buffer_size $(task.memory} \\
+            --buffer_size ${task.memory} \\
             --ignore_r2 1 \\
             --ignore_3prime_r2 2 \\
             --bedGraph \\
