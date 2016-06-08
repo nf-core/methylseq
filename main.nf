@@ -312,10 +312,10 @@ process bismark_summary {
     errorStrategy 'ignore'
  
     input:
-    file '*{html,txt}' into bismark_summary_done
+    file methXtract_done
     
     output:
-    file '*{html,txt}'  
+    file '*{html,txt}' into bismark_summary_done
    
     """
     bismark2summary $PWD/results/bismark
