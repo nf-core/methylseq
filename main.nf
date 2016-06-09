@@ -106,7 +106,7 @@ process fastqc {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
   
-    publishDir "$params.outdir/fastqc"
+    publishDir "${params.outdir}/fastqc"
 
     input:
     set val(prefix), file(reads:'*') from read_files_fastqc
@@ -139,7 +139,7 @@ process trim_galore {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     
-    publishDir "$params.outdir/trim_galore"
+    publishDir "${params.outdir}/trim_galore"
 
     input:
     set val(prefix), file(reads:'*') from read_files_trimming
@@ -177,7 +177,7 @@ process bismark_align {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     
-    publishDir "$params.outdir/bismark"
+    publishDir "${params.outdir}/bismark"
     
     input:
     file index
@@ -215,7 +215,7 @@ process bismark_deduplicate {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
    
-    publishDir "$params.outdir/bismark" 
+    publishDir "${params.outdir}/bismark" 
     
     input:
     file bam
@@ -252,7 +252,7 @@ process bismark_methXtract {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
    
-    publishDir "$params.outdir/bismark" 
+    publishDir "${params.outdir}/bismark" 
     
     input:
     file bam_dedup
@@ -306,7 +306,7 @@ process bismark_summary {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
 
-    publishDir "$params.outdir/bismark"    
+    publishDir "${params.outdir}/bismark"    
  
     input:
     file bismark_align_results_1.toList()
@@ -335,23 +335,22 @@ process multiqc {
     errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
 
-    publishDir "$params.outdir/MultiQC"    
+    publishDir "${params.outdir}/MultiQC"    
  
     input:
     file ('fastqc/*') from fastqc_results.toList()
     file ('trimgalore/*') from trimgalore_results.toList()
     file ('bismark/*') from bismark_align_results_2.toList()
-    file bismark_align_results_2.toList()
-    file bismark_dedup_results_2.toList()
-    file bismark_methXtract_results_2.toList()
-    file bismark_summary_results.toList()
+    file ('bismark/*') from bismark_dedup_results_2.toList()
+    file ('bismark/*') from bismark_methXtract_results_2.toList()
+    file ('bismark/*') from bismark_summary_results.toList()
     
     output:
-    file 'multiqc_report.html'
+    file '*multiqc_report.html'
     file '*multiqc_data'
    
     """
-    multiqc -f $PWD/results
+    multiqc -f .
     """
 }
 
