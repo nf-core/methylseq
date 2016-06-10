@@ -102,9 +102,10 @@ process fastqc {
     module 'FastQC'
 
     memory { 2.GB * task.attempt }
-    time { 1.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
+    time { 4.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
+    maxErrors '-1'
   
     publishDir "${params.outdir}/fastqc"
 
@@ -115,7 +116,7 @@ process fastqc {
     file '*_fastqc.{zip,html}' into fastqc_results
 
     """
-    fastqc -q $reads
+    fastqc $reads
     """
 }
 
@@ -135,9 +136,10 @@ process trim_galore {
 
     cpus 3
     memory { 3.GB * task.attempt }
-    time { 4.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
+    time { 8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
     
     publishDir "${params.outdir}/trim_galore"
 
@@ -173,9 +175,10 @@ process bismark_align {
     
     cpus 8
     memory { 32.GB * task.attempt }
-    time  { 8.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
+    time  { 12.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
     
     publishDir "${params.outdir}/bismark"
     
@@ -211,9 +214,10 @@ process bismark_deduplicate {
     module 'bismark'
     
     memory { 32.GB * task.attempt }
-    time  {4.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
+    time  {8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
    
     publishDir "${params.outdir}/bismark" 
     
@@ -248,9 +252,10 @@ process bismark_methXtract {
     
     cpus 4
     memory { 8.GB * task.attempt }
-    time  {6.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'terminate' }
+    time  {8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
    
     publishDir "${params.outdir}/bismark" 
     
@@ -303,8 +308,7 @@ process bismark_summary {
     
     memory '2GB'   
     time '1h'
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
-    maxRetries 3
+    errorStrategy 'ignore'
 
     publishDir "${params.outdir}/bismark"    
  
@@ -331,9 +335,8 @@ process multiqc {
     module 'MultiQC'
     
     memory '4GB'   
-    time '4h'
-    errorStrategy { task.exitStatus == 140 || task.exitStatus == 143 ? 'retry' : 'ignore' }
-    maxRetries 3
+    time '2h'
+    errorStrategy 'ignore'
 
     publishDir "${params.outdir}/MultiQC"    
  
