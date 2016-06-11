@@ -62,7 +62,6 @@ log.info "===================================="
 log.info "Reads        : ${params.reads}"
 log.info "Genome       : ${params.genome}"
 log.info "Index        : ${params.index}"
-log.info "Annotation   : ${params.gtf}"
 log.info "Current home : $HOME"
 log.info "Current user : $USER"
 log.info "Current path : $PWD"
@@ -76,18 +75,17 @@ index = file(params.index)
 if( !index.exists() ) exit 1, "Missing Bismark index: ${index}"
 
 /*
- * Create a channel for read files 
+ * Create a channel for read files - groups based on shared prefixes
  */
- 
 Channel
-     .fromPath( params.reads )
-     .ifEmpty { error "Cannot find any reads matching: ${params.reads}" }
-     .map { path ->  
+    .fromPath( params.reads )
+    .ifEmpty { error "Cannot find any reads matching: ${params.reads}" }
+    .map { path ->
         def prefix = readPrefix(path, params.reads)
         tuple(prefix, path)
-     }
-     .groupTuple(sort: true)
-     .set { read_files }
+    }
+    .groupTuple(sort: true)
+    .set { read_files }
  
 read_files.into  { read_files_fastqc; read_files_trimming }
 
@@ -97,28 +95,28 @@ read_files.into  { read_files_fastqc; read_files_trimming }
  */
 
 process fastqc {
-    tag "$name"
+    tag "$prefix"
 
     module 'bioinfo-tools'
+    module 'java'
     module 'FastQC'
 
     memory { 2.GB * task.attempt }
-    time { 1.h * task.attempt }
-
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
+    time { 4.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
+    maxErrors '-1'
   
-    publishDir "$params.outdir/fastqc"
+    publishDir "${params.outdir}/fastqc"
 
     input:
-    set val(name), file(reads:'*') from read_files_fastqc
+    set val(prefix), file(reads:'*') from read_files_fastqc
 
     output:
-    file '*_fastqc.html' into fastqc_html
-    file '*_fastqc.zip' into fastqc_zip
+    file '*_fastqc.{zip,html}' into fastqc_results
 
     """
-    fastqc -q ${reads}
+    fastqc $reads
     """
 }
 
@@ -128,31 +126,33 @@ process fastqc {
  */
 
 process trim_galore {
-    tag "$name"
+    tag "$prefix"
 
     module 'bioinfo-tools'
+    module 'java'
     module 'FastQC'
     module 'cutadapt'
     module 'TrimGalore'
 
     cpus 3
     memory { 3.GB * task.attempt }
-    time { 4.h * task.attempt }
-    
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'terminate' }
+    time { 8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
-    publishDir "$params.outdir/trim_galore"
+    maxErrors '-1'
+    
+    publishDir "${params.outdir}/trim_galore"
 
     input:
-    set val(name), file(reads:'*') from read_files_trimming
+    set val(prefix), file(reads:'*') from read_files_trimming
     
     output:
     file '*fq.gz' into trimmed_reads
-    file '*trimming_report.txt' 
+    file '*trimming_report.txt' into trimgalore_results
 
     script:
     single = reads instanceof Path
-    if( single ) {
+    if (single) {
         """
         trim_galore --gzip --fastqc_args "-q" $reads
         """
@@ -175,11 +175,12 @@ process bismark_align {
     
     cpus 8
     memory { 32.GB * task.attempt }
-    time  { 8.h * task.attempt }
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'terminate' }
+    time  { 12.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
     
-    publishDir "$params.outdir/bismark"
+    publishDir "${params.outdir}/bismark"
     
     input:
     file index
@@ -187,18 +188,18 @@ process bismark_align {
     
     output:
     file '*.bam' into bam
-    file '*.{txt,png,gz}'
+    file '*.{txt,png,gz}' into bismark_align_results_1, bismark_align_results_2
     
-    if( single ) {
+    script:
+    if (single) {
         """
         bismark --bam $index $trimmed_reads
         """
     } else {
         """
-        bismark --bam $index -1 $trimmed_reads[0] -2 $trimmed_reads[1]
+        bismark --bam $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
         """
     }
-    
 }
 
 
@@ -211,23 +212,24 @@ process bismark_deduplicate {
     
     module 'bioinfo-tools'
     module 'bismark'
-    memory { 32.GB * task.attempt }
-    time  {4.h * task.attempt }
     
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
+    memory { 32.GB * task.attempt }
+    time  {8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
    
-    publishDir "$params.outdir/bismark" 
+    publishDir "${params.outdir}/bismark" 
     
     input:
     file bam
     
     output:
     file '*deduplicated.bam' into bam_dedup
-    file '*.{txt,png,gz}'
+    file '*.{txt,png,gz}' into bismark_dedup_results_1, bismark_dedup_results_2
  
     script:
-    if( single ) {
+    if (single) {
         """
         deduplicate_bismark -s --bam $bam
         """
@@ -247,28 +249,28 @@ process bismark_methXtract {
     
     module 'bioinfo-tools'
     module 'bismark'
+    
     cpus 4
     memory { 8.GB * task.attempt }
-    time  {6.h * task.attempt }
-    
-    errorStrategy { task.exitStatus == 140 ? 'retry' : 'warning' }
+    time  {8.h * task.attempt }
+    errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
+    maxErrors '-1'
    
-    publishDir "$params.outdir/bismark" 
+    publishDir "${params.outdir}/bismark" 
     
     input:
     file bam_dedup
     
     output:
-    file '*splitting_report.txt' into methXtract_done
-    file '*.{txt,png,gz}'
+    file '*.{txt,png,gz}' into bismark_methXtract_results_1, bismark_methXtract_results_2
  
     script:
-    if( single ) {
+    if (single) {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
-            --buffer_size $(task.memory} \\
+            --buffer_size ${task.memory} \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -280,7 +282,7 @@ process bismark_methXtract {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
-            --buffer_size $(task.memory} \\
+            --buffer_size ${task.memory} \\
             --ignore_r2 1 \\
             --ignore_3prime_r2 2 \\
             --bedGraph \\
@@ -306,16 +308,17 @@ process bismark_summary {
     
     memory '2GB'   
     time '1h'
-
-    publishDir "$params.outdir/bismark"    
-  
     errorStrategy 'ignore'
+
+    publishDir "${params.outdir}/bismark"    
  
     input:
-    file '*{html,txt}' into bismark_summary_done
+    file bismark_align_results_1.toList()
+    file bismark_dedup_results_1.toList()
+    file bismark_methXtract_results_1.toList()
     
     output:
-    file '*{html,txt}'  
+    file '*{html,txt}' into bismark_summary_results
    
     """
     bismark2summary $PWD/results/bismark
@@ -332,21 +335,25 @@ process multiqc {
     module 'MultiQC'
     
     memory '4GB'   
-    time '4h'
-
-    publishDir "$params.outdir/MultiQC"    
-  
+    time '2h'
     errorStrategy 'ignore'
+
+    publishDir "${params.outdir}/MultiQC"    
  
     input:
-    file bismark_summary_done
+    file ('fastqc/*') from fastqc_results.toList()
+    file ('trimgalore/*') from trimgalore_results.toList()
+    file ('bismark/*') from bismark_align_results_2.toList()
+    file ('bismark/*') from bismark_dedup_results_2.toList()
+    file ('bismark/*') from bismark_methXtract_results_2.toList()
+    file ('bismark/*') from bismark_summary_results.toList()
     
     output:
-    file 'multiqc_report.html'
+    file '*multiqc_report.html'
     file '*multiqc_data'
    
     """
-    multiqc -f $PWD/results
+    multiqc -f .
     """
 }
 
@@ -387,9 +394,7 @@ def readPrefix( Path actual, template ) {
         def prefix = fileName.substring(0,end)
         while(prefix.endsWith('-') || prefix.endsWith('_') || prefix.endsWith('.') ) 
           prefix=prefix[0..-2]
-          
         return prefix
     }
-    println(fileName) 
     return fileName
 }
