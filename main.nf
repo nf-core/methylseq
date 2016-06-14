@@ -10,19 +10,19 @@
 ----------------------------------------------------------------------------------------
  Basic command:
  $ nextflow main.nf
- 
+
  Pipeline variables can be configured with the following command line options:
  --genome [ID] (default: GRCh37)
  --index [path] (default: set by genome ID in config)
  --reads [path] (default: data/*{_1,_2}*.fastq.gz)
  --outdir [path] (default: ./results)
  --name [str] (default: BS-Seq Best Practice)
- 
+
  For example:
  $ nextflow main.nf --reads 'path/to/data/sample_*_{1,2}.fq.gz' --genome GRCm38
 ---------------------------------------------------------------------------------------
-The pipeline can determine whether the input data is single or paired end. This relies on 
-specifying the input files correctly. For paired en data us the example above, i.e. 
+The pipeline can determine whether the input data is single or paired end. This relies on
+specifying the input files correctly. For paired en data us the example above, i.e.
 'sample_*_{1,2}.fastq.gz'. Without the glob {1,2} (or similiar) the data will be treated
 as single end.
 ----------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ Channel
     }
     .groupTuple(sort: true)
     .set { read_files }
- 
+
 read_files.into  { read_files_fastqc; read_files_trimming }
 
 
@@ -128,25 +128,25 @@ read_files.into  { read_files_fastqc; read_files_trimming }
 
 process fastqc {
     tag "$prefix"
-
+    
     module 'bioinfo-tools'
     module 'java'
     module 'FastQC'
-
+    
     memory { 2.GB * task.attempt }
     time { 4.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'ignore' }
     maxRetries 3
     maxErrors '-1'
-  
+    
     publishDir "${params.outdir}/fastqc", mode: 'copy'
-
+    
     input:
     set val(prefix), file(reads:'*') from read_files_fastqc
-
+    
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-
+    
     """
     fastqc $reads
     """
@@ -159,13 +159,13 @@ process fastqc {
 
 process trim_galore {
     tag "$prefix"
-
+    
     module 'bioinfo-tools'
     module 'java'
     module 'FastQC'
     module 'cutadapt'
     module 'TrimGalore'
-
+    
     cpus 3
     memory { 3.GB * task.attempt }
     time { 8.h * task.attempt }
@@ -174,14 +174,14 @@ process trim_galore {
     maxErrors '-1'
     
     publishDir "${params.outdir}/trim_galore", mode: 'copy'
-
+    
     input:
     set val(prefix), file(reads:'*') from read_files_trimming
     
     output:
     file '*fq.gz' into trimmed_reads
     file '*trimming_report.txt' into trimgalore_results
-
+    
     script:
     single = reads instanceof Path
     c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -264,7 +264,7 @@ process bismark_deduplicate {
     output:
     file '*deduplicated.bam' into bam_dedup
     file '*.{txt,png,gz}' into bismark_dedup_results_1, bismark_dedup_results_2
- 
+    
     script:
     if (single) {
         """
@@ -293,7 +293,7 @@ process bismark_methXtract {
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
-   
+    
     publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
@@ -301,7 +301,7 @@ process bismark_methXtract {
     
     output:
     file '*.{txt,png,gz}' into bismark_methXtract_results_1, bismark_methXtract_results_2
- 
+    
     script:
     if (single) {
         """
@@ -339,16 +339,16 @@ process bismark_methXtract {
  * STEP 6 - Bismark Summary
  */
 
-process bismark_summary { 
+process bismark_summary {
     module 'bioinfo-tools'
     module 'bismark'
     
-    memory '2GB'   
+    memory '2GB'
     time '1h'
     errorStrategy 'ignore'
-
+    
     publishDir "${params.outdir}/bismark", mode: 'copy'
- 
+    
     input:
     file bismark_align_results_1.toList()
     file bismark_dedup_results_1.toList()
@@ -356,7 +356,7 @@ process bismark_summary {
     
     output:
     file '*{html,txt}' into bismark_summary_results
-   
+    
     """
     bismark2summary $PWD/results/bismark
     """
@@ -367,16 +367,16 @@ process bismark_summary {
  * STEP 7 - MultiQC
  */
 
-process multiqc { 
+process multiqc {
     module 'bioinfo-tools'
     module 'MultiQC'
     
-    memory '4GB'   
+    memory '4GB'
     time '2h'
     errorStrategy 'ignore'
-
+    
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
- 
+    
     input:
     file ('fastqc/*') from fastqc_results.toList()
     file ('trimgalore/*') from trimgalore_results.toList()
@@ -395,18 +395,18 @@ process multiqc {
 }
 
 
-/* 
- * Helper function, given a file Path 
+/*
+ * Helper function, given a file Path
  * returns the file name region matching a specified glob pattern
  * starting from the beginning of the name up to last matching group.
- * 
- * For example: 
+ *
+ * For example:
  *   readPrefix('/some/data/file_alpha_1.fa', 'file*_1.fa' )
- * 
- * Returns: 
+ *
+ * Returns:
  *   'file_alpha'
  */
- 
+
 def readPrefix( Path actual, template ) {
 
     final fileName = actual.getFileName().toString()
@@ -414,9 +414,9 @@ def readPrefix( Path actual, template ) {
     def filePattern = template.toString()
     int p = filePattern.lastIndexOf('/')
     if( p != -1 ) filePattern = filePattern.substring(p+1)
-    if( !filePattern.contains('*') && !filePattern.contains('?') ) 
-        filePattern = '*' + filePattern 
-  
+    if( !filePattern.contains('*') && !filePattern.contains('?') )
+        filePattern = '*' + filePattern
+    
     def regex = filePattern
                     .replace('.','\\.')
                     .replace('*','(.*)')
@@ -426,10 +426,10 @@ def readPrefix( Path actual, template ) {
                     .replace(',','|')
 
     def matcher = (fileName =~ /$regex/)
-    if( matcher.matches() ) {  
-        def end = matcher.end(matcher.groupCount() )      
+    if( matcher.matches() ) {
+        def end = matcher.end(matcher.groupCount() )
         def prefix = fileName.substring(0,end)
-        while(prefix.endsWith('-') || prefix.endsWith('_') || prefix.endsWith('.') ) 
+        while(prefix.endsWith('-') || prefix.endsWith('_') || prefix.endsWith('.') )
           prefix=prefix[0..-2]
         return prefix
     }
