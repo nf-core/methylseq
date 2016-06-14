@@ -119,7 +119,7 @@ Channel
     .groupTuple(sort: true)
     .set { read_files }
 
-read_files.into  { read_files_fastqc; read_files_trimming }
+read_files.into { read_files_fastqc; read_files_trimming }
 
 
 /*
@@ -191,11 +191,11 @@ process trim_galore {
     
     if (single) {
         """
-        trim_galore --gzip --fastqc_args "-q" $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+        trim_galore --gzip $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     } else {
         """
-        trim_galore --paired --gzip --fastqc_args "-q" $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+        trim_galore --paired --gzip $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     }
 }
