@@ -86,7 +86,7 @@ if(params.cegx){
     params.three_prime_clip_r2 = 2
 }
 
-single='null'
+single = 'null'
 
 log.info "===================================="
 log.info " RNAbp : RNA-Seq Best Practice v${version}"
@@ -168,7 +168,7 @@ process trim_galore {
     
     cpus 3
     memory { 3.GB * task.attempt }
-    time { 8.h * task.attempt }
+    time { 16.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
@@ -212,7 +212,7 @@ process bismark_align {
     
     cpus 8
     memory { 32.GB * task.attempt }
-    time  { 12.h * task.attempt }
+    time  { 36.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
@@ -251,7 +251,7 @@ process bismark_deduplicate {
     module 'bismark'
     
     memory { 32.GB * task.attempt }
-    time  {8.h * task.attempt }
+    time  { 12.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
@@ -289,7 +289,7 @@ process bismark_methXtract {
     
     cpus 4
     memory { 8.GB * task.attempt }
-    time  {8.h * task.attempt }
+    time  { 8.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
