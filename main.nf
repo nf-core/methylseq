@@ -54,6 +54,38 @@ params.name = "BS-Seq Best practice"
 params.reads = "data/*{_1,_2}*.fastq.gz"
 params.outdir = './results'
 
+params.clip_r1 = 0
+params.clip_r2 = 0
+params.three_prime_clip_r1 = 0
+params.three_prime_clip_r2 = 0
+
+if(params.pbat){
+    params.clip_r1 = 6
+    params.clip_r2 = 6
+}
+if(params.single_cell){
+    params.clip_r1 = 9
+    params.clip_r2 = 9
+}
+if(params.epignome){
+    params.clip_r1 = 6
+    params.clip_r2 = 6
+    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r2 = 6
+}
+if(params.accel){
+    params.clip_r1 = 10
+    params.clip_r2 = 15
+    params.three_prime_clip_r1 = 10
+    params.three_prime_clip_r2 = 10
+}
+if(params.cegx){
+    params.clip_r1 = 6
+    params.clip_r2 = 6
+    params.three_prime_clip_r1 = 2
+    params.three_prime_clip_r2 = 2
+}
+
 single='null'
 
 log.info "===================================="
@@ -107,7 +139,7 @@ process fastqc {
     maxRetries 3
     maxErrors '-1'
   
-    publishDir "${params.outdir}/fastqc"
+    publishDir "${params.outdir}/fastqc", mode: 'copy'
 
     input:
     set val(prefix), file(reads:'*') from read_files_fastqc
@@ -141,7 +173,7 @@ process trim_galore {
     maxRetries 3
     maxErrors '-1'
     
-    publishDir "${params.outdir}/trim_galore"
+    publishDir "${params.outdir}/trim_galore", mode: 'copy'
 
     input:
     set val(prefix), file(reads:'*') from read_files_trimming
@@ -152,13 +184,18 @@ process trim_galore {
 
     script:
     single = reads instanceof Path
+    c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
+    c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
+    tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
+    tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
+    
     if (single) {
         """
-        trim_galore --gzip --fastqc_args "-q" $reads
+        trim_galore --gzip --fastqc_args "-q" $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     } else {
         """
-        trim_galore --paired --gzip --fastqc_args "-q" $reads
+        trim_galore --paired --gzip --fastqc_args "-q" $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     }
 }
@@ -180,7 +217,7 @@ process bismark_align {
     maxRetries 3
     maxErrors '-1'
     
-    publishDir "${params.outdir}/bismark"
+    publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
     file index
@@ -219,7 +256,7 @@ process bismark_deduplicate {
     maxRetries 3
     maxErrors '-1'
    
-    publishDir "${params.outdir}/bismark" 
+    publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
     file bam
@@ -257,7 +294,7 @@ process bismark_methXtract {
     maxRetries 3
     maxErrors '-1'
    
-    publishDir "${params.outdir}/bismark" 
+    publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
     file bam_dedup
@@ -310,7 +347,7 @@ process bismark_summary {
     time '1h'
     errorStrategy 'ignore'
 
-    publishDir "${params.outdir}/bismark"    
+    publishDir "${params.outdir}/bismark", mode: 'copy'
  
     input:
     file bismark_align_results_1.toList()
@@ -338,7 +375,7 @@ process multiqc {
     time '2h'
     errorStrategy 'ignore'
 
-    publishDir "${params.outdir}/MultiQC"    
+    publishDir "${params.outdir}/MultiQC", mode: 'copy'
  
     input:
     file ('fastqc/*') from fastqc_results.toList()
