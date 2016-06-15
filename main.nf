@@ -101,6 +101,17 @@ log.info "Script dir   : $baseDir"
 log.info "Working dir  : $workDir"
 log.info "Output dir   : ${params.outdir}"
 log.info "===================================="
+if(params.pbat){        log.info "Trim Profile : PBAT" }
+if(params.single_cell){ log.info "Trim Profile : Single Cell" }
+if(params.epignome){    log.info "Trim Profile : Epignome" }
+if(params.accel){       log.info "Trim Profile : Accel" }
+if(params.cegx){        log.info "Trim Profile : CEGX" }
+log.info "Output dir   : ${params.outdir}"
+log.info "Trim R1      : ${params.clip_r1}"
+log.info "Trim R2      : ${params.clip_r2}"
+log.info "Trim 3' R1   : ${params.three_prime_clip_r1}"
+log.info "Trim 3' R2   : ${params.three_prime_clip_r2}"
+log.info "===================================="
 
 // Validate inputs
 index = file(params.index)
@@ -208,6 +219,7 @@ process bismark_align {
     tag "$trimmed_reads"
     
     module 'bioinfo-tools'
+    module 'samtools'
     module 'bismark'
     
     cpus 8
@@ -248,6 +260,7 @@ process bismark_deduplicate {
     tag "$bam"
     
     module 'bioinfo-tools'
+    module 'samtools'
     module 'bismark'
     
     memory { 32.GB * task.attempt }
@@ -285,6 +298,7 @@ process bismark_methXtract {
     tag "$bam_dedup"
     
     module 'bioinfo-tools'
+    module 'samtools'
     module 'bismark'
     
     cpus 4
@@ -341,6 +355,7 @@ process bismark_methXtract {
 
 process bismark_summary {
     module 'bioinfo-tools'
+    module 'samtools'
     module 'bismark'
     
     memory '2GB'
