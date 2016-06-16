@@ -54,36 +54,36 @@ params.name = "BS-Seq Best practice"
 params.reads = "data/*{_1,_2}*.fastq.gz"
 params.outdir = './results'
 
-params.clip_r1 = 0
-params.clip_r2 = 0
-params.three_prime_clip_r1 = 0
-params.three_prime_clip_r2 = 0
-
 if(params.pbat){
     params.clip_r1 = 6
     params.clip_r2 = 6
-}
-if(params.single_cell){
+    params.three_prime_clip_r1 = 0
+    params.three_prime_clip_r2 = 0
+} else if(params.single_cell){
     params.clip_r1 = 9
     params.clip_r2 = 9
-}
-if(params.epignome){
+    params.three_prime_clip_r1 = 0
+    params.three_prime_clip_r2 = 0
+} else if(params.epignome){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-}
-if(params.accel){
+} else if(params.accel){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
     params.three_prime_clip_r2 = 10
-}
-if(params.cegx){
+} else if(params.cegx){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 2
     params.three_prime_clip_r2 = 2
+} else {
+    params.clip_r1 = 0
+    params.clip_r2 = 0
+    params.three_prime_clip_r1 = 0
+    params.three_prime_clip_r2 = 0
 }
 
 single = 'null'
