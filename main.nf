@@ -1,6 +1,7 @@
 #!/usr/bin/env nextflow
-
 /*
+vim: syntax=groovy
+-*- mode: groovy;-*-
 ========================================================================================
              B S - S E Q   M E T H Y L A T I O N   B E S T - P R A C T I C E
 ========================================================================================
@@ -50,7 +51,6 @@ version = 0.1
 // Configurable variables
 params.genome = 'GRCh37'
 params.index = params.genomes[ params.genome ].bismark
-params.name = "BS-Seq Best practice"
 params.reads = "data/*{_1,_2}*.fastq.gz"
 params.outdir = './results'
 
@@ -86,10 +86,10 @@ if(params.pbat){
     params.three_prime_clip_r2 = 0
 }
 
-single = 'null'
+def single
 
 log.info "===================================="
-log.info " RNAbp : RNA-Seq Best Practice v${version}"
+log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "===================================="
 log.info "Reads        : ${params.reads}"
 log.info "Genome       : ${params.genome}"
@@ -115,7 +115,7 @@ log.info "===================================="
 
 // Validate inputs
 index = file(params.index)
-if( !index.exists() ) exit 1, "Missing Bismark index: ${index}"
+if( !index.exists() ) exit 1, "Missing Bismark index: $index"
 
 /*
  * Create a channel for read files - groups based on shared prefixes
@@ -141,7 +141,6 @@ process fastqc {
     tag "$prefix"
     
     module 'bioinfo-tools'
-    module 'java'
     module 'FastQC'
     
     memory { 2.GB * task.attempt }
@@ -172,9 +171,6 @@ process trim_galore {
     tag "$prefix"
     
     module 'bioinfo-tools'
-    module 'java'
-    module 'FastQC'
-    module 'cutadapt'
     module 'TrimGalore'
     
     cpus 3
@@ -199,14 +195,14 @@ process trim_galore {
     c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
     tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
     tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
-    
+    rrbs = params.rrbs ? "--rrbs" : ''
     if (single) {
         """
-        trim_galore --gzip $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+        trim_galore --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     } else {
         """
-        trim_galore --paired --gzip $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+        trim_galore --paired --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
         """
     }
 }
@@ -222,31 +218,36 @@ process bismark_align {
     module 'samtools'
     module 'bismark'
     
-    cpus 8
+    cpus 6
     memory { 32.GB * task.attempt }
     time  { 36.h * task.attempt }
     errorStrategy { task.exitStatus == 143 ? 'retry' : 'terminate' }
     maxRetries 3
     maxErrors '-1'
     
-    publishDir "${params.outdir}/bismark", mode: 'copy'
+    publishDir "${params.outdir}/bismark/aligned", mode: 'copy'
     
     input:
     file index
     file trimmed_reads
     
     output:
-    file '*.bam' into bam
-    file '*.{txt,png,gz}' into bismark_align_results_1, bismark_align_results_2
+    file '*.bam' into bam, bam_2
+    file '*report.txt' into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
+    file '*.{png,gz}' into bismark_align_results
+    file '*.{fq, fastq}' into bismark_unmapped
     
     script:
+    pbat = params.pbat ? "--pbat" : ''
+    non_directional = params.single_cell || params.non_directional ? "--non_directional" : ''
+    unmapped = params.unmapped ? "--unmapped" : ''
     if (single) {
         """
-        bismark --bam $index $trimmed_reads
+        bismark --bam $pbat $non_directional $unmapped $index $trimmed_reads
         """
     } else {
         """
-        bismark --bam $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
+        bismark --bam $pbat $non_directional $unmapped $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
         """
     }
 }
@@ -269,14 +270,15 @@ process bismark_deduplicate {
     maxRetries 3
     maxErrors '-1'
    
-    publishDir "${params.outdir}/bismark", mode: 'copy'
+    publishDir "${params.outdir}/bismark/deduplicated", mode: 'copy'
     
     input:
     file bam
     
     output:
     file '*deduplicated.bam' into bam_dedup
-    file '*.{txt,png,gz}' into bismark_dedup_results_1, bismark_dedup_results_2
+    file '*.deduplication_report.txt' into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+    file '*.{png,gz}' into bismark_dedup_results
     
     script:
     if (single) {
@@ -308,13 +310,15 @@ process bismark_methXtract {
     maxRetries 3
     maxErrors '-1'
     
-    publishDir "${params.outdir}/bismark", mode: 'copy'
+    publishDir "${params.outdir}/bismark/methylation", mode: 'copy'
     
     input:
     file bam_dedup
     
     output:
-    file '*.{txt,png,gz}' into bismark_methXtract_results_1, bismark_methXtract_results_2
+    file '*.splitting_report.txt' into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
+    file '*.M-bias.txt' into bismark_mbias_1, bismark_mbias_3, bismark_mbias_3
+    file '*.{png,gz}' into bismark_methXtract_results
     
     script:
     if (single) {
@@ -334,7 +338,7 @@ process bismark_methXtract {
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory} \\
-            --ignore_r2 1 \\
+            --ignore_r2 2 \\
             --ignore_3prime_r2 2 \\
             --bedGraph \\
             --counts \\
@@ -348,14 +352,44 @@ process bismark_methXtract {
 }
 
 
+/*
+ * STEP 6 - Bismark Sample Report
+ */
+process bismark_report {
+    module 'bioinfo-tools'
+    module 'bismark'
+    
+    memory '2GB'
+    time '1h'
+    errorStrategy 'ignore'
+    
+    publishDir "${params.outdir}/bismark/summaries", mode: 'copy'
+    
+    input:
+    file bismark_align_log_1
+    file bismark_dedup_log_1
+    file bismark_splitting_report_1
+    file bismark_mbias_1
+    
+    output:
+    file '*{html,txt}' into bismark_reports_results
+    
+    """
+    bismark2report \\
+        --alignment_report $bismark_align_log_1 \\
+        --dedup_report $bismark_dedup_log_1 \\
+        --splitting_report $bismark_splitting_report_1 \\
+        --mbias_report $bismark_mbias_1
+    """
+}
+
 
 /*
- * STEP 6 - Bismark Summary
+ * STEP 7 - Bismark Summary Report
  */
 
 process bismark_summary {
     module 'bioinfo-tools'
-    module 'samtools'
     module 'bismark'
     
     memory '2GB'
@@ -365,15 +399,17 @@ process bismark_summary {
     publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
-    file bismark_align_results_1.toList()
-    file bismark_dedup_results_1.toList()
-    file bismark_methXtract_results_1.toList()
+    file bam_2.toList()
+    file bismark_align_log_2.toList()
+    file bismark_dedup_log_2.toList()
+    file bismark_splitting_report_2.toList()
+    file bismark_mbias_2.toList()
     
     output:
     file '*{html,txt}' into bismark_summary_results
     
     """
-    bismark2summary $PWD/results/bismark
+    bismark2summary .
     """
 }
 
@@ -384,7 +420,8 @@ process bismark_summary {
 
 process multiqc {
     module 'bioinfo-tools'
-    module 'MultiQC'
+    // Don't load MultiQC module here as overwrites environment installation.
+    // Load env module in process instead if multiqc command isn't found.
     
     memory '4GB'
     time '2h'
@@ -395,9 +432,11 @@ process multiqc {
     input:
     file ('fastqc/*') from fastqc_results.toList()
     file ('trimgalore/*') from trimgalore_results.toList()
-    file ('bismark/*') from bismark_align_results_2.toList()
-    file ('bismark/*') from bismark_dedup_results_2.toList()
-    file ('bismark/*') from bismark_methXtract_results_2.toList()
+    file ('bismark/*') from bismark_align_log_3.toList()
+    file ('bismark/*') from bismark_dedup_log_3.toList()
+    file ('bismark/*') from bismark_splitting_report_3.toList()
+    file ('bismark/*') from bismark_mbias_3.toList()
+    file ('bismark/*') from bismark_reports_results.toList()
     file ('bismark/*') from bismark_summary_results.toList()
     
     output:
@@ -405,6 +444,8 @@ process multiqc {
     file '*multiqc_data'
    
     """
+    # Load MultiQC with environment module if not already in PATH
+    type multiqc >/dev/null 2>&1 || { module load MultiQC; };
     multiqc -f .
     """
 }
@@ -421,7 +462,6 @@ process multiqc {
  * Returns:
  *   'file_alpha'
  */
-
 def readPrefix( Path actual, template ) {
 
     final fileName = actual.getFileName().toString()
@@ -431,21 +471,21 @@ def readPrefix( Path actual, template ) {
     if( p != -1 ) filePattern = filePattern.substring(p+1)
     if( !filePattern.contains('*') && !filePattern.contains('?') )
         filePattern = '*' + filePattern
-    
+
     def regex = filePattern
-                    .replace('.','\\.')
-                    .replace('*','(.*)')
-                    .replace('?','(.?)')
-                    .replace('{','(?:')
-                    .replace('}',')')
-                    .replace(',','|')
+        .replace('.','\\.')
+        .replace('*','(.*)')
+        .replace('?','(.?)')
+        .replace('{','(?:')
+        .replace('}',')')
+        .replace(',','|')
 
     def matcher = (fileName =~ /$regex/)
     if( matcher.matches() ) {
         def end = matcher.end(matcher.groupCount() )
         def prefix = fileName.substring(0,end)
         while(prefix.endsWith('-') || prefix.endsWith('_') || prefix.endsWith('.') )
-          prefix=prefix[0..-2]
+            prefix=prefix[0..-2]
         return prefix
     }
     return fileName
