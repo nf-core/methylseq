@@ -6,50 +6,12 @@ vim: syntax=groovy
              B S - S E Q   M E T H Y L A T I O N   B E S T - P R A C T I C E
 ========================================================================================
  New Methylation (BS-Seq) Best Practice Analysis Pipeline. Started June 2016.
- @Authors
+ #### Homepage / Documentation
+ https://github.com/SciLifeLab/NGI-MethylSeq
+ #### Authors
  Phil Ewels <phil.ewels@scilifelab.se>
 ----------------------------------------------------------------------------------------
- Basic command:
- $ nextflow main.nf
-
- Pipeline variables can be configured with the following command line options:
- --genome [ID] (default: GRCh37)
- --index [path] (default: set by genome ID in config)
- --reads [path] (default: data/*{_1,_2}*.fastq.gz)
- --outdir [path] (default: ./results)
- --name [str] (default: BS-Seq Best Practice)
- --nodedup (default: False)
- --rrbs (default: False)
- --pbat (default: False)
- --single_cell (default: False)
- --epignome (default: False)
- --accel (default: False)
- --cegx (default: False)
- --clip_r1 [int] (default: 0)
- --clip_r2 [int] (default: 0)
- --three_prime_clip_r1 [int] (default: 0)
- --three_prime_clip_r2 [int] (default: 0)
-
- For example:
- $ nextflow main.nf --reads 'path/to/data/sample_*_{1,2}.fq.gz'
----------------------------------------------------------------------------------------
-The pipeline can determine whether the input data is single or paired end. This relies on
-specifying the input files correctly. For paired en data us the example above, i.e.
-'sample_*_{1,2}.fastq.gz'. Without the glob {1,2} (or similiar) the data will be treated
-as single end.
-----------------------------------------------------------------------------------------
- Pipeline overview:
- - FastQC - read quility control
- - Trim Galore! - trimming
- - Bismark - align
- - Bismark - deduplication (can be skipped with --nodedup)
- - Bismark - methylation extraction
- - Bismark - sample report
- - Bismark - summary report
- - MultiQC
-----------------------------------------------------------------------------------------
 */
-
 
 
 /*
@@ -60,11 +22,25 @@ as single end.
 version = 0.1
 
 // Configurable variables
-params.genome = 'GRCh37'
-params.index = params.genomes[ params.genome ].bismark
+params.genome = false
+params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.reads = "data/*_{1,2}.fastq.gz"
 params.outdir = './results'
+params.nodedup = false
 
+// Validate inputs
+if( params.bismark_index ){
+    bismark_index = file(params.bismark_index)
+    if( !bismark_index.exists() ) exit 1, "Bismark index not found: ${params.bismark_index}"
+} else {
+    exit 1, "No reference genome specified! Please use --genome or --bismark_index"
+}
+
+params.pbat = false
+params.single_cell = false
+params.epignome = false
+params.accel = false
+params.cegx = false
 if(params.pbat){
     params.clip_r1 = 6
     params.clip_r2 = 6
@@ -104,7 +80,7 @@ log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "===================================="
 log.info "Reads          : ${params.reads}"
 log.info "Genome         : ${params.genome}"
-log.info "Index          : ${params.index}"
+log.info "Bismark Index  : ${params.bismark_index}"
 log.info "Current home   : $HOME"
 log.info "Current user   : $USER"
 log.info "Current path   : $PWD"
@@ -112,7 +88,7 @@ log.info "Script dir     : $baseDir"
 log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
 log.info "===================================="
-log.info "Deduplication  : ${params.deduplicate}"
+log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
 if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
@@ -128,8 +104,6 @@ log.info "Config Profile : ${workflow.profile}"
 log.info "===================================="
 
 // Validate inputs
-index = file(params.index)
-if( !index.exists() ) exit 1, "Missing Bismark index: $index"
 if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 
 /*
@@ -145,9 +119,6 @@ Channel
  */
 process fastqc {
     tag "$name"
-    
-    memory { 2.GB * task.attempt }
-    time { 4.h * task.attempt }
     publishDir "${params.outdir}/fastqc", mode: 'copy'
     
     input:
@@ -167,10 +138,6 @@ process fastqc {
  */
 process trim_galore {
     tag "$name"
-    
-    cpus 3
-    memory { 3.GB * task.attempt }
-    time { 16.h * task.attempt }
     publishDir "${params.outdir}/trim_galore", mode: 'copy'
     
     input:
@@ -203,14 +170,10 @@ process trim_galore {
  */
 process bismark_align {
     tag "$trimmed_reads"
-    
-    cpus 6
-    memory { 32.GB * task.attempt }
-    time  { 36.h * task.attempt }
     publishDir "${params.outdir}/bismark/aligned", mode: 'copy'
     
     input:
-    file index
+    file index from bismark_index
     file trimmed_reads
     
     output:
@@ -229,7 +192,7 @@ process bismark_align {
         """
     } else {
         """
-        bismark --bam $pbat $non_directional $unmapped $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
+        bismark --bam --dovetail $pbat $non_directional $unmapped $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
         """
     }
 }
@@ -242,9 +205,6 @@ if (params.nodedup) {
 } else {
     process bismark_deduplicate {
         tag "$bam"
-        
-        memory { 32.GB * task.attempt }
-        time  { 12.h * task.attempt }
         publishDir "${params.outdir}/bismark/deduplicated", mode: 'copy'
         
         input:
@@ -273,10 +233,6 @@ if (params.nodedup) {
  */
 process bismark_methXtract {
     tag "$bam_dedup"
-    
-    cpus 4
-    memory { 8.GB * task.attempt }
-    time  { 8.h * task.attempt }
     publishDir "${params.outdir}/bismark/methylation", mode: 'copy'
     
     input:
@@ -323,9 +279,6 @@ process bismark_methXtract {
  * STEP 6 - Bismark Sample Report
  */
 process bismark_report {
-    
-    memory '2GB'
-    time '1h'
     publishDir "${params.outdir}/bismark/summaries", mode: 'copy'
     
     input:
@@ -351,9 +304,6 @@ process bismark_report {
  * STEP 7 - Bismark Summary Report
  */
 process bismark_summary {
-    
-    memory '2GB'
-    time '1h'
     publishDir "${params.outdir}/bismark", mode: 'copy'
     
     input:
@@ -376,9 +326,6 @@ process bismark_summary {
  * STEP 7 - MultiQC
  */
 process multiqc {
-    
-    memory '4GB'
-    time '2h'
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
     
     input:

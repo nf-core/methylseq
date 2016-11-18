@@ -61,7 +61,7 @@ configuration options can be used by specifying `-profile <name>` when running t
 ## Running the pipeline
 The typical command for running the pipeline is as follows:
 ```
-nextflow SciLifeLab/NGI-MethylSeq --reads '*_R{1,2}.fastq.gz'
+nextflow SciLifeLab/NGI-MethylSeq --reads '*_R{1,2}.fastq.gz' --genome GRCh37
 ```
 
 Note that the pipeline will create files in your working directory:
@@ -87,7 +87,6 @@ If left unspecified, the pipeline will assume that the data is in a directory ca
 
 ### `--genome`
 The reference genome to use of the analysis, needs to be one of the genome specified in the config file.
-The human `GRCh37` genome is used by default.
 
 See [`conf/uppmax.config`](conf/uppmax.config) for a list of the supported reference genomes
 and their keys. Common genomes that are supported are:
@@ -102,6 +101,12 @@ and their keys. Common genomes that are supported are:
   * `--genome 'R64-1-1'`
 
 > There are numerous others - check the config file for more.
+
+If you usually want to work with a single species, you can set a default in your user config file.
+For example, add this line to `~/.nextflow/config`:
+```
+params.genome = 'GRCh37'
+```
 
 ### Trimming Parameters
 The pipeline accepts a number of parameters to change how the trimming is done, according to your data type.
@@ -137,10 +142,10 @@ Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and sa
 By default, the pipeline includes a deduplication step after alignment. If you would like to skip this
 step (eg. for RRBS data), use the `--nodedup` command line option.
 
-### `--index`
+### `--bismark_index`
 If you prefer, you can specify the full path to your reference genome when you run the pipeline:
 ```
---index [path to Bismark index]
+--bismark_index [path to Bismark index]
 ```
 
 ### `--outdir`
