@@ -27,6 +27,10 @@ params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?
 params.reads = "data/*_{1,2}.fastq.gz"
 params.outdir = './results'
 params.nodedup = false
+params.allowMismatches = false
+params.numMismatches = 0.2
+// -0.2 will allow a penalty of bp * -0.2
+// For 100bp = -20 or 3 mismatches or gaps
 
 // Validate inputs
 if( params.bismark_index ){
@@ -186,13 +190,14 @@ process bismark_align {
     pbat = params.pbat ? "--pbat" : ''
     non_directional = params.single_cell || params.non_directional ? "--non_directional" : ''
     unmapped = params.unmapped ? "--unmapped" : ''
+    mismatches = params.allowMismatches ? "--score_min 0,0,-${params.numMismatches}" : ''
     if (single) {
         """
-        bismark --bam $pbat $non_directional $unmapped $index $trimmed_reads
+        bismark --bam $pbat $non_directional $unmapped $mismatches $index $trimmed_reads
         """
     } else {
         """
-        bismark --bam --dovetail $pbat $non_directional $unmapped $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
+        bismark --bam --dovetail $pbat $non_directional $unmapped $mismatches $index -1 ${trimmed_reads[0]} -2 ${trimmed_reads[1]}
         """
     }
 }
