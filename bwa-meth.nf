@@ -22,13 +22,15 @@ vim: syntax=groovy
 version = 0.1
 
 // Configurable variables
+params.project = false
 params.genome = false
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
 params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
 params.saveReference = true
-params.reads = "data/*_{1,2}.fastq.gz"
+params.reads = "data/*_R{1,2}.fastq.gz"
 params.outdir = './results'
+params.notrim = false
 params.nodedup = false
 params.allcontexts = false
 params.mindepth = 0
@@ -90,9 +92,9 @@ if(params.pbat){
 
 def single
 
-log.info "===================================="
+log.info "==================================================="
 log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
-log.info "===================================="
+log.info "==================================================="
 log.info "Reads          : ${params.reads}"
 log.info "Genome         : ${params.genome}"
 log.info "Bismark Index  : ${params.bismark_index}"
@@ -102,7 +104,6 @@ log.info "Current path   : $PWD"
 log.info "Script dir     : $baseDir"
 log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
-log.info "===================================="
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
@@ -110,13 +111,13 @@ if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
 if(params.epignome){    log.info "Trim Profile   : Epignome" }
 if(params.accel){       log.info "Trim Profile   : Accel" }
 if(params.cegx){        log.info "Trim Profile   : CEGX" }
-log.info "Output dir     : ${params.outdir}"
-log.info "Trim R1        : ${params.clip_r1}"
-log.info "Trim R2        : ${params.clip_r2}"
-log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
-log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
+if(params.clip_r1 > 0)  log.info "Trim R1        : ${params.clip_r1}"
+if(params.clip_r2 > 0)  log.info "Trim R2        : ${params.clip_r2}"
+if(params.three_prime_clip_r1 > 0) log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
+if(params.three_prime_clip_r2 > 0) log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
 log.info "Config Profile : ${workflow.profile}"
-log.info "===================================="
+if(params.project) log.info "UPPMAX Project : ${params.project}"
+log.info "==================================================="
 
 // Validate inputs
 if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
@@ -198,32 +199,37 @@ process fastqc {
 /*
  * STEP 2 - Trim Galore!
  */
-process trim_galore {
-    tag "$name"
-    publishDir "${params.outdir}/trim_galore", mode: 'copy'
-    
-    input:
-    set val(name), file(reads) from read_files_trimming
-    
-    output:
-    file '*fq.gz' into trimmed_reads
-    file '*trimming_report.txt' into trimgalore_results
-    
-    script:
-    single = reads instanceof Path
-    c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
-    c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
-    tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
-    tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
-    rrbs = params.rrbs ? "--rrbs" : ''
-    if (single) {
-        """
-        trim_galore --gzip $rrbs $c_r1 $tpc_r1 $reads
-        """
-    } else {
-        """
-        trim_galore --paired --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
-        """
+if(params.notrim){
+    trimmed_reads = read_files_trimming
+    trimgalore_results = []
+} else {
+    process trim_galore {
+        tag "$name"
+        publishDir "${params.outdir}/trim_galore", mode: 'copy'
+        
+        input:
+        set val(name), file(reads) from read_files_trimming
+        
+        output:
+        set val(name), file('*fq.gz') into trimmed_reads
+        file '*trimming_report.txt' into trimgalore_results
+        
+        script:
+        single = reads instanceof Path
+        c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
+        c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
+        tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
+        tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
+        rrbs = params.rrbs ? "--rrbs" : ''
+        if (single) {
+            """
+            trim_galore --gzip $rrbs $c_r1 $tpc_r1 $reads
+            """
+        } else {
+            """
+            trim_galore --paired --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            """
+        }
     }
 }
 
@@ -231,11 +237,11 @@ process trim_galore {
  * STEP 3 - align with bwa-mem
  */
 process bwamem_align {
-    tag "$trimmed_reads"
+    tag "$name"
     publishDir "${params.outdir}/bwa-mem/alignments", mode: 'copy'
     
     input:
-    file reads from trimmed_reads
+    set val(name), file(reads) from trimmed_reads
     file index from bwa_meth_index
     file bwa_meth_indices
     
@@ -248,7 +254,7 @@ process bwamem_align {
     bwameth.py \\
         --threads ${task.cpus} \\
         --reference $index \\
-        $reads | samtools view -b - > ${prefix}.bam
+        $reads | samtools view -bS - > ${prefix}.bam
     """
 }
 
@@ -263,9 +269,9 @@ process samtools_postalignment {
     file bam from bam_aligned
     
     output:
-    file '${bam.baseName}_flagstat.txt' into flagstat_results
-    file '${bam.BaseName}.sorted.bam' into bam_sorted
-    file '${bam.BaseName}.sorted.bam.bai' into bam_index
+    file "${bam.baseName}_flagstat.txt" into flagstat_results
+    file "${bam.baseName}.sorted.bam" into bam_sorted
+    file "${bam.baseName}.sorted.bam.bai" into bam_index
     
     script:
     """
@@ -273,11 +279,11 @@ process samtools_postalignment {
     
     samtools sort \\
         -@ ${task.cpus} \\
-        -m ${task.memory.toGigs()}G \\
-        -o ${bam.BaseName}.sorted.bam \\
+        -m ${task.memory.toGiga()}G \\
+        -o ${bam.baseName}.sorted.bam \\
         $bam
     
-    samtools index ${bam.BaseName}.sorted.bam
+    samtools index ${bam.baseName}.sorted.bam
     """
 }
 
@@ -321,7 +327,7 @@ process pileOMeth {
     publishDir "${params.outdir}/PileOMeth", mode: 'copy'
     
     input:
-    file bam from bam_sorted
+    file bam from bam_md
     file fasta
     file fasta_index
     
