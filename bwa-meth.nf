@@ -93,7 +93,7 @@ if(params.pbat){
 def single
 
 log.info "==================================================="
-log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
+log.info " NGI-MethylSeq : Bisulfite-Seq BWA-Meth v${version}"
 log.info "==================================================="
 log.info "Reads          : ${params.reads}"
 log.info "Genome         : ${params.genome}"
@@ -104,8 +104,14 @@ log.info "Current path   : $PWD"
 log.info "Script dir     : $baseDir"
 log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
-log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
+log.info "---------------------------------------------------"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
+log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
+log.info "PileOMeth      : C Contexts - ${params.allcontexts ? 'All (CpG, CHG, CHH)' : 'CpG only'}"
+log.info "PileOMeth      : Minimum Depth - ${params.mindepth}"
+if(params.ignoreFlags){ log.info "PileOMeth:     : Ignoring SAM Flags" }
+log.info "---------------------------------------------------"
+if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
 if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
 if(params.epignome){    log.info "Trim Profile   : Epignome" }
@@ -115,6 +121,7 @@ if(params.clip_r1 > 0)  log.info "Trim R1        : ${params.clip_r1}"
 if(params.clip_r2 > 0)  log.info "Trim R2        : ${params.clip_r2}"
 if(params.three_prime_clip_r1 > 0) log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
 if(params.three_prime_clip_r2 > 0) log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
+log.info "---------------------------------------------------"
 log.info "Config Profile : ${workflow.profile}"
 if(params.project) log.info "UPPMAX Project : ${params.project}"
 log.info "==================================================="
@@ -238,12 +245,12 @@ if(params.notrim){
  */
 process bwamem_align {
     tag "$name"
-    publishDir "${params.outdir}/bwa-mem/alignments", mode: 'copy'
+    publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
     
     input:
     set val(name), file(reads) from trimmed_reads
-    file index from bwa_meth_index
-    file bwa_meth_indices
+    file index from bwa_meth_index.first()
+    file bwa_meth_indices from bwa_meth_indices.first()
     
     output:
     file '*.bam' into bam_aligned
@@ -263,7 +270,7 @@ process bwamem_align {
  */
 process samtools_postalignment {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/bwa-mem/sorted", mode: 'copy'
+    publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
     
     input:
     file bam from bam_aligned
@@ -293,7 +300,7 @@ process samtools_postalignment {
  */
 process markDuplicates {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/bwa-mem/markDuplicates", mode: 'copy'
+    publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy'
 
     input:
     file bam from bam_sorted
@@ -328,8 +335,8 @@ process pileOMeth {
     
     input:
     file bam from bam_md
-    file fasta
-    file fasta_index
+    file fasta from fasta
+    file fasta_index from fasta
     
     output:
     file '*' into pileometh_results

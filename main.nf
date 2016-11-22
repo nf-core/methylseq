@@ -95,8 +95,11 @@ log.info "Current path   : $PWD"
 log.info "Script dir     : $baseDir"
 log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
++log.info "---------------------------------------------------"
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
++log.info "---------------------------------------------------"
+if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
 if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
 if(params.epignome){    log.info "Trim Profile   : Epignome" }
@@ -106,6 +109,7 @@ if(params.clip_r1 > 0)  log.info "Trim R1        : ${params.clip_r1}"
 if(params.clip_r2 > 0)  log.info "Trim R2        : ${params.clip_r2}"
 if(params.three_prime_clip_r1 > 0) log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
 if(params.three_prime_clip_r2 > 0) log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
++log.info "---------------------------------------------------"
 log.info "Config Profile : ${workflow.profile}"
 if(params.project) log.info "UPPMAX Project : ${params.project}"
 log.info "=================================================="
@@ -182,7 +186,7 @@ if(params.notrim){
  */
 process bismark_align {
     tag "$name"
-    publishDir "${params.outdir}/bismark/aligned", mode: 'copy'
+    publishDir "${params.outdir}/bismark_alignments", mode: 'copy'
     
     input:
     file index from bismark_index
@@ -191,7 +195,7 @@ process bismark_align {
     output:
     file '*.bam' into bam, bam_2
     file '*report.txt' into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-    if(params.unmapped) file '*.fq.gz' into bismark_unmapped
+    file '*.fq.gz' into bismark_unmapped, optional: true
     
     script:
     pbat = params.pbat ? "--pbat" : ''
@@ -217,7 +221,7 @@ if (params.nodedup) {
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
-        publishDir "${params.outdir}/bismark/deduplicated", mode: 'copy'
+        publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy'
         
         input:
         file bam
@@ -244,7 +248,7 @@ if (params.nodedup) {
  */
 process bismark_methXtract {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/bismark/methylation", mode: 'copy'
+    publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy'
     
     input:
     file bam from bam_dedup
@@ -291,7 +295,7 @@ process bismark_methXtract {
  * STEP 6 - Bismark Sample Report
  */
 process bismark_report {
-    publishDir "${params.outdir}/bismark/summaries", mode: 'copy'
+    publishDir "${params.outdir}/bismark_reports", mode: 'copy'
     
     input:
     file bismark_align_log_1
@@ -316,7 +320,7 @@ process bismark_report {
  * STEP 7 - Bismark Summary Report
  */
 process bismark_summary {
-    publishDir "${params.outdir}/bismark", mode: 'copy'
+    publishDir "${params.outdir}/bismark_summary", mode: 'copy'
     
     input:
     file ('*') from bam_2.flatten().toList()
@@ -330,7 +334,7 @@ process bismark_summary {
     
     script:
     """
-    bismark2summary .
+    bismark2summary
     """
 }
 
