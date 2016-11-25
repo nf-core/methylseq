@@ -40,7 +40,7 @@ params.ignoreFlags = false
 if( params.bwa_meth_index ){
     bwa_meth_index = file("${params.bwa_meth_index}.bwameth.c2t.bwt")
     bwa_meth_indices = Channel.fromPath( "${params.bwa_meth_index}*" ).toList()
-    if( !hisat2_index.exists() ) exit 1, "bwa-meth index not found: ${params.bwa_meth_index}"
+    if( !bwa_meth_index.exists() ) exit 1, "bwa-meth index not found: ${params.bwa_meth_index}"
 }
 if( params.fasta_index ){
     fasta_index = file(params.fasta_index)
