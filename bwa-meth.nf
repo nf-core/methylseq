@@ -134,7 +134,7 @@ if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX proje
  */
 Channel
     .fromFilePairs( params.reads, size: -1 )
-    .ifEmpty { error "Cannot find any reads matching: ${params.reads}" }
+    .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}" }
     .into { read_files_fastqc; read_files_trimming }
 
 
