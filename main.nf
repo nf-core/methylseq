@@ -95,10 +95,10 @@ log.info "Current path   : $PWD"
 log.info "Script dir     : $baseDir"
 log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
-+log.info "---------------------------------------------------"
+log.info "---------------------------------------------------"
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
-+log.info "---------------------------------------------------"
+log.info "---------------------------------------------------"
 if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
 if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
@@ -109,7 +109,7 @@ if(params.clip_r1 > 0)  log.info "Trim R1        : ${params.clip_r1}"
 if(params.clip_r2 > 0)  log.info "Trim R2        : ${params.clip_r2}"
 if(params.three_prime_clip_r1 > 0) log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
 if(params.three_prime_clip_r2 > 0) log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
-+log.info "---------------------------------------------------"
+log.info "---------------------------------------------------"
 log.info "Config Profile : ${workflow.profile}"
 if(params.project) log.info "UPPMAX Project : ${params.project}"
 log.info "=================================================="
