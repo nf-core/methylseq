@@ -31,10 +31,11 @@ params.outdir = './results'
 params.notrim = false
 params.nodedup = false
 params.relaxMismatches = false
-params.numMismatches = 0.2
-// -0.2 will allow a penalty of bp * -0.2
-// For 100bp reads, this is -20. Mismatches cost -6, gap opening -5 and gap extension -2
-// Sp -20 would allow ~ 3 mismatches or ~ 3 x 1-2bp indels
+params.numMismatches = 0.6
+// 0.6 will allow a penalty of bp * -0.6
+// For 100bp reads, this is -60. Mismatches cost -6, gap opening -5 and gap extension -2
+// Sp -60 would allow 10 mismatches or ~ 8 x 1-2bp indels
+// Bismark default is 0.2 (L,0,-0.2), Bowtie2 default is 0.6 (L,0,-0.6)
 
 // Validate inputs
 if( params.bismark_index ){
@@ -97,7 +98,8 @@ log.info "Working dir    : $workDir"
 log.info "Output dir     : ${params.outdir}"
 log.info "---------------------------------------------------"
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
-if(params.rrbs){        log.info "RRBS Mode      : On" }
+if(params.rrbs){            log.info "RRBS Mode      : On" }
+if(params.relaxMismatches){ log.info "Mismatch Func  : L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)" }
 log.info "---------------------------------------------------"
 if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
@@ -193,9 +195,9 @@ process bismark_align {
     set val(name), file(reads) from trimmed_reads
     
     output:
-    file '*.bam' into bam, bam_2
-    file '*report.txt' into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-    file '*.fq.gz' into bismark_unmapped, optional: true
+    file "*.bam" into bam, bam_2
+    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
+    if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
     
     script:
     pbat = params.pbat ? "--pbat" : ''
