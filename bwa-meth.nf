@@ -256,11 +256,13 @@ process bwamem_align {
     file '*.bam' into bam_aligned
     
     script:
+    fasta = index.toString() - '.bwameth.c2t'
     prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
     """
+    set -o pipefail   # Capture exit codes from bwa-meth
     bwameth.py \\
         --threads ${task.cpus} \\
-        --reference $index \\
+        --reference $fasta \\
         $reads | samtools view -bS - > ${prefix}.bam
     """
 }
