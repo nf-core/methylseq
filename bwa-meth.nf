@@ -253,10 +253,10 @@ process bwamem_align {
     file bwa_meth_indices from bwa_meth_indices.first()
     
     output:
-    file '*.bam' into bam_aligned
+    file '*.bam' into bam_aligned, bam_flagstat
     
     script:
-    fasta = index.toString() - '.bwameth.c2t'
+    fasta = index.toString() - '.bwameth.c2t.bwt'
     prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
     """
     set -o pipefail   # Capture exit codes from bwa-meth
@@ -268,31 +268,63 @@ process bwamem_align {
 }
 
 /*
- * STEP 4 - sort and index alignments
+ * STEP 4.1 - samtools flagstat on samples
  */
-process samtools_postalignment {
+process samtools_flagstat {
+    tag "${bam.baseName}"
+    publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
+    
+    input:
+    file bam from bam_flagstat
+    
+    output:
+    file "${bam.baseName}_flagstat.txt" into flagstat_results
+    
+    script:
+    """
+    samtools flagstat $bam > ${bam.baseName}_flagstat.txt
+    """
+}
+/*
+ * STEP 4.2 - sort and index alignments
+ */
+process samtools_sort {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
+    
+    executor 'local'
     
     input:
     file bam from bam_aligned
     
     output:
-    file "${bam.baseName}_flagstat.txt" into flagstat_results
-    file "${bam.baseName}.sorted.bam" into bam_sorted
-    file "${bam.baseName}.sorted.bam.bai" into bam_index
+    file "${bam.baseName}.sorted.bam" into bam_sorted, bam_for_index
     
     script:
     """
-    samtools flagstat $bam > ${bam.baseName}_flagstat.txt
-    
     samtools sort \\
-        -@ ${task.cpus} \\
-        -m ${task.memory.toGiga()}G \\
-        -o ${bam.baseName}.sorted.bam \\
         $bam
+        -m ${task.memory.toBytes() / task.cpus} \\
+        -@ ${task.cpus} \\
+        > ${bam.baseName}.sorted.bam
+    """
+}
+/*
+ * STEP 4.3 - sort and index alignments
+ */
+process samtools_index {
+    tag "${bam.baseName}"
+    publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
     
-    samtools index ${bam.baseName}.sorted.bam
+    input:
+    file bam from bam_for_index
+    
+    output:
+    file "${bam}.bai" into bam_index
+    
+    script:
+    """
+    samtools index $bam
     """
 }
 
