@@ -279,10 +279,12 @@ process samtools_flagstat {
     
     output:
     file "${bam.baseName}_flagstat.txt" into flagstat_results
+    file "${bam.baseName}_stats.txt" into samtools_stats_results
     
     script:
     """
     samtools flagstat $bam > ${bam.baseName}_flagstat.txt
+    samtools stats $bam > ${bam.baseName}_stats.txt
     """
 }
 /*
@@ -396,6 +398,7 @@ process multiqc {
     file ('fastqc/*') from fastqc_results.flatten().toList()
     file ('trimgalore/*') from trimgalore_results.flatten().toList()
     file ('samtools/*') from flagstat_results.flatten().toList()
+    file ('samtools/*') from samtools_stats_results.flatten().toList()
     file ('picard/*') from picard_results.flatten().toList()
     file ('pileometh/*') from pileometh_results.flatten().toList()
     
