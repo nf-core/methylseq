@@ -23,6 +23,7 @@ version = 0.1
 
 // Configurable variables
 params.project = false
+params.emailAddress = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.saveReference = false
@@ -210,7 +211,13 @@ process bismark_align {
         """
     } else {
         """
-        bismark --bam --dovetail $pbat $non_directional $unmapped $mismatches $index -1 ${reads[0]} -2 ${reads[1]}
+        bismark \\
+            --bam \\
+            --dovetail \\
+            $pbat $non_directional $unmapped $mismatches \\
+            $index \\
+            -1 ${reads[0]} \\
+            -2 ${reads[1]}
         """
     }
 }
@@ -297,6 +304,7 @@ process bismark_methXtract {
  * STEP 6 - Bismark Sample Report
  */
 process bismark_report {
+    tag "$name"
     publishDir "${params.outdir}/bismark_reports", mode: 'copy'
     
     input:
@@ -309,6 +317,7 @@ process bismark_report {
     file '*{html,txt}' into bismark_reports_results
     
     script:
+    name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
     """
     bismark2report \\
         --alignment_report $bismark_align_log_1 \\
@@ -364,4 +373,31 @@ process multiqc {
     """
     multiqc -f .
     """
+}
+
+
+// E-mail sent upon pipeline completion
+workflow.onComplete {
+    if(params.emailAddress){
+        def subject = "NGI-MethylSeq pipeline completed ${ workflow.success ? 'successfully' : 'with errors' }"
+
+        ['mail', '-s', subject, params.emailAddress].execute() << """
+
+        NGI-MethylSeq pipeline execution summary
+        ----------------------------------------
+        Starterd at  : ${workflow.start}
+        Completed at : ${workflow.complete}
+        Duration     : ${workflow.duration}
+        Success      : ${workflow.success}
+        Launch Dir   : ${workflow.launchDir}
+        Work Dir     : ${workflow.workDir}
+        Command      : ${workflow.commandLine}
+        Resumed      : ${workflow.resume}
+        Profile      : ${workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile}
+        Nextflow v   : ${nextflow.version}
+        Exit status  : ${workflow.exitStatus}
+        Error msg    : ${workflow.errorMessage ?: '-'}
+        Error report : ${workflow.errorReport ?: '-'}
+        """
+    }
 }
