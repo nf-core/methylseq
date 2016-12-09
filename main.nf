@@ -46,6 +46,7 @@ if( params.bismark_index ){
     exit 1, "No reference genome specified! Please use --genome or --bismark_index"
 }
 
+params.rrbs = false
 params.pbat = false
 params.single_cell = false
 params.epignome = false
