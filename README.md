@@ -14,38 +14,8 @@ the results files.
 
 ## Installation
 ### NextFlow installation
-To use this pipeline, you need to have a working version of NextFlow installed. You can find more
-information about this pipeline tool at [nextflow.io](http://www.nextflow.io/). The typical installation
-of NextFlow looks like this:
-
-```
-curl -fsSL get.nextflow.io | bash
-mv ./nextflow ~/bin
-```
-
-#### UPPMAX
-If you're running on a Swedish UPPMAX cluster you can load NextFlow as an environment module instead:
-```
-module load nextflow
-```
-
-The first time you load this you will get a warning about setting environment variables. To automatically set these at login, you can add the following lines to your `~/.bashrc` file:
-```bash
-export NXF_LAUNCHBASE=$SNIC_TMP
-export NXF_TEMP=$SNIC_TMP
-```
-
-### NextFlow configuration
-Next, you need to set up a config file so that NextFlow knows how to run and where to find reference
-indexes. You can find an example configuration file for UPPMAX (milou) with this repository:
-[`example_uppmax_config`](https://github.com/SciLifeLab/NGI-MethylSeq/blob/master/example_uppmax_config).
-
-Copy this file to `~/.nextflow/config` and edit the line `'-A YOUR_PROJECT_ID'` to contain your
-UPPMAX project identifier.
-
-It is entirely possible to run this pipeline on other clusters - just note that you may need to customise
-the `process` environment (eg. if you're using a cluster system other than SLURM) and the paths to reference
-files.
+See https://github.com/SciLifeLab/NGI-NextflowDocs for instructions on how to install and configure
+Nextflow.
 
 ### Pipeline installation
 This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub when run if
@@ -57,10 +27,49 @@ git clone https://github.com/SciLifeLab/NGI-MethylSeq.git
 nextflow NGI-MethylSeq/main.nf
 ```
 
+## Configuration
+By default, the pipeline is configured to run on the Swedish UPPMAX cluster (milou / irma).
+
+You will need to specify your UPPMAX project ID when running a pipeline. To do this, use
+the command line flag `--project <project_ID>`.
+
+To avoid having to specify this every time you run Nextflow, you can add it to your
+personal Nextflow config file instead. Add this line to `~/.nextflow/config`:
+
+```groovy
+params.project = 'project_ID'
+```
+
+The pipeline will exit with an error message if you try to run it pipeline with the default
+UPPMAX config profile and don't set project.
+
+
+### Running on other clusters
+It is entirely possible to run this pipeline on other clusters, though you will need to set up
+your own config file so that the script knows where to find your reference files and how your
+cluster works.
+
+Copy the contents of [`conf/uppmax.config`](conf/uppmax.config) to your own config file somewhere
+and then reference it with `-c` when running the pipeline.
+
+If you think that there are other people using the pipeline who would benefit from your configuration
+(eg. other common cluster setups), please let us know. It should be easy to create a new config file
+in `conf` and reference this as a named profile in [`nextflow.config`](nextflow.config). Then these
+configuration options can be used by specifying `-profile <name>` when running the pipeline.
+
+
 ## Running the pipeline
 The typical command for running the pipeline is as follows:
 ```
-nextflow SciLifeLab/NGI-MethylSeq --reads '*_R{1,2}.fastq.gz' --genome GRCm38
+nextflow SciLifeLab/NGI-MethylSeq --reads '*_R{1,2}.fastq.gz' --genome GRCh37
+```
+
+Note that the pipeline will create files in your working directory:
+```bash
+work            # Directory containing the nextflow working files
+results         # Finished results (configurable, see below)
+.nextflow_log   # Log file from Nextflow
+# Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
 
 ### `--reads`
@@ -69,6 +78,8 @@ Location of the input FastQ files:
  --reads 'path/to/data/sample_*_{1,2}.fastq'
 ```
 
+**NB: Must be enclosed in quotes!**
+
 Note that the `{1,2}` parentheses are required to specify paired end data. Running `--reads '*.fastq'` will treat
 all files as single end. Also, note that the file path should be in quotation marks to prevent shell glob expansion.
 
@@ -76,13 +87,26 @@ If left unspecified, the pipeline will assume that the data is in a directory ca
 
 ### `--genome`
 The reference genome to use of the analysis, needs to be one of the genome specified in the config file.
-The human `GRCh37` genome is set as default.
+
+See [`conf/uppmax.config`](conf/uppmax.config) for a list of the supported reference genomes
+and their keys. Common genomes that are supported are:
+
+* Human
+  * `--genome GRCh37`
+* Mouse
+  * `--genome GRCm38`
+* Drosophila
+  * `--genome BDGP6`
+* _S. cerevisiae_
+  * `--genome 'R64-1-1'`
+
+> There are numerous others - check the config file for more.
+
+If you usually want to work with a single species, you can set a default in your user config file.
+For example, add this line to `~/.nextflow/config`:
 ```
---genome 'GRCm38'
+params.genome = 'GRCh37'
 ```
-The `example_uppmax_config` file currently has the location of references for most of the
-[Illumina iGenomes](http://support.illumina.com/sequencing/sequencing_software/igenome.html)
-held on UPPMAX.
 
 ### Trimming Parameters
 The pipeline accepts a number of parameters to change how the trimming is done, according to your data type.
@@ -105,7 +129,7 @@ You can specify custom trimming parameters as follows:
 
 Finally, specifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore!
 
-## Bismark Parameters
+### Bismark Parameters
 Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when
 aligning with Bismark.
 
@@ -113,6 +137,19 @@ Using the `--single_cell` parameter will set the `--non_directional` flag when a
 This can also be set with `--non_directional` (doesn't affect trimming).
 
 Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads.
+
+### Deduplication
+By default, the pipeline includes a deduplication step after alignment. If you would like to skip this
+step (eg. for RRBS data), use the `--nodedup` command line option.
+
+### `--bismark_index`
+If you prefer, you can specify the full path to your reference genome when you run the pipeline:
+```
+--bismark_index [path to Bismark index]
+```
+
+### `--outdir`
+The output directory where the results will be saved.
 
 ### `-c`
 Specify the path to a specific config file (this is a core NextFlow command). Useful if using different UPPMAX
