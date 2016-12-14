@@ -372,7 +372,7 @@ process qualimap {
         -bam ${bam.baseName}.sorted.bam \\
         -outdir ${bam.baseName}_qualimap \\
         --collect-overlap-pairs \\
-        --java-mem-size=${task.mem.toGigs()}G \\
+        --java-mem-size=${task.memory.toGiga()}G \\
         -nt ${task.cpus}
     """
 }
