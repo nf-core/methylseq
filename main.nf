@@ -237,7 +237,7 @@ if (params.nodedup) {
         file bam
         
         output:
-        file "${bam.baseName}.deduplicated.bam" into bam_dedup
+        file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
         
         script:
@@ -351,7 +351,34 @@ process bismark_summary {
 }
 
 /*
- * STEP 7 - MultiQC
+ * STEP 8 - Qualimap
+ */
+process qualimap {
+    tag "${bam.baseName}"
+    publishDir "${params.outdir}/Qualimap", mode: 'copy'
+    
+    input:
+    file bam from bam_dedup_qualimap
+    
+    output:
+    file '${bam.baseName}_qualimap' into qualimap_results
+    
+    script:
+    gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
+    gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    """
+    samtools sort $bam -o ${bam.baseName}.sorted.bam
+    qualimap bamqc $gcref \\
+        -bam ${bam.baseName}.sorted.bam \\
+        -outdir ${bam.baseName}_qualimap \\
+        --collect-overlap-pairs \\
+        --java-mem-size=${task.mem.toGigs()}G \\
+        -nt ${task.cpus}
+    """
+}
+
+/*
+ * STEP 9 - MultiQC
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
@@ -365,6 +392,7 @@ process multiqc {
     file ('bismark/*') from bismark_mbias_3.flatten().toList()
     file ('bismark/*') from bismark_reports_results.flatten().toList()
     file ('bismark/*') from bismark_summary_results.flatten().toList()
+    file ('qualimap/*') from qualimap_results.flatten().toList()
     
     output:
     file '*multiqc_report.html'

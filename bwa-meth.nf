@@ -342,7 +342,7 @@ process markDuplicates {
     file bam from bam_sorted
 
     output:
-    file "${bam.baseName}.markDups.bam" into bam_md
+    file "${bam.baseName}.markDups.bam" into bam_md, bam_md_qualimap
     file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
     script:
@@ -387,9 +387,36 @@ process pileOMeth {
     """
 }
 
+/*
+ * STEP 7 - Qualimap
+ */
+process qualimap {
+    tag "${bam.baseName}"
+    publishDir "${params.outdir}/Qualimap", mode: 'copy'
+    
+    input:
+    file bam from bam_md_qualimap
+    
+    output:
+    file '${bam.baseName}_qualimap' into qualimap_results
+    
+    script:
+    gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
+    gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    """
+    samtools sort $bam -o ${bam.baseName}.sorted.bam
+    qualimap bamqc $gcref \\
+        -bam ${bam.baseName}.sorted.bam \\
+        -outdir ${bam.baseName}_qualimap \\
+        --skip-duplicated \\
+        --collect-overlap-pairs \\
+        --java-mem-size=${task.mem.toGigs()}G \\
+        -nt ${task.cpus}
+    """
+}
 
 /*
- * STEP 7 - MultiQC
+ * STEP 8 - MultiQC
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
@@ -401,6 +428,7 @@ process multiqc {
     file ('samtools/*') from samtools_stats_results.flatten().toList()
     file ('picard/*') from picard_results.flatten().toList()
     file ('pileometh/*') from pileometh_results.flatten().toList()
+    file ('qualimap/*') from qualimap_results.flatten().toList()
     
     output:
     file '*multiqc_report.html'
