@@ -422,11 +422,11 @@ workflow.onComplete {
         Work Dir     : ${workflow.workDir}
         Command      : ${workflow.commandLine}
         Resumed      : ${workflow.resume}
-        Profile      : ${workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile}
+        Profile      : ${workflow.profile}
         Nextflow v   : ${nextflow.version}
         Exit status  : ${workflow.exitStatus}
-        Error msg    : ${workflow.errorMessage ?: '-'}
-        Error report : ${workflow.errorReport ?: '-'}
+        Error msg    : ${workflow.errorMessage}
+        Error report : ${workflow.errorReport}
         """
     }
 }
