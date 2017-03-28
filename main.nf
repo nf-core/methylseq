@@ -51,23 +51,24 @@ params.pbat = false
 params.single_cell = false
 params.epignome = false
 params.accel = false
+params.zymo = false
 params.cegx = false
 if(params.pbat){
     params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.single_cell){
-    params.clip_r1 = 9
     params.clip_r2 = 9
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.epignome){
+    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r2 = 9
+} else if(params.single_cell){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-} else if(params.accel){
+} else if(params.epignome){
+    params.clip_r1 = 8
+    params.clip_r2 = 8
+    params.three_prime_clip_r1 = 8
+    params.three_prime_clip_r2 = 8
+} else if(params.accel || params.zymo){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
@@ -135,13 +136,13 @@ Channel
 process fastqc {
     tag "$name"
     publishDir "${params.outdir}/fastqc", mode: 'copy'
-    
+
     input:
     set val(name), file(reads) from read_files_fastqc
-    
+
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-    
+
     script:
     """
     fastqc -q $reads
@@ -158,14 +159,14 @@ if(params.notrim){
     process trim_galore {
         tag "$name"
         publishDir "${params.outdir}/trim_galore", mode: 'copy'
-        
+
         input:
         set val(name), file(reads) from read_files_trimming
-        
+
         output:
         set val(name), file('*fq.gz') into trimmed_reads
         file '*trimming_report.txt' into trimgalore_results
-        
+
         script:
         single = reads instanceof Path
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -191,19 +192,19 @@ if(params.notrim){
 process bismark_align {
     tag "$name"
     publishDir "${params.outdir}/bismark_alignments", mode: 'copy'
-    
+
     input:
     file index from bismark_index
     set val(name), file(reads) from trimmed_reads
-    
+
     output:
     file "*.bam" into bam, bam_2
     file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
     if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
-    
+
     script:
     pbat = params.pbat ? "--pbat" : ''
-    non_directional = params.single_cell || params.non_directional ? "--non_directional" : ''
+    non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
     unmapped = params.unmapped ? "--unmapped" : ''
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
     if (single) {
@@ -226,20 +227,20 @@ process bismark_align {
 /*
  * STEP 4 - Bismark deduplicate
  */
-if (params.nodedup) {
+if (params.nodedup || params.rrbs) {
     bam_dedup = bam
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
         publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy'
-        
+
         input:
         file bam
-        
+
         output:
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
-        
+
         script:
         if (single) {
             """
@@ -259,22 +260,23 @@ if (params.nodedup) {
 process bismark_methXtract {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy'
-    
+
     input:
     file bam from bam_dedup
-    
+
     output:
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
-    
+
     script:
+    ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
     if (single) {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
-            --ignore_r2 2 \\
+            $ignore_r2 \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -307,16 +309,16 @@ process bismark_methXtract {
 process bismark_report {
     tag "$name"
     publishDir "${params.outdir}/bismark_reports", mode: 'copy'
-    
+
     input:
     file bismark_align_log_1
     file bismark_dedup_log_1
     file bismark_splitting_report_1
     file bismark_mbias_1
-    
+
     output:
     file '*{html,txt}' into bismark_reports_results
-    
+
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
     """
@@ -333,17 +335,17 @@ process bismark_report {
  */
 process bismark_summary {
     publishDir "${params.outdir}/bismark_summary", mode: 'copy'
-    
+
     input:
     file ('*') from bam_2.flatten().toList()
     file ('*') from bismark_align_log_2.flatten().toList()
     file ('*') from bismark_dedup_log_2.flatten().toList()
     file ('*') from bismark_splitting_report_2.flatten().toList()
     file ('*') from bismark_mbias_2.flatten().toList()
-    
+
     output:
     file '*{html,txt}' into bismark_summary_results
-    
+
     script:
     """
     bismark2summary
@@ -356,13 +358,13 @@ process bismark_summary {
 process qualimap {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/Qualimap", mode: 'copy'
-    
+
     input:
     file bam from bam_dedup_qualimap
-    
+
     output:
     file '${bam.baseName}_qualimap' into qualimap_results
-    
+
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
@@ -382,7 +384,7 @@ process qualimap {
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    
+
     input:
     file ('fastqc/*') from fastqc_results.flatten().toList()
     file ('trimgalore/*') from trimgalore_results.flatten().toList()
@@ -393,11 +395,11 @@ process multiqc {
     file ('bismark/*') from bismark_reports_results.flatten().toList()
     file ('bismark/*') from bismark_summary_results.flatten().toList()
     file ('qualimap/*') from qualimap_results.flatten().toList()
-    
+
     output:
     file '*multiqc_report.html'
     file '*multiqc_data'
-    
+
     script:
     """
     multiqc -f .

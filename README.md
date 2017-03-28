@@ -115,10 +115,11 @@ The following settings are set for these command line flags:
 
 | Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |
 |-----------------|------------|------------|------------|------------|
-| `--pbat`        | 6          | 6          | 0          | 0          |
-| `--single_cell` | 9          | 9          | 0          | 0          |
-| `--epignome`    | 6          | 6          | 6          | 6          |
+| `--pbat`        | 6          | 9          | 6          | 9          |
+| `--single_cell` | 6          | 6          | 6          | 6          |
+| `--epignome`    | 8          | 8          | 8          | 8          |
 | `--accel`       | 10         | 15         | 10         | 10         |
+| `--zymo`        | 10         | 15         | 10         | 10         |
 | `--cegx`        | 6          | 6          | 2          | 2          |
 
 You can specify custom trimming parameters as follows:
@@ -134,14 +135,13 @@ Finally, specifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore!
 Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when
 aligning with Bismark.
 
-Using the `--single_cell` parameter will set the `--non_directional` flag when aligning with Bismark.
+Using the `--single_cell` or `--zymo` parameters will set the `--non_directional` flag when aligning with Bismark.
 This can also be set with `--non_directional` (doesn't affect trimming).
 
 Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads.
 
 ### Deduplication
-By default, the pipeline includes a deduplication step after alignment. If you would like to skip this
-step (eg. for RRBS data), use the `--nodedup` command line option.
+By default, the pipeline includes a deduplication step after alignment. This is skipped if `--rrbs` or `--nodedup` are specified on the command line.
 
 ### `--bismark_index`
 If you prefer, you can specify the full path to your reference genome when you run the pipeline:

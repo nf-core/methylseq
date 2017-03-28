@@ -53,27 +53,29 @@ if ( params.fasta ){
     exit 1, "No reference Fasta file specified! Please use --fasta"
 }
 
+params.rrbs = false
 params.pbat = false
 params.single_cell = false
 params.epignome = false
 params.accel = false
+params.zymo = false
 params.cegx = false
 if(params.pbat){
     params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.single_cell){
-    params.clip_r1 = 9
     params.clip_r2 = 9
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.epignome){
+    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r2 = 9
+} else if(params.single_cell){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-} else if(params.accel){
+} else if(params.epignome){
+    params.clip_r1 = 8
+    params.clip_r2 = 8
+    params.three_prime_clip_r1 = 8
+    params.three_prime_clip_r2 = 8
+} else if(params.accel || params.zymo){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
