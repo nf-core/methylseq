@@ -34,6 +34,7 @@ params.notrim = false
 params.nodedup = false
 params.unmapped = false
 params.non_directional = false
+params.comprehensive = false
 params.relaxMismatches = false
 params.numMismatches = 0.6
 // 0.6 will allow a penalty of bp * -0.6
@@ -104,13 +105,12 @@ summary['Current path']   = "$PWD"
 summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
-// log.info "---------------------------------------------------"
 summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
 summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
 summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
+summary['All Cytosine Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
-// log.info "---------------------------------------------------"
 if(params.notrim)       summary['Trimming Step'] = "Skipped"
 if(params.pbat)         summary['Trim Profile'] = "PBAT"
 if(params.single_cell)  summary['Trim Profile'] = "Single Cell"
@@ -121,11 +121,10 @@ if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
 if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
 if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
 if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_clip_r2
-// log.info "---------------------------------------------------"
 summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
-log.info summary.collect { k,v -> "${k.padRight(15)}: $v" }.join("\n")
+log.info summary.collect { k,v -> "${k.padRight(20)}: $v" }.join("\n")
 log.info "========================================="
 
 // Validate inputs
@@ -280,9 +279,10 @@ process bismark_methXtract {
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
+    comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
     if (single) {
         """
-        bismark_methylation_extractor \\
+        bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
             $ignore_r2 \\
@@ -295,7 +295,7 @@ process bismark_methXtract {
         """
     } else {
         """
-        bismark_methylation_extractor \\
+        bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
             --ignore_r2 2 \\
