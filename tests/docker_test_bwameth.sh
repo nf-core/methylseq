@@ -32,7 +32,7 @@ else
     echo "Done"
 fi
 
-cmd="nextflow run $script_path -resume --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $script_path -resume -profile testing --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"
