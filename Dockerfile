@@ -71,8 +71,8 @@ RUN mkdir /opt/bowtie2 && \
 RUN mkdir /opt/Bismark && \
     curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.17.0.zip -o /opt/Bismark/bismark.zip && \
     unzip /opt/Bismark/bismark.zip -d /opt/Bismark && \
-    echo "export PATH=/opt/Bismark/Bismark-0.17.0:$PATH" >> ~/.bashrc && \
     rm /opt/Bismark/bismark.zip
+ENV PATH="/opt/Bismark/Bismark-0.17.0:${PATH}"
 
 # Install Qualimap
 RUN mkdir /opt/Qualimap && \

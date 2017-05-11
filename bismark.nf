@@ -29,6 +29,7 @@ params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?
 params.saveReference = false
 params.reads = "data/*_R{1,2}.fastq.gz"
 params.outdir = './results'
+params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
 params.notrim = false
 params.nodedup = false
 params.unmapped = false
@@ -47,6 +48,7 @@ if( params.bismark_index ){
 } else {
     exit 1, "No reference genome specified! Please use --genome or --bismark_index"
 }
+multiqc_config = file(params.multiqc_config)
 
 params.rrbs = false
 params.pbat = false
@@ -395,6 +397,7 @@ process multiqc {
     echo true
 
     input:
+    file multiqc_config
     file (fastqc:'fastqc/*') from fastqc_results.collect()
     file ('trimgalore/*') from trimgalore_results.collect()
     file ('bismark/*') from bismark_align_log_3.collect()
@@ -412,8 +415,7 @@ process multiqc {
     script:
     prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
     """
-    cp $baseDir/conf/multiqc_config.yaml multiqc_config.yaml
-    multiqc -f . 2>&1
+    multiqc -f -c $multiqc_config . 2>&1
     """
 }
 
