@@ -17,6 +17,7 @@ RUN apt-get update && \
         libpcre3-dev \
         libreadline-dev \
         libssl-dev \
+        libtbb-dev \
         make \
         python-dev \
         zlib1g-dev \
@@ -57,20 +58,20 @@ RUN curl -fsSL https://github.com/broadinstitute/picard/releases/download/2.0.1/
     rm /opt/picard-tools-2.0.1.zip
 ENV PICARD_HOME /opt/picard-tools-2.0.1
 
+# Install Bowtie2
+RUN mkdir /opt/bowtie2 && \
+    curl -fsSL https://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.3.2/bowtie2-2.3.2-source.zip -o /opt/bowtie2/bowtie2.zip && \
+    unzip /opt/bowtie2/bowtie2.zip -d /opt/bowtie2 && \
+    cd /opt/bowtie2/bowtie2-2.3.2/ && \
+    make && \
+    ln -s /opt/bowtie2/bowtie2-2.3.2/bowtie2 /usr/local/bin/bowtie2 && \
+    rm /opt/bowtie2/bowtie2.zip
+
 # Install Bismark
 RUN mkdir /opt/Bismark && \
     curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.17.0.zip -o /opt/Bismark/bismark.zip && \
     unzip /opt/Bismark/bismark.zip -d /opt/Bismark && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bam2nuc /usr/local/bin/bam2nuc && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark /usr/local/bin/bismark && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark2bedGraph /usr/local/bin/bismark2bedGraph && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark2report /usr/local/bin/bismark2report && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark2summary /usr/local/bin/bismark2summary && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark_genome_preparation /usr/local/bin/bismark_genome_preparation && \
-    ln -s /opt/Bismark/Bismark-0.17.0/bismark_methylation_extractor /usr/local/bin/bismark_methylation_extractor && \
-    ln -s /opt/Bismark/Bismark-0.17.0/coverage2cytosine /usr/local/bin/coverage2cytosine && \
-    ln -s /opt/Bismark/Bismark-0.17.0/deduplicate_bismark /usr/local/bin/deduplicate_bismark && \
-    ln -s /opt/Bismark/Bismark-0.17.0/filter_non_conversion /usr/local/bin/filter_non_conversion && \
+    echo "export PATH=/opt/Bismark/Bismark-0.17.0:$PATH" >> ~/.bashrc && \
     rm /opt/Bismark/bismark.zip
 
 # Install Qualimap

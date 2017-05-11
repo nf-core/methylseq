@@ -31,6 +31,8 @@ params.reads = "data/*_R{1,2}.fastq.gz"
 params.outdir = './results'
 params.notrim = false
 params.nodedup = false
+params.unmapped = false
+params.non_directional = false
 params.relaxMismatches = false
 params.numMismatches = 0.6
 // 0.6 will allow a penalty of bp * -0.6
@@ -102,6 +104,8 @@ summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
 // log.info "---------------------------------------------------"
 summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
+summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
+summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
 // log.info "---------------------------------------------------"
@@ -366,7 +370,7 @@ process qualimap {
     file bam from bam_dedup_qualimap
 
     output:
-    file '${bam.baseName}_qualimap' into qualimap_results
+    file "${bam.baseName}_qualimap" into qualimap_results
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -392,7 +396,6 @@ process multiqc {
 
     input:
     file (fastqc:'fastqc/*') from fastqc_results.collect()
-    file ('fastqc/*') from fastqc_results.collect()
     file ('trimgalore/*') from trimgalore_results.collect()
     file ('bismark/*') from bismark_align_log_3.collect()
     file ('bismark/*') from bismark_dedup_log_3.collect()
