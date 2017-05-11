@@ -2,4 +2,5 @@
 work/
 data/
 results/
+tests/test_data
 .DS_Store

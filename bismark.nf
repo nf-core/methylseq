@@ -23,14 +23,17 @@ version = 0.1
 
 // Configurable variables
 params.project = false
-params.emailAddress = false
+params.email = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.saveReference = false
 params.reads = "data/*_R{1,2}.fastq.gz"
 params.outdir = './results'
+params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
 params.notrim = false
 params.nodedup = false
+params.unmapped = false
+params.non_directional = false
 params.relaxMismatches = false
 params.numMismatches = 0.6
 // 0.6 will allow a penalty of bp * -0.6
@@ -45,29 +48,31 @@ if( params.bismark_index ){
 } else {
     exit 1, "No reference genome specified! Please use --genome or --bismark_index"
 }
+multiqc_config = file(params.multiqc_config)
 
 params.rrbs = false
 params.pbat = false
 params.single_cell = false
 params.epignome = false
 params.accel = false
+params.zymo = false
 params.cegx = false
 if(params.pbat){
     params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.single_cell){
-    params.clip_r1 = 9
     params.clip_r2 = 9
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.epignome){
+    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r2 = 9
+} else if(params.single_cell){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-} else if(params.accel){
+} else if(params.epignome){
+    params.clip_r1 = 8
+    params.clip_r2 = 8
+    params.three_prime_clip_r1 = 8
+    params.three_prime_clip_r2 = 8
+} else if(params.accel || params.zymo){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
@@ -89,34 +94,39 @@ def single
 log.info "=================================================="
 log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "=================================================="
-log.info "Reads          : ${params.reads}"
-log.info "Genome         : ${params.genome}"
-log.info "Bismark Index  : ${params.bismark_index}"
-log.info "Current home   : $HOME"
-log.info "Current user   : $USER"
-log.info "Current path   : $PWD"
-log.info "Script dir     : $baseDir"
-log.info "Working dir    : $workDir"
-log.info "Output dir     : ${params.outdir}"
-log.info "---------------------------------------------------"
-log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
-if(params.rrbs){            log.info "RRBS Mode      : On" }
-if(params.relaxMismatches){ log.info "Mismatch Func  : L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)" }
-log.info "---------------------------------------------------"
-if(params.notrim){      log.info "Trimming Step  : Skipped" }
-if(params.pbat){        log.info "Trim Profile   : PBAT" }
-if(params.single_cell){ log.info "Trim Profile   : Single Cell" }
-if(params.epignome){    log.info "Trim Profile   : Epignome" }
-if(params.accel){       log.info "Trim Profile   : Accel" }
-if(params.cegx){        log.info "Trim Profile   : CEGX" }
-if(params.clip_r1 > 0)  log.info "Trim R1        : ${params.clip_r1}"
-if(params.clip_r2 > 0)  log.info "Trim R2        : ${params.clip_r2}"
-if(params.three_prime_clip_r1 > 0) log.info "Trim 3' R1     : ${params.three_prime_clip_r1}"
-if(params.three_prime_clip_r2 > 0) log.info "Trim 3' R2     : ${params.three_prime_clip_r2}"
-log.info "---------------------------------------------------"
-log.info "Config Profile : ${workflow.profile}"
-if(params.project) log.info "UPPMAX Project : ${params.project}"
-log.info "=================================================="
+def summary = [:]
+summary['Reads']          = params.reads
+summary['Genome']         = params.genome
+summary['Bismark Index']  = params.bismark_index
+summary['Current home']   = "$HOME"
+summary['Current user']   = "$USER"
+summary['Current path']   = "$PWD"
+summary['Working dir']    = workflow.workDir
+summary['Output dir']     = params.outdir
+summary['Script dir']     = workflow.projectDir
+// log.info "---------------------------------------------------"
+summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
+summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
+summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
+if(params.rrbs) summary['RRBS Mode'] = 'On'
+if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
+// log.info "---------------------------------------------------"
+if(params.notrim)       summary['Trimming Step'] = "Skipped"
+if(params.pbat)         summary['Trim Profile'] = "PBAT"
+if(params.single_cell)  summary['Trim Profile'] = "Single Cell"
+if(params.epignome)     summary['Trim Profile'] = "Epignome"
+if(params.accel)        summary['Trim Profile'] = "Accel"
+if(params.cegx)         summary['Trim Profile'] = "CEGX"
+if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
+if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
+if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
+if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_clip_r2
+// log.info "---------------------------------------------------"
+summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
+if(params.project) summary['UPPMAX Project'] = params.project
+if(params.email) summary['E-mail Address'] = params.email
+log.info summary.collect { k,v -> "${k.padRight(15)}: $v" }.join("\n")
+log.info "========================================="
 
 // Validate inputs
 if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
@@ -135,13 +145,13 @@ Channel
 process fastqc {
     tag "$name"
     publishDir "${params.outdir}/fastqc", mode: 'copy'
-    
+
     input:
     set val(name), file(reads) from read_files_fastqc
-    
+
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-    
+
     script:
     """
     fastqc -q $reads
@@ -158,14 +168,14 @@ if(params.notrim){
     process trim_galore {
         tag "$name"
         publishDir "${params.outdir}/trim_galore", mode: 'copy'
-        
+
         input:
         set val(name), file(reads) from read_files_trimming
-        
+
         output:
         set val(name), file('*fq.gz') into trimmed_reads
         file '*trimming_report.txt' into trimgalore_results
-        
+
         script:
         single = reads instanceof Path
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -191,19 +201,19 @@ if(params.notrim){
 process bismark_align {
     tag "$name"
     publishDir "${params.outdir}/bismark_alignments", mode: 'copy'
-    
+
     input:
     file index from bismark_index
     set val(name), file(reads) from trimmed_reads
-    
+
     output:
     file "*.bam" into bam, bam_2
     file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
     if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
-    
+
     script:
     pbat = params.pbat ? "--pbat" : ''
-    non_directional = params.single_cell || params.non_directional ? "--non_directional" : ''
+    non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
     unmapped = params.unmapped ? "--unmapped" : ''
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
     if (single) {
@@ -226,20 +236,20 @@ process bismark_align {
 /*
  * STEP 4 - Bismark deduplicate
  */
-if (params.nodedup) {
+if (params.nodedup || params.rrbs) {
     bam_dedup = bam
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
         publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy'
-        
+
         input:
         file bam
-        
+
         output:
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
-        
+
         script:
         if (single) {
             """
@@ -259,22 +269,23 @@ if (params.nodedup) {
 process bismark_methXtract {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy'
-    
+
     input:
     file bam from bam_dedup
-    
+
     output:
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
-    
+
     script:
+    ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
     if (single) {
         """
         bismark_methylation_extractor \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
-            --ignore_r2 2 \\
+            $ignore_r2 \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -307,16 +318,16 @@ process bismark_methXtract {
 process bismark_report {
     tag "$name"
     publishDir "${params.outdir}/bismark_reports", mode: 'copy'
-    
+
     input:
     file bismark_align_log_1
     file bismark_dedup_log_1
     file bismark_splitting_report_1
     file bismark_mbias_1
-    
+
     output:
     file '*{html,txt}' into bismark_reports_results
-    
+
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
     """
@@ -333,17 +344,17 @@ process bismark_report {
  */
 process bismark_summary {
     publishDir "${params.outdir}/bismark_summary", mode: 'copy'
-    
+
     input:
-    file ('*') from bam_2.flatten().toList()
-    file ('*') from bismark_align_log_2.flatten().toList()
-    file ('*') from bismark_dedup_log_2.flatten().toList()
-    file ('*') from bismark_splitting_report_2.flatten().toList()
-    file ('*') from bismark_mbias_2.flatten().toList()
-    
+    file ('*') from bam_2.collect()
+    file ('*') from bismark_align_log_2.collect()
+    file ('*') from bismark_dedup_log_2.collect()
+    file ('*') from bismark_splitting_report_2.collect()
+    file ('*') from bismark_mbias_2.collect()
+
     output:
     file '*{html,txt}' into bismark_summary_results
-    
+
     script:
     """
     bismark2summary
@@ -356,13 +367,13 @@ process bismark_summary {
 process qualimap {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/Qualimap", mode: 'copy'
-    
+
     input:
     file bam from bam_dedup_qualimap
-    
+
     output:
-    file '${bam.baseName}_qualimap' into qualimap_results
-    
+    file "${bam.baseName}_qualimap" into qualimap_results
+
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
@@ -381,52 +392,89 @@ process qualimap {
  * STEP 9 - MultiQC
  */
 process multiqc {
+    tag "$prefix"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    
+    echo true
+
     input:
-    file ('fastqc/*') from fastqc_results.flatten().toList()
-    file ('trimgalore/*') from trimgalore_results.flatten().toList()
-    file ('bismark/*') from bismark_align_log_3.flatten().toList()
-    file ('bismark/*') from bismark_dedup_log_3.flatten().toList()
-    file ('bismark/*') from bismark_splitting_report_3.flatten().toList()
-    file ('bismark/*') from bismark_mbias_3.flatten().toList()
-    file ('bismark/*') from bismark_reports_results.flatten().toList()
-    file ('bismark/*') from bismark_summary_results.flatten().toList()
-    file ('qualimap/*') from qualimap_results.flatten().toList()
-    
+    file multiqc_config
+    file (fastqc:'fastqc/*') from fastqc_results.collect()
+    file ('trimgalore/*') from trimgalore_results.collect()
+    file ('bismark/*') from bismark_align_log_3.collect()
+    file ('bismark/*') from bismark_dedup_log_3.collect()
+    file ('bismark/*') from bismark_splitting_report_3.collect()
+    file ('bismark/*') from bismark_mbias_3.collect()
+    file ('bismark/*') from bismark_reports_results.collect()
+    file ('bismark/*') from bismark_summary_results.collect()
+    file ('qualimap/*') from qualimap_results.collect()
+
     output:
-    file '*multiqc_report.html'
-    file '*multiqc_data'
-    
+    file "*multiqc_report.html" into multiqc_report
+    file "*multiqc_data"
+
     script:
+    prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
     """
-    multiqc -f .
+    multiqc -f -c $multiqc_config . 2>&1
     """
 }
 
 
-// E-mail sent upon pipeline completion
+
+
+/*
+ * Completion e-mail notification
+ */
 workflow.onComplete {
-    if(params.emailAddress){
-        def subject = "NGI-MethylSeq pipeline completed ${ workflow.success ? 'successfully' : 'with errors' }"
 
-        ['mail', '-s', subject, params.emailAddress].execute() << """
+    // Build the e-mail subject and header
+    def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
+    subject += "\nContent-Type: text/html"
 
-        NGI-MethylSeq pipeline execution summary
-        ----------------------------------------
-        Starterd at  : ${workflow.start}
-        Completed at : ${workflow.complete}
-        Duration     : ${workflow.duration}
-        Success      : ${workflow.success}
-        Launch Dir   : ${workflow.launchDir}
-        Work Dir     : ${workflow.workDir}
-        Command      : ${workflow.commandLine}
-        Resumed      : ${workflow.resume}
-        Profile      : ${workflow.profile}
-        Nextflow v   : ${nextflow.version}
-        Exit status  : ${workflow.exitStatus}
-        Error msg    : ${workflow.errorMessage}
-        Error report : ${workflow.errorReport}
-        """
+    // Set up the e-mail variables
+    def email_fields = [:]
+    email_fields['version'] = version
+    email_fields['runName'] = workflow.runName
+    email_fields['success'] = workflow.success
+    email_fields['dateComplete'] = workflow.complete
+    email_fields['duration'] = workflow.duration
+    email_fields['exitStatus'] = workflow.exitStatus
+    email_fields['errorMessage'] = (workflow.errorMessage ?: 'None')
+    email_fields['errorReport'] = (workflow.errorReport ?: 'None')
+    email_fields['commandLine'] = workflow.commandLine
+    email_fields['projectDir'] = workflow.projectDir
+    email_fields['summary'] = summary
+    email_fields['summary']['Date Started'] = workflow.start
+    email_fields['summary']['Date Completed'] = workflow.complete
+    email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
+    email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
+    email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
+    email_fields['summary']['Pipeline script file path'] = workflow.scriptFile
+    email_fields['summary']['Pipeline script hash ID'] = workflow.scriptId
+    if(workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
+    if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
+    if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
+    if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
+
+    // Render the e-mail HTML template
+    def f = new File("$baseDir/assets/summary_email.html")
+    def engine = new groovy.text.GStringTemplateEngine()
+    def template = engine.createTemplate(f).make(email_fields)
+    def email_html = template.toString()
+
+    // Send the HTML e-mail
+    if (params.email) {
+        [ 'mail', '-s', subject, params.email ].execute() << email_html
     }
+
+    // Write summary e-mail HTML to a file
+    def output_d = new File( "${params.outdir}/Documentation/" )
+    if( !output_d.exists() ) {
+      output_d.mkdirs()
+    }
+    def output_f = new File( output_d, "pipeline_report.html" )
+    output_f.withWriter { w ->
+        w << email_html
+    }
+
 }

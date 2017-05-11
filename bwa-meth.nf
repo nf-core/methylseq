@@ -13,7 +13,6 @@ vim: syntax=groovy
 ----------------------------------------------------------------------------------------
 */
 
-
 /*
  * SET UP CONFIGURATION VARIABLES
  */
@@ -44,7 +43,7 @@ if( params.bwa_meth_index ){
 }
 if( params.fasta_index ){
     fasta_index = file(params.fasta_index)
-    if( !fasta.exists() ) exit 1, "Fasta file not found: ${params.fasta_index}"
+    if( !fasta_index.exists() ) exit 1, "Fasta file not found: ${params.fasta_index}"
 }
 if ( params.fasta ){
     fasta = file(params.fasta)
@@ -53,27 +52,29 @@ if ( params.fasta ){
     exit 1, "No reference Fasta file specified! Please use --fasta"
 }
 
+params.rrbs = false
 params.pbat = false
 params.single_cell = false
 params.epignome = false
 params.accel = false
+params.zymo = false
 params.cegx = false
 if(params.pbat){
     params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.single_cell){
-    params.clip_r1 = 9
     params.clip_r2 = 9
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
-} else if(params.epignome){
+    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r2 = 9
+} else if(params.single_cell){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-} else if(params.accel){
+} else if(params.epignome){
+    params.clip_r1 = 8
+    params.clip_r2 = 8
+    params.three_prime_clip_r1 = 8
+    params.three_prime_clip_r2 = 8
+} else if(params.accel || params.zymo){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
@@ -97,7 +98,7 @@ log.info " NGI-MethylSeq : Bisulfite-Seq BWA-Meth v${version}"
 log.info "==================================================="
 log.info "Reads          : ${params.reads}"
 log.info "Genome         : ${params.genome}"
-log.info "Bismark Index  : ${params.bismark_index}"
+log.info "BWA Index  : ${params.bwa_meth_index}"
 log.info "Current home   : $HOME"
 log.info "Current user   : $USER"
 log.info "Current path   : $PWD"
@@ -107,9 +108,9 @@ log.info "Output dir     : ${params.outdir}"
 log.info "---------------------------------------------------"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
-log.info "PileOMeth      : C Contexts - ${params.allcontexts ? 'All (CpG, CHG, CHH)' : 'CpG only'}"
-log.info "PileOMeth      : Minimum Depth - ${params.mindepth}"
-if(params.ignoreFlags){ log.info "PileOMeth:     : Ignoring SAM Flags" }
+log.info "MethylDackel      : C Contexts - ${params.allcontexts ? 'All (CpG, CHG, CHH)' : 'CpG only'}"
+log.info "MethylDackel      : Minimum Depth - ${params.mindepth}"
+if(params.ignoreFlags){ log.info "MethylDackel:     : Ignoring SAM Flags" }
 log.info "---------------------------------------------------"
 if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
@@ -137,8 +138,6 @@ Channel
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}" }
     .into { read_files_fastqc; read_files_trimming }
 
-
-
 /*
  * PREPROCESSING - Build bwa-mem index
  */
@@ -153,7 +152,7 @@ if(!params.bwa_meth_index){
         output:
         file "${fasta}.bwameth.c2t.bwt" into bwa_meth_index
         file "${fasta}*" into bwa_meth_indices
-        
+
         script:
         """
         bwameth.py index $fasta
@@ -174,7 +173,7 @@ if(!params.fasta_index){
 
         output:
         file "${fasta}.fai" into fasta_index
-        
+
         script:
         """
         samtools faidx $fasta
@@ -182,21 +181,19 @@ if(!params.fasta_index){
     }
 }
 
-
-
 /*
  * STEP 1 - FastQC
  */
 process fastqc {
     tag "$name"
     publishDir "${params.outdir}/fastqc", mode: 'copy'
-    
+
     input:
     set val(name), file(reads) from read_files_fastqc
-    
+
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-    
+
     script:
     """
     fastqc -q $reads
@@ -213,14 +210,14 @@ if(params.notrim){
     process trim_galore {
         tag "$name"
         publishDir "${params.outdir}/trim_galore", mode: 'copy'
-        
+
         input:
         set val(name), file(reads) from read_files_trimming
-        
+
         output:
         set val(name), file('*fq.gz') into trimmed_reads
         file '*trimming_report.txt' into trimgalore_results
-        
+
         script:
         single = reads instanceof Path
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -246,15 +243,15 @@ if(params.notrim){
 process bwamem_align {
     tag "$name"
     publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
-    
+
     input:
     set val(name), file(reads) from trimmed_reads
-    file index from bwa_meth_index.first()
-    file bwa_meth_indices from bwa_meth_indices.first()
-    
+    file index from bwa_meth_index
+    file bwa_meth_indices from bwa_meth_indices
+
     output:
     file '*.bam' into bam_aligned, bam_flagstat
-    
+
     script:
     fasta = index.toString() - '.bwameth.c2t.bwt'
     prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
@@ -273,14 +270,14 @@ process bwamem_align {
 process samtools_flagstat {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
-    
+
     input:
     file bam from bam_flagstat
-    
+
     output:
     file "${bam.baseName}_flagstat.txt" into flagstat_results
     file "${bam.baseName}_stats.txt" into samtools_stats_results
-    
+
     script:
     """
     samtools flagstat $bam > ${bam.baseName}_flagstat.txt
@@ -293,19 +290,19 @@ process samtools_flagstat {
 process samtools_sort {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
-    
+
     executor 'local'
-    
+
     input:
     file bam from bam_aligned
-    
+
     output:
     file "${bam.baseName}.sorted.bam" into bam_sorted, bam_for_index
-    
+
     script:
     """
     samtools sort \\
-        $bam
+        $bam \\
         -m ${task.memory.toBytes() / task.cpus} \\
         -@ ${task.cpus} \\
         > ${bam.baseName}.sorted.bam
@@ -317,19 +314,18 @@ process samtools_sort {
 process samtools_index {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
-    
+
     input:
     file bam from bam_for_index
-    
+
     output:
     file "${bam}.bai" into bam_index
-    
+
     script:
     """
     samtools index $bam
     """
 }
-
 
 /*
  * STEP 5 - Mark duplicates
@@ -361,29 +357,28 @@ process markDuplicates {
     """
 }
 
-
 /*
- * STEP 6 - extract methylation with PileOMeth
+ * STEP 6 - extract methylation with MethylDackel
  */
-process pileOMeth {
+process methyldackel {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/PileOMeth", mode: 'copy'
-    
+    publishDir "${params.outdir}/MethylDackel", mode: 'copy'
+
     input:
     file bam from bam_md
     file fasta from fasta
     file fasta_index from fasta
-    
+
     output:
-    file '*' into pileometh_results
-    
+    file '*' into methyldackel_results
+
     script:
     allcontexts = params.allcontexts ? '--CHG --CHH' : ''
     mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
     ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
     """
-    PileOMeth extract $allcontexts $ignoreFlags $mindepth $fasta $bam
-    PileOMeth mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
+    MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
+    MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
     """
 }
 
@@ -393,16 +388,17 @@ process pileOMeth {
 process qualimap {
     tag "${bam.baseName}"
     publishDir "${params.outdir}/Qualimap", mode: 'copy'
-    
+
     input:
     file bam from bam_md_qualimap
-    
+
     output:
-    file '${bam.baseName}_qualimap' into qualimap_results
-    
+    file "${bam.baseName}_qualimap" into qualimap_results
+
     script:
-    gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
-    gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    gcref = ''
+    if(params.genome == 'GRCh37') gcref = '-gd HUMAN'
+    if(params.genome == 'GRCm38') gcref = '-gd MOUSE'
     """
     samtools sort $bam -o ${bam.baseName}.sorted.bam
     qualimap bamqc $gcref \\
@@ -420,20 +416,20 @@ process qualimap {
  */
 process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    
+
     input:
     file ('fastqc/*') from fastqc_results.flatten().toList()
     file ('trimgalore/*') from trimgalore_results.flatten().toList()
     file ('samtools/*') from flagstat_results.flatten().toList()
     file ('samtools/*') from samtools_stats_results.flatten().toList()
     file ('picard/*') from picard_results.flatten().toList()
-    file ('pileometh/*') from pileometh_results.flatten().toList()
+    file ('methyldackel/*') from methyldackel_results.flatten().toList()
     file ('qualimap/*') from qualimap_results.flatten().toList()
-    
+
     output:
     file '*multiqc_report.html'
     file '*multiqc_data'
-    
+
     script:
     """
     multiqc -f .
