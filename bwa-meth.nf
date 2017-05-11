@@ -109,9 +109,9 @@ log.info "Output dir     : ${params.outdir}"
 log.info "---------------------------------------------------"
 if(params.rrbs){        log.info "RRBS Mode      : On" }
 log.info "Deduplication  : ${params.nodedup ? 'No' : 'Yes'}"
-log.info "PileOMeth      : C Contexts - ${params.allcontexts ? 'All (CpG, CHG, CHH)' : 'CpG only'}"
-log.info "PileOMeth      : Minimum Depth - ${params.mindepth}"
-if(params.ignoreFlags){ log.info "PileOMeth:     : Ignoring SAM Flags" }
+log.info "MethylDackel      : C Contexts - ${params.allcontexts ? 'All (CpG, CHG, CHH)' : 'CpG only'}"
+log.info "MethylDackel      : Minimum Depth - ${params.mindepth}"
+if(params.ignoreFlags){ log.info "MethylDackel:     : Ignoring SAM Flags" }
 log.info "---------------------------------------------------"
 if(params.notrim){      log.info "Trimming Step  : Skipped" }
 if(params.pbat){        log.info "Trim Profile   : PBAT" }
@@ -365,11 +365,11 @@ process markDuplicates {
 
 
 /*
- * STEP 6 - extract methylation with PileOMeth
+ * STEP 6 - extract methylation with MethylDackel
  */
-process pileOMeth {
+process methyldackel {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/PileOMeth", mode: 'copy'
+    publishDir "${params.outdir}/MethylDackel", mode: 'copy'
     
     input:
     file bam from bam_md
@@ -377,15 +377,15 @@ process pileOMeth {
     file fasta_index from fasta
     
     output:
-    file '*' into pileometh_results
+    file '*' into methyldackel_results
     
     script:
     allcontexts = params.allcontexts ? '--CHG --CHH' : ''
     mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
     ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
     """
-    PileOMeth extract $allcontexts $ignoreFlags $mindepth $fasta $bam
-    PileOMeth mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
+    MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
+    MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
     """
 }
 
@@ -429,7 +429,7 @@ process multiqc {
     file ('samtools/*') from flagstat_results.flatten().toList()
     file ('samtools/*') from samtools_stats_results.flatten().toList()
     file ('picard/*') from picard_results.flatten().toList()
-    file ('pileometh/*') from pileometh_results.flatten().toList()
+    file ('methyldackel/*') from methyldackel_results.flatten().toList()
     file ('qualimap/*') from qualimap_results.flatten().toList()
     
     output:
