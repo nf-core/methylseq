@@ -32,7 +32,7 @@ else
     echo "Done"
 fi
 
-cmd="nextflow run $script_path -resume -profile testing --bismark_index ${data_dir}/references/BismarkIndex/ --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $script_path -resume -profile testing --bismark_index ${data_dir}/references/BismarkIndex/ --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"
