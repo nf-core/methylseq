@@ -34,6 +34,7 @@ params.notrim = false
 params.nodedup = false
 params.unmapped = false
 params.non_directional = false
+params.comprehensive = false
 params.relaxMismatches = false
 params.numMismatches = 0.6
 // 0.6 will allow a penalty of bp * -0.6
@@ -89,13 +90,21 @@ if(params.pbat){
     params.three_prime_clip_r2 = 0
 }
 
-def single
+/*
+ * Create a channel for input read files
+ */
+params.singleEnd = false
+Channel
+    .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
+    .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nIf this is single-end data, please specify --singleEnd on the command line." }
+    .into { read_files_fastqc; read_files_trimming }
 
 log.info "=================================================="
 log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "=================================================="
 def summary = [:]
 summary['Reads']          = params.reads
+summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 summary['Bismark Index']  = params.bismark_index
 summary['Current home']   = "$HOME"
@@ -104,13 +113,12 @@ summary['Current path']   = "$PWD"
 summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
-// log.info "---------------------------------------------------"
 summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
 summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
 summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
+summary['All Cytosine Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
-// log.info "---------------------------------------------------"
 if(params.notrim)       summary['Trimming Step'] = "Skipped"
 if(params.pbat)         summary['Trim Profile'] = "PBAT"
 if(params.single_cell)  summary['Trim Profile'] = "Single Cell"
@@ -121,23 +129,15 @@ if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
 if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
 if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
 if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_clip_r2
-// log.info "---------------------------------------------------"
 summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
-log.info summary.collect { k,v -> "${k.padRight(15)}: $v" }.join("\n")
+log.info summary.collect { k,v -> "${k.padRight(20)}: $v" }.join("\n")
 log.info "========================================="
 
 // Validate inputs
 if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 
-/*
- * Create a channel for input read files
- */
-Channel
-    .fromFilePairs( params.reads, size: -1 )
-    .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}" }
-    .into { read_files_fastqc; read_files_trimming }
 
 /*
  * STEP 1 - FastQC
@@ -177,13 +177,12 @@ if(params.notrim){
         file '*trimming_report.txt' into trimgalore_results
 
         script:
-        single = reads instanceof Path
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
         c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
-        if (single) {
+        if (params.singleEnd) {
             """
             trim_galore --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
@@ -216,7 +215,7 @@ process bismark_align {
     non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
     unmapped = params.unmapped ? "--unmapped" : ''
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
-    if (single) {
+    if (params.singleEnd) {
         """
         bismark --bam $pbat $non_directional $unmapped $mismatches $index $reads
         """
@@ -251,7 +250,7 @@ if (params.nodedup || params.rrbs) {
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
 
         script:
-        if (single) {
+        if (params.singleEnd) {
             """
             deduplicate_bismark -s --bam $bam
             """
@@ -280,9 +279,10 @@ process bismark_methXtract {
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
-    if (single) {
+    comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+    if (params.singleEnd) {
         """
-        bismark_methylation_extractor \\
+        bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
             $ignore_r2 \\
@@ -295,7 +295,7 @@ process bismark_methXtract {
         """
     } else {
         """
-        bismark_methylation_extractor \\
+        bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
             --ignore_r2 2 \\

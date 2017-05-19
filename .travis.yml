@@ -15,7 +15,7 @@ install:
   - mkdir results
 
 env:
-  - TEST_SUITE=docker_test
-  - TEST_SUITE=docker_test_bwameth
+  - s=docker_test
+  - s=docker_test_bwameth
 
-script: "./${TEST_SUITE}.sh"
+script: "./${s}.sh"
