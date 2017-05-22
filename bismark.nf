@@ -118,13 +118,13 @@ summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
 summary['Directional Mode'] = params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
-if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
-if(params.notrim)       summary['Trimming Step'] = "Skipped"
-if(params.pbat)         summary['Trim Profile'] = "PBAT"
-if(params.single_cell)  summary['Trim Profile'] = "Single Cell"
-if(params.epignome)     summary['Trim Profile'] = "Epignome"
-if(params.accel)        summary['Trim Profile'] = "Accel"
-if(params.cegx)         summary['Trim Profile'] = "CEGX"
+if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
+if(params.notrim)       summary['Trimming Step'] = 'Skipped'
+if(params.pbat)         summary['Trim Profile'] = 'PBAT'
+if(params.single_cell)  summary['Trim Profile'] = 'Single Cell'
+if(params.epignome)     summary['Trim Profile'] = 'Epignome'
+if(params.accel)        summary['Trim Profile'] = 'Accel'
+if(params.cegx)         summary['Trim Profile'] = 'CEGX'
 if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
 if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
 if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
