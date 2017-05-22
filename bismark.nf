@@ -114,9 +114,9 @@ summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
 summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
-summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
-summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
-summary['All Cytosine Contexts'] = params.comprehensive ? 'Yes' : 'No'
+summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
+summary['Directional Mode'] = params.non_directional ? 'No' : 'Yes'
+summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
 if(params.notrim)       summary['Trimming Step'] = "Skipped"
@@ -132,7 +132,7 @@ if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_cl
 summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
-log.info summary.collect { k,v -> "${k.padRight(20)}: $v" }.join("\n")
+log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
 // Validate inputs
