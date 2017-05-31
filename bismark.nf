@@ -27,6 +27,8 @@ params.email = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.saveReference = false
+params.saveTrimmed = false
+params.saveAlignedIntermediates = false
 params.reads = "data/*_R{1,2}.fastq.gz"
 params.outdir = './results'
 params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
@@ -39,7 +41,7 @@ params.relaxMismatches = false
 params.numMismatches = 0.6
 // 0.6 will allow a penalty of bp * -0.6
 // For 100bp reads, this is -60. Mismatches cost -6, gap opening -5 and gap extension -2
-// Sp -60 would allow 10 mismatches or ~ 8 x 1-2bp indels
+// So -60 would allow 10 mismatches or ~ 8 x 1-2bp indels
 // Bismark default is 0.2 (L,0,-0.2), Bowtie2 default is 0.6 (L,0,-0.6)
 
 // Validate inputs
@@ -114,17 +116,19 @@ summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
 summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
-summary['Save Unmapped']  = params.unmapped ? 'No' : 'Yes'
-summary['Directional Mode'] = params.non_directional ? 'Yes' : 'No'
-summary['All Cytosine Contexts'] = params.comprehensive ? 'Yes' : 'No'
+summary['Save Trimmed']   = params.saveTrimmed
+summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
+summary['Save Intermeds'] = params.saveAlignedIntermediates
+summary['Directional Mode'] = params.non_directional ? 'No' : 'Yes'
+summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if(params.rrbs) summary['RRBS Mode'] = 'On'
-if(params.relaxMismatches) summary['Mismatch Func'] = 'L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)'
-if(params.notrim)       summary['Trimming Step'] = "Skipped"
-if(params.pbat)         summary['Trim Profile'] = "PBAT"
-if(params.single_cell)  summary['Trim Profile'] = "Single Cell"
-if(params.epignome)     summary['Trim Profile'] = "Epignome"
-if(params.accel)        summary['Trim Profile'] = "Accel"
-if(params.cegx)         summary['Trim Profile'] = "CEGX"
+if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
+if(params.notrim)       summary['Trimming Step'] = 'Skipped'
+if(params.pbat)         summary['Trim Profile'] = 'PBAT'
+if(params.single_cell)  summary['Trim Profile'] = 'Single Cell'
+if(params.epignome)     summary['Trim Profile'] = 'Epignome'
+if(params.accel)        summary['Trim Profile'] = 'Accel'
+if(params.cegx)         summary['Trim Profile'] = 'CEGX'
 if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
 if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
 if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
@@ -132,7 +136,7 @@ if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_cl
 summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
-log.info summary.collect { k,v -> "${k.padRight(20)}: $v" }.join("\n")
+log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
 // Validate inputs
@@ -144,7 +148,8 @@ if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX proje
  */
 process fastqc {
     tag "$name"
-    publishDir "${params.outdir}/fastqc", mode: 'copy'
+    publishDir "${params.outdir}/fastqc", mode: 'copy',
+        saveAs: {filename -> filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"}
 
     input:
     set val(name), file(reads) from read_files_fastqc
@@ -167,14 +172,20 @@ if(params.notrim){
 } else {
     process trim_galore {
         tag "$name"
-        publishDir "${params.outdir}/trim_galore", mode: 'copy'
+        publishDir "${params.outdir}/trim_galore", mode: 'copy',
+            saveAs: {filename ->
+                if (filename.indexOf("_fastqc") > 0) "FastQC/$filename"
+                else if (filename.indexOf("trimming_report.txt") > 0) "logs/$filename"
+                else params.saveTrimmed ? filename : null
+            }
 
         input:
         set val(name), file(reads) from read_files_trimming
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
-        file '*trimming_report.txt' into trimgalore_results
+        file "*trimming_report.txt" into trimgalore_results
+        file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
 
         script:
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -182,13 +193,14 @@ if(params.notrim){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
+        non_directional = params.rrbs && params.non_directional ? "--non_directional" : ''
         if (params.singleEnd) {
             """
-            trim_galore --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
         } else {
             """
-            trim_galore --paired --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
             """
         }
     }
@@ -199,7 +211,12 @@ if(params.notrim){
  */
 process bismark_align {
     tag "$name"
-    publishDir "${params.outdir}/bismark_alignments", mode: 'copy'
+    publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
+        saveAs: {filename ->
+            if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
+            else if (filename.indexOf(".bam") == -1) "logs/$filename"
+            else params.saveAlignedIntermediates || params.nodedup || params.rrbs ? filename : null
+        }
 
     input:
     file index from bismark_index
@@ -240,7 +257,8 @@ if (params.nodedup || params.rrbs) {
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
-        publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy'
+        publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
+            saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
         input:
         file bam
@@ -267,7 +285,14 @@ if (params.nodedup || params.rrbs) {
  */
 process bismark_methXtract {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy'
+    publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
+        saveAs: {filename ->
+            if (filename.indexOf("splitting_report.txt") > 0) "logs/$filename"
+            else if (filename.indexOf("M-bias") > 0) "m-bias/$filename"
+            else if (filename.indexOf(".cov") > 0) "methylation_coverage/$filename"
+            else if (filename.indexOf("bedGraph") > 0) "bedGraph/$filename"
+            else "methylation_calls/$filename"
+        }
 
     input:
     file bam from bam_dedup
@@ -366,7 +391,7 @@ process bismark_summary {
  */
 process qualimap {
     tag "${bam.baseName}"
-    publishDir "${params.outdir}/Qualimap", mode: 'copy'
+    publishDir "${params.outdir}/qualimap", mode: 'copy'
 
     input:
     file bam from bam_dedup_qualimap
