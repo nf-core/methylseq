@@ -94,7 +94,7 @@ A reference genome path can be specified on the command line each time you run w
 params {
   genomes {
     'YOUR-ID' {
-      bismar  = '<PATH TO BISMARK REF>/BismarkIndex'
+      bismark  = '<PATH TO BISMARK REF>/BismarkIndex'
       fasta  = '<PATH TO FASTA FILE>/genome.fa'
     }
     'OTHER-GENOME' {
