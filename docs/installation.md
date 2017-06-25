@@ -82,20 +82,18 @@ process {
 ```
 
 ### Reference Genomes
-The NGI-MethylSeq pipeline needs a reference genome for alignment and annotation. If not already available, start by downloading the relevant reference, for example from [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
+The NGI-MethylSeq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
 
-> NB: The below paragraph is a lie. You currently need a Bismark reference. Integrated builds from Fasta files coming soon...
+If you don't want to use the illumina iGenomes you can supply either a Bismark reference or a FASTA file. If a Bismark reference is specified, the pipeline won't have to generate it and will be finished quite a bit faster. If a FASTA file is supplied then the Bismark reference will be built when the pipeline starts. Use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future. Use  `--bismark_index` or `--fasta` to specify the paths to the reference.
 
-The minimal requirements are a FASTA file. If a Bismark reference is specified, the pipeline won't have to generate it and will be finished quite a bit faster. Use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future.
-
-A reference genome path can be specified on the command line each time you run with `--bismark_index` or `--fasta`. Alternatively, add the paths to the config under a relevant id and just specify this id with `--genome ID` when you run the pipeline _(this can also be set as a default in your config)_:
+Alternatively, you can add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
 
 ```groovy
 params {
   genomes {
     'YOUR-ID' {
       bismark  = '<PATH TO BISMARK REF>/BismarkIndex'
-      fasta  = '<PATH TO FASTA FILE>/genome.fa'
+      fasta  = '<PATH TO FASTA FILE>/genome.fa' // used if above is not specified
     }
     'OTHER-GENOME' {
       // [..]
@@ -105,7 +103,6 @@ params {
   genome = 'YOUR-ID'
 }
 ```
-
 
 ### Software Requirements
 To run the pipeline, several software packages are required. How you satisfy these requirements is essentially up to you and depends on your system.
