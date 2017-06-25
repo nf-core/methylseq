@@ -65,14 +65,15 @@ RUN mkdir /opt/bowtie2 && \
     cd /opt/bowtie2/bowtie2-2.3.2/ && \
     make && \
     ln -s /opt/bowtie2/bowtie2-2.3.2/bowtie2 /usr/local/bin/bowtie2 && \
+    ln -s /opt/bowtie2/bowtie2-2.3.2/bowtie2-build /usr/local/bin/bowtie2-build && \
     rm /opt/bowtie2/bowtie2.zip
 
 # Install Bismark
 RUN mkdir /opt/Bismark && \
-    curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.17.0.zip -o /opt/Bismark/bismark.zip && \
+    curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.18.1.zip -o /opt/Bismark/bismark.zip && \
     unzip /opt/Bismark/bismark.zip -d /opt/Bismark && \
     rm /opt/Bismark/bismark.zip
-ENV PATH="/opt/Bismark/Bismark-0.17.0:${PATH}"
+ENV PATH="/opt/Bismark/Bismark-0.18.1:${PATH}"
 
 # Install Qualimap
 RUN mkdir /opt/Qualimap && \
@@ -104,4 +105,4 @@ RUN mkdir /opt/MethylDackel && \
     rm /opt/MethylDackel/MethylDackel.zip
 
 # Install MultiQC
-RUN pip install git+git://github.com/ewels/MultiQC.git
+RUN pip install multiqc

@@ -19,5 +19,5 @@ env:
   - s=docker_test_bwameth
 
 script:
-  - "./${s}.sh"
-  - "./${s}.sh true" # Run again, building reference genome
+  - "./${s}.sh true"
+  - "./${s}.sh" # Run again, WITHOUT building reference genome

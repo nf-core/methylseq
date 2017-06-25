@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-script_path="../bwa-meth.nf"
-if [ -z $1]
-then
-    echo "No argument given, going to try to run ../bwa-meth.nf"
-else
-    script_path=$1
-fi
-
 data_path="/tmp"
 if [ -d "./test_data" ]
 then
@@ -32,7 +24,16 @@ else
     echo "Done"
 fi
 
-cmd="nextflow run $script_path -resume -profile testing --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --reads \"${data_dir}/*.fastq.gz\""
+if [ -z $1]
+then
+    buildrefs="--fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome"
+else
+    buildrefs=""
+fi
+
+run_name="Test MethylSeq Run: "$(date +%s)
+
+cmd="nextflow run ../bwa-meth.nf -resume -profile testing --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa  $buildrefs --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"
