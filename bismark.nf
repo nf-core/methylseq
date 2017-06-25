@@ -174,11 +174,13 @@ if(!params.bismark_index && fasta){
         file fasta from fasta
 
         output:
-        file "Bisulfite_Genome" into bismark_index
+        file "BismarkIndex" into bismark_index
 
         script:
         """
-        bismark_genome_preparation ./
+        mkdir BismarkIndex
+        mv $fasta BismarkIndex/
+        bismark_genome_preparation BismarkIndex
         """
     }
 }

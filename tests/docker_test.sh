@@ -26,9 +26,9 @@ fi
 
 if [ -z $1]
 then
-    buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
+    buildrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
 else
-    buildrefs="--fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+    buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
 fi
 
 run_name="Test MethylSeq Run: "$(date +%s)

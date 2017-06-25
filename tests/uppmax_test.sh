@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-script_path="../bismark.nf"
-if [ -z $1]
-then
-    echo "No argument given, going to try to run ../main.nf"
-else
-    script_path=$1
-fi
-
 data_path=$SNIC_NOBACKUP
 if [ -d "./test_data" ]
 then
@@ -31,9 +23,16 @@ else
     echo "Done"
 fi
 
-run_name="Test RNA Run: "$(date +%s)
+if [ -z $1]
+then
+    buildrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+else
+    buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
+fi
 
-cmd="nextflow run $script_path -resume -name \"$run_name\" -profile devel --bismark_index ${data_dir}/references/BismarkIndex/ --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+run_name="Test MethylSeq Run: "$(date +%s)
+
+cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile devel $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"

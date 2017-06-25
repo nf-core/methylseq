@@ -26,7 +26,7 @@ fi
 
 if [ -z $1]
 then
-    buildrefs="--fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome"
+    buildrefs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
 else
     buildrefs=""
 fi
