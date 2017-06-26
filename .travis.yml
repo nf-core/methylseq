@@ -6,6 +6,7 @@ jdk: openjdk8
 
 services:
   - docker
+
 install:
   - mkdir /tmp/nextflow
   - cd /tmp/nextflow
