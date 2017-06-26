@@ -539,6 +539,7 @@ workflow.onComplete {
           subject += "\nMIME-Version: 1.0\nContent-Type: text/html"
           [ 'mail', '-s', subject, params.email ].execute() << email_html
         }
+        log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
 
     // Write summary e-mail HTML to a file
@@ -547,8 +548,6 @@ workflow.onComplete {
       output_d.mkdirs()
     }
     def output_f = new File( output_d, "pipeline_report.html" )
-    output_f.withWriter { w ->
-        w << email_html
-    }
-
+    output_f.withWriter { w -> w << email_html }
+    log.info "[NGI-MethylSeq] Pipeline Complete"
 }
