@@ -497,10 +497,6 @@ process multiqc {
  */
 workflow.onComplete {
 
-    // Build the e-mail subject and header
-    def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
-    subject += "\nContent-Type: text/html"
-
     // Set up the e-mail variables
     def email_fields = [:]
     email_fields['version'] = version
@@ -534,7 +530,15 @@ workflow.onComplete {
 
     // Send the HTML e-mail
     if (params.email) {
-        [ 'mail', '-s', subject, params.email ].execute() << email_html
+        def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
+        try {
+          // Try to send using `-a` mail flags (Linux)
+          [ 'mail', '-s', subject, '-a', '"MIME-Version: 1.0"', '-a', '"Content-type: text/html"', params.email ].execute() << email_html
+        } catch (all) {
+          // Catch failures and try again without `-a` (OSX)
+          subject += "\nMIME-Version: 1.0\nContent-Type: text/html"
+          [ 'mail', '-s', subject, params.email ].execute() << email_html
+        }
     }
 
     // Write summary e-mail HTML to a file
