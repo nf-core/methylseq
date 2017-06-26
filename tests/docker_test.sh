@@ -24,16 +24,26 @@ else
     echo "Done"
 fi
 
-if [ -z $1]
-then
+# Do we build a reference genome index or just use a pre-existing one?
+if [ -z $1]; then
     buildrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
 else
     buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
 fi
 
+# Detect Travis fork for dockerhub image if we can
+if [ -z "$TRAVIS_REPO_SLUG" ]; then
+    dockerfl=""
+else
+    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
+    dockerfl="-with-docker $dockerimg"
+fi
+
+# Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile testing $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile testing $dockerfl $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"

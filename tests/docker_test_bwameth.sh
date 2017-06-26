@@ -31,9 +31,18 @@ else
     buildrefs=""
 fi
 
+# Detect Travis fork for dockerhub image if we can
+if [ -z "$TRAVIS_REPO_SLUG" ]; then
+    dockerfl=""
+else
+    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
+    dockerfl="-with-docker $dockerimg"
+fi
+
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run ../bwa-meth.nf -resume -profile testing --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa  $buildrefs --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run ../bwa-meth.nf -resume -profile testing $dockerfl --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa  $buildrefs --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"
