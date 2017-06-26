@@ -39,18 +39,18 @@ RUN pip install cutadapt
 
 # Install TrimGalore
 RUN mkdir /opt/TrimGalore && \
-    curl -fsSL http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.2.zip -o /opt/TrimGalore/trim_galore_v0.4.2.zip && \
-    unzip /opt/TrimGalore/trim_galore_v0.4.2.zip -d /opt/TrimGalore && \
-    ln -s /opt/TrimGalore/trim_galore /usr/local/bin/trim_galore && \
-    rm /opt/TrimGalore/trim_galore_v0.4.2.zip
+    curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.4.4.zip -o /opt/TrimGalore/0.4.4.zip && \
+    unzip /opt/TrimGalore/0.4.4.zip -d /opt/TrimGalore && \
+    ln -s /opt/TrimGalore/TrimGalore-0.4.4/trim_galore /usr/local/bin/trim_galore && \
+    rm /opt/TrimGalore/0.4.4.zip
 
 # Install SAMTools
-RUN curl -fsSL https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2 -o /opt/samtools-1.3.1.tar.bz2 && \
-    tar xvjf /opt/samtools-1.3.1.tar.bz2 -C /opt/ && \
-    cd /opt/samtools-1.3.1 && \
+RUN curl -fsSL https://github.com/samtools/samtools/releases/download/1.5/samtools-1.5.tar.bz2 -o /opt/samtools-1.5.tar.bz2 && \
+    tar xvjf /opt/samtools-1.5.tar.bz2 -C /opt/ && \
+    cd /opt/samtools-1.5 && \
     make && \
     make install && \
-    rm /opt/samtools-1.3.1.tar.bz2
+    rm /opt/samtools-1.5.tar.bz2
 
 # Install PicardTools
 RUN curl -fsSL https://github.com/broadinstitute/picard/releases/download/2.0.1/picard-tools-2.0.1.zip -o /opt/picard-tools-2.0.1.zip && \
