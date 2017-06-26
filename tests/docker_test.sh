@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-script_path="../bismark.nf"
-if [ -z $1]
-then
-    echo "No argument given, going to try to run ../bismark.nf"
-else
-    script_path=$1
-fi
-
 data_path="/tmp"
 if [ -d "./test_data" ]
 then
@@ -32,7 +24,26 @@ else
     echo "Done"
 fi
 
-cmd="nextflow run $script_path -resume -profile testing --bismark_index ${data_dir}/references/BismarkIndex/ --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+# Do we build a reference genome index or just use a pre-existing one?
+if [ -z $1]; then
+    buildrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+else
+    buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
+fi
+
+# Detect Travis fork for dockerhub image if we can
+if [ -z "$TRAVIS_REPO_SLUG" ]; then
+    dockerfl=""
+else
+    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
+    dockerfl="-with-docker $dockerimg"
+fi
+
+# Run name
+run_name="Test MethylSeq Run: "$(date +%s)
+
+cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile testing $dockerfl $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-----"

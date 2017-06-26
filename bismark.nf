@@ -22,10 +22,12 @@ vim: syntax=groovy
 version = 0.1
 
 // Configurable variables
+params.name = false
 params.project = false
 params.email = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
+params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
 params.saveReference = false
 params.saveTrimmed = false
 params.saveAlignedIntermediates = false
@@ -46,12 +48,28 @@ params.numMismatches = 0.6
 
 // Validate inputs
 if( params.bismark_index ){
-    bismark_index = file(params.bismark_index)
-    if( !bismark_index.exists() ) exit 1, "Bismark index not found: ${params.bismark_index}"
-} else {
-    exit 1, "No reference genome specified! Please use --genome or --bismark_index"
+    bismark_index = Channel
+        .fromPath(params.bismark_index)
+        .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
+}
+else if ( params.fasta ){
+    fasta = file(params.fasta)
+    if( !fasta.exists() ) exit 1, "Fasta file not found: ${params.fasta}"
+}
+else {
+    exit 1, "No reference genome specified! Please use --genome, --bismark_index or --fasta"
 }
 multiqc_config = file(params.multiqc_config)
+
+// Validate inputs
+if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+
+// Has the run name been specified by the user?
+//  this has the bonus effect of catching both -name and --name
+custom_runName = params.name
+if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
+  custom_runName = workflow.runName
+}
 
 params.rrbs = false
 params.pbat = false
@@ -105,22 +123,12 @@ log.info "=================================================="
 log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "=================================================="
 def summary = [:]
+summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
-summary['Bismark Index']  = params.bismark_index
-summary['Current home']   = "$HOME"
-summary['Current user']   = "$USER"
-summary['Current path']   = "$PWD"
-summary['Working dir']    = workflow.workDir
-summary['Output dir']     = params.outdir
-summary['Script dir']     = workflow.projectDir
-summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
-summary['Save Trimmed']   = params.saveTrimmed
-summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
-summary['Save Intermeds'] = params.saveAlignedIntermediates
-summary['Directional Mode'] = params.non_directional ? 'No' : 'Yes'
-summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
+if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
+else if(params.fasta)    summary['Fasta Ref'] = params.fasta
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
 if(params.notrim)       summary['Trimming Step'] = 'Skipped'
@@ -129,18 +137,53 @@ if(params.single_cell)  summary['Trim Profile'] = 'Single Cell'
 if(params.epignome)     summary['Trim Profile'] = 'Epignome'
 if(params.accel)        summary['Trim Profile'] = 'Accel'
 if(params.cegx)         summary['Trim Profile'] = 'CEGX'
-if(params.clip_r1 > 0)  summary['Trim R1'] = params.clip_r1
-if(params.clip_r2 > 0)  summary['Trim R2'] = params.clip_r2
-if(params.three_prime_clip_r1 > 0) summary["Trim 3' R1"] = params.three_prime_clip_r1
-if(params.three_prime_clip_r2 > 0) summary["Trim 3' R2"] = params.three_prime_clip_r2
+summary['Trim R1'] = params.clip_r1
+summary['Trim R2'] = params.clip_r2
+summary["Trim 3' R1"] = params.three_prime_clip_r1
+summary["Trim 3' R2"] = params.three_prime_clip_r2
+summary['Deduplication']  = params.nodedup ? 'No' : 'Yes'
+summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
+summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
+summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
+summary['Save Intermeds'] = params.saveAlignedIntermediates ? 'Yes' : 'No'
+summary['Directional Mode'] = params.non_directional ? 'No' : 'Yes'
+summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
+summary['Current home']   = "$HOME"
+summary['Current user']   = "$USER"
+summary['Current path']   = "$PWD"
+summary['Working dir']    = workflow.workDir
+summary['Output dir']     = params.outdir
+summary['Script dir']     = workflow.projectDir
 summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
-// Validate inputs
-if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+
+/*
+ * PREPROCESSING - Build Bismark index
+ */
+if(!params.bismark_index && fasta){
+    process makeBismarkIndex {
+        tag fasta
+        publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
+                   saveAs: { params.saveReference ? it : null }, mode: 'copy'
+
+        input:
+        file fasta from fasta
+
+        output:
+        file "BismarkIndex" into bismark_index
+
+        script:
+        """
+        mkdir BismarkIndex
+        cp $fasta BismarkIndex/
+        bismark_genome_preparation BismarkIndex
+        """
+    }
+}
 
 
 /*
@@ -234,15 +277,17 @@ process bismark_align {
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
     if (params.singleEnd) {
         """
-        bismark --bam $pbat $non_directional $unmapped $mismatches $index $reads
+        bismark \\
+            --bam $pbat $non_directional $unmapped $mismatches \\
+            --genome $index \\
+            $reads
         """
     } else {
         """
         bismark \\
             --bam \\
-            --dovetail \\
-            $pbat $non_directional $unmapped $mismatches \\
-            $index \\
+            --dovetail $pbat $non_directional $unmapped $mismatches \\
+            --genome $index \\
             -1 ${reads[0]} \\
             -2 ${reads[1]}
         """
