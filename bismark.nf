@@ -497,10 +497,6 @@ process multiqc {
  */
 workflow.onComplete {
 
-    // Build the e-mail subject and header
-    def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
-    subject += "\nContent-Type: text/html"
-
     // Set up the e-mail variables
     def email_fields = [:]
     email_fields['version'] = version
@@ -526,15 +522,31 @@ workflow.onComplete {
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
 
-    // Render the e-mail HTML template
-    def f = new File("$baseDir/assets/summary_email.html")
+    // Render the e-mail TXT template
     def engine = new groovy.text.GStringTemplateEngine()
-    def template = engine.createTemplate(f).make(email_fields)
-    def email_html = template.toString()
+    def tf = new File("$baseDir/assets/email_template.txt")
+    def txt_template = engine.createTemplate(tf).make(email_fields)
+    def email_txt = txt_template.toString()
+
+    // Render the e-mail HTML template
+    def hf = new File("$baseDir/assets/email_template.html")
+    def html_template = engine.createTemplate(hf).make(email_fields)
+    def email_html = html_template.toString()
 
     // Send the HTML e-mail
     if (params.email) {
-        [ 'mail', '-s', subject, params.email ].execute() << email_html
+        def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
+        try {
+          // Try to send HTML e-mail using sendmail
+          def html_email = "To: $params.email\nSubject: $subject\nMime-Version: 1.0\nContent-Type: text/html\n\n$email_html";
+          def smproc = [ 'sendmail', '-t' ].execute() << html_email
+          log.debug "[NGI-MethylSeq] Sent summary e-mail using sendmail"
+        } catch (all) {
+          // Catch failures and try with plaintext
+          [ 'mail', '-s', subject, params.email ].execute() << email_txt
+          log.debug "[NGI-MethylSeq] Sendmail failed, failing back to sending summary e-mail using mail"
+        }
+        log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
 
     // Write summary e-mail HTML to a file
@@ -543,8 +555,6 @@ workflow.onComplete {
       output_d.mkdirs()
     }
     def output_f = new File( output_d, "pipeline_report.html" )
-    output_f.withWriter { w ->
-        w << email_html
-    }
-
+    output_f.withWriter { w -> w << email_html }
+    log.info "[NGI-MethylSeq] Pipeline Complete"
 }
