@@ -179,7 +179,7 @@ if(!params.bismark_index && fasta){
         script:
         """
         mkdir BismarkIndex
-        mv $fasta BismarkIndex/
+        cp $fasta BismarkIndex/
         bismark_genome_preparation BismarkIndex
         """
     }
@@ -277,15 +277,17 @@ process bismark_align {
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
     if (params.singleEnd) {
         """
-        bismark --bam $pbat $non_directional $unmapped $mismatches $index $reads
+        bismark \\
+            --bam $pbat $non_directional $unmapped $mismatches \\
+            --genome $index \\
+            $reads
         """
     } else {
         """
         bismark \\
             --bam \\
-            --dovetail \\
-            $pbat $non_directional $unmapped $mismatches \\
-            $index \\
+            --dovetail $pbat $non_directional $unmapped $mismatches \\
+            --genome $index \\
             -1 ${reads[0]} \\
             -2 ${reads[1]}
         """
