@@ -522,22 +522,29 @@ workflow.onComplete {
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
 
-    // Render the e-mail HTML template
-    def f = new File("$baseDir/assets/summary_email.html")
+    // Render the e-mail TXT template
     def engine = new groovy.text.GStringTemplateEngine()
-    def template = engine.createTemplate(f).make(email_fields)
-    def email_html = template.toString()
+    def tf = new File("$baseDir/assets/email_template.txt")
+    def txt_template = engine.createTemplate(tf).make(email_fields)
+    def email_txt = txt_template.toString()
+
+    // Render the e-mail HTML template
+    def hf = new File("$baseDir/assets/email_template.html")
+    def html_template = engine.createTemplate(hf).make(email_fields)
+    def email_html = html_template.toString()
 
     // Send the HTML e-mail
     if (params.email) {
         def subject = "NGI-MethylSeq Pipeline Complete: $workflow.runName"
         try {
-          // Try to send using `-a` mail flags (Linux)
-          [ 'mail', '-s', subject, '-a', '"MIME-Version: 1.0"', '-a', '"Content-type: text/html"', params.email ].execute() << email_html
+          // Try to send HTML e-mail using sendmail
+          def html_email = "To: $params.email\nSubject: $subject\nMime-Version: 1.0\nContent-Type: text/html\n\n$email_html";
+          def smproc = [ 'sendmail', '-t' ].execute() << html_email
+          log.debug "[NGI-MethylSeq] Sent summary e-mail using sendmail"
         } catch (all) {
-          // Catch failures and try again without `-a` (OSX)
-          subject += "\nMIME-Version: 1.0\nContent-Type: text/html"
-          [ 'mail', '-s', subject, params.email ].execute() << email_html
+          // Catch failures and try with plaintext
+          [ 'mail', '-s', subject, params.email ].execute() << email_txt
+          log.debug "[NGI-MethylSeq] Sendmail failed, failing back to sending summary e-mail using mail"
         }
         log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
