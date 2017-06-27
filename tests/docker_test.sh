@@ -25,7 +25,8 @@ else
 fi
 
 # Do we build a reference genome index or just use a pre-existing one?
-if [ -z $1]; then
+if [ -z $1 ]
+then
     buildrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
 else
     buildrefs="--bismark_index ${data_dir}/references/BismarkIndex/"
