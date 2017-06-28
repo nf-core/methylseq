@@ -181,7 +181,6 @@ log.info "========================================="
  */
 if(!params.bismark_index && fasta){
     process makeBismarkIndex {
-        tag fasta
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
