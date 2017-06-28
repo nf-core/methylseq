@@ -1,7 +1,7 @@
 # ![NGI-MethylSeq](docs/images/NGI-MethylSeq_logo.png)
 
 [![Build Status](https://travis-ci.org/SciLifeLab/NGI-MethylSeq.svg?branch=master)](https://travis-ci.org/SciLifeLab/NGI-MethylSeq)
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.22.2-brightgreen.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.25.1-brightgreen.svg)](https://www.nextflow.io/)
 
 ### Introduction
 
