@@ -70,10 +70,10 @@ RUN mkdir /opt/bowtie2 && \
 
 # Install Bismark
 RUN mkdir /opt/Bismark && \
-    curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.18.1.zip -o /opt/Bismark/bismark.zip && \
+    curl -fsSL https://github.com/FelixKrueger/Bismark/archive/0.18.2.zip -o /opt/Bismark/bismark.zip && \
     unzip /opt/Bismark/bismark.zip -d /opt/Bismark && \
     rm /opt/Bismark/bismark.zip
-ENV PATH="/opt/Bismark/Bismark-0.18.1:${PATH}"
+ENV PATH="/opt/Bismark/Bismark-0.18.2:${PATH}"
 
 # Install Qualimap
 RUN mkdir /opt/Qualimap && \

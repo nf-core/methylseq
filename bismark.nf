@@ -21,6 +21,17 @@ vim: syntax=groovy
 // Pipeline version
 version = 0.1
 
+// Check that Nextflow version is up to date enough
+nf_required_version = '0.24.1'
+if( ! nextflow.version.matches(">= $nf_required_version") ){
+  log.error "====================================================\n" +
+            "  Nextflow version $nf_required_version required! You are running $nextflow.version.\n" +
+            "  Execution will continue, but things may break.\n" +
+            "============================================================"
+} else {
+  log.debug "Nextflow version $nf_required_version required, running $nextflow.version."
+}
+
 // Configurable variables
 params.name = false
 params.project = false
