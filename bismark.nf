@@ -22,14 +22,24 @@ vim: syntax=groovy
 version = 0.1
 
 // Check that Nextflow version is up to date enough
-nf_required_version = '0.24.1'
-if( ! nextflow.version.matches(">= $nf_required_version") ){
+nf_required_version = '0.25.1'
+try {
+  if( ! nextflow.version.matches(">= $nf_required_version") ){
+    log.error "====================================================\n" +
+              "  Nextflow version $nf_required_version required! You are running v$nextflow.version.\n" +
+              "  Pipeline execution will continue, but things may break.\n" +
+              "  Please run `nextflow self-update` to update Nextflow.\n" +
+              "============================================================"
+  } else {
+    log.debug "Nextflow version $nf_required_version required, running $nextflow.version."
+  }
+} catch (all) {
+  // Nextflow version < 0.25
   log.error "====================================================\n" +
-            "  Nextflow version $nf_required_version required! You are running $nextflow.version.\n" +
-            "  Execution will continue, but things may break.\n" +
+            "  Nextflow version $nf_required_version required! You are running v$workflow.nextflow.version.\n" +
+            "  Pipeline execution will continue, but things may break.\n" +
+            "  Please run `nextflow self-update` to update Nextflow.\n" +
             "============================================================"
-} else {
-  log.debug "Nextflow version $nf_required_version required, running $nextflow.version."
 }
 
 // Configurable variables
