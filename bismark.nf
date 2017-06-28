@@ -181,7 +181,6 @@ log.info "========================================="
  */
 if(!params.bismark_index && fasta){
     process makeBismarkIndex {
-        tag fasta
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
@@ -190,12 +189,13 @@ if(!params.bismark_index && fasta){
 
         output:
         file "BismarkIndex" into bismark_index
+        stdout makeBismarkIndex_stdout
 
         script:
         """
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
-        bismark_genome_preparation BismarkIndex
+        bismark_genome_preparation BismarkIndex 2>&1
         """
     }
 }
@@ -214,10 +214,12 @@ process fastqc {
 
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
+    stdout fastqc_stdout
 
     script:
     """
     fastqc -q $reads
+    fastqc --version
     """
 }
 
@@ -282,7 +284,7 @@ process bismark_align {
 
     output:
     file "*.bam" into bam, bam_2
-    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
+    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3, bismark_align_log_4
     if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
 
     script:
@@ -300,8 +302,7 @@ process bismark_align {
     } else {
         """
         bismark \\
-            --bam \\
-            --dovetail $pbat $non_directional $unmapped $mismatches \\
+            --bam $pbat $non_directional $unmapped $mismatches \\
             --genome $index \\
             -1 ${reads[0]} \\
             -2 ${reads[1]}
@@ -326,15 +327,18 @@ if (params.nodedup || params.rrbs) {
         output:
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+        stdout bismark_deduplicate_stdout
 
         script:
         if (params.singleEnd) {
             """
             deduplicate_bismark -s --bam $bam
+            deduplicate_bismark --version
             """
         } else {
             """
             deduplicate_bismark -p --bam $bam
+            deduplicate_bismark --version
             """
         }
     }
@@ -361,6 +365,7 @@ process bismark_methXtract {
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
+    stdout bismark_methXtract_stdout
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
@@ -376,7 +381,7 @@ process bismark_methXtract {
             --gzip \\
             -s \\
             --report \\
-            $bam
+            $bam 2>&1
         """
     } else {
         """
@@ -391,7 +396,7 @@ process bismark_methXtract {
             -p \\
             --no_overlap \\
             --report \\
-            $bam
+            $bam 2>&1
         """
     }
 }
@@ -412,6 +417,7 @@ process bismark_report {
 
     output:
     file '*{html,txt}' into bismark_reports_results
+    stdout bismark_report_stdout
 
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
@@ -421,6 +427,7 @@ process bismark_report {
         --dedup_report $bismark_dedup_log_1 \\
         --splitting_report $bismark_splitting_report_1 \\
         --mbias_report $bismark_mbias_1
+    bismark2report --version
     """
 }
 
@@ -439,10 +446,12 @@ process bismark_summary {
 
     output:
     file '*{html,txt}' into bismark_summary_results
+    stdout bismark_summary_stdout
 
     script:
     """
     bismark2summary
+    bismark2summary --version
     """
 }
 
@@ -458,6 +467,7 @@ process qualimap {
 
     output:
     file "${bam.baseName}_qualimap" into qualimap_results
+    stdout qualimap_stdout
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -496,6 +506,7 @@ process multiqc {
     output:
     file "*multiqc_report.html" into multiqc_report
     file "*multiqc_data"
+    stdout multiqc_stdout
 
     script:
     prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
@@ -504,8 +515,46 @@ process multiqc {
     """
 }
 
-
-
+/*
+ * Parse software version numbers
+ */
+makeBismarkIndex_version = false
+fastqc_version = false
+trim_galore_version = false
+bismark_align_version = false
+bismark_deduplicate_version = false
+bismark_methXtract_version = false
+bismark_report_version = false
+bismark_summary_version = false
+qualimap_version = false
+multiqc_version = false
+makeBismarkIndex_stdout.subscribe { stdout ->
+  makeBismarkIndex_version = stdout.find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> version }
+}
+fastqc_stdout.subscribe { stdout ->
+  fastqc_version = stdout.find(/FastQC v(\S+)/) { match, version -> version }
+}
+bismark_align_log_4.subscribe { logfile ->
+  bismark_align_version = logfile.getText().find(/Bismark report for: .* \(version: (.+)\)/) { match, version -> version }
+}
+bismark_deduplicate_stdout.subscribe { stdout ->
+  bismark_deduplicate_version = stdout.find(/Deduplicator Version: v(\S+)/) { match, version -> version }
+}
+bismark_methXtract_stdout.subscribe { stdout ->
+  bismark_methXtract_version = stdout.find(/Bismark methylation extractor version v(\S+)/) { match, version -> version }
+}
+bismark_report_stdout.subscribe { stdout ->
+  bismark_report_version = stdout.find(/bismark2report version: v(\S+)/) { match, version -> version }
+}
+bismark_summary_stdout.subscribe { stdout ->
+  bismark_summary_version = stdout.find(/bismark2summary version: (\S+)/) { match, version -> version }
+}
+qualimap_stdout.subscribe { stdout ->
+  qualimap_version = stdout.find(/QualiMap v.(\S+)/) { match, version -> version }
+}
+multiqc_stdout.subscribe { stdout ->
+  multiqc_version = stdout.find(/This is MultiQC v(\S+)/) { match, version -> version }
+}
 
 /*
  * Completion e-mail notification
@@ -540,6 +589,16 @@ workflow.onComplete {
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
+    if(makeBismarkIndex_version) email_fields['summary']['bismark_genome_preparation Version'] = makeBismarkIndex_version
+    if(fastqc_version) email_fields['summary']['FastQC Version'] = fastqc_version
+    if(trim_galore_version) email_fields['summary']['Trim Galore! Version'] = trim_galore_version
+    if(bismark_align_version) email_fields['summary']['bismark Version'] = bismark_align_version
+    if(bismark_deduplicate_version) email_fields['summary']['bismark_deduplicate Version'] = bismark_deduplicate_version
+    if(bismark_methXtract_version) email_fields['summary']['bismark_methylation_extractor Version'] = bismark_methXtract_version
+    if(bismark_report_version) email_fields['summary']['bismark_report Version'] = bismark_report_version
+    if(bismark_summary_version) email_fields['summary']['bismark_summary Version'] = bismark_summary_version
+    if(qualimap_version) email_fields['summary']['Qualimap Version'] = qualimap_version
+    if(multiqc_version) email_fields['summary']['MultiQC Version'] = multiqc_version
 
     // Render the TXT template
     def engine = new groovy.text.GStringTemplateEngine()
@@ -573,7 +632,7 @@ workflow.onComplete {
     }
 
     // Write summary e-mail HTML to a file
-    def output_d = new File( "${params.outdir}/Documentation/" )
+    def output_d = new File( "${params.outdir}/pipeline_info/" )
     if( !output_d.exists() ) {
       output_d.mkdirs()
     }
