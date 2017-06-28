@@ -66,6 +66,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
+    makeBismarkIndex_stdout = Channel.create()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
