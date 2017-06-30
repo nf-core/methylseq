@@ -66,7 +66,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stdout = Channel.create()
+    makeBismarkIndex_stderr = Channel.create()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -190,13 +190,13 @@ if(!params.bismark_index && fasta){
 
         output:
         file "BismarkIndex" into bismark_index
-        stdout makeBismarkIndex_stdout
+        file '.command.err' into makeBismarkIndex_stderr
 
         script:
         """
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
-        bismark_genome_preparation BismarkIndex 2>&1
+        bismark_genome_preparation BismarkIndex
         """
     }
 }
@@ -229,7 +229,8 @@ process fastqc {
  */
 if(params.notrim){
     trimmed_reads = read_files_trimming
-    trimgalore_results = []
+    trimgalore_results = Channel.create()
+    trimgalore_logs = Channel.create()
 } else {
     process trim_galore {
         tag "$name"
@@ -245,7 +246,7 @@ if(params.notrim){
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
-        file "*trimming_report.txt" into trimgalore_results
+        file "*trimming_report.txt" into trimgalore_results, trimgalore_logs
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
 
         script:
@@ -366,7 +367,7 @@ process bismark_methXtract {
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
-    stdout bismark_methXtract_stdout
+    file '.command.err' into bismark_methXtract_stderr
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
@@ -382,7 +383,7 @@ process bismark_methXtract {
             --gzip \\
             -s \\
             --report \\
-            $bam 2>&1
+            $bam
         """
     } else {
         """
@@ -397,7 +398,7 @@ process bismark_methXtract {
             -p \\
             --no_overlap \\
             --report \\
-            $bam 2>&1
+            $bam
         """
     }
 }
@@ -490,7 +491,6 @@ process qualimap {
 process multiqc {
     tag "$prefix"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    echo true
 
     input:
     file multiqc_config
@@ -507,54 +507,78 @@ process multiqc {
     output:
     file "*multiqc_report.html" into multiqc_report
     file "*multiqc_data"
-    stdout multiqc_stdout
+    file '.command.err' into multiqc_stderr
 
     script:
     prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
     """
-    multiqc -f -c $multiqc_config . 2>&1
+    echo "
+    id: 'ngi-rnaseq'
+    section_name: 'NGI-RNAseq Software Versions'
+    plot_type: 'html'
+    data: |
+        <dl class="dl-horizontal">
+          <dt>bismark_genome_preparation</dt><dd>${software_versions['bismark_genome_preparation']}</dd>
+          <dt>FastQC</dt><dd>${software_versions['FastQC']}</dd>
+          <dt>Trim Galore!</dt><dd>${software_versions['Trim Galore!']}</dd>
+          <dt>bismark</dt><dd>${software_versions['bismark']}</dd>
+          <dt>bismark_deduplicate</dt><dd>${software_versions['bismark_deduplicate']}</dd>
+          <dt>bismark_methylation_extractor</dt><dd>${software_versions['bismark_methylation_extractor']}</dd>
+          <dt>bismark_report</dt><dd>${software_versions['bismark_report']}</dd>
+          <dt>bismark_summary</dt><dd>${software_versions['bismark_summary']}</dd>
+          <dt>Qualimap</dt><dd>${software_versions['Qualimap']}</dd>
+        </dl>
+    " > software_versions_mqc.yaml
+    
+    multiqc -f -c $multiqc_config .
     """
 }
 
 /*
  * Parse software version numbers
  */
-makeBismarkIndex_version = false
-fastqc_version = false
-trim_galore_version = false
-bismark_align_version = false
-bismark_deduplicate_version = false
-bismark_methXtract_version = false
-bismark_report_version = false
-bismark_summary_version = false
-qualimap_version = false
-multiqc_version = false
-makeBismarkIndex_stdout.subscribe { stdout ->
-  makeBismarkIndex_version = stdout.find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> version }
+software_versions = [
+  'bismark_genome_preparation': 'N/A',
+  'FastQC': 'N/A',
+  'Trim Galore!': 'N/A',
+  'bismark': 'N/A',
+  'bismark_deduplicate': 'N/A',
+  'bismark_methylation_extractor': 'N/A',
+  'bismark_report': 'N/A',
+  'bismark_summary': 'N/A',
+  'Qualimap': 'N/A',
+  'MultiQC': 'N/A'
+]
+
+makeBismarkIndex_stderr.subscribe { stdout ->
+  software_versions['bismark_genome_preparation'] = stdout.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> version }
 }
 fastqc_stdout.subscribe { stdout ->
-  fastqc_version = stdout.find(/FastQC v(\S+)/) { match, version -> version }
+  software_versions['FastQC'] = stdout.find(/FastQC v(\S+)/) { match, version -> version }
+}
+trimgalore_logs.subscribe { stdout ->
+  software_versions['Trim Galore!'] = stdout.getText().find(/Trim Galore version: (\S+)/) { match, version -> version }
 }
 bismark_align_log_4.subscribe { logfile ->
-  bismark_align_version = logfile.getText().find(/Bismark report for: .* \(version: (.+)\)/) { match, version -> version }
+  software_versions['bismark'] = logfile.getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> version }
 }
 bismark_deduplicate_stdout.subscribe { stdout ->
-  bismark_deduplicate_version = stdout.find(/Deduplicator Version: v(\S+)/) { match, version -> version }
+  software_versions['bismark_deduplicate'] = stdout.find(/Deduplicator Version: v(\S+)/) { match, version -> version }
 }
-bismark_methXtract_stdout.subscribe { stdout ->
-  bismark_methXtract_version = stdout.find(/Bismark methylation extractor version v(\S+)/) { match, version -> version }
+bismark_methXtract_stderr.subscribe { stdout ->
+  software_versions['bismark_methylation_extractor'] = stdout.getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> version }
 }
 bismark_report_stdout.subscribe { stdout ->
-  bismark_report_version = stdout.find(/bismark2report version: v(\S+)/) { match, version -> version }
+  software_versions['bismark_report'] = stdout.find(/bismark2report version: v(\S+)/) { match, version -> version }
 }
 bismark_summary_stdout.subscribe { stdout ->
-  bismark_summary_version = stdout.find(/bismark2summary version: (\S+)/) { match, version -> version }
+  software_versions['bismark_summary'] = stdout.find(/bismark2summary version: (\S+)/) { match, version -> version }
 }
 qualimap_stdout.subscribe { stdout ->
-  qualimap_version = stdout.find(/QualiMap v.(\S+)/) { match, version -> version }
+  software_versions['Qualimap'] = stdout.find(/QualiMap v.(\S+)/) { match, version -> version }
 }
-multiqc_stdout.subscribe { stdout ->
-  multiqc_version = stdout.find(/This is MultiQC v(\S+)/) { match, version -> version }
+multiqc_stderr.subscribe { stdout ->
+  software_versions['MultiQC'] = stdout.getText().find(/This is MultiQC v(\S+)/) { match, version -> version }
 }
 
 /*
@@ -581,25 +605,16 @@ workflow.onComplete {
     email_fields['summary'] = summary
     email_fields['summary']['Date Started'] = workflow.start
     email_fields['summary']['Date Completed'] = workflow.complete
-    email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
-    email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
-    email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
     email_fields['summary']['Pipeline script file path'] = workflow.scriptFile
     email_fields['summary']['Pipeline script hash ID'] = workflow.scriptId
     if(workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
-    if(makeBismarkIndex_version) email_fields['summary']['bismark_genome_preparation Version'] = makeBismarkIndex_version
-    if(fastqc_version) email_fields['summary']['FastQC Version'] = fastqc_version
-    if(trim_galore_version) email_fields['summary']['Trim Galore! Version'] = trim_galore_version
-    if(bismark_align_version) email_fields['summary']['bismark Version'] = bismark_align_version
-    if(bismark_deduplicate_version) email_fields['summary']['bismark_deduplicate Version'] = bismark_deduplicate_version
-    if(bismark_methXtract_version) email_fields['summary']['bismark_methylation_extractor Version'] = bismark_methXtract_version
-    if(bismark_report_version) email_fields['summary']['bismark_report Version'] = bismark_report_version
-    if(bismark_summary_version) email_fields['summary']['bismark_summary Version'] = bismark_summary_version
-    if(qualimap_version) email_fields['summary']['Qualimap Version'] = qualimap_version
-    if(multiqc_version) email_fields['summary']['MultiQC Version'] = multiqc_version
+    email_fields['software_versions'] = software_versions
+    email_fields['software_versions']['Nextflow Version'] = workflow.nextflow.version
+    email_fields['software_versions']['Nextflow Build'] = workflow.nextflow.build
+    email_fields['software_versions']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
     // Render the TXT template
     def engine = new groovy.text.GStringTemplateEngine()
