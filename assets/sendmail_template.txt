@@ -11,7 +11,7 @@ $email_html
 --ngimimeboundary
 Content-Type: image/png;name="NGI-MethylSeq_logo.png"
 Content-Transfer-Encoding: base64
-Content-ID: <ngipipelinelogo>
+Content-ID: <ngimethylseqlogo>
 Content-Disposition: inline; filename="NGI-MethylSeq_logo.png"
 
 <% out << new File("$baseDir/assets/NGI-MethylSeq_logo.png").
