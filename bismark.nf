@@ -40,6 +40,7 @@ try {
 params.name = false
 params.project = false
 params.email = false
+params.plaintext_email = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
@@ -192,7 +193,6 @@ if(!params.bismark_index && fasta){
         output:
         file "BismarkIndex" into bismark_index
         file '.command.err' into makeBismarkIndex_stderr
-        val 'done' into makeBismarkIndex_done
 
         script:
         """
@@ -218,7 +218,6 @@ process fastqc {
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
     stdout fastqc_stdout
-    val 'done' into fastqc_done
 
     script:
     """
@@ -252,7 +251,6 @@ if(params.notrim){
         set val(name), file('*fq.gz') into trimmed_reads
         file "*trimming_report.txt" into trimgalore_results, trimgalore_logs
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
-        val 'done' into trimgalore_logs_done
 
         script:
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -293,7 +291,6 @@ process bismark_align {
     file "*.bam" into bam, bam_2
     file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3, bismark_align_log_4
     if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
-    val 'done' into bismark_align_done
 
     script:
     pbat = params.pbat ? "--pbat" : ''
@@ -336,7 +333,6 @@ if (params.nodedup || params.rrbs) {
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
         stdout bismark_deduplicate_stdout
-        val 'done' into bismark_dedup_done
 
         script:
         if (params.singleEnd) {
@@ -375,7 +371,6 @@ process bismark_methXtract {
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
     file '.command.err' into bismark_methXtract_stderr
-    val 'done' into bismark_methXtract_done
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
@@ -428,7 +423,6 @@ process bismark_report {
     output:
     file '*{html,txt}' into bismark_reports_results
     stdout bismark_report_stdout
-    val 'done' into bismark_reports_done
 
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
@@ -458,7 +452,6 @@ process bismark_summary {
     output:
     file '*{html,txt}' into bismark_summary_results
     stdout bismark_summary_stdout
-    val 'done' into bismark_summary_done
 
     script:
     """
@@ -480,7 +473,6 @@ process qualimap {
     output:
     file "${bam.baseName}_qualimap" into qualimap_results
     stdout qualimap_stdout
-    val 'done' into qualimap_done
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -644,15 +636,15 @@ workflow.onComplete {
     // Send the HTML e-mail
     if (params.email) {
         try {
+          if( params.plaintext_email ){ throw GroovyException('Send plaintext e-mail, not HTML') }
           // Try to send HTML e-mail using sendmail
           [ 'sendmail', '-t' ].execute() << sendmail_html
-          log.debug "[NGI-MethylSeq] Sent summary e-mail using sendmail"
+          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (sendmail)"
         } catch (all) {
           // Catch failures and try with plaintext
           [ 'mail', '-s', subject, params.email ].execute() << email_txt
-          log.debug "[NGI-MethylSeq] Sendmail failed, failing back to sending summary e-mail using mail"
+          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (mail)"
         }
-        log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
 
     // Switch the embedded MIME images with base64 encoded src
