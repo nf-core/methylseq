@@ -1,5 +1,11 @@
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="description" content="NGI-RNAseq: a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis at the National Genomics Infrastructure at SciLifeLab Stockholm, Sweden.">
+  <title>NGI-RNAseq Pipeline Report</title>
 </head>
 <body>
 <div style="font-family: Helvetica, Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto;">
@@ -41,7 +47,7 @@
 <h3>Software Versions:</h3>
 <table style="width:100%; max-width:100%; border-spacing: 0; border-collapse: collapse; border:0; margin-bottom: 30px;">
     <tbody style="border-bottom: 1px solid #ddd;">
-        <% out << software_versions.collect{ k,v -> "<tr><th style='text-align:left; padding: 8px 0; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd;'>$k</th><td style='text-align:left; padding: 8px; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd;'><pre style='white-space: pre-wrap; overflow: visible;'>${v ?: '<span style="color:#CCCCCC;">N/A</a>'}</pre></td></tr>" }.join("\n") %>
+        <% out << software_versions.collect{ k,v -> "<tr><th style='text-align:left; padding: 8px 0; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd;'>$k</th><td style='text-align:left; padding: 8px; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd;'><pre style='white-space: pre-wrap; overflow: visible;'>${v ?: '<span style="color:#999999;">N/A</a>'}</pre></td></tr>" }.join("\n") %>
     </tbody>
 </table>
 

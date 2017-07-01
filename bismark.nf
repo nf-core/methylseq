@@ -503,44 +503,56 @@ software_versions = [
   'Bismark genomePrep': null, 'FastQC': null, 'Trim Galore!': null, 'Bismark': null, 'Bismark Deduplication': null,
   'Bismark methXtract': null, 'Bismark Report': null, 'Bismark Summary': null, 'Qualimap': null
 ]
-makeBismarkIndex_stderr.subscribe { stdout -> software_versions['Bismark genomePrep'] = stdout.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version" } }
-fastqc_stdout.subscribe { stdout -> software_versions['FastQC'] = stdout.find(/FastQC v(\S+)/) { match, version -> "v$version" } }
-trimgalore_logs.subscribe { stdout -> software_versions['Trim Galore!'] = stdout.getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" } }
-bismark_align_log_4.subscribe { logfile -> software_versions['Bismark'] = logfile.getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" } }
-bismark_deduplicate_stdout.subscribe { stdout -> software_versions['Bismark Deduplication'] = stdout.find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" } }
-bismark_methXtract_stderr.subscribe { stdout -> software_versions['Bismark methXtract'] = stdout.getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" } }
-bismark_report_stdout.subscribe { stdout -> software_versions['Bismark Report'] = stdout.find(/bismark2report version: v(\S+)/) { match, version -> "v$version" } }
-bismark_summary_stdout.subscribe { stdout -> software_versions['Bismark Summary'] = stdout.find(/bismark2summary version: (\S+)/) { match, version -> "v$version" } }
-qualimap_stdout.subscribe { stdout -> software_versions['Qualimap'] = stdout.find(/QualiMap v.(\S+)/) { match, version -> "v$version" } }
-
 process get_software_versions {
+    cache false
+
     input:
-    file makeBismarkIndex from makeBismarkIndex_done.collect()
-    file fastqc from fastqc_done.collect()
-    file trimgalore from trimgalore_logs_done.collect()
-    file bismark_align from bismark_align_done.collect()
-    file bismark_deduplicate from bismark_dedup_done.collect()
-    file bismark_methXtract from bismark_methXtract_done.collect()
-    file bismark_report from bismark_reports_done.collect()
-    file bismark_summary from bismark_summary_done.collect()
-    file qualimap from qualimap_done.collect()
+    val makeBismarkIndex from makeBismarkIndex_stderr.collect()
+    val fastqc from fastqc_stdout.collect()
+    val trimgalore from trimgalore_logs.collect()
+    val bismark_align from bismark_align_log_4.collect()
+    val bismark_deduplicate from bismark_deduplicate_stdout.collect()
+    val bismark_methXtract from bismark_methXtract_stderr.collect()
+    val bismark_report from bismark_report_stdout.collect()
+    val bismark_summary from bismark_summary_stdout.collect()
+    val qualimap from qualimap_stdout.collect()
 
     output:
     file 'software_versions_mqc.yaml' into software_versions_yaml
 
-    script:
-    """
-    echo "
+    exec:
+    software_versions['Bismark genomePrep'] = \
+      makeBismarkIndex[0].getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version" }
+    software_versions['FastQC'] = \
+      fastqc[0].find(/FastQC v(\S+)/) { match, version -> "v$version" }
+    software_versions['Trim Galore!'] = \
+      trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark'] = \
+      bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
+    software_versions['Bismark Deduplication'] = \
+      bismark_deduplicate[0].find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark methXtract'] = \
+      bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark Report'] = \
+      bismark_report[0].find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark Summary'] = \
+      bismark_summary[0].find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
+    software_versions['Qualimap'] = \
+      qualimap[0].find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
+
+    def sw_yaml_file = task.workDir.resolve('software_versions_mqc.yaml')
+    sw_yaml_file.text  = """
     id: 'ngi-rnaseq'
     section_name: 'NGI-RNAseq Software Versions'
+    section_href: 'https://github.com/SciLifeLab/NGI-RNAseq'
     plot_type: 'html'
     description: 'are collected at run time from the software output.'
     data: |
-        <dl class=\\"dl-horizontal\\">
-${software_versions.collect{ k,v -> "            <dt>$k</dt><dd>${v ?: '<span style=\\"color:#CCCCCC;\\">N/A</a>'}</dd>" }.join("\n")}
+        <dl class=\"dl-horizontal\">
+${software_versions.collect{ k,v -> "            <dt>$k</dt><dd>${v ?: '<span style=\"color:#999999;\">N/A</a>'}</dd>" }.join("\n")}
         </dl>
-    " > software_versions_mqc.yaml
-    """
+    """.stripIndent()
+
 }
 
 
@@ -642,6 +654,14 @@ workflow.onComplete {
         }
         log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
+
+    // Switch the embedded MIME images with base64 encoded src
+    ngipipelinelogo = new File("$baseDir/assets/NGI-MethylSeq_logo.png").bytes.encodeBase64().toString()
+    scilifelablogo = new File("$baseDir/assets/SciLifeLab_logo.png").bytes.encodeBase64().toString()
+    ngilogo = new File("$baseDir/assets/NGI_logo.png").bytes.encodeBase64().toString()
+    email_html = email_html.replaceAll(~/cid:ngipipelinelogo/, "data:image/png;base64,$ngipipelinelogo")
+    email_html = email_html.replaceAll(~/cid:scilifelablogo/, "data:image/png;base64,$scilifelablogo")
+    email_html = email_html.replaceAll(~/cid:ngilogo/, "data:image/png;base64,$ngilogo")
 
     // Write summary e-mail HTML to a file
     def output_d = new File( "${params.outdir}/pipeline_info/" )
