@@ -67,7 +67,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stderr = Channel.empty()
+    makeBismarkIndex_stderr = Channel.from(false)
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -498,7 +498,7 @@ process get_software_versions {
     cache false
 
     input:
-    val makeBismarkIndex from makeBismarkIndex_stderr.collect()
+    val makeBismarkIndex from makeBismarkIndex_stderr
     val fastqc from fastqc_stdout.collect()
     val trimgalore from trimgalore_logs.collect()
     val bismark_align from bismark_align_log_4.collect()
@@ -512,8 +512,10 @@ process get_software_versions {
     file 'software_versions_mqc.yaml' into software_versions_yaml
 
     exec:
-    software_versions['Bismark genomePrep'] = \
-      makeBismarkIndex[0].getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version" }
+    if(makeBismarkIndex != false){
+      software_versions['Bismark genomePrep'] = \
+        makeBismarkIndex.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version"; }
+    }
     software_versions['FastQC'] = \
       fastqc[0].find(/FastQC v(\S+)/) { match, version -> "v$version" }
     software_versions['Trim Galore!'] = \
