@@ -105,4 +105,4 @@ RUN mkdir /opt/MethylDackel && \
     rm /opt/MethylDackel/MethylDackel.zip
 
 # Install MultiQC
-RUN pip install multiqc
+RUN pip install git+https://github.com/ewels/MultiQC.git

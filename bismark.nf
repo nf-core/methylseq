@@ -40,6 +40,7 @@ try {
 params.name = false
 params.project = false
 params.email = false
+params.plaintext_email = false
 params.genome = false
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
@@ -66,7 +67,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stdout = Channel.create()
+    makeBismarkIndex_stderr = Channel.empty()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -190,13 +191,13 @@ if(!params.bismark_index && fasta){
 
         output:
         file "BismarkIndex" into bismark_index
-        stdout makeBismarkIndex_stdout
+        file '.command.err' into makeBismarkIndex_stderr
 
         script:
         """
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
-        bismark_genome_preparation BismarkIndex 2>&1
+        bismark_genome_preparation BismarkIndex
         """
     }
 }
@@ -229,7 +230,9 @@ process fastqc {
  */
 if(params.notrim){
     trimmed_reads = read_files_trimming
-    trimgalore_results = []
+    trimgalore_results = Channel.create()
+    trimgalore_logs = Channel.create()
+    trimgalore_logs_done = Channel.create()
 } else {
     process trim_galore {
         tag "$name"
@@ -245,7 +248,7 @@ if(params.notrim){
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
-        file "*trimming_report.txt" into trimgalore_results
+        file "*trimming_report.txt" into trimgalore_results, trimgalore_logs
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
 
         script:
@@ -366,7 +369,7 @@ process bismark_methXtract {
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
-    stdout bismark_methXtract_stdout
+    file '.command.err' into bismark_methXtract_stderr
 
     script:
     ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
@@ -382,7 +385,7 @@ process bismark_methXtract {
             --gzip \\
             -s \\
             --report \\
-            $bam 2>&1
+            $bam
         """
     } else {
         """
@@ -397,7 +400,7 @@ process bismark_methXtract {
             -p \\
             --no_overlap \\
             --report \\
-            $bam 2>&1
+            $bam
         """
     }
 }
@@ -485,12 +488,71 @@ process qualimap {
 }
 
 /*
+ * Parse software version numbers
+ */
+software_versions = [
+  'Bismark genomePrep': null, 'FastQC': null, 'Trim Galore!': null, 'Bismark': null, 'Bismark Deduplication': null,
+  'Bismark methXtract': null, 'Bismark Report': null, 'Bismark Summary': null, 'Qualimap': null
+]
+process get_software_versions {
+    cache false
+
+    input:
+    val makeBismarkIndex from makeBismarkIndex_stderr.collect()
+    val fastqc from fastqc_stdout.collect()
+    val trimgalore from trimgalore_logs.collect()
+    val bismark_align from bismark_align_log_4.collect()
+    val bismark_deduplicate from bismark_deduplicate_stdout.collect()
+    val bismark_methXtract from bismark_methXtract_stderr.collect()
+    val bismark_report from bismark_report_stdout.collect()
+    val bismark_summary from bismark_summary_stdout.collect()
+    val qualimap from qualimap_stdout.collect()
+
+    output:
+    file 'software_versions_mqc.yaml' into software_versions_yaml
+
+    exec:
+    software_versions['Bismark genomePrep'] = \
+      makeBismarkIndex[0].getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version" }
+    software_versions['FastQC'] = \
+      fastqc[0].find(/FastQC v(\S+)/) { match, version -> "v$version" }
+    software_versions['Trim Galore!'] = \
+      trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark'] = \
+      bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
+    software_versions['Bismark Deduplication'] = \
+      bismark_deduplicate[0].find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark methXtract'] = \
+      bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark Report'] = \
+      bismark_report[0].find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
+    software_versions['Bismark Summary'] = \
+      bismark_summary[0].find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
+    software_versions['Qualimap'] = \
+      qualimap[0].find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
+
+    def sw_yaml_file = task.workDir.resolve('software_versions_mqc.yaml')
+    sw_yaml_file.text  = """
+    id: 'ngi-rnaseq'
+    section_name: 'NGI-RNAseq Software Versions'
+    section_href: 'https://github.com/SciLifeLab/NGI-RNAseq'
+    plot_type: 'html'
+    description: 'are collected at run time from the software output.'
+    data: |
+        <dl class=\"dl-horizontal\">
+${software_versions.collect{ k,v -> "            <dt>$k</dt><dd>${v ?: '<span style=\"color:#999999;\">N/A</a>'}</dd>" }.join("\n")}
+        </dl>
+    """.stripIndent()
+
+}
+
+
+/*
  * STEP 9 - MultiQC
  */
 process multiqc {
     tag "$prefix"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
-    echo true
 
     input:
     file multiqc_config
@@ -503,59 +565,20 @@ process multiqc {
     file ('bismark/*') from bismark_reports_results.collect()
     file ('bismark/*') from bismark_summary_results.collect()
     file ('qualimap/*') from qualimap_results.collect()
+    file ('software_versions/*') from software_versions_yaml
 
     output:
     file "*multiqc_report.html" into multiqc_report
     file "*multiqc_data"
-    stdout multiqc_stdout
+    file '.command.err' into multiqc_stderr
 
     script:
     prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
     """
-    multiqc -f -c $multiqc_config . 2>&1
+    multiqc -f -c $multiqc_config .
     """
 }
-
-/*
- * Parse software version numbers
- */
-makeBismarkIndex_version = false
-fastqc_version = false
-trim_galore_version = false
-bismark_align_version = false
-bismark_deduplicate_version = false
-bismark_methXtract_version = false
-bismark_report_version = false
-bismark_summary_version = false
-qualimap_version = false
-multiqc_version = false
-makeBismarkIndex_stdout.subscribe { stdout ->
-  makeBismarkIndex_version = stdout.find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> version }
-}
-fastqc_stdout.subscribe { stdout ->
-  fastqc_version = stdout.find(/FastQC v(\S+)/) { match, version -> version }
-}
-bismark_align_log_4.subscribe { logfile ->
-  bismark_align_version = logfile.getText().find(/Bismark report for: .* \(version: (.+)\)/) { match, version -> version }
-}
-bismark_deduplicate_stdout.subscribe { stdout ->
-  bismark_deduplicate_version = stdout.find(/Deduplicator Version: v(\S+)/) { match, version -> version }
-}
-bismark_methXtract_stdout.subscribe { stdout ->
-  bismark_methXtract_version = stdout.find(/Bismark methylation extractor version v(\S+)/) { match, version -> version }
-}
-bismark_report_stdout.subscribe { stdout ->
-  bismark_report_version = stdout.find(/bismark2report version: v(\S+)/) { match, version -> version }
-}
-bismark_summary_stdout.subscribe { stdout ->
-  bismark_summary_version = stdout.find(/bismark2summary version: (\S+)/) { match, version -> version }
-}
-qualimap_stdout.subscribe { stdout ->
-  qualimap_version = stdout.find(/QualiMap v.(\S+)/) { match, version -> version }
-}
-multiqc_stdout.subscribe { stdout ->
-  multiqc_version = stdout.find(/This is MultiQC v(\S+)/) { match, version -> version }
-}
+multiqc_stderr.subscribe { stdout -> software_versions['MultiQC'] = stdout.getText().find(/This is MultiQC v(\S+)/) { match, version -> "v$version" } }
 
 /*
  * Completion e-mail notification
@@ -581,25 +604,16 @@ workflow.onComplete {
     email_fields['summary'] = summary
     email_fields['summary']['Date Started'] = workflow.start
     email_fields['summary']['Date Completed'] = workflow.complete
-    email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
-    email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
-    email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
     email_fields['summary']['Pipeline script file path'] = workflow.scriptFile
     email_fields['summary']['Pipeline script hash ID'] = workflow.scriptId
     if(workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
-    if(makeBismarkIndex_version) email_fields['summary']['bismark_genome_preparation Version'] = makeBismarkIndex_version
-    if(fastqc_version) email_fields['summary']['FastQC Version'] = fastqc_version
-    if(trim_galore_version) email_fields['summary']['Trim Galore! Version'] = trim_galore_version
-    if(bismark_align_version) email_fields['summary']['bismark Version'] = bismark_align_version
-    if(bismark_deduplicate_version) email_fields['summary']['bismark_deduplicate Version'] = bismark_deduplicate_version
-    if(bismark_methXtract_version) email_fields['summary']['bismark_methylation_extractor Version'] = bismark_methXtract_version
-    if(bismark_report_version) email_fields['summary']['bismark_report Version'] = bismark_report_version
-    if(bismark_summary_version) email_fields['summary']['bismark_summary Version'] = bismark_summary_version
-    if(qualimap_version) email_fields['summary']['Qualimap Version'] = qualimap_version
-    if(multiqc_version) email_fields['summary']['MultiQC Version'] = multiqc_version
+    email_fields['software_versions'] = software_versions
+    email_fields['software_versions']['Nextflow Version'] = "v$workflow.nextflow.version"
+    email_fields['software_versions']['Nextflow Build'] = workflow.nextflow.build
+    email_fields['software_versions']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
     // Render the TXT template
     def engine = new groovy.text.GStringTemplateEngine()
@@ -621,16 +635,24 @@ workflow.onComplete {
     // Send the HTML e-mail
     if (params.email) {
         try {
+          if( params.plaintext_email ){ throw GroovyException('Send plaintext e-mail, not HTML') }
           // Try to send HTML e-mail using sendmail
           [ 'sendmail', '-t' ].execute() << sendmail_html
-          log.debug "[NGI-MethylSeq] Sent summary e-mail using sendmail"
+          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (sendmail)"
         } catch (all) {
           // Catch failures and try with plaintext
           [ 'mail', '-s', subject, params.email ].execute() << email_txt
-          log.debug "[NGI-MethylSeq] Sendmail failed, failing back to sending summary e-mail using mail"
+          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (mail)"
         }
-        log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email"
     }
+
+    // Switch the embedded MIME images with base64 encoded src
+    ngimethylseqlogo = new File("$baseDir/assets/NGI-MethylSeq_logo.png").bytes.encodeBase64().toString()
+    scilifelablogo = new File("$baseDir/assets/SciLifeLab_logo.png").bytes.encodeBase64().toString()
+    ngilogo = new File("$baseDir/assets/NGI_logo.png").bytes.encodeBase64().toString()
+    email_html = email_html.replaceAll(~/cid:ngimethylseqlogo/, "data:image/png;base64,$ngimethylseqlogo")
+    email_html = email_html.replaceAll(~/cid:scilifelablogo/, "data:image/png;base64,$scilifelablogo")
+    email_html = email_html.replaceAll(~/cid:ngilogo/, "data:image/png;base64,$ngilogo")
 
     // Write summary e-mail HTML to a file
     def output_d = new File( "${params.outdir}/pipeline_info/" )
