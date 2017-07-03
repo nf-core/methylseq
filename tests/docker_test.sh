@@ -44,9 +44,12 @@ fi
 # Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile testing $dockerfl $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run ../bismark.nf -resume -name \"$run_name\" -profile testing $dockerfl $buildrefs --singleEnd --reads \"${data_dir}/*.fastq.gz\" & sleep 540 ; kill \$!"
 echo "Starting nextflow... Command:"
 echo $cmd
-echo "-----"
+echo "-------------------------------------------------------"
 eval $cmd
+echo "-------------------------------------------------------"
+echo "-------------------------------------------------------"
+cat .nextflow.log
 
