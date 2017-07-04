@@ -216,7 +216,7 @@ process fastqc {
 
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-    stdout fastqc_stdout
+    file '.command.out' into fastqc_stdout
 
     script:
     """
@@ -230,9 +230,9 @@ process fastqc {
  */
 if(params.notrim){
     trimmed_reads = read_files_trimming
-    trimgalore_results = Channel.create()
-    trimgalore_logs = Channel.create()
-    trimgalore_logs_done = Channel.create()
+    trimgalore_results = Channel.from(false)
+    trimgalore_logs = Channel.from(false)
+    trimgalore_logs_done = Channel.from(false)
 } else {
     process trim_galore {
         tag "$name"
@@ -331,7 +331,7 @@ if (params.nodedup || params.rrbs) {
         output:
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
-        stdout bismark_deduplicate_stdout
+        file '.command.out' into bismark_deduplicate_stdout
 
         script:
         if (params.singleEnd) {
@@ -421,7 +421,7 @@ process bismark_report {
 
     output:
     file '*{html,txt}' into bismark_reports_results
-    stdout bismark_report_stdout
+    file '.command.out' into bismark_report_stdout
 
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
@@ -450,7 +450,7 @@ process bismark_summary {
 
     output:
     file '*{html,txt}' into bismark_summary_results
-    stdout bismark_summary_stdout
+    file '.command.out' into bismark_summary_stdout
 
     script:
     """
@@ -471,7 +471,7 @@ process qualimap {
 
     output:
     file "${bam.baseName}_qualimap" into qualimap_results
-    stdout qualimap_stdout
+    file '.command.out' into qualimap_stdout
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -492,7 +492,7 @@ process qualimap {
  */
 software_versions = [
   'Bismark genomePrep': null, 'FastQC': null, 'Trim Galore!': null, 'Bismark': null, 'Bismark Deduplication': null,
-  'Bismark methXtract': null, 'Bismark Report': null, 'Bismark Summary': null, 'Qualimap': null
+  'Bismark methXtract': null, 'Bismark Report': null, 'Bismark Summary': null, 'Qualimap': null, 'Nextflow': "v$workflow.nextflow.version"
 ]
 process get_software_versions {
     cache false
@@ -517,27 +517,29 @@ process get_software_versions {
         makeBismarkIndex.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version"; }
     }
     software_versions['FastQC'] = \
-      fastqc[0].find(/FastQC v(\S+)/) { match, version -> "v$version" }
-    software_versions['Trim Galore!'] = \
-      trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
+      fastqc[0].getText().find(/FastQC v(\S+)/) { match, version -> "v$version" }
+    if(!params.notrim){
+      software_versions['Trim Galore!'] = \
+        trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
+    }
     software_versions['Bismark'] = \
       bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
     software_versions['Bismark Deduplication'] = \
-      bismark_deduplicate[0].find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+      bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
     software_versions['Bismark methXtract'] = \
       bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
     software_versions['Bismark Report'] = \
-      bismark_report[0].find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
+      bismark_report[0].getText().find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
     software_versions['Bismark Summary'] = \
-      bismark_summary[0].find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
+      bismark_summary[0].getText().find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
     software_versions['Qualimap'] = \
-      qualimap[0].find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
+      qualimap[0].getText().find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
 
     def sw_yaml_file = task.workDir.resolve('software_versions_mqc.yaml')
     sw_yaml_file.text  = """
     id: 'ngi-rnaseq'
-    section_name: 'NGI-RNAseq Software Versions'
-    section_href: 'https://github.com/SciLifeLab/NGI-RNAseq'
+    section_name: 'NGI-MethylSeq Software Versions'
+    section_href: 'https://github.com/SciLifeLab/NGI-MethylSeq'
     plot_type: 'html'
     description: 'are collected at run time from the software output.'
     data: |
@@ -570,14 +572,16 @@ process multiqc {
     file ('software_versions/*') from software_versions_yaml
 
     output:
-    file "*multiqc_report.html" into multiqc_report
-    file "*multiqc_data"
+    file "*_report.html" into multiqc_report
+    file "*_data"
     file '.command.err' into multiqc_stderr
 
     script:
     prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
+    rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
+    rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
     """
-    multiqc -f -c $multiqc_config .
+    multiqc -f $rtitle $rfilename --config $multiqc_config .
     """
 }
 multiqc_stderr.subscribe { stdout -> software_versions['MultiQC'] = stdout.getText().find(/This is MultiQC v(\S+)/) { match, version -> "v$version" } }
@@ -613,7 +617,6 @@ workflow.onComplete {
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
     email_fields['software_versions'] = software_versions
-    email_fields['software_versions']['Nextflow Version'] = "v$workflow.nextflow.version"
     email_fields['software_versions']['Nextflow Build'] = workflow.nextflow.build
     email_fields['software_versions']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
