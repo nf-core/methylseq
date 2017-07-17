@@ -19,7 +19,7 @@ vim: syntax=groovy
  */
 
 // Pipeline version
-version = 0.1
+version = 0.2
 
 // Check that Nextflow version is up to date enough
 // try / throw / catch works for NF versions < 0.25 when this was implemented
