@@ -19,7 +19,7 @@ vim: syntax=groovy
  */
 
 // Pipeline version
-version = 0.2
+version = "0.3dev"
 
 // Check that Nextflow version is up to date enough
 // try / throw / catch works for NF versions < 0.25 when this was implemented
@@ -233,7 +233,6 @@ if(params.notrim){
     trimmed_reads = read_files_trimming
     trimgalore_results = Channel.from(false)
     trimgalore_logs = Channel.from(false)
-    trimgalore_logs_done = Channel.from(false)
 } else {
     process trim_galore {
         tag "$name"
@@ -319,7 +318,11 @@ process bismark_align {
  * STEP 4 - Bismark deduplicate
  */
 if (params.nodedup || params.rrbs) {
-    bam_dedup = bam
+    bam.into { bam_dedup; bam_dedup_qualimap }
+    bismark_dedup_log_1 = Channel.from(false)
+    bismark_dedup_log_2 = Channel.from(false)
+    bismark_dedup_log_3 = Channel.from(false)
+    bismark_deduplicate_stdout = Channel.from(false)
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
@@ -373,14 +376,12 @@ process bismark_methXtract {
     file '.command.err' into bismark_methXtract_stderr
 
     script:
-    ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
     comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
     if (params.singleEnd) {
         """
         bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
-            $ignore_r2 \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -497,6 +498,7 @@ software_versions = [
 ]
 process get_software_versions {
     cache false
+    executor 'local'
 
     input:
     val makeBismarkIndex from makeBismarkIndex_stderr
@@ -525,8 +527,10 @@ process get_software_versions {
     }
     software_versions['Bismark'] = \
       bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
-    software_versions['Bismark Deduplication'] = \
-      bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    if (!params.nodedup && !params.rrbs) {
+      software_versions['Bismark Deduplication'] = \
+        bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    }
     software_versions['Bismark methXtract'] = \
       bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
     software_versions['Bismark Report'] = \
