@@ -486,7 +486,7 @@ process get_software_versions {
     script:
     """
     echo $version > v_ngi_methylseq.txt
-    echo $nextflow.version > v_nextflow.txt
+    echo $workflow.nextflow.version > v_nextflow.txt
     bismark_genome_preparation --version > v_bismark_genome_preparation.txt
     fastqc --version > v_fastqc.txt
     cutadapt --version > v_cutadapt.txt
