@@ -67,7 +67,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stderr = Channel.from(false)
+    makeBismarkIndex_stderr = Channel.empty()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -232,7 +232,7 @@ process fastqc {
 if(params.notrim){
     trimmed_reads = read_files_trimming
     trimgalore_results = Channel.from(false)
-    trimgalore_logs = Channel.from(false)
+    trimgalore_logs = Channel.empty()
 } else {
     process trim_galore {
         tag "$name"
@@ -322,7 +322,7 @@ if (params.nodedup || params.rrbs) {
     bismark_dedup_log_1 = Channel.from(false)
     bismark_dedup_log_2 = Channel.from(false)
     bismark_dedup_log_3 = Channel.from(false)
-    bismark_deduplicate_stdout = Channel.from(false)
+    bismark_deduplicate_stdout = Channel.empty()
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
@@ -501,44 +501,38 @@ process get_software_versions {
     executor 'local'
 
     input:
-    val makeBismarkIndex from makeBismarkIndex_stderr
-    val fastqc from fastqc_stdout.collect()
-    val trimgalore from trimgalore_logs.collect()
-    val bismark_align from bismark_align_log_4.collect()
-    val bismark_deduplicate from bismark_deduplicate_stdout.collect()
-    val bismark_methXtract from bismark_methXtract_stderr.collect()
-    val bismark_report from bismark_report_stdout.collect()
-    val bismark_summary from bismark_summary_stdout.collect()
-    val qualimap from qualimap_stdout.collect()
+    val makeBismarkIndex from makeBismarkIndex_stderr.toList()
+    val fastqc from fastqc_stdout.toList()
+    val trimgalore from trimgalore_logs.toList()
+    val bismark_align from bismark_align_log_4.toList()
+    val bismark_deduplicate from bismark_deduplicate_stdout.toList()
+    val bismark_methXtract from bismark_methXtract_stderr.toList()
+    val bismark_report from bismark_report_stdout.toList()
+    val bismark_summary from bismark_summary_stdout.toList()
+    val qualimap from qualimap_stdout.toList()
 
     output:
     file 'software_versions_mqc.yaml' into software_versions_yaml
 
     exec:
-    if(makeBismarkIndex != false){
-      software_versions['Bismark genomePrep'] = \
-        makeBismarkIndex.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version"; }
-    }
+    software_versions['Bismark genomePrep'] = \
+      makeBismarkIndex ? makeBismarkIndex[0].getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version"; } : null
     software_versions['FastQC'] = \
-      fastqc[0].getText().find(/FastQC v(\S+)/) { match, version -> "v$version" }
-    if(!params.notrim){
-      software_versions['Trim Galore!'] = \
-        trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
-    }
+      fastqc ? fastqc[0].getText().find(/FastQC v(\S+)/) { match, version -> "v$version" } : null
+    software_versions['Trim Galore!'] = \
+      trimgalore ? trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" } : null
     software_versions['Bismark'] = \
-      bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
-    if (!params.nodedup && !params.rrbs) {
-      software_versions['Bismark Deduplication'] = \
-        bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
-    }
+      bismark_align ? bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" } : null
+    software_versions['Bismark Deduplication'] = \
+      bismark_deduplicate ? bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" } : null
     software_versions['Bismark methXtract'] = \
-      bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
+      bismark_methXtract ? bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" } : null
     software_versions['Bismark Report'] = \
-      bismark_report[0].getText().find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
+      bismark_report ? bismark_report[0].getText().find(/bismark2report version: v(\S+)/) { match, version -> "v$version" } : null
     software_versions['Bismark Summary'] = \
-      bismark_summary[0].getText().find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
+      bismark_summary ? bismark_summary[0].getText().find(/bismark2summary version: (\S+)/) { match, version -> "v$version" } : null
     software_versions['Qualimap'] = \
-      qualimap[0].getText().find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
+      qualimap ? qualimap[0].getText().find(/QualiMap v.(\S+)/) { match, version -> "v$version" } : null
 
     def sw_yaml_file = task.workDir.resolve('software_versions_mqc.yaml')
     sw_yaml_file.text  = """
