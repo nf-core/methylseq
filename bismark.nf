@@ -376,14 +376,12 @@ process bismark_methXtract {
     file '.command.err' into bismark_methXtract_stderr
 
     script:
-    ignore_r2 = params.rrbs ? "--ignore_r2 2" : ''
     comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
     if (params.singleEnd) {
         """
         bismark_methylation_extractor $comprehensive \\
             --multi ${task.cpus} \\
             --buffer_size ${task.memory.toGiga()}G \\
-            $ignore_r2 \\
             --bedGraph \\
             --counts \\
             --gzip \\
