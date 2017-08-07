@@ -526,8 +526,10 @@ process get_software_versions {
     }
     software_versions['Bismark'] = \
       bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
-    software_versions['Bismark Deduplication'] = \
-      bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    if (!params.nodedup && !params.rrbs) {
+      software_versions['Bismark Deduplication'] = \
+        bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
+    }
     software_versions['Bismark methXtract'] = \
       bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
     software_versions['Bismark Report'] = \
