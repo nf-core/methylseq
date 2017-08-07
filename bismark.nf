@@ -498,6 +498,7 @@ software_versions = [
 ]
 process get_software_versions {
     cache false
+    executor 'local'
 
     input:
     val makeBismarkIndex from makeBismarkIndex_stderr
