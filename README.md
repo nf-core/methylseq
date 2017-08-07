@@ -9,6 +9,12 @@ NGI-MethylSeq is a bioinformatics best-practice analysis pipeline used for Methy
 
 The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
+### Choice of workflows
+
+There are two separate workflows contained in this repository - one using [Bismark](https://github.com/FelixKrueger/Bismark) and one using [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel). The Bismark pipeline is being actively developed and maintained, the bwa-meth workflow is not _(currently)_. The Nextflow manifest specifies the Bismark pipeline as the default workflow, so the bwa-meth script will be ignored unless explicitly run.
+
+### Harware requirements
+
 This pipeline is primarily used with a SLURM cluster on the Swedish [UPPMAX systems](https://www.uppmax.uu.se). However, the pipeline should be able to run on any system that Nextflow supports. We have done some limited testing using Docker and AWS, and the pipeline comes with some configuration for these systems. See the [installation docs](docs/installation.md) for more information.
 
 ### Documentation
