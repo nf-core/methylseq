@@ -34,6 +34,7 @@ then
     data_path="./test_data"
     echo "Found data directory in current working directory, using ./test_data/"
 fi
+data_dir=${data_path}/ngi-bisulfite_test_set
 
 # command line options
 pipelinescript="../bismark.nf"
@@ -99,7 +100,6 @@ if [[ $buildrefs ]] && [[ $bwameth ]]; then
 fi
 
 
-data_dir=${data_path}/ngi-bisulfite_test_set
 if [ -d $data_dir ]
 then
     echo "Found existing test set, using $data_dir"
