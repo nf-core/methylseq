@@ -233,7 +233,6 @@ if(params.notrim){
     trimmed_reads = read_files_trimming
     trimgalore_results = Channel.from(false)
     trimgalore_logs = Channel.from(false)
-    trimgalore_logs_done = Channel.from(false)
 } else {
     process trim_galore {
         tag "$name"
@@ -319,7 +318,11 @@ process bismark_align {
  * STEP 4 - Bismark deduplicate
  */
 if (params.nodedup || params.rrbs) {
-    bam_dedup = bam
+    bam.into { bam_dedup; bam_dedup_qualimap }
+    bismark_dedup_log_1 = Channel.from(false)
+    bismark_dedup_log_2 = Channel.from(false)
+    bismark_dedup_log_3 = Channel.from(false)
+    bismark_deduplicate_stdout = Channel.from(false)
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"

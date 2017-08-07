@@ -5,6 +5,7 @@ function print_usage {
   echo -e  "\nUsage:\t$0\n" \
     "\t\t[-b (build genome references)\n" \
     "\t\t[-r (run in RRBS mode)\n" \
+    "\t\t[-n (run in notrim mode)\n" \
     "\t\t[-p (run bwameth pipeline)\n" \
     "\t\t[-u (run UPPMAX test)\n" \
     "\t\t[-t <test data directory>]\n" \
@@ -39,8 +40,9 @@ pipelinescript="../bismark.nf"
 profile="-profile testing"
 refs="--bismark_index ${data_dir}/references/BismarkIndex/"
 rrbs=""
+notrim=""
 
-while getopts ":brpuht:d:" opt; do
+while getopts ":brnpuht:d:" opt; do
   case $opt in
     b)
       echo "Building genome references" >&2
@@ -50,6 +52,10 @@ while getopts ":brpuht:d:" opt; do
     r)
       echo "Running in RRBS mode" >&2
       rrbs="--rrbs"
+      ;;
+    n)
+      echo "Running in no-trimming mode" >&2
+      notrim="--notrim"
       ;;
     p)
       echo "Running BWAmeth pipeline" >&2
@@ -108,7 +114,7 @@ fi
 # Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $rrbs $dockerfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"
