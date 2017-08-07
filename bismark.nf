@@ -67,7 +67,7 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stderr = Channel.from(false)
+    makeBismarkIndex_stderr = Channel.empty()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -192,7 +192,6 @@ if(!params.bismark_index && fasta){
 
         output:
         file "BismarkIndex" into bismark_index
-        file '.command.err' into makeBismarkIndex_stderr
 
         script:
         """
@@ -217,12 +216,10 @@ process fastqc {
 
     output:
     file '*_fastqc.{zip,html}' into fastqc_results
-    file '.command.out' into fastqc_stdout
 
     script:
     """
     fastqc -q $reads
-    fastqc --version
     """
 }
 
@@ -232,7 +229,6 @@ process fastqc {
 if(params.notrim){
     trimmed_reads = read_files_trimming
     trimgalore_results = Channel.from(false)
-    trimgalore_logs = Channel.from(false)
 } else {
     process trim_galore {
         tag "$name"
@@ -248,7 +244,7 @@ if(params.notrim){
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
-        file "*trimming_report.txt" into trimgalore_results, trimgalore_logs
+        file "*trimming_report.txt" into trimgalore_results
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
 
         script:
@@ -288,7 +284,7 @@ process bismark_align {
 
     output:
     file "*.bam" into bam, bam_2
-    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3, bismark_align_log_4
+    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
     if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
 
     script:
@@ -322,7 +318,6 @@ if (params.nodedup || params.rrbs) {
     bismark_dedup_log_1 = Channel.from(false)
     bismark_dedup_log_2 = Channel.from(false)
     bismark_dedup_log_3 = Channel.from(false)
-    bismark_deduplicate_stdout = Channel.from(false)
 } else {
     process bismark_deduplicate {
         tag "${bam.baseName}"
@@ -335,18 +330,15 @@ if (params.nodedup || params.rrbs) {
         output:
         file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
         file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
-        file '.command.out' into bismark_deduplicate_stdout
 
         script:
         if (params.singleEnd) {
             """
             deduplicate_bismark -s --bam $bam
-            deduplicate_bismark --version
             """
         } else {
             """
             deduplicate_bismark -p --bam $bam
-            deduplicate_bismark --version
             """
         }
     }
@@ -373,7 +365,6 @@ process bismark_methXtract {
     file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
     file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
     file '*.{png,gz}' into bismark_methXtract_results
-    file '.command.err' into bismark_methXtract_stderr
 
     script:
     comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
@@ -423,7 +414,6 @@ process bismark_report {
 
     output:
     file '*{html,txt}' into bismark_reports_results
-    file '.command.out' into bismark_report_stdout
 
     script:
     name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
@@ -433,7 +423,6 @@ process bismark_report {
         --dedup_report $bismark_dedup_log_1 \\
         --splitting_report $bismark_splitting_report_1 \\
         --mbias_report $bismark_mbias_1
-    bismark2report --version
     """
 }
 
@@ -452,12 +441,10 @@ process bismark_summary {
 
     output:
     file '*{html,txt}' into bismark_summary_results
-    file '.command.out' into bismark_summary_stdout
 
     script:
     """
     bismark2summary
-    bismark2summary --version
     """
 }
 
@@ -473,7 +460,6 @@ process qualimap {
 
     output:
     file "${bam.baseName}_qualimap" into qualimap_results
-    file '.command.out' into qualimap_stdout
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -492,68 +478,31 @@ process qualimap {
 /*
  * Parse software version numbers
  */
-software_versions = [
-  'Bismark genomePrep': null, 'FastQC': null, 'Trim Galore!': null, 'Bismark': null, 'Bismark Deduplication': null,
-  'Bismark methXtract': null, 'Bismark Report': null, 'Bismark Summary': null, 'Qualimap': null, 'Nextflow': "v$workflow.nextflow.version"
-]
 process get_software_versions {
-    cache false
-    executor 'local'
-
-    input:
-    val makeBismarkIndex from makeBismarkIndex_stderr
-    val fastqc from fastqc_stdout.collect()
-    val trimgalore from trimgalore_logs.collect()
-    val bismark_align from bismark_align_log_4.collect()
-    val bismark_deduplicate from bismark_deduplicate_stdout.collect()
-    val bismark_methXtract from bismark_methXtract_stderr.collect()
-    val bismark_report from bismark_report_stdout.collect()
-    val bismark_summary from bismark_summary_stdout.collect()
-    val qualimap from qualimap_stdout.collect()
 
     output:
     file 'software_versions_mqc.yaml' into software_versions_yaml
 
-    exec:
-    if(makeBismarkIndex != false){
-      software_versions['Bismark genomePrep'] = \
-        makeBismarkIndex.getText().find(/Bisulfite Genome Indexer version v(\S+)/) { match, version -> "v$version"; }
-    }
-    software_versions['FastQC'] = \
-      fastqc[0].getText().find(/FastQC v(\S+)/) { match, version -> "v$version" }
-    if(!params.notrim){
-      software_versions['Trim Galore!'] = \
-        trimgalore[0].getText().find(/Trim Galore version: (\S+)/) { match, version -> "v$version" }
-    }
-    software_versions['Bismark'] = \
-      bismark_align[0].getText().find(/Bismark report for: .* \(version: v(.+)\)/) { match, version -> "v$version" }
-    if (!params.nodedup && !params.rrbs) {
-      software_versions['Bismark Deduplication'] = \
-        bismark_deduplicate[0].getText().find(/Deduplicator Version: v(\S+)/) { match, version -> "v$version" }
-    }
-    software_versions['Bismark methXtract'] = \
-      bismark_methXtract[0].getText().find(/Bismark methylation extractor version v(\S+)/) { match, version -> "v$version" }
-    software_versions['Bismark Report'] = \
-      bismark_report[0].getText().find(/bismark2report version: v(\S+)/) { match, version -> "v$version" }
-    software_versions['Bismark Summary'] = \
-      bismark_summary[0].getText().find(/bismark2summary version: (\S+)/) { match, version -> "v$version" }
-    software_versions['Qualimap'] = \
-      qualimap[0].getText().find(/QualiMap v.(\S+)/) { match, version -> "v$version" }
-
-    def sw_yaml_file = task.workDir.resolve('software_versions_mqc.yaml')
-    sw_yaml_file.text  = """
-    id: 'ngi-rnaseq'
-    section_name: 'NGI-MethylSeq Software Versions'
-    section_href: 'https://github.com/SciLifeLab/NGI-MethylSeq'
-    plot_type: 'html'
-    description: 'are collected at run time from the software output.'
-    data: |
-        <dl class=\"dl-horizontal\">
-${software_versions.collect{ k,v -> "            <dt>$k</dt><dd>${v ?: '<span style=\"color:#999999;\">N/A</a>'}</dd>" }.join("\n")}
-        </dl>
-    """.stripIndent()
-
+    script:
+    """
+    echo $version > v_ngi_methylseq.txt
+    echo $nextflow.version > v_nextflow.txt
+    bismark_genome_preparation --version > v_bismark_genome_preparation.txt
+    fastqc --version > v_fastqc.txt
+    cutadapt --version > v_cutadapt.txt
+    trim_galore --version > v_trim_galore.txt
+    bismark --version > v_bismark.txt
+    deduplicate_bismark --version > v_deduplicate_bismark.txt
+    bismark_methylation_extractor --version > v_bismark_methylation_extractor.txt
+    bismark2report --version > v_bismark2report.txt
+    bismark2summary --version > v_bismark2summary.txt
+    samtools --version > v_samtools.txt
+    qualimap --version > v_qualimap.txt
+    multiqc --version > v_multiqc.txt
+    scrape_software_versions.py > software_versions_mqc.yaml
+    """
 }
+
 
 
 /*
@@ -589,7 +538,6 @@ process multiqc {
     multiqc -f $rtitle $rfilename --config $multiqc_config .
     """
 }
-multiqc_stderr.subscribe { stdout -> software_versions['MultiQC'] = stdout.getText().find(/This is MultiQC v(\S+)/) { match, version -> "v$version" } }
 
 /*
  * Completion e-mail notification
@@ -621,9 +569,9 @@ workflow.onComplete {
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
-    email_fields['software_versions'] = software_versions
-    email_fields['software_versions']['Nextflow Build'] = workflow.nextflow.build
-    email_fields['software_versions']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
+    email_fields['summary']['Nextflow Version'] = nextflow.version
+    email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
+    email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
     // Render the TXT template
     def engine = new groovy.text.GStringTemplateEngine()
