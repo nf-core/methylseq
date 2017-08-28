@@ -67,7 +67,6 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stderr = Channel.empty()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -279,8 +278,8 @@ process bismark_align {
         }
 
     input:
-    file index from bismark_index
     set val(name), file(reads) from trimmed_reads
+    file index from bismark_index.collect()
 
     output:
     file "*.bam" into bam, bam_2
