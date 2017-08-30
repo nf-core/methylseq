@@ -522,7 +522,7 @@ process multiqc {
     file ('bismark/*') from bismark_reports_results.collect()
     file ('bismark/*') from bismark_summary_results.collect()
     file ('qualimap/*') from qualimap_results.collect()
-    file ('software_versions/*') from software_versions_yaml
+    file ('software_versions/*') from software_versions_yaml.collect()
 
     output:
     file "*_report.html" into multiqc_report
