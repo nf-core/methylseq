@@ -10,6 +10,7 @@ function print_usage {
     "\t\t[-u (run UPPMAX test)\n" \
     "\t\t[-t <test data directory>]\n" \
     "\t\t[-d <docker image>]\n" \
+    "\t\t[-s <singularity image>]\n" \
     "\t\t[-h (show this help message)]" >&2 ;
 }
 
@@ -41,8 +42,9 @@ profile="-profile testing"
 refs="--bismark_index ${data_dir}/references/BismarkIndex/"
 rrbs=""
 notrim=""
+singularityfl=""
 
-while getopts ":brnpuht:d:" opt; do
+while getopts ":brnpuht:d:s:" opt; do
   case $opt in
     b)
       echo "Building genome references" >&2
@@ -76,6 +78,10 @@ while getopts ":brnpuht:d:" opt; do
     d)
       echo "Using docker image $OPTARG" >&2
       dockerfl="-with-docker $OPTARG"
+      ;;
+    s)
+      echo "Using singularity image $OPTARG" >&2
+      singularityfl="-with-singularity $OPTARG"
       ;;
     h)
       print_usage
@@ -113,7 +119,7 @@ fi
 # Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"
