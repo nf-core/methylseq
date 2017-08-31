@@ -14,10 +14,13 @@ install:
   - sudo ln -s /tmp/nextflow/nextflow /usr/local/bin/nextflow
   - cd ${TRAVIS_BUILD_DIR}/tests/
 
+env:
+  - CLFLAGS=""       # Basic run
+  - CLFLAGS="-b"     # Run, build reference genome
+  - CLFLAGS="-r"     # Run, RRBS mode
+  - CLFLAGS="-n"     # Run, no-trimming mode
+  - CLFLAGS="-p"     # BWAmeth use existing ref genome
+  - CLFLAGS="-p -b"  # BWAmeth run, build reference genome
+
 script:
-  - "./docker_test.sh"        # Basic run
-  - "./docker_test.sh -b"     # Run, build reference genome
-  - "./docker_test.sh -r"     # Run, RRBS mode
-  - "./docker_test.sh -n"     # Run, no-trimming mode
-  - "./docker_test.sh -p"     # BWAmeth use existing ref genome
-  - "./docker_test.sh -p -b"  # BWAmeth run, build reference genome
+  - "./run_test.sh $CLFLAGS"
