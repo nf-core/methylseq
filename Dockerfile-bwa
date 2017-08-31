@@ -1,4 +1,5 @@
-FROM openjdk:8
+# openjdk:8 moved from debian jessie to stretch after u131, which breaks everything (bowtie)
+FROM openjdk:8u121
 
 LABEL authors="phil.ewels@scilifelab.se,denis.moreno@scilifelab.se" \
     description="Docker image containing all requirements for NGI-MethylSeq pipeline"
@@ -89,3 +90,6 @@ RUN mkdir /opt/MethylDackel && \
 
 # Install MultiQC
 RUN pip install multiqc
+
+# Create UPPMAX directories for Singularity
+RUN mkdir /pica /proj /sw
