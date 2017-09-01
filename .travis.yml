@@ -19,8 +19,9 @@ env:
   - CLFLAGS="-b"     # Run, build reference genome
   - CLFLAGS="-r"     # Run, RRBS mode
   - CLFLAGS="-n"     # Run, no-trimming mode
-  - CLFLAGS="-p"     # BWAmeth use existing ref genome
-  - CLFLAGS="-p -b"  # BWAmeth run, build reference genome
+  # Commented out until I figure out how to handle multiple docker images nicely
+  # - CLFLAGS="-p"     # BWAmeth use existing ref genome
+  # - CLFLAGS="-p -b"  # BWAmeth run, build reference genome
 
 script:
   - "./run_test.sh $CLFLAGS"
