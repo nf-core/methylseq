@@ -10,13 +10,13 @@ function print_usage {
     "\t\t[-u (run UPPMAX test)\n" \
     "\t\t[-t <test data directory>]\n" \
     "\t\t[-d <docker image>]\n" \
+    "\t\t[-s <singularity image>]\n" \
     "\t\t[-h (show this help message)]" >&2 ;
 }
 
 # Check that we have required commands
 curl --version >/dev/null 2>&1 || { echo >&2 "I require curl, but it's not installed. Aborting."; exit 1; }
 tar --version >/dev/null 2>&1 || { echo >&2 "I require tar, but it's not installed. Aborting."; exit 1; }
-docker -v >/dev/null 2>&1 || { echo >&2 "I require docker, but it's not installed. Visit https://www.docker.com/products/overview#/install_the_platform  ."; exit 1; }
 nextflow -v >/dev/null 2>&1 || { echo >&2 "I require nextflow, but it's not installed. If you hava Java, run 'curl -fsSL get.nextflow.io | bash'. If not, install Java."; exit 1; }
 
 # Detect Travis fork for dockerhub image if we can
@@ -42,8 +42,9 @@ profile="-profile testing"
 refs="--bismark_index ${data_dir}/references/BismarkIndex/"
 rrbs=""
 notrim=""
+singularityfl=""
 
-while getopts ":brnpuht:d:" opt; do
+while getopts ":brnpuht:d:s:" opt; do
   case $opt in
     b)
       echo "Building genome references" >&2
@@ -77,6 +78,10 @@ while getopts ":brnpuht:d:" opt; do
     d)
       echo "Using docker image $OPTARG" >&2
       dockerfl="-with-docker $OPTARG"
+      ;;
+    s)
+      echo "Using singularity image $OPTARG" >&2
+      singularityfl="-with-singularity $OPTARG"
       ;;
     h)
       print_usage
@@ -114,7 +119,7 @@ fi
 # Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"

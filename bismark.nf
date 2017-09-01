@@ -67,7 +67,6 @@ if( params.bismark_index ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-    makeBismarkIndex_stderr = Channel.empty()
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -279,8 +278,8 @@ process bismark_align {
         }
 
     input:
-    file index from bismark_index
     set val(name), file(reads) from trimmed_reads
+    file index from bismark_index.collect()
 
     output:
     file "*.bam" into bam, bam_2
@@ -523,7 +522,7 @@ process multiqc {
     file ('bismark/*') from bismark_reports_results.collect()
     file ('bismark/*') from bismark_summary_results.collect()
     file ('qualimap/*') from qualimap_results.collect()
-    file ('software_versions/*') from software_versions_yaml
+    file ('software_versions/*') from software_versions_yaml.collect()
 
     output:
     file "*_report.html" into multiqc_report
@@ -569,7 +568,7 @@ workflow.onComplete {
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
-    email_fields['summary']['Nextflow Version'] = nextflow.version
+    email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 

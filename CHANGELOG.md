@@ -2,6 +2,7 @@
 
 ## v0.3dev
 * Fix `--rrbs` mode ([#24](https://github.com/SciLifeLab/NGI-MethylSeq/issues/24))
+* Fixed fairly major bug where only a single sample would run past alignment
 * Merged test scripts and rewrote to use command line flags / new travis script.
 * Refactored software version collection code to be more resilient and cleaner / easier to maintain.
 
