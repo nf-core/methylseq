@@ -142,16 +142,20 @@ If you are able to use [Docker](https://www.docker.com/), you can use the [sclif
 
 We recommend using [Bioconda](https://bioconda.github.io/) to install the required software as the process is quite easy in our experience.
 
-## 3.3) Configuration: Docker
+## 3.3) Configuration: Docker and Singularity
 Docker is a great way to run NGI-MethylSeq, as it manages all software installations and allows the pipeline to be run in an identical software environment across a range of systems.
 
-Nextflow has [excellent integration](https://www.nextflow.io/docs/latest/docker.html) with Docker, and beyond installing the two tools, not much else is required.
+On UPPMAX, we use this pipeline with [Singularity](http://singularity.lbl.gov/) instead of Docker. Singularity similar to Docker, but designed for long-running jobs in HPC environments.
+Singularity images are automatically created from Docker images, so only a Docker image has to be maintained.
 
+Nextflow has [excellent integration](https://www.nextflow.io/docs/latest/docker.html) with Docker and Singularity, and beyond installing Nextflow and Docker / Singularity, not much else is required.
+
+#### Docker
 First, install docker on your system : [Docker Installation Instructions](https://docs.docker.com/engine/installation/)
 
 Then, simply run the analysis pipeline:
 ```bash
-nextflow run SciLifeLab/NGI-MethylSeq -profile docker # rest of normal launch command
+nextflow run SciLifeLab/NGI-MethylSeq -profile base -with-docker scilifelab/ngi-methylseq # rest of normal launch command
 ```
 
 Nextflow will recognise `SciLifeLab/NGI-MethylSeq` and download the pipeline from GitHub. The `-profile docker` configuration lists the [sclifelab/ngi-methylseq](https://hub.docker.com/r/scilifelab/ngi-methylseq/) image that we have created and is hosted at dockerhub, and this is downloaded.
@@ -159,6 +163,15 @@ Nextflow will recognise `SciLifeLab/NGI-MethylSeq` and download the pipeline fro
 A reference genome is still required by the pipeline. Specifying a path to a FASTA file is the minimum requirement, a Bismark reference will automatically be generated. See the above [Reference Genomes](#reference-genomes) documentation for instructions on how to configure Nextflow with preset paths to make this easier.
 
 A test suite for docker comes with the pipeline, and can be run by moving to the [`tests` directory](https://github.com/ewels/NGI-MethylSeq/tree/master/tests) and running `./docker_test.sh`. This will download a small lambda genome and some data, and attempt to run the pipeline through docker on that small dataset. This is automatically run using [Travis](https://travis-ci.org/SciLifeLab/NGI-MethylSeq/) whenever changes are made to the pipeline.
+
+#### Singularity
+Running with singularity is very similar. Nextflow will pull the docker image from dockerhub, build a singularity image from this and run using that.
+
+The command is as follows:
+```bash
+nextflow run SciLifeLab/NGI-MethylSeq -profile base -with-singularity docker://scilifelab/ngi-methylseq # rest of normal launch command
+```
+
 
 ## 3.4) Configuration: Amazon EC2
 There are multiple ways of running this pipeline over Amazon's EC2 service. Please see the [NGI-RNAseq pipeline docs](https://github.com/SciLifeLab/NGI-RNAseq/blob/master/docs/amazon_web_services.md) for more information.
