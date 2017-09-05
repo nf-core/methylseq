@@ -186,12 +186,7 @@ projects or different sets of reference genomes.
 
 **NB:** Single hyphen (core Nextflow option)
 
-Note - you can use this to override defaults. For example, we run on UPPMAX but don't want to use the MultiQC
-environment module as is the default. So we specify a config file using `-c` that contains the following:
-
-```groovy
-process.$multiqc.module = []
-```
+Note - you can use this to override defaults.
 
 ### `--clusterOptions`
 Submit arbitrary SLURM options (UPPMAX profile only). For instance, you could use `--clusterOptions '-p devcore'`
