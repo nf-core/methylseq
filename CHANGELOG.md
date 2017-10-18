@@ -1,5 +1,13 @@
 # NGI-MethylSeq
 
+## v0.4dev
+* Fix for iGenomes base path in configs
+
+## [v0.3.1](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3.1) - 2017-09-05
+* Include base profile name and documentation about Singularity.
+* Testing automated docker hub image tagging for releases.
+
+
 ## [v0.3](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3) - 2017-09-01
 * Fix `--rrbs` mode ([#24](https://github.com/SciLifeLab/NGI-MethylSeq/issues/24))
 * Fixed fairly major bug where only a single sample would run past alignment
