@@ -82,4 +82,4 @@ RUN pip install git+https://github.com/ewels/MultiQC.git
 
 # Create root directories for UPPMAX and c3se hebbe
 RUN mkdir /pica /lupus /crex1 /crex2 /proj /scratch /sw \
-          /c3se /local /apps /usr/share/lmod/lmod /var/hasplm
+          /c3se /local /apps
