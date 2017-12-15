@@ -12,8 +12,10 @@ All of the documentation refers to the Bismark workflow at this stage, though mo
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run SciLifeLab/NGI-MethylSeq --genome GRCh37 --reads '*_R{1,2}.fastq.gz'
+nextflow run SciLifeLab/NGI-MethylSeq --genome GRCh37 --reads '*_R{1,2}.fastq.gz' -profile docker
 ```
+
+This will launch the pipeline with the `docker` configuration profile (Swedish UPPMAX users use `-profile uppmax`). See below for more information about profiles.
 
 Note that the pipeline will create files in your working directory:
 
@@ -23,6 +25,33 @@ results         # Finished results (configurable, see below)
 .nextflow_log   # Log file from Nextflow
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
+
+
+### `-profile`
+Use this parameter to choose a configuration profile. `-profile docker` is likely useful for users outside of Sweden. Available profiles are:
+
+* `standard`
+    * The default profile - this is used if `-profile` is not specified at all
+    * Uses sensible defaults for requirements, runs using the `local` executor (native system calls) and expects all software to be installed and available on the `PATH`.
+    * This profile is mainly designed to be used as a starting point for other configurations and is inherited by most of the other profiles below.
+* `uppmax`
+    * Designed to be used on the Swedish [UPPMAX](http://uppmax.uu.se/) clusters such as `milou`, `rackham`, `bianca` and `irma`
+    * Launches jobs using the SLURM executor.
+    * Uses [Singularity](http://singularity.lbl.gov/) to provide all software requirements
+    * Comes with locations for illumina iGenome reference paths built in
+    * Use with `--project` to provide your UPPMAX project ID.
+* `uppmax_devel`
+    * Uses the milou [devel partition](http://www.uppmax.uu.se/support/user-guides/slurm-user-guide/#tocjump_030509106905141747_8) for testing the pipeline quickly.
+    * Not suitable for proper analysis runs
+* `docker`
+    * A generic configuration profile to be used with [Docker](http://docker.com/)
+    * Runs using the `local` executor and pulls software from dockerhub: [`scilifelab/ngi-rnaseq`](http://hub.docker.com/r/scilifelab/ngi-rnaseq/)
+* `aws`
+    * A starter configuration for running the pipeline on Amazon Web Services.
+    * Specifies docker configuration and uses the `spark` job executor
+    * Requires additional configuration to run - see the documentation dedicated to this topic.
+* `none`
+    * No configuration at all. Useful if you want to build your own config from scratch and want to avoid loading in the default `base` config profile.
 
 ## Input Data
 

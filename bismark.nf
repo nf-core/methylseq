@@ -35,6 +35,18 @@ try {
             "  Please run `nextflow self-update` to update Nextflow.\n" +
             "============================================================"
 }
+// Show a big error message if we're running on the base config and an uppmax cluster
+if( workflow.profile == 'standard'){
+    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+        log.error "====================================================\n" +
+                  "  WARNING! You are running with the default 'standard'\n" +
+                  "  pipeline config profile, which runs on the head node\n" +
+                  "  and assumes all software is on the PATH.\n" +
+                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
+                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                  "============================================================"
+    }
+}
 
 // Configurable variables
 params.name = false
@@ -78,7 +90,9 @@ else {
 multiqc_config = file(params.multiqc_config)
 
 // Validate inputs
-if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
+    if ( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+}
 
 // Has the run name been specified by the user?
 //  this has the bonus effect of catching both -name and --name
@@ -159,19 +173,26 @@ summary['Trim R2'] = params.clip_r2
 summary["Trim 3' R1"] = params.three_prime_clip_r1
 summary["Trim 3' R2"] = params.three_prime_clip_r2
 summary['Deduplication']  = params.nodedup || params.rrbs ? 'No' : 'Yes'
+summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
+summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
 summary['Save Intermeds'] = params.saveAlignedIntermediates ? 'Yes' : 'No'
-summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
-summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
+summary['Max Memory']     = params.max_memory
+summary['Max CPUs']       = params.max_cpus
+summary['Max Time']       = params.max_time
+summary['Output dir']     = params.outdir
+summary['Working dir']    = workflow.workDir
+summary['Container']      = workflow.container
+if(workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Current home']   = "$HOME"
 summary['Current user']   = "$USER"
 summary['Current path']   = "$PWD"
 summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
-summary['Config Profile'] = (workflow.profile == 'standard' ? 'UPPMAX' : workflow.profile)
+summary['Config Profile'] = workflow.profile
 if(params.project) summary['UPPMAX Project'] = params.project
 if(params.email) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
@@ -564,10 +585,10 @@ workflow.onComplete {
     email_fields['summary']['Date Completed'] = workflow.complete
     email_fields['summary']['Pipeline script file path'] = workflow.scriptFile
     email_fields['summary']['Pipeline script hash ID'] = workflow.scriptId
+    email_fields['summary']['Container'] = workflow.container
     if(workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
     if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
-    if(workflow.container) email_fields['summary']['Docker image'] = workflow.container
     email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
@@ -622,4 +643,19 @@ workflow.onComplete {
     output_tf.withWriter { w -> w << email_txt }
 
     log.info "[NGI-MethylSeq] Pipeline Complete"
+
+    if(!workflow.success){
+        if( workflow.profile == 'standard'){
+            if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+                log.error "====================================================\n" +
+                        "  WARNING! You are running with the default 'standard'\n" +
+                        "  pipeline config profile, which runs on the head node\n" +
+                        "  and assumes all software is on the PATH.\n" +
+                        "  This is probably why everything broke.\n" +
+                        "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                        "============================================================"
+            }
+        }
+    }
+
 }
