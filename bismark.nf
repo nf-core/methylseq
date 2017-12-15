@@ -35,6 +35,18 @@ try {
             "  Please run `nextflow self-update` to update Nextflow.\n" +
             "============================================================"
 }
+// Show a big error message if we're running on the base config and an uppmax cluster
+if( workflow.profile == 'standard'){
+    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+        log.error "====================================================\n" +
+                  "  WARNING! You are running with the default 'standard'\n" +
+                  "  pipeline config profile, which runs on the head node\n" +
+                  "  and assumes all software is on the PATH.\n" +
+                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
+                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                  "============================================================"
+    }
+}
 
 // Configurable variables
 params.name = false
@@ -78,7 +90,9 @@ else {
 multiqc_config = file(params.multiqc_config)
 
 // Validate inputs
-if( workflow.profile == 'standard' && !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
+    if ( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+}
 
 // Has the run name been specified by the user?
 //  this has the bonus effect of catching both -name and --name
@@ -629,4 +643,19 @@ workflow.onComplete {
     output_tf.withWriter { w -> w << email_txt }
 
     log.info "[NGI-MethylSeq] Pipeline Complete"
+
+    if(!workflow.success){
+        if( workflow.profile == 'standard'){
+            if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+                log.error "====================================================\n" +
+                        "  WARNING! You are running with the default 'standard'\n" +
+                        "  pipeline config profile, which runs on the head node\n" +
+                        "  and assumes all software is on the PATH.\n" +
+                        "  This is probably why everything broke.\n" +
+                        "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                        "============================================================"
+            }
+        }
+    }
+
 }
