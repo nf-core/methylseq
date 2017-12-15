@@ -38,7 +38,7 @@ data_dir=${data_path}/ngi-bisulfite_test_set
 
 # command line options
 pipelinescript="../bismark.nf"
-profile="-profile testing"
+profile="-profile docker --max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
 refs="--bismark_index ${data_dir}/references/BismarkIndex/"
 rrbs=""
 notrim=""
@@ -66,7 +66,7 @@ while getopts ":brnpuht:d:s:" opt; do
       ;;
     u)
       echo "Running UPPMAX config" >&2
-      profile="-profile devel"
+      profile="-profile uppmax_devel"
       if [ data_path -ne "./test_data" ]; then
         data_path=$SNIC_NOBACKUP
       fi
