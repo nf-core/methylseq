@@ -45,7 +45,7 @@ for k, v in regexes.items():
 
 # Dump to YAML
 print ('''
-id: 'ngi-rnaseq'
+id: 'software_versions'
 section_name: 'NGI-MethylSeq Software Versions'
 section_href: 'https://github.com/SciLifeLab/NGI-MethylSeq'
 plot_type: 'html'
@@ -56,4 +56,3 @@ data: |
 for k,v in results.items():
     print("        <dt>{}</dt><dd>{}</dd>".format(k,v))
 print ("    </dl>")
-
