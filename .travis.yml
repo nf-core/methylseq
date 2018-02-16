@@ -16,7 +16,6 @@ install:
 
 env:
   - CLFLAGS=""       # Basic run
-  - CLFLAGS="-b"     # Run, build reference genome
   - CLFLAGS="-r"     # Run, RRBS mode
   - CLFLAGS="-n"     # Run, no-trimming mode
   # Commented out until I figure out how to handle multiple docker images nicely
@@ -24,4 +23,5 @@ env:
   # - CLFLAGS="-p -b"  # BWAmeth run, build reference genome
 
 script:
+  - "./run_test.sh -b $CLFLAGS" # Run, build reference genome
   - "./run_test.sh $CLFLAGS"

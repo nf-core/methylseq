@@ -2,5 +2,5 @@
 work/
 data/
 results/
-tests/test_data
+tests/test_data/ngi-bisulfite_test_set/
 .DS_Store

@@ -6,3 +6,10 @@ swedac_accredited: false
 report_section_order:
     software_versions:
         order: -1000
+table_columns_visible:
+    QualiMap:
+        avg_gc: false
+        30_x_pc: false
+        percentage_aligned: false
+top_modules:
+    - 'bismark'
