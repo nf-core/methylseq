@@ -28,18 +28,28 @@ if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
 fi
 
 # Look for an existing test data directory
-data_path="/tmp"
-if [ -d "./test_data" ]
-then
-    data_path="./test_data"
-    echo "Found data directory in current working directory, using ./test_data/"
-fi
+data_path="./test_data"
 data_dir=${data_path}/ngi-bisulfite_test_set
+
+if [ -d $data_dir ]
+then
+    echo "Found existing test set, using $data_dir"
+else
+    echo "Unpacking test set..."
+    tar xvjf ${data_path}/ngi-bisulfite_test_set.tar.bz2 -C ${data_path}
+    echo "Done"
+fi
 
 # command line options
 pipelinescript="../bismark.nf"
 profile="-profile docker --max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
-refs="--bismark_index ${data_dir}/references/BismarkIndex/"
+if [ -d "${data_dir}/references/BismarkIndex/" ]
+then
+    refs="--bismark_index ${data_dir}/references/BismarkIndex/"
+else
+    refs="--bismark_index results/reference_genome/BismarkIndex/"
+    echo "Couldn't find Bismark ref index in '${data_dir}/references/BismarkIndex/' - assuming one has been built by a test already"
+fi
 rrbs=""
 notrim=""
 singularityfl=""
@@ -67,9 +77,6 @@ while getopts ":brnpuht:d:s:" opt; do
     u)
       echo "Running UPPMAX config" >&2
       profile="-profile uppmax_devel"
-      if [ data_path -ne "./test_data" ]; then
-        data_path=$SNIC_NOBACKUP
-      fi
       ;;
     t)
       echo "Test data path specified" >&2
@@ -104,22 +111,10 @@ if [[ $buildrefs ]] && [[ $bwameth ]]; then
   refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
 fi
 
-
-if [ -d $data_dir ]
-then
-    echo "Found existing test set, using $data_dir"
-else
-    echo "Downloading test set..."
-    curl https://export.uppmax.uu.se/b2013064/test-data/ngi-bisulfite_test_set.tar.bz2 > ${data_path}/ngi-bisulfite_test_set.tar.bz2
-    echo "Unpacking test set..."
-    tar xvjf ${data_path}/ngi-bisulfite_test_set.tar.bz2 -C ${data_path}
-    echo "Done"
-fi
-
 # Run name
 run_name="Test MethylSeq Run: "$(date +%s)
 
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"
