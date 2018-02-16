@@ -534,16 +534,16 @@ process multiqc {
 
     input:
     file multiqc_config
-    file (fastqc:'fastqc/*') from fastqc_results.toList()
-    file ('trimgalore/*') from trimgalore_results.toList()
-    file ('bismark/*') from bismark_align_log_3.toList()
-    file ('bismark/*') from bismark_dedup_log_3.toList()
-    file ('bismark/*') from bismark_splitting_report_3.toList()
-    file ('bismark/*') from bismark_mbias_3.toList()
-    file ('bismark/*') from bismark_reports_results.toList()
-    file ('bismark/*') from bismark_summary_results.toList()
-    file ('qualimap/*') from qualimap_results.toList()
-    file ('software_versions/*') from software_versions_yaml.toList()
+    file (fastqc:'fastqc/*') from fastqc_results.collect()
+    file ('trimgalore/*') from trimgalore_results.collect()
+    file ('bismark/*') from bismark_align_log_3.collect()
+    file ('bismark/*') from bismark_dedup_log_3.collect()
+    file ('bismark/*') from bismark_splitting_report_3.collect()
+    file ('bismark/*') from bismark_mbias_3.collect()
+    file ('bismark/*') from bismark_reports_results.collect()
+    file ('bismark/*') from bismark_summary_results.collect()
+    file ('qualimap/*') from qualimap_results.collect()
+    file ('software_versions/*') from software_versions_yaml.collect()
 
     output:
     file "*_report.html" into multiqc_report
