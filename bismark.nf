@@ -312,17 +312,37 @@ process bismark_align {
     non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
     unmapped = params.unmapped ? "--unmapped" : ''
     mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
+    multicore = ''
+    if (task.cpus){
+        // Numbers based on recommendation by Felix for a typical mouse genome
+        if(params.single_cell || params.zymo || params.non_directional){
+            cpu_per_multicore = 5
+            mem_per_multicore = 18.GB
+        } else {
+            cpu_per_multicore = 3
+            mem_per_multicore = 13.GB
+        }
+        // How many multicore splits can we afford with the cpus we have?
+        ccore = Math.max(1, task.cpus as int / cpu_per_multicore) as int
+        // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
+        if(task.memory){
+          ccore = Math.min(ccore, task.memory as nextflow.util.MemoryUnit / mem_per_multicore) as int
+        }
+        if(ccore > 1){
+          multicore = "--multicore $ccore"
+        }
+    }
     if (params.singleEnd) {
         """
         bismark \\
-            --bam $pbat $non_directional $unmapped $mismatches \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
             --genome $index \\
             $reads
         """
     } else {
         """
         bismark \\
-            --bam $pbat $non_directional $unmapped $mismatches \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
             --genome $index \\
             -1 ${reads[0]} \\
             -2 ${reads[1]}
@@ -388,11 +408,26 @@ process bismark_methXtract {
 
     script:
     comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+    multicore = ''
+    if (task.cpus){
+        // Numbers based on Bismark docs
+        ccore = Math.max(1, task.cpus as int / 10) as int
+        if(ccore > 1){
+          multicore = "--multicore $ccore"
+        }
+    }
+    buffer = ''
+    if (task.memory){
+        mbuffer = task.memory as nextflow.util.MemoryUnit - 2.GB
+        // only set if we have more than 8GB available
+        if(4.GB.compareTo(mbuffer) == 1){
+          buffer = "--buffer_size ${mbuffer.toGiga()}G"
+        }
+    }
     if (params.singleEnd) {
         """
         bismark_methylation_extractor $comprehensive \\
-            --multi ${task.cpus} \\
-            --buffer_size ${task.memory.toGiga()}G \\
+            $multicore $buffer \\
             --bedGraph \\
             --counts \\
             --gzip \\
@@ -403,8 +438,7 @@ process bismark_methXtract {
     } else {
         """
         bismark_methylation_extractor $comprehensive \\
-            --multi ${task.cpus} \\
-            --buffer_size ${task.memory.toGiga()}G \\
+            $multicore $buffer \\
             --ignore_r2 2 \\
             --ignore_3prime_r2 2 \\
             --bedGraph \\
