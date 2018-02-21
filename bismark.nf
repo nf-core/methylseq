@@ -317,16 +317,20 @@ process bismark_align {
         // Numbers based on recommendation by Felix for a typical mouse genome
         if(params.single_cell || params.zymo || params.non_directional){
             cpu_per_multicore = 5
-            mem_per_multicore = 18.GB
+            mem_per_multicore = (18.GB).toBytes()
         } else {
             cpu_per_multicore = 3
-            mem_per_multicore = 13.GB
+            mem_per_multicore = (13.GB).toBytes()
         }
         // How many multicore splits can we afford with the cpus we have?
-        ccore = Math.max(1, task.cpus as int / cpu_per_multicore) as int
+        ccore = ((task.cpus as int) / cpu_per_multicore) as int
         // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
-        if(task.memory){
-          ccore = Math.min(ccore, task.memory as nextflow.util.MemoryUnit / mem_per_multicore) as int
+        try {
+            tmem = (task.memory as nextflow.util.MemoryUnit).toBytes()
+            mcore = (tmem / mem_per_multicore) as int
+            ccore = Math.min(ccore, mcore)
+        } catch (all) {
+            log.debug "Not able to define bismark align multicore based on available memory"
         }
         if(ccore > 1){
           multicore = "--multicore $ccore"
@@ -411,16 +415,16 @@ process bismark_methXtract {
     multicore = ''
     if (task.cpus){
         // Numbers based on Bismark docs
-        ccore = Math.max(1, task.cpus as int / 10) as int
+        ccore = ((task.cpus as int) / 10) as int
         if(ccore > 1){
           multicore = "--multicore $ccore"
         }
     }
     buffer = ''
     if (task.memory){
-        mbuffer = task.memory as nextflow.util.MemoryUnit - 2.GB
-        // only set if we have more than 8GB available
-        if(4.GB.compareTo(mbuffer) == 1){
+        mbuffer = (task.memory as nextflow.util.MemoryUnit) - 2.GB
+        // only set if we have more than 6GB available
+        if(mbuffer.compareTo(4.GB) == 1){
           buffer = "--buffer_size ${mbuffer.toGiga()}G"
         }
     }
