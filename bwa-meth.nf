@@ -7,7 +7,7 @@ vim: syntax=groovy
 ========================================================================================
  Methylation (BS-Seq) Analysis Pipeline using bwa-meth. Started November 2016.
  #### Homepage / Documentation
- https://github.com/SciLifeLab/NGI-MethylSeq
+ https://github.com/nf-core/MethylSeq
  #### Authors
  Phil Ewels <phil.ewels@scilifelab.se>
 ----------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ if(params.pbat){
 def single
 
 log.info "==================================================="
-log.info " NGI-MethylSeq : Bisulfite-Seq BWA-Meth v${version}"
+log.info " nf-core/MethylSeq : Bisulfite-Seq BWA-Meth v${version}"
 log.info "==================================================="
 log.info "Reads          : ${params.reads}"
 log.info "Genome         : ${params.genome}"

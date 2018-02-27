@@ -1,10 +1,10 @@
-# NGI-MethylSeq Output
+# nf-core/MethylSeq Output
 
-NGI-MethylSeq is the new RNA-seq Best Practice pipeline used by the [National Genomics Infrastructure](https://ngisweden.scilifelab.se/) at [SciLifeLab](https://www.scilifelab.se/platforms/ngi/) in Stockholm, Sweden.
+nf-core/MethylSeq is the new RNA-seq Best Practice pipeline used by the [National Genomics Infrastructure](https://ngisweden.scilifelab.se/) at [SciLifeLab](https://www.scilifelab.se/platforms/ngi/) in Stockholm, Sweden.
 
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
-Note that NGI-MethylSeq contains two workflows - one for Bismark, one for bwa-meth. This document describes the output from the default Bismark workflow.
+Note that nf-core/MethylSeq contains two workflows - one for Bismark, one for bwa-meth. This document describes the output from the default Bismark workflow.
 
 ## Pipeline overview
 The pipeline is built using [Nextflow](https://www.nextflow.io/)
@@ -36,7 +36,7 @@ For further reading and documentation see the [FastQC help](http://www.bioinform
   * zip file containing the FastQC report, tab-delimited data file and plot images
 
 ## TrimGalore
-The NGI-MethylSeq BP 2.0 pipeline uses [TrimGalore](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore uses [Cutadapt](https://github.com/marcelm/cutadapt) for adapter trimming and runs FastQC after it finishes.
+The nf-core/MethylSeq BP 2.0 pipeline uses [TrimGalore](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore uses [Cutadapt](https://github.com/marcelm/cutadapt) for adapter trimming and runs FastQC after it finishes.
 
 MultiQC reports the percentage of bases removed by TrimGalore in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
 
@@ -55,7 +55,7 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
 Single-end data will have slightly different file names and only one FastQ file per sample.
 
 ## Bismark
-The default NGI-MethylSeq workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) to process raw sequencing reads into cytosine methylation calls.
+The default nf-core/MethylSeq workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) to process raw sequencing reads into cytosine methylation calls.
 
 ### Alignment
 Bismark converts all Cytosines to Thymine _in-silico_ and then aligns against a three-letter reference genome. It produces a BAM file of genomic alignments.

@@ -2,7 +2,7 @@
 FROM openjdk:8u121
 
 LABEL authors="phil.ewels@scilifelab.se,denis.moreno@scilifelab.se" \
-    description="Docker image containing all requirements for NGI-MethylSeq pipeline"
+    description="Docker image containing all requirements for nf-core/MethylSeq pipeline"
 
 # Install container-wide requrements gcc, pip, zlib, libssl, make, libncurses, fortran77, g++, R
 RUN apt-get update && \

@@ -7,7 +7,7 @@ vim: syntax=groovy
 ========================================================================================
  New Methylation (BS-Seq) Best Practice Analysis Pipeline. Started June 2016.
  #### Homepage / Documentation
- https://github.com/SciLifeLab/NGI-MethylSeq
+ https://github.com/nf-core/MethylSeq
  #### Authors
  Phil Ewels <phil.ewels@scilifelab.se>
 ----------------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ Channel
     .into { read_files_fastqc; read_files_trimming }
 
 log.info "=================================================="
-log.info " NGI-MethylSeq : Bisulfite-Seq Best Practice v${version}"
+log.info " nf-core/MethylSeq : Bisulfite-Seq Best Practice v${version}"
 log.info "=================================================="
 def summary = [:]
 summary['Run Name']       = custom_runName ?: workflow.runName
@@ -603,9 +603,9 @@ process multiqc {
 workflow.onComplete {
 
     // Set up the e-mail variables
-    def subject = "[NGI-MethylSeq] Successful: $workflow.runName"
+    def subject = "[nf-core/MethylSeq] Successful: $workflow.runName"
     if(!workflow.success){
-      subject = "[NGI-MethylSeq] FAILED: $workflow.runName"
+      subject = "[nf-core/MethylSeq] FAILED: $workflow.runName"
     }
     def email_fields = [:]
     email_fields['version'] = version
@@ -654,16 +654,16 @@ workflow.onComplete {
           if( params.plaintext_email ){ throw GroovyException('Send plaintext e-mail, not HTML') }
           // Try to send HTML e-mail using sendmail
           [ 'sendmail', '-t' ].execute() << sendmail_html
-          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (sendmail)"
+          log.info "[nf-core/MethylSeq] Sent summary e-mail to $params.email (sendmail)"
         } catch (all) {
           // Catch failures and try with plaintext
           [ 'mail', '-s', subject, params.email ].execute() << email_txt
-          log.info "[NGI-MethylSeq] Sent summary e-mail to $params.email (mail)"
+          log.info "[nf-core/MethylSeq] Sent summary e-mail to $params.email (mail)"
         }
     }
 
     // Switch the embedded MIME images with base64 encoded src
-    ngimethylseqlogo = new File("$baseDir/assets/NGI-MethylSeq_logo.png").bytes.encodeBase64().toString()
+    ngimethylseqlogo = new File("$baseDir/assets/MethylSeq_logo.png").bytes.encodeBase64().toString()
     scilifelablogo = new File("$baseDir/assets/SciLifeLab_logo.png").bytes.encodeBase64().toString()
     ngilogo = new File("$baseDir/assets/NGI_logo.png").bytes.encodeBase64().toString()
     email_html = email_html.replaceAll(~/cid:ngimethylseqlogo/, "data:image/png;base64,$ngimethylseqlogo")
@@ -680,7 +680,7 @@ workflow.onComplete {
     def output_tf = new File( output_d, "pipeline_report.txt" )
     output_tf.withWriter { w -> w << email_txt }
 
-    log.info "[NGI-MethylSeq] Pipeline Complete"
+    log.info "[nf-core/MethylSeq] Pipeline Complete"
 
     if(!workflow.success){
         if( workflow.profile == 'standard'){
