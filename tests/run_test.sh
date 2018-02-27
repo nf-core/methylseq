@@ -25,6 +25,8 @@ if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
     dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
     echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
     dockerfl="-with-docker $dockerimg"
+else
+    dockerfl="-with-docker"
 fi
 
 # Look for an existing test data directory
@@ -42,7 +44,7 @@ fi
 
 # command line options
 pipelinescript="../bismark.nf"
-profile="-profile docker --max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
+profile="--max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
 if [ -d "${data_dir}/references/BismarkIndex/" ]
 then
     refs="--bismark_index ${data_dir}/references/BismarkIndex/"
