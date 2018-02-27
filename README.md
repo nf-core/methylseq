@@ -5,7 +5,7 @@
 
 ### Introduction
 
-`nf-core/MethylSeq` is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis.
+**nf-core/MethylSeq** is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis.
 
 The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
@@ -22,11 +22,34 @@ The nf-core/MethylSeq pipeline comes with documentation about the pipeline, foun
 
 
 ### Credits
-These scripts were written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden. Written by Phil Ewels (@ewels) and Rickard Hammarén (@Hammarn).
+These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
 
----
+* Main authors:
+  * Phil Ewels ([@ewels](https://github.com/ewels/))
+  * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
+* Contributors:
+  * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
 
-[![SciLifeLab](https://raw.githubusercontent.com/nf-core/MethylSeq/master/docs/images/SciLifeLab_logo.png)](http://www.scilifelab.se/)
-[![National Genomics Infrastructure](https://raw.githubusercontent.com/nf-core/MethylSeq/master/docs/images/NGI_logo.png)](https://ngisweden.scilifelab.se/)
 
----
+### Participating Institutes
+**nf-core/MethylSeq** is used by a number of core sequencing and bioinformatics facilities. Some of these are listed below. If you use this pipeline too, please let us know in an issue and we will add you to the list.
+
+<table>
+  <tr>
+    <td width="200">
+      <img src="docs/images/SciLifeLab_logo.png" width=200">
+      <img src="docs/images/NGI_logo.png" width=200">
+    </td>
+    <td>
+      SciLifeLab National Genomics Infrastructure (NGI), Sweden <br>
+      https://ngisweden.scilifelab.se/
+    </td>
+  </tr>
+  <tr>
+    <td width="200"><img src="https://raw.githubusercontent.com/SciLifeLab/NGI-RNAseq/master/docs/images/QBiC_logo.png" width="120"></td>
+    <td>
+      Quantitative Biology Center (QBiC), Germany <br>
+      https://portal.qbic.uni-tuebingen.de/portal/
+    </td>
+  </tr>
+</table>
