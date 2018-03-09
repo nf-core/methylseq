@@ -18,19 +18,16 @@ vim: syntax=groovy
  * SET UP CONFIGURATION VARIABLES
  */
 
-// Pipeline version
-version = "0.4dev"
 
 // Check that Nextflow version is up to date enough
 // try / throw / catch works for NF versions < 0.25 when this was implemented
-nf_required_version = '0.25.1'
 try {
-  if( ! nextflow.version.matches(">= $nf_required_version") ){
+  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
     throw GroovyException('Nextflow version too old')
   }
 } catch (all) {
   log.error "====================================================\n" +
-            "  Nextflow version $nf_required_version required! You are running v$workflow.nextflow.version.\n" +
+            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
             "  Pipeline execution will continue, but things may break.\n" +
             "  Please run `nextflow self-update` to update Nextflow.\n" +
             "============================================================"
@@ -47,32 +44,6 @@ if( workflow.profile == 'standard'){
                   "============================================================"
     }
 }
-
-// Configurable variables
-params.name = false
-params.project = false
-params.email = false
-params.plaintext_email = false
-params.genome = false
-params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
-params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-params.saveReference = false
-params.saveTrimmed = false
-params.saveAlignedIntermediates = false
-params.reads = "data/*_R{1,2}.fastq.gz"
-params.outdir = './results'
-params.multiqc_config = "$baseDir/conf/multiqc_config.yaml"
-params.notrim = false
-params.nodedup = false
-params.unmapped = false
-params.non_directional = false
-params.comprehensive = false
-params.relaxMismatches = false
-params.numMismatches = 0.6
-// 0.6 will allow a penalty of bp * -0.6
-// For 100bp reads, this is -60. Mismatches cost -6, gap opening -5 and gap extension -2
-// So -60 would allow 10 mismatches or ~ 8 x 1-2bp indels
-// Bismark default is 0.2 (L,0,-0.2), Bowtie2 default is 0.6 (L,0,-0.6)
 
 // Validate inputs
 if( params.bismark_index ){
@@ -101,6 +72,7 @@ if( !(workflow.runName ==~ /[a-z]+_[a-z]+/) ){
   custom_runName = workflow.runName
 }
 
+// Library prep presets
 params.rrbs = false
 params.pbat = false
 params.single_cell = false
@@ -143,14 +115,13 @@ if(params.pbat){
 /*
  * Create a channel for input read files
  */
-params.singleEnd = false
 Channel
     .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
     .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --singleEnd on the command line." }
     .into { read_files_fastqc; read_files_trimming }
 
 log.info "=================================================="
-log.info " nf-core/MethylSeq : Bisulfite-Seq Best Practice v${version}"
+log.info " nf-core/MethylSeq : Bisulfite-Seq Best Practice v${params.version}"
 log.info "=================================================="
 def summary = [:]
 summary['Run Name']       = custom_runName ?: workflow.runName
@@ -543,7 +514,7 @@ process get_software_versions {
 
     script:
     """
-    echo $version > v_ngi_methylseq.txt
+    echo $params.version > v_ngi_methylseq.txt
     echo $workflow.nextflow.version > v_nextflow.txt
     bismark_genome_preparation --version > v_bismark_genome_preparation.txt
     fastqc --version > v_fastqc.txt
@@ -608,7 +579,7 @@ workflow.onComplete {
       subject = "[nf-core/MethylSeq] FAILED: $workflow.runName"
     }
     def email_fields = [:]
-    email_fields['version'] = version
+    email_fields['version'] = params.version
     email_fields['runName'] = workflow.runName
     email_fields['success'] = workflow.success
     email_fields['dateComplete'] = workflow.complete

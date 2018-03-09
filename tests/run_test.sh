@@ -113,10 +113,7 @@ if [[ $buildrefs ]] && [[ $bwameth ]]; then
   refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
 fi
 
-# Run name
-run_name="Test MethylSeq Run: "$(date +%s)
-
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"
