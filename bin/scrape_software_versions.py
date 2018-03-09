@@ -16,6 +16,10 @@ regexes = {
     'Bismark Report': ['v_bismark2report.txt', r"bismark2report version: v(\S+)"],
     'Bismark Summary': ['v_bismark2summary.txt', r"bismark2summary version: (\S+)"],
     'Samtools': ['v_samtools.txt', r"samtools (\S+)"],
+    'BWA': ['v_bwa.txt', r"Version: (\S+)"],
+    'bwa-meth': ['v_bwameth.txt', r"bwa-meth\.py (\S+)"],
+    'Picard MarkDuplicates': ['v_picard_markdups.txt', r"([\d\.]+)"],
+    'MethylDackel': ['v_methyldackel.txt', r"(.+)"],
     'Qualimap': ['v_qualimap.txt', r"QualiMap v.(\S+)"],
     'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
 }
@@ -32,6 +36,10 @@ results['Bismark methXtract'] = '<span style="color:#999999;\">N/A</span>'
 results['Bismark Report'] = '<span style="color:#999999;\">N/A</span>'
 results['Bismark Summary'] = '<span style="color:#999999;\">N/A</span>'
 results['Samtools'] = '<span style="color:#999999;\">N/A</span>'
+results['BWA'] = '<span style="color:#999999;\">N/A</span>'
+results['bwa-meth'] = '<span style="color:#999999;\">N/A</span>'
+results['Picard MarkDuplicates'] = '<span style="color:#999999;\">N/A</span>'
+results['MethylDackel'] = '<span style="color:#999999;\">N/A</span>'
 results['Qualimap'] = '<span style="color:#999999;\">N/A</span>'
 results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
 
@@ -42,6 +50,11 @@ for k, v in regexes.items():
         match = re.search(v[1], versions)
         if match:
             results[k] = "v{}".format(match.group(1))
+
+# Remove empty keys (defining them above ensures correct order)
+for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel']:
+    if results[k] == '<span style="color:#999999;\">N/A</span>':
+        del(results[k])
 
 # Dump to YAML
 print ('''

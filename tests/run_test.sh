@@ -3,6 +3,7 @@
 # print_usage()
 function print_usage {
   echo -e  "\nUsage:\t$0\n" \
+    "\t\t[-a (aligner to use)\n" \
     "\t\t[-b (build genome references)\n" \
     "\t\t[-r (run in RRBS mode)\n" \
     "\t\t[-n (run in notrim mode)\n" \
@@ -43,7 +44,8 @@ else
 fi
 
 # command line options
-pipelinescript="../bismark.nf"
+pipelinescript="../main.nf"
+aligner="bismark"
 profile="--max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
 if [ -d "${data_dir}/references/BismarkIndex/" ]
 then
@@ -56,8 +58,12 @@ rrbs=""
 notrim=""
 singularityfl=""
 
-while getopts ":brnpuht:d:s:" opt; do
+while getopts ":abrnpuht:d:s:" opt; do
   case $opt in
+    a)
+      echo "Using aligner $OPTARG" >&2
+      aligner=$OPTARG
+      ;;
     b)
       echo "Building genome references" >&2
       refs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
@@ -113,7 +119,7 @@ if [[ $buildrefs ]] && [[ $bwameth ]]; then
   refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
 fi
 
-cmd="nextflow run $pipelinescript -resume $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume --aligner $aligner $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"

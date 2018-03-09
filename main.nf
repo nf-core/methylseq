@@ -17,7 +17,16 @@ vim: syntax=groovy
 /*
  * SET UP CONFIGURATION VARIABLES
  */
-
+params.name = false
+params.project = false
+params.clusterOptions = false
+params.email = false
+params.plaintext_email = false
+params.genome = false
+params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
+params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
+params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
 // Check that Nextflow version is up to date enough
 // try / throw / catch works for NF versions < 0.25 when this was implemented
@@ -46,10 +55,23 @@ if( workflow.profile == 'standard'){
 }
 
 // Validate inputs
-if( params.bismark_index ){
+if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
+    exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismar', 'bwameth'"
+}
+if( params.bismark_index && params.aligner == 'bismark' ){
     bismark_index = Channel
         .fromPath(params.bismark_index)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
+}
+else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
+    bwa_meth_index = file("${params.bwa_meth_index}.bwameth.c2t.bwt")
+    bwa_meth_indices = Channel
+        .fromPath( "${params.bwa_meth_index}*" )
+        .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
+}
+else if( params.fasta_index && params.aligner == 'bwameth' ){
+    fasta_index = file(params.fasta_index)
+    if( !fasta_index.exists() ) exit 1, "Fasta index file not found: ${params.fasta_index}"
 }
 else if ( params.fasta ){
     fasta = file(params.fasta)
@@ -126,9 +148,11 @@ log.info "=================================================="
 def summary = [:]
 summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
+summary['Aligner']        = params.aligner
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
+if(params.bwa_meth_index) summary['BWA-Meth Index'] = params.bwa_meth_index
 else if(params.fasta)    summary['Fasta Ref'] = params.fasta
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
@@ -146,6 +170,8 @@ summary["Trim 3' R2"] = params.three_prime_clip_r2
 summary['Deduplication']  = params.nodedup || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
+if(params.mindepth) summary['Minimum Depth'] = params.mindepth
+if(params.ignoreFlags) summary['MethylDackel'] = 'Ignoring SAM Flags'
 summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
@@ -173,7 +199,7 @@ log.info "========================================="
 /*
  * PREPROCESSING - Build Bismark index
  */
-if(!params.bismark_index && fasta){
+if(!params.bismark_index && params.fasta && params.aligner == 'bismark'){
     process makeBismarkIndex {
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
@@ -189,6 +215,50 @@ if(!params.bismark_index && fasta){
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
         bismark_genome_preparation BismarkIndex
+        """
+    }
+}
+
+
+/*
+ * PREPROCESSING - Build bwa-mem index
+ */
+if(!params.bwa_meth_index && params.fasta && params.aligner == 'bwameth'){
+    process makeBwaMemIndex {
+        tag fasta
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
+
+        input:
+        file fasta from fasta
+
+        output:
+        file "${fasta}.bwameth.c2t.bwt" into bwa_meth_index
+        file "${fasta}*" into bwa_meth_indices
+
+        script:
+        """
+        bwameth.py index $fasta
+        """
+    }
+}
+
+/*
+ * PREPROCESSING - Index Fasta file
+ */
+if(!params.fasta_index && params.fasta && params.aligner == 'bwameth'){
+    process makeFastaIndex {
+        tag fasta
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
+
+        input:
+        file fasta
+
+        output:
+        file "${fasta}.fai" into fasta_index
+
+        script:
+        """
+        samtools faidx $fasta
         """
     }
 }
@@ -258,224 +328,391 @@ if(params.notrim){
 }
 
 /*
- * STEP 3 - align with Bismark
+ * STEP 3.1 - align with Bismark
  */
-process bismark_align {
-    tag "$name"
-    publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
-        saveAs: {filename ->
-            if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
-            else if (filename.indexOf(".bam") == -1) "logs/$filename"
-            else params.saveAlignedIntermediates || params.nodedup || params.rrbs ? filename : null
-        }
-
-    input:
-    set val(name), file(reads) from trimmed_reads
-    file index from bismark_index.collect()
-
-    output:
-    file "*.bam" into bam, bam_2
-    file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-    if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
-
-    script:
-    pbat = params.pbat ? "--pbat" : ''
-    non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
-    unmapped = params.unmapped ? "--unmapped" : ''
-    mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
-    multicore = ''
-    if (task.cpus){
-        // Numbers based on recommendation by Felix for a typical mouse genome
-        if(params.single_cell || params.zymo || params.non_directional){
-            cpu_per_multicore = 5
-            mem_per_multicore = (18.GB).toBytes()
-        } else {
-            cpu_per_multicore = 3
-            mem_per_multicore = (13.GB).toBytes()
-        }
-        // How many multicore splits can we afford with the cpus we have?
-        ccore = ((task.cpus as int) / cpu_per_multicore) as int
-        // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
-        try {
-            tmem = (task.memory as nextflow.util.MemoryUnit).toBytes()
-            mcore = (tmem / mem_per_multicore) as int
-            ccore = Math.min(ccore, mcore)
-        } catch (all) {
-            log.debug "Not able to define bismark align multicore based on available memory"
-        }
-        if(ccore > 1){
-          multicore = "--multicore $ccore"
-        }
-    }
-    if (params.singleEnd) {
-        """
-        bismark \\
-            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-            --genome $index \\
-            $reads
-        """
-    } else {
-        """
-        bismark \\
-            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-            --genome $index \\
-            -1 ${reads[0]} \\
-            -2 ${reads[1]}
-        """
-    }
-}
-
-/*
- * STEP 4 - Bismark deduplicate
- */
-if (params.nodedup || params.rrbs) {
-    bam.into { bam_dedup; bam_dedup_qualimap }
-    bismark_dedup_log_1 = Channel.from(false)
-    bismark_dedup_log_2 = Channel.from(false)
-    bismark_dedup_log_3 = Channel.from(false)
-} else {
-    process bismark_deduplicate {
-        tag "${bam.baseName}"
-        publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
-            saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
+if(params.aligner == 'bismark'){
+    process bismark_align {
+        tag "$name"
+        publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
+            saveAs: {filename ->
+                if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
+                else if (filename.indexOf(".bam") == -1) "logs/$filename"
+                else params.saveAlignedIntermediates || params.nodedup || params.rrbs ? filename : null
+            }
 
         input:
-        file bam
+        set val(name), file(reads) from trimmed_reads
+        file index from bismark_index.collect()
 
         output:
-        file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
-        file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+        file "*.bam" into bam, bam_2
+        file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
+        if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
 
         script:
+        pbat = params.pbat ? "--pbat" : ''
+        non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
+        unmapped = params.unmapped ? "--unmapped" : ''
+        mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
+        multicore = ''
+        if (task.cpus){
+            // Numbers based on recommendation by Felix for a typical mouse genome
+            if(params.single_cell || params.zymo || params.non_directional){
+                cpu_per_multicore = 5
+                mem_per_multicore = (18.GB).toBytes()
+            } else {
+                cpu_per_multicore = 3
+                mem_per_multicore = (13.GB).toBytes()
+            }
+            // How many multicore splits can we afford with the cpus we have?
+            ccore = ((task.cpus as int) / cpu_per_multicore) as int
+            // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
+            try {
+                tmem = (task.memory as nextflow.util.MemoryUnit).toBytes()
+                mcore = (tmem / mem_per_multicore) as int
+                ccore = Math.min(ccore, mcore)
+            } catch (all) {
+                log.debug "Not able to define bismark align multicore based on available memory"
+            }
+            if(ccore > 1){
+              multicore = "--multicore $ccore"
+            }
+        }
         if (params.singleEnd) {
             """
-            deduplicate_bismark -s --bam $bam
+            bismark \\
+                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+                --genome $index \\
+                $reads
             """
         } else {
             """
-            deduplicate_bismark -p --bam $bam
+            bismark \\
+                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+                --genome $index \\
+                -1 ${reads[0]} \\
+                -2 ${reads[1]}
             """
         }
     }
-}
 
-/*
- * STEP 5 - Bismark methylation extraction
- */
-process bismark_methXtract {
-    tag "${bam.baseName}"
-    publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
-        saveAs: {filename ->
-            if (filename.indexOf("splitting_report.txt") > 0) "logs/$filename"
-            else if (filename.indexOf("M-bias") > 0) "m-bias/$filename"
-            else if (filename.indexOf(".cov") > 0) "methylation_coverage/$filename"
-            else if (filename.indexOf("bedGraph") > 0) "bedGraph/$filename"
-            else "methylation_calls/$filename"
-        }
-
-    input:
-    file bam from bam_dedup
-
-    output:
-    file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
-    file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
-    file '*.{png,gz}' into bismark_methXtract_results
-
-    script:
-    comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
-    multicore = ''
-    if (task.cpus){
-        // Numbers based on Bismark docs
-        ccore = ((task.cpus as int) / 10) as int
-        if(ccore > 1){
-          multicore = "--multicore $ccore"
-        }
-    }
-    buffer = ''
-    if (task.memory){
-        mbuffer = (task.memory as nextflow.util.MemoryUnit) - 2.GB
-        // only set if we have more than 6GB available
-        if(mbuffer.compareTo(4.GB) == 1){
-          buffer = "--buffer_size ${mbuffer.toGiga()}G"
-        }
-    }
-    if (params.singleEnd) {
-        """
-        bismark_methylation_extractor $comprehensive \\
-            $multicore $buffer \\
-            --bedGraph \\
-            --counts \\
-            --gzip \\
-            -s \\
-            --report \\
-            $bam
-        """
+    /*
+     * STEP 4 - Bismark deduplicate
+     */
+    if (params.nodedup || params.rrbs) {
+        bam.into { bam_dedup; bam_dedup_qualimap }
+        bismark_dedup_log_1 = Channel.from(false)
+        bismark_dedup_log_2 = Channel.from(false)
+        bismark_dedup_log_3 = Channel.from(false)
     } else {
+        process bismark_deduplicate {
+            tag "${bam.baseName}"
+            publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
+                saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
+
+            input:
+            file bam
+
+            output:
+            file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
+            file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+
+            script:
+            if (params.singleEnd) {
+                """
+                deduplicate_bismark -s --bam $bam
+                """
+            } else {
+                """
+                deduplicate_bismark -p --bam $bam
+                """
+            }
+        }
+    }
+
+    /*
+     * STEP 5 - Bismark methylation extraction
+     */
+    process bismark_methXtract {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
+            saveAs: {filename ->
+                if (filename.indexOf("splitting_report.txt") > 0) "logs/$filename"
+                else if (filename.indexOf("M-bias") > 0) "m-bias/$filename"
+                else if (filename.indexOf(".cov") > 0) "methylation_coverage/$filename"
+                else if (filename.indexOf("bedGraph") > 0) "bedGraph/$filename"
+                else "methylation_calls/$filename"
+            }
+
+        input:
+        file bam from bam_dedup
+
+        output:
+        file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
+        file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
+        file '*.{png,gz}' into bismark_methXtract_results
+
+        script:
+        comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+        multicore = ''
+        if (task.cpus){
+            // Numbers based on Bismark docs
+            ccore = ((task.cpus as int) / 10) as int
+            if(ccore > 1){
+              multicore = "--multicore $ccore"
+            }
+        }
+        buffer = ''
+        if (task.memory){
+            mbuffer = (task.memory as nextflow.util.MemoryUnit) - 2.GB
+            // only set if we have more than 6GB available
+            if(mbuffer.compareTo(4.GB) == 1){
+              buffer = "--buffer_size ${mbuffer.toGiga()}G"
+            }
+        }
+        if (params.singleEnd) {
+            """
+            bismark_methylation_extractor $comprehensive \\
+                $multicore $buffer \\
+                --bedGraph \\
+                --counts \\
+                --gzip \\
+                -s \\
+                --report \\
+                $bam
+            """
+        } else {
+            """
+            bismark_methylation_extractor $comprehensive \\
+                $multicore $buffer \\
+                --ignore_r2 2 \\
+                --ignore_3prime_r2 2 \\
+                --bedGraph \\
+                --counts \\
+                --gzip \\
+                -p \\
+                --no_overlap \\
+                --report \\
+                $bam
+            """
+        }
+    }
+
+
+    /*
+     * STEP 6 - Bismark Sample Report
+     */
+    process bismark_report {
+        tag "$name"
+        publishDir "${params.outdir}/bismark_reports", mode: 'copy'
+
+        input:
+        file bismark_align_log_1
+        file bismark_dedup_log_1
+        file bismark_splitting_report_1
+        file bismark_mbias_1
+
+        output:
+        file '*{html,txt}' into bismark_reports_results
+
+        script:
+        name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
         """
-        bismark_methylation_extractor $comprehensive \\
-            $multicore $buffer \\
-            --ignore_r2 2 \\
-            --ignore_3prime_r2 2 \\
-            --bedGraph \\
-            --counts \\
-            --gzip \\
-            -p \\
-            --no_overlap \\
-            --report \\
-            $bam
+        bismark2report \\
+            --alignment_report $bismark_align_log_1 \\
+            --dedup_report $bismark_dedup_log_1 \\
+            --splitting_report $bismark_splitting_report_1 \\
+            --mbias_report $bismark_mbias_1
         """
     }
+
+    /*
+     * STEP 7 - Bismark Summary Report
+     */
+    process bismark_summary {
+        publishDir "${params.outdir}/bismark_summary", mode: 'copy'
+
+        input:
+        file ('*') from bam_2.collect()
+        file ('*') from bismark_align_log_2.collect()
+        file ('*') from bismark_dedup_log_2.collect()
+        file ('*') from bismark_splitting_report_2.collect()
+        file ('*') from bismark_mbias_2.collect()
+
+        output:
+        file '*{html,txt}' into bismark_summary_results
+
+        script:
+        """
+        bismark2summary
+        """
+    }
+} // End of bismark processing block
+else {
+    bismark_align_log_3 = Channel.from(false)
+    bismark_dedup_log_3 = Channel.from(false)
+    bismark_splitting_report_3 = Channel.from(false)
+    bismark_mbias_3 = Channel.from(false)
+    bismark_reports_results = Channel.from(false)
+    bismark_summary_results = Channel.from(false)
 }
 
 
 /*
- * STEP 6 - Bismark Sample Report
+ * Process with bwa-mem and assorted tools
  */
-process bismark_report {
-    tag "$name"
-    publishDir "${params.outdir}/bismark_reports", mode: 'copy'
+if(params.aligner == 'bwamem'){
+    process bwamem_align {
+        tag "$name"
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
 
-    input:
-    file bismark_align_log_1
-    file bismark_dedup_log_1
-    file bismark_splitting_report_1
-    file bismark_mbias_1
+        input:
+        set val(name), file(reads) from trimmed_reads
+        file index from bwa_meth_index
+        file bwa_meth_indices from bwa_meth_indices
 
-    output:
-    file '*{html,txt}' into bismark_reports_results
+        output:
+        file '*.bam' into bam_aligned, bam_flagstat
 
-    script:
-    name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
-    """
-    bismark2report \\
-        --alignment_report $bismark_align_log_1 \\
-        --dedup_report $bismark_dedup_log_1 \\
-        --splitting_report $bismark_splitting_report_1 \\
-        --mbias_report $bismark_mbias_1
-    """
+        script:
+        fasta = index.toString() - '.bwameth.c2t.bwt'
+        prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
+        """
+        set -o pipefail   # Capture exit codes from bwa-meth
+        bwameth.py \\
+            --threads ${task.cpus} \\
+            --reference $fasta \\
+            $reads | samtools view -bS - > ${prefix}.bam
+        """
+    }
+
+
+    /*
+     * STEP 4.1 - samtools flagstat on samples
+     */
+    process samtools_flagstat {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
+
+        input:
+        file bam from bam_flagstat
+
+        output:
+        file "${bam.baseName}_flagstat.txt" into flagstat_results
+        file "${bam.baseName}_stats.txt" into samtools_stats_results
+
+        script:
+        """
+        samtools flagstat $bam > ${bam.baseName}_flagstat.txt
+        samtools stats $bam > ${bam.baseName}_stats.txt
+        """
+    }
+    /*
+     * STEP 4.2 - sort and index alignments
+     */
+    process samtools_sort {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
+
+        executor 'local'
+
+        input:
+        file bam from bam_aligned
+
+        output:
+        file "${bam.baseName}.sorted.bam" into bam_sorted, bam_for_index
+
+        script:
+        """
+        samtools sort \\
+            $bam \\
+            -m ${task.memory.toBytes() / task.cpus} \\
+            -@ ${task.cpus} \\
+            > ${bam.baseName}.sorted.bam
+        """
+    }
+    /*
+     * STEP 4.3 - sort and index alignments
+     */
+    process samtools_index {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
+
+        input:
+        file bam from bam_for_index
+
+        output:
+        file "${bam}.bai" into bam_index
+
+        script:
+        """
+        samtools index $bam
+        """
+    }
+
+    /*
+     * STEP 5 - Mark duplicates
+     */
+    process markDuplicates {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy'
+
+        input:
+        file bam from bam_sorted
+
+        output:
+        file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
+        file "${bam.baseName}.markDups_metrics.txt" into picard_results
+
+        script:
+        """
+        java -Xmx2g -jar \$PICARD_HOME/picard.jar MarkDuplicates \\
+            INPUT=$bam \\
+            OUTPUT=${bam.baseName}.markDups.bam \\
+            METRICS_FILE=${bam.baseName}.markDups_metrics.txt \\
+            REMOVE_DUPLICATES=false \\
+            ASSUME_SORTED=true \\
+            PROGRAM_RECORD_ID='null' \\
+            VALIDATION_STRINGENCY=LENIENT
+
+        # Print version number to standard out
+        echo "File name: $bam Picard version "\$(java -Xmx2g -jar \$PICARD_HOME/picard.jar  MarkDuplicates --version 2>&1)
+        """
+    }
+
+    /*
+     * STEP 6 - extract methylation with MethylDackel
+     */
+    process methyldackel {
+        tag "${bam.baseName}"
+        publishDir "${params.outdir}/MethylDackel", mode: 'copy'
+
+        input:
+        file bam from bam_md
+        file fasta from fasta
+        file fasta_index from fasta
+
+        output:
+        file '*' into methyldackel_results
+
+        script:
+        allcontexts = params.comprehensive ? '--CHG --CHH' : ''
+        mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
+        ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
+        """
+        MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
+        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
+        """
+    }
+
+} // end of bwa-meth if block
+else {
+    flagstat_results = Channel.from(false)
+    samtools_stats_results = Channel.from(false)
+    picard_results = Channel.from(false)
+    methyldackel_results = Channel.from(false)
 }
 
-/*
- * STEP 7 - Bismark Summary Report
- */
-process bismark_summary {
-    publishDir "${params.outdir}/bismark_summary", mode: 'copy'
-
-    input:
-    file ('*') from bam_2.collect()
-    file ('*') from bismark_align_log_2.collect()
-    file ('*') from bismark_dedup_log_2.collect()
-    file ('*') from bismark_splitting_report_2.collect()
-    file ('*') from bismark_mbias_2.collect()
-
-    output:
-    file '*{html,txt}' into bismark_summary_results
-
-    script:
-    """
-    bismark2summary
-    """
-}
 
 /*
  * STEP 8 - Qualimap
@@ -526,6 +763,10 @@ process get_software_versions {
     bismark2report --version > v_bismark2report.txt
     bismark2summary --version > v_bismark2summary.txt
     samtools --version > v_samtools.txt
+    bwa 2> v_bwa.txt
+    bwameth.py --version > v_bwameth.txt
+    picard MarkDuplicates --version 2> v_picard_markdups.txt
+    MethylDackel --version > v_methyldackel.txt
     qualimap --version > v_qualimap.txt
     multiqc --version > v_multiqc.txt
     scrape_software_versions.py > software_versions_mqc.yaml
@@ -543,16 +784,20 @@ process multiqc {
 
     input:
     file multiqc_config
-    file (fastqc:'fastqc/*') from fastqc_results.collect()
-    file ('trimgalore/*') from trimgalore_results.collect()
-    file ('bismark/*') from bismark_align_log_3.collect()
-    file ('bismark/*') from bismark_dedup_log_3.collect()
-    file ('bismark/*') from bismark_splitting_report_3.collect()
-    file ('bismark/*') from bismark_mbias_3.collect()
-    file ('bismark/*') from bismark_reports_results.collect()
-    file ('bismark/*') from bismark_summary_results.collect()
-    file ('qualimap/*') from qualimap_results.collect()
-    file ('software_versions/*') from software_versions_yaml.collect()
+    file (fastqc:'fastqc/*') from fastqc_results.toList()
+    file ('trimgalore/*') from trimgalore_results.toList()
+    file ('bismark/*') from bismark_align_log_3.toList()
+    file ('bismark/*') from bismark_dedup_log_3.toList()
+    file ('bismark/*') from bismark_splitting_report_3.toList()
+    file ('bismark/*') from bismark_mbias_3.toList()
+    file ('bismark/*') from bismark_reports_results.toList()
+    file ('bismark/*') from bismark_summary_results.toList()
+    file ('samtools/*') from flagstat_results.flatten().toList()
+    file ('samtools/*') from samtools_stats_results.flatten().toList()
+    file ('picard/*') from picard_results.flatten().toList()
+    file ('methyldackel/*') from methyldackel_results.flatten().toList()
+    file ('qualimap/*') from qualimap_results.toList()
+    file ('software_versions/*') from software_versions_yaml.toList()
 
     output:
     file "*_report.html" into multiqc_report

@@ -24,16 +24,21 @@ install:
 
 env:
   # Test with minimum supported version of Nextflow
-  - NXF_VER=0.25.1 CLFLAGS=""       # Basic run
-  - NXF_VER=0.25.1 CLFLAGS="-r"     # Run, RRBS mode
-  - NXF_VER=0.25.1 CLFLAGS="-n"     # Run, no-trimming mode
+  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS=""       # Basic run
+  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS="-r"     # Run, RRBS mode
+  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS="-n"     # Run, no-trimming mode
   # Test with the latest version of nextflow
-  - CLFLAGS=""       # Basic run
-  - CLFLAGS="-r"     # Run, RRBS mode
-  - CLFLAGS="-n"     # Run, no-trimming mode
-  # Commented out until I figure out how to handle multiple docker images nicely
-  # - CLFLAGS="-p"     # BWAmeth use existing ref genome
-  # - CLFLAGS="-p -b"  # BWAmeth run, build reference genome
+  - ALIGNER=bismark CLFLAGS=""       # Basic run
+  - ALIGNER=bismark CLFLAGS="-r"     # Run, RRBS mode
+  - ALIGNER=bismark CLFLAGS="-n"     # Run, no-trimming mode
+  # Test with minimum supported version of Nextflow
+  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS=""       # Basic run
+  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS="-r"     # Run, RRBS mode
+  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS="-n"     # Run, no-trimming mode
+  # Test with the latest version of nextflow
+  - ALIGNER=bwameth CLFLAGS=""       # Basic run
+  - ALIGNER=bwameth CLFLAGS="-r"     # Run, RRBS mode
+  - ALIGNER=bwameth CLFLAGS="-n"     # Run, no-trimming mode
 
 script:
   - "nf-core lint ${TRAVIS_BUILD_DIR}"
