@@ -1,0 +1,17 @@
+name: nfcore-methylseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # Default bismark
+  - fastqc=0.11.5
+  - trim-galore=0.4.5
+  - samtools=1.7
+  - bowtie2=2.3.4.1
+  - bismark=0.19.0
+  - qualimap=2.2.2a
+  - multiqc=1.4
+  # bwa-meth aligner
+  - picard=2.17.8
+  - bwameth=0.2.0
+  - methyldackel=0.3.0
