@@ -23,6 +23,11 @@ install:
   - cd ${TRAVIS_BUILD_DIR}
 
 env:
+  # Test with minimum supported version of Nextflow
+  - NXF_VER=0.25.1 CLFLAGS=""       # Basic run
+  - NXF_VER=0.25.1 CLFLAGS="-r"     # Run, RRBS mode
+  - NXF_VER=0.25.1 CLFLAGS="-n"     # Run, no-trimming mode
+  # Test with the latest version of nextflow
   - CLFLAGS=""       # Basic run
   - CLFLAGS="-r"     # Run, RRBS mode
   - CLFLAGS="-n"     # Run, no-trimming mode
