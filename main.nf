@@ -64,7 +64,6 @@ if( params.bismark_index && params.aligner == 'bismark' ){
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
 }
 else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
-    bwa_meth_index = file("${params.bwa_meth_index}.bwameth.c2t.bwt")
     bwa_meth_indices = Channel
         .fromPath( "${params.bwa_meth_index}*" )
         .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
@@ -152,7 +151,7 @@ summary['Aligner']        = params.aligner
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
-if(params.bwa_meth_index) summary['BWA-Meth Index'] = params.bwa_meth_index
+if(params.bwa_meth_index) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
 else if(params.fasta)    summary['Fasta Ref'] = params.fasta
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
@@ -568,14 +567,13 @@ if(params.aligner == 'bwameth'){
 
         input:
         set val(name), file(reads) from trimmed_reads
-        file index from bwa_meth_index
         file bwa_meth_indices from bwa_meth_indices
 
         output:
         file '*.bam' into bam_aligned, bam_flagstat
 
         script:
-        fasta = index.toString() - '.bwameth.c2t.bwt'
+        fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
         """
         set -o pipefail   # Capture exit codes from bwa-meth
@@ -670,7 +668,7 @@ if(params.aligner == 'bwameth'){
 
             script:
             """
-            java -Xmx2g -jar \$PICARD_HOME/picard.jar MarkDuplicates \\
+            picard MarkDuplicates \\
                 INPUT=$bam \\
                 OUTPUT=${bam.baseName}.markDups.bam \\
                 METRICS_FILE=${bam.baseName}.markDups_metrics.txt \\
@@ -692,7 +690,7 @@ if(params.aligner == 'bwameth'){
         input:
         file bam from bam_md
         file fasta from fasta
-        file fasta_index from fasta
+        file fasta_index from fasta_index
 
         output:
         file '*' into methyldackel_results
@@ -753,8 +751,8 @@ process get_software_versions {
 
     script:
     """
-    echo $params.version > v_ngi_methylseq.txt
-    echo $workflow.nextflow.version > v_nextflow.txt
+    echo "$params.version" > v_ngi_methylseq.txt
+    echo "$workflow.nextflow.version" > v_nextflow.txt
     bismark_genome_preparation --version > v_bismark_genome_preparation.txt
     fastqc --version > v_fastqc.txt
     cutadapt --version > v_cutadapt.txt
@@ -781,12 +779,11 @@ process get_software_versions {
  * STEP 9 - MultiQC
  */
 process multiqc {
-    tag "$prefix"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
     file multiqc_config
-    file (fastqc:'fastqc/*') from fastqc_results.toList()
+    file ('fastqc/*') from fastqc_results.toList()
     file ('trimgalore/*') from trimgalore_results.toList()
     file ('bismark/*') from bismark_align_log_3.toList()
     file ('bismark/*') from bismark_dedup_log_3.toList()
@@ -807,7 +804,6 @@ process multiqc {
     file '.command.err' into multiqc_stderr
 
     script:
-    prefix = fastqc[0].toString() - '_fastqc.html' - 'fastqc/'
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
     rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
     """
