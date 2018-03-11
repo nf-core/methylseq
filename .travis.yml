@@ -23,9 +23,9 @@ install:
   - cd ${TRAVIS_BUILD_DIR}
 
 env:
-  - ALIGNER=bismark NXF_VER=0.27.0
+  - ALIGNER=bismark NXF_VER=0.27.6
   - ALIGNER=bismark
-  - ALIGNER=bwameth NXF_VER=0.27.0
+  - ALIGNER=bwameth NXF_VER=0.27.6
   - ALIGNER=bwameth
 
 script:
