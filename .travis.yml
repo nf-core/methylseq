@@ -23,24 +23,14 @@ install:
   - cd ${TRAVIS_BUILD_DIR}
 
 env:
-  # Test with minimum supported version of Nextflow
-  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS=""       # Basic run
-  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS="-r"     # Run, RRBS mode
-  - NXF_VER=0.27.0 ALIGNER=bismark CLFLAGS="-n"     # Run, no-trimming mode
-  # Test with the latest version of nextflow
-  - ALIGNER=bismark CLFLAGS=""       # Basic run
-  - ALIGNER=bismark CLFLAGS="-r"     # Run, RRBS mode
-  - ALIGNER=bismark CLFLAGS="-n"     # Run, no-trimming mode
-  # Test with minimum supported version of Nextflow
-  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS=""       # Basic run
-  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS="-r"     # Run, RRBS mode
-  - NXF_VER=0.27.0 ALIGNER=bwameth CLFLAGS="-n"     # Run, no-trimming mode
-  # Test with the latest version of nextflow
-  - ALIGNER=bwameth CLFLAGS=""       # Basic run
-  - ALIGNER=bwameth CLFLAGS="-r"     # Run, RRBS mode
-  - ALIGNER=bwameth CLFLAGS="-n"     # Run, no-trimming mode
+  - ALIGNER=bismark NXF_VER=0.27.0
+  - ALIGNER=bismark
+  - ALIGNER=bwameth NXF_VER=0.27.0
+  - ALIGNER=bwameth
 
 script:
   - "nf-core lint ${TRAVIS_BUILD_DIR}"
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -b $CLFLAGS" # Run, build reference genome
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh $CLFLAGS"
+  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -b" # Run, build reference genome
+  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER"    # Basic run
+  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -r" # Run, RRBS mode
+  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -n" # Run, no-trimming mode
