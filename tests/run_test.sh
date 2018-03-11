@@ -58,7 +58,7 @@ rrbs=""
 notrim=""
 singularityfl=""
 
-while getopts ":abrnpuht:d:s:" opt; do
+while getopts ":brnpuht:d:s:a:" opt; do
   case $opt in
     a)
       echo "Using aligner $OPTARG" >&2

@@ -56,7 +56,7 @@ if( workflow.profile == 'standard'){
 
 // Validate inputs
 if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
-    exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismar', 'bwameth'"
+    exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
 }
 if( params.bismark_index && params.aligner == 'bismark' ){
     bismark_index = Channel
@@ -561,7 +561,7 @@ else {
 /*
  * Process with bwa-mem and assorted tools
  */
-if(params.aligner == 'bwamem'){
+if(params.aligner == 'bwameth'){
     process bwamem_align {
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
@@ -653,31 +653,33 @@ if(params.aligner == 'bwamem'){
     /*
      * STEP 5 - Mark duplicates
      */
-    process markDuplicates {
-        tag "${bam.baseName}"
-        publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy'
+    if (params.nodedup || params.rrbs) {
+        bam_sorted.into { bam_md; bam_dedup_qualimap }
+        picard_results = Channel.from(false)
+    } else {
+        process markDuplicates {
+            tag "${bam.baseName}"
+            publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy'
 
-        input:
-        file bam from bam_sorted
+            input:
+            file bam from bam_sorted
 
-        output:
-        file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
-        file "${bam.baseName}.markDups_metrics.txt" into picard_results
+            output:
+            file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
+            file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
-        script:
-        """
-        java -Xmx2g -jar \$PICARD_HOME/picard.jar MarkDuplicates \\
-            INPUT=$bam \\
-            OUTPUT=${bam.baseName}.markDups.bam \\
-            METRICS_FILE=${bam.baseName}.markDups_metrics.txt \\
-            REMOVE_DUPLICATES=false \\
-            ASSUME_SORTED=true \\
-            PROGRAM_RECORD_ID='null' \\
-            VALIDATION_STRINGENCY=LENIENT
-
-        # Print version number to standard out
-        echo "File name: $bam Picard version "\$(java -Xmx2g -jar \$PICARD_HOME/picard.jar  MarkDuplicates --version 2>&1)
-        """
+            script:
+            """
+            java -Xmx2g -jar \$PICARD_HOME/picard.jar MarkDuplicates \\
+                INPUT=$bam \\
+                OUTPUT=${bam.baseName}.markDups.bam \\
+                METRICS_FILE=${bam.baseName}.markDups_metrics.txt \\
+                REMOVE_DUPLICATES=false \\
+                ASSUME_SORTED=true \\
+                PROGRAM_RECORD_ID='null' \\
+                VALIDATION_STRINGENCY=LENIENT
+            """
+        }
     }
 
     /*
