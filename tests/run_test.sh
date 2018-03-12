@@ -7,7 +7,6 @@ function print_usage {
     "\t\t[-b (build genome references)\n" \
     "\t\t[-r (run in RRBS mode)\n" \
     "\t\t[-n (run in notrim mode)\n" \
-    "\t\t[-p (run bwameth pipeline)\n" \
     "\t\t[-u (run UPPMAX test)\n" \
     "\t\t[-t <test data directory>]\n" \
     "\t\t[-d <docker image>]\n" \
@@ -51,14 +50,8 @@ fi
 # command line options
 pipelinescript="../main.nf"
 aligner="bismark"
-profile="--max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
-if [ -d "${data_dir}/references/BismarkIndex/" ]
-then
-    refs="--bismark_index ${data_dir}/references/BismarkIndex/"
-else
-    refs="--bismark_index results/reference_genome/BismarkIndex/"
-    echo "Couldn't find Bismark ref index in '${data_dir}/references/BismarkIndex/' - assuming one has been built by a test already"
-fi
+profile="--max_cpus 2 --max_memory '6.GB' --max_time '48.h'"
+customrefs=""
 rrbs=""
 notrim=""
 singularityfl=""
@@ -71,7 +64,7 @@ while getopts ":brnpuht:d:s:a:" opt; do
       ;;
     b)
       echo "Building genome references" >&2
-      refs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+      customrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
       buildrefs=1
       ;;
     r)
@@ -81,11 +74,6 @@ while getopts ":brnpuht:d:s:a:" opt; do
     n)
       echo "Running in no-trimming mode" >&2
       notrim="--notrim"
-      ;;
-    p)
-      echo "Running BWAmeth pipeline" >&2
-      pipelinescript="../bwa-meth.nf --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
-      bwameth=1
       ;;
     u)
       echo "Running UPPMAX config" >&2
@@ -120,8 +108,23 @@ while getopts ":brnpuht:d:s:a:" opt; do
   esac
 done
 
+if [[ ! -z $customrefs ]]; then
+    refs=$customrefs
+elif [ -d "${data_dir}/references/BismarkIndex/" ] && [ "$aligner" == "bismark" ]; then
+    refs="--bismark_index ${data_dir}/references/BismarkIndex/"
+elif [ ! -d "${data_dir}/references/BismarkIndex/" ] && [ "$aligner" == "bismark" ]; then
+    refs="--bismark_index results/reference_genome/BismarkIndex/"
+    echo "Attempting to use a reference genome from previous run in ./results/reference_genome"
+elif [ -d "${data_dir}/references/bwameth_index/" ] && [ "$aligner" == "bwameth" ]; then
+    refs="--bwa_meth_index ${data_dir}/references/bwameth_index/ --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+elif [ ! -d "${data_dir}/references/bwameth_index/" ] && [ "$aligner" == "bwameth" ]; then
+    # Fasta file should always be there, so stick with that for now.
+    refs="--bwa_meth_index results/reference_genome/genome.fa --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+    echo "Attempting to use a reference genome from previous run in ./results/reference_genome/"
+fi
+
 if [[ $buildrefs ]] && [[ $bwameth ]]; then
-  refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
+  refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai"
 fi
 
 cmd="nextflow run $pipelinescript -resume --aligner $aligner $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""

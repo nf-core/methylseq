@@ -72,12 +72,15 @@ else if( params.fasta_index && params.aligner == 'bwameth' ){
     fasta_index = file(params.fasta_index)
     if( !fasta_index.exists() ) exit 1, "Fasta index file not found: ${params.fasta_index}"
 }
-else if ( params.fasta ){
+else if( !params.fasta ) {
+    exit 1, "No reference genome index specified!"
+}
+if ( params.fasta ){
     fasta = file(params.fasta)
     if( !fasta.exists() ) exit 1, "Fasta file not found: ${params.fasta}"
 }
-else {
-    exit 1, "No reference genome specified! Please use --genome, --bismark_index or --fasta"
+else if( params.aligner == 'bwameth') {
+    exit 1, "No Fasta reference specified! This is required by MethylDackel."
 }
 multiqc_config = file(params.multiqc_config)
 
@@ -568,7 +571,7 @@ if(params.aligner == 'bwameth'){
 
         input:
         set val(name), file(reads) from trimmed_reads
-        file bwa_meth_indices from bwa_meth_indices
+        file bwa_meth_indices from bwa_meth_indices.toList()
 
         output:
         file '*.bam' into bam_aligned
@@ -610,7 +613,7 @@ if(params.aligner == 'bwameth'){
         """
         samtools sort \\
             $bam \\
-            -m ${(task.memory.toBytes() / task.cpus) / 2} \\
+            -m ${task.memory.toBytes() / task.cpus} \\
             -@ ${task.cpus} \\
             > ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
