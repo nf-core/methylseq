@@ -610,7 +610,7 @@ if(params.aligner == 'bwameth'){
         """
         samtools sort \\
             $bam \\
-            -m ${task.memory.toBytes() / task.cpus} \\
+            -m ${(task.memory.toBytes() / task.cpus) / 2} \\
             -@ ${task.cpus} \\
             > ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
