@@ -23,8 +23,13 @@ nextflow -v >/dev/null 2>&1 || { echo >&2 "I require nextflow, but it's not inst
 # Detect Travis fork for dockerhub image if we can
 dockerfl=""
 if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
-    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
-    echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
+    echo "Detected repo as '$TRAVIS_REPO_SLUG'"
+    dockerimg="quay.io/"$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    if [[ ! -z "$TRAVIS_BRANCH" ]]; then
+        echo "Detected branch as '$TRAVIS_BRANCH'"
+        dockerimg="$dockerimg:$TRAVIS_BRANCH"
+    fi
+    echo "Using docker image '$dockerimg'"
     dockerfl="-with-docker $dockerimg"
 else
     dockerfl="-with-docker"
