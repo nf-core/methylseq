@@ -1,13 +1,13 @@
 =================================================
- nf-core/MethylSeq: Bisulfite-Seq Best Practice v${version}
+ nf-core/methylseq: Bisulfite-Seq Best Practice v${version}
 =================================================
 Run Name: $runName
 
 <% if (success){
-    out << "## nf-core/MethylSeq execution completed successfully! ##"
+    out << "## nf-core/methylseq execution completed successfully! ##"
 } else {
     out << """####################################################
-## nf-core/MethylSeq execution completed unsuccessfully! ##
+## nf-core/methylseq execution completed unsuccessfully! ##
 ####################################################
 The exit status of the task that caused the workflow execution to fail was: $exitStatus.
 The full error message was:
@@ -28,7 +28,7 @@ Pipeline Configuration:
 <% out << summary.collect{ k,v -> " - $k: $v" }.join("\n") %>
 
 --
-nf-core/MethylSeq is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis at the National Genomics Infrastructure at SciLifeLab Stockholm, Sweden.
+nf-core/methylseq is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis at the National Genomics Infrastructure at SciLifeLab Stockholm, Sweden.
 The pipeline uses Nextflow, a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
-For more information, please see the pipeline homepage: https://github.com/nf-core/MethylSeq
+For more information, please see the pipeline homepage: https://github.com/nf-core/methylseq
 

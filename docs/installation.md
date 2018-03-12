@@ -1,6 +1,6 @@
-# nf-core/MethylSeq Installation
+# nf-core/methylseq Installation
 
-To start using the nf-core/MethylSeq pipeline, there are three steps described below:
+To start using the nf-core/methylseq pipeline, there are three steps described below:
 
 1. [Install Nextflow](#1-install-nextflow)
 2. [Install the pipeline](#2-install-the-pipeline)
@@ -29,14 +29,14 @@ mv nextflow ~/bin
 See [nextflow.io](https://www.nextflow.io/) and [NGI-NextflowDocs](https://github.com/SciLifeLab/NGI-NextflowDocs) for further instructions on how to install and configure Nextflow.
 
 ## 2) Install the Pipeline
-This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `nf-core/MethylSeq` is specified as the pipeline name.
+This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `nf-core/methylseq` is specified as the pipeline name.
 
 If you prefer, you can download the files yourself from GitHub and run them directly:
 
 ```bash
-git clone https://github.com/nf-core/MethylSeq.git
-nextflow run nf-core/MethylSeq/bismark.nf
-nextflow run nf-core/MethylSeq/bwa-meth.nf # Alternative bwa-meth pipeline
+git clone https://github.com/nf-core/methylseq.git
+nextflow run nf-core/methylseq/bismark.nf
+nextflow run nf-core/methylseq/bwa-meth.nf # Alternative bwa-meth pipeline
 ```
 
 ## 3) Pipeline Configuration
@@ -110,7 +110,7 @@ process {
 ```
 
 ### Reference Genomes
-The nf-core/MethylSeq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
+The nf-core/methylseq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
 
 If you don't want to use the illumina iGenomes you can supply either a Bismark reference or a FASTA file. If a Bismark reference is specified, the pipeline won't have to generate it and will be finished quite a bit faster. If a FASTA file is supplied then the Bismark reference will be built when the pipeline starts. Use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future. Use  `--bismark_index` or `--fasta` to specify the paths to the reference.
 

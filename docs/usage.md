@@ -1,8 +1,8 @@
-# nf-core/MethylSeq Usage
+# nf-core/methylseq Usage
 
 ## Bismark and bwa-meth workflow
 
-The nf-core/MethylSeq package is actually two pipelines in one. The default (and most polished) workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) for processing and can be found in `bismark.nf`. Unless specified otherwise, nf-core/MethylSeq will run this pipeline.
+The nf-core/methylseq package is actually two pipelines in one. The default (and most polished) workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) for processing and can be found in `bismark.nf`. Unless specified otherwise, nf-core/methylseq will run this pipeline.
 
 The second included workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackyl](https://github.com/dpryan79/methyldackel) instead of Bismark and can be found in `bwa-meth.nf`. To run this workflow, you must download the repository files and explicitly call `nextflow run /path/to/files/bwa-meth.nf`. Note that this workflow has not been tested to the same extent and may have bugs.
 
@@ -12,7 +12,7 @@ All of the documentation refers to the Bismark workflow at this stage, though mo
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/MethylSeq --genome GRCh37 --reads '*_R{1,2}.fastq.gz' -profile docker
+nextflow run nf-core/methylseq --genome GRCh37 --reads '*_R{1,2}.fastq.gz' -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile (Swedish UPPMAX users use `-profile uppmax`). See below for more information about profiles.
