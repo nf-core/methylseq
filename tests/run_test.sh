@@ -3,10 +3,10 @@
 # print_usage()
 function print_usage {
   echo -e  "\nUsage:\t$0\n" \
+    "\t\t[-a (aligner to use)\n" \
     "\t\t[-b (build genome references)\n" \
     "\t\t[-r (run in RRBS mode)\n" \
     "\t\t[-n (run in notrim mode)\n" \
-    "\t\t[-p (run bwameth pipeline)\n" \
     "\t\t[-u (run UPPMAX test)\n" \
     "\t\t[-t <test data directory>]\n" \
     "\t\t[-d <docker image>]\n" \
@@ -22,9 +22,16 @@ nextflow -v >/dev/null 2>&1 || { echo >&2 "I require nextflow, but it's not inst
 # Detect Travis fork for dockerhub image if we can
 dockerfl=""
 if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
-    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
-    echo "Detected repo as '$TRAVIS_REPO_SLUG' - using docker image '$dockerimg'"
+    echo "Detected repo as '$TRAVIS_REPO_SLUG'"
+    dockerimg="quay.io/"$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    if [[ ! -z "$TRAVIS_BRANCH" ]]; then
+        echo "Detected branch as '$TRAVIS_BRANCH'"
+        dockerimg="$dockerimg:$TRAVIS_BRANCH"
+    fi
+    echo "Using docker image '$dockerimg'"
     dockerfl="-with-docker $dockerimg"
+else
+    dockerfl="-with-docker"
 fi
 
 # Look for an existing test data directory
@@ -41,24 +48,23 @@ else
 fi
 
 # command line options
-pipelinescript="../bismark.nf"
-profile="-profile docker --max_cpus 2 --max_memory '7.GB' --max_time '48.h'"
-if [ -d "${data_dir}/references/BismarkIndex/" ]
-then
-    refs="--bismark_index ${data_dir}/references/BismarkIndex/"
-else
-    refs="--bismark_index results/reference_genome/BismarkIndex/"
-    echo "Couldn't find Bismark ref index in '${data_dir}/references/BismarkIndex/' - assuming one has been built by a test already"
-fi
+pipelinescript="../main.nf"
+aligner="bismark"
+profile="--max_cpus 2 --max_memory '6.GB' --max_time '48.h'"
+customrefs=""
 rrbs=""
 notrim=""
 singularityfl=""
 
-while getopts ":brnpuht:d:s:" opt; do
+while getopts ":brnpuht:d:s:a:" opt; do
   case $opt in
+    a)
+      echo "Using aligner $OPTARG" >&2
+      aligner=$OPTARG
+      ;;
     b)
       echo "Building genome references" >&2
-      refs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+      customrefs="--saveReference --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
       buildrefs=1
       ;;
     r)
@@ -68,11 +74,6 @@ while getopts ":brnpuht:d:s:" opt; do
     n)
       echo "Running in no-trimming mode" >&2
       notrim="--notrim"
-      ;;
-    p)
-      echo "Running BWAmeth pipeline" >&2
-      pipelinescript="../bwa-meth.nf --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
-      bwameth=1
       ;;
     u)
       echo "Running UPPMAX config" >&2
@@ -107,14 +108,26 @@ while getopts ":brnpuht:d:s:" opt; do
   esac
 done
 
-if [[ $buildrefs ]] && [[ $bwameth ]]; then
-  refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai --bwa_meth_index results/reference_genome/genome.fa"
+if [[ ! -z $customrefs ]]; then
+    refs=$customrefs
+elif [ -d "${data_dir}/references/BismarkIndex/" ] && [ "$aligner" == "bismark" ]; then
+    refs="--bismark_index ${data_dir}/references/BismarkIndex/"
+elif [ ! -d "${data_dir}/references/BismarkIndex/" ] && [ "$aligner" == "bismark" ]; then
+    refs="--bismark_index results/reference_genome/BismarkIndex/"
+    echo "Attempting to use a reference genome from previous run in ./results/reference_genome"
+elif [ -d "${data_dir}/references/bwameth_index/" ] && [ "$aligner" == "bwameth" ]; then
+    refs="--bwa_meth_index ${data_dir}/references/bwameth_index/ --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+elif [ ! -d "${data_dir}/references/bwameth_index/" ] && [ "$aligner" == "bwameth" ]; then
+    # Fasta file should always be there, so stick with that for now.
+    refs="--bwa_meth_index results/reference_genome/genome.fa --fasta ${data_dir}/references/WholeGenomeFasta/genome.fa"
+    echo "Attempting to use a reference genome from previous run in ./results/reference_genome/"
 fi
 
-# Run name
-run_name="Test MethylSeq Run: "$(date +%s)
+if [[ $buildrefs ]] && [[ $bwameth ]]; then
+  refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai"
+fi
 
-cmd="nextflow run $pipelinescript -resume -name \"$run_name\" $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
+cmd="nextflow run $pipelinescript -resume --aligner $aligner $profile $notrim $rrbs $dockerfl $singularityfl $refs --singleEnd --reads \"${data_dir}/SRR389222_sub*.fastq.gz\""
 echo "Starting nextflow... Command:"
 echo $cmd
 echo "-------------------------------------------------------"

@@ -1,6 +1,6 @@
-# NGI-MethylSeq Installation
+# nf-core/MethylSeq Installation
 
-To start using the NGI-MethylSeq pipeline, there are three steps described below:
+To start using the nf-core/MethylSeq pipeline, there are three steps described below:
 
 1. [Install Nextflow](#1-install-nextflow)
 2. [Install the pipeline](#2-install-the-pipeline)
@@ -29,18 +29,45 @@ mv nextflow ~/bin
 See [nextflow.io](https://www.nextflow.io/) and [NGI-NextflowDocs](https://github.com/SciLifeLab/NGI-NextflowDocs) for further instructions on how to install and configure Nextflow.
 
 ## 2) Install the Pipeline
-This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `SciLifeLab/NGI-MethylSeq` is specified as the pipeline name.
+This pipeline itself needs no installation - NextFlow will automatically fetch it from GitHub if `nf-core/MethylSeq` is specified as the pipeline name.
 
 If you prefer, you can download the files yourself from GitHub and run them directly:
 
 ```bash
-git clone https://github.com/SciLifeLab/NGI-MethylSeq.git
-nextflow run NGI-MethylSeq/bismark.nf
-nextflow run NGI-MethylSeq/bwa-meth.nf # Alternative bwa-meth pipeline
+git clone https://github.com/nf-core/MethylSeq.git
+nextflow run nf-core/MethylSeq/bismark.nf
+nextflow run nf-core/MethylSeq/bwa-meth.nf # Alternative bwa-meth pipeline
 ```
 
-## 3.1) Configuration: UPPMAX
-By default, the pipeline is configured to run on the [Swedish UPPMAX](https://www.uppmax.uu.se/) cluster (`milou` / `irma`). As such, you shouldn't need to add any custom configuration - everything _should_ work out of the box.
+## 3) Pipeline Configuration
+By default, the pipeline runs with the `standard` configuration profile. This uses a number of sensible defaults for process requirements and is suitable for running on a simple (if powerful!) basic server. You can see this configuration in [`conf/base.config`](../conf/base.config).
+
+Be warned of two important points about this default configuration:
+
+1. The default profile uses the `local` executor
+    * All jobs are run in the login session. If you're using a simple server, this may be fine. If you're using a compute cluster, this is bad as all jobs will run on the head node.
+2. Nextflow will expect all software to be installed and available on the `PATH`
+
+The default resource requests are all measured against the following default limits:
+
+* `max_memory` = 128.GB
+* `max_cpus` = 16
+* `max_time` = 240.h
+
+To adjust these limits, specify them on the command line with two hyphens, eg. `--max_memory '64.GB'`.
+
+Note that these limits are the maximum to be used _per task_. Nextflow will automatically attempt to parallelise as many jobs as possible given the available resources.
+
+## 3.2) Configuration: Docker and Singularity
+Running the pipeline with the option `-with-docker` tells Nextflow to enable docker for this run. The above base profile already specifies the container to be used (hub.docker.com/r/nf-core/methylseq).
+
+If you don't have Docker available and do have [Singularity](http://singularity.lbl.gov/), instead use `-with-singularity` on the command line.
+
+## 3.3) Configuration: Amazon Cloud
+The pipeline comes with a configuration profile to be used with Amazon AWS. To use it, run the pipeline with `-profile aws`. This tells Nextflow to use the `ignite` job executor and Docker. Note that there are very many different ways to run Nextflow on AWS. This is beyond the scope of this documentation, please see the main Nextflow documentation.
+
+## 3.4) Configuration: UPPMAX
+To run the pipeline on the [Swedish UPPMAX](https://www.uppmax.uu.se/) clusters (`rackham`, `irma`, `bianca` etc), use the command line flag `-profile uppmax`. This tells Nextflow to submit jobs using the SLURM job executor with Singularity for software dependencies.
 
 Note that you will need to specify your UPPMAX project ID when running a pipeline. To do this, use the command line flag `--project <project_ID>`. The pipeline will exit with an error message if you try to run it pipeline with the default UPPMAX config profile without a project.
 
@@ -50,19 +77,14 @@ Note that you will need to specify your UPPMAX project ID when running a pipelin
 params.project = 'project_ID' // eg. b2017123
 ```
 
-## 3.2) Configuration: Other clusters
+## 3.5) Configuration: Other clusters
 It is entirely possible to run this pipeline on other clusters, though you will need to set up your own config file so that the script knows where to find your reference files and how your cluster works.
 
 > If you think that there are other people using the pipeline who would benefit from your configuration (eg. other common cluster setups), please let us know. We can add a new configuration and profile which can used by specifying `-profile <name>` when running the pipeline.
 
 If you are the only person to be running this pipeline, you can create your config file as `~/.nextflow/config` and it will be applied every time you run Nextflow. Alternatively, save the file anywhere and reference it when running the pipeline with `-c path/to/config`.
 
-An empty configuration comes with the pipeline, which should be applied by using the command line flag `-profile none`. This prevents the UPPMAX defaults (above) from being applied and means that you only need to configure the specifics for your system.
-
-### Cluster Environment
-By default, Nextflow uses the `local` executor - in other words, all jobs are run in the login session. If you're using a simple server, this may be fine. If you're using a compute cluster, this is bad as all jobs will run on the head node.
-
-To specify your cluster environment, add the following line to your config file:
+To specify your cluster environment, add the following line to your config file
 
 ```groovy
 process {
@@ -70,9 +92,15 @@ process {
 }
 ```
 
+This can be also be done on the command line:
+
+```
+-e.process={executor='SLURM'}
+```
+
 Many different cluster types are supported by Nextflow. For more information, please see the [Nextflow documentation](https://www.nextflow.io/docs/latest/executor.html).
 
-Note that you may need to specify cluster options, such as a project or queue. To do so, use the `clusterOptions` config option:
+Note that you may need to specify cluster options, such as a project or queue. To do so, use the `clusterOptions` config option.
 
 ```groovy
 process {
@@ -82,7 +110,7 @@ process {
 ```
 
 ### Reference Genomes
-The NGI-MethylSeq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
+The nf-core/MethylSeq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
 
 If you don't want to use the illumina iGenomes you can supply either a Bismark reference or a FASTA file. If a Bismark reference is specified, the pipeline won't have to generate it and will be finished quite a bit faster. If a FASTA file is supplied then the Bismark reference will be built when the pipeline starts. Use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future. Use  `--bismark_index` or `--fasta` to specify the paths to the reference.
 
@@ -103,82 +131,3 @@ params {
   genome = 'YOUR-ID'
 }
 ```
-
-### Software Requirements
-To run the pipeline, several software packages are required. How you satisfy these requirements is essentially up to you and depends on your system.
-
-#### Environment Modules
-If your cluster uses environment modules, the software may already be available. If so, just add lines to your custom config file as follows _(customise module names and versions as appropriate)_:
-
-```groovy
-process {
-  // Main Bismark Pipeline
-  $fastqc.module = ['FastQC']
-  $trim_galore.module = ['TrimGalore']
-  $bismark_align.module = ['samtools/1.3', 'bismark']
-  $bismark_deduplicate.module = ['samtools/1.3', 'bismark']
-  $bismark_methXtract.module = ['samtools/1.3', 'bismark']
-  $bismark_report.module = ['bismark']
-  $bismark_summary.module = ['bismark']
-  $qualimap.module = ['samtools/1.3', 'QualiMap']
-  $multiqc.module = ['MultiQC']
-
-  // Extras for BWA-meth Pipeline
-  $makeBwaMemIndex.module = ['bwa', 'bwa-meth', 'samtools/1.3']
-  $makeFastaIndex.module = ['samtools/1.3']
-  $bwamem_align.module = ['bwa', 'bwa-meth', 'samtools/1.3']
-  $samtools_flagstat.module = ['samtools/1.3']
-  $samtools_sort.module = ['samtools/1.3']
-  $samtools_index.module = ['samtools/1.3']
-  $markDuplicates.module = ['picard/2.0.1']
-  $methyldackel.module = ['MethylDackel']
-}
-```
-
-#### Manual Installation
-If the software is not already available, you will need to install it.
-
-If you are able to use [Docker](https://www.docker.com/), you can use the [sclifelab/ngi-methylseq](https://hub.docker.com/r/scilifelab/ngi-methylseq/) image which comes with all requirements. This is pulled by Nextflow automatically if you use `-profile docker` (see below for [further instructions](#33-configuration-docker)).
-
-We recommend using [Bioconda](https://bioconda.github.io/) to install the required software as the process is quite easy in our experience.
-
-## 3.3) Configuration: Docker and Singularity
-Docker is a great way to run NGI-MethylSeq, as it manages all software installations and allows the pipeline to be run in an identical software environment across a range of systems.
-
-On UPPMAX, we use this pipeline with [Singularity](http://singularity.lbl.gov/) instead of Docker. Singularity similar to Docker, but designed for long-running jobs in HPC environments.
-Singularity images are automatically created from Docker images, so only a Docker image has to be maintained.
-
-Nextflow has [excellent integration](https://www.nextflow.io/docs/latest/docker.html) with Docker and Singularity, and beyond installing Nextflow and Docker / Singularity, not much else is required.
-
-#### Docker
-First, install docker on your system : [Docker Installation Instructions](https://docs.docker.com/engine/installation/)
-
-Then, simply run the analysis pipeline:
-```bash
-nextflow run SciLifeLab/NGI-MethylSeq -profile base -with-docker scilifelab/ngi-methylseq # rest of normal launch command
-```
-
-Nextflow will recognise `SciLifeLab/NGI-MethylSeq` and download the pipeline from GitHub. The `-profile docker` configuration lists the [sclifelab/ngi-methylseq](https://hub.docker.com/r/scilifelab/ngi-methylseq/) image that we have created and is hosted at dockerhub, and this is downloaded.
-
-A reference genome is still required by the pipeline. Specifying a path to a FASTA file is the minimum requirement, a Bismark reference will automatically be generated. See the above [Reference Genomes](#reference-genomes) documentation for instructions on how to configure Nextflow with preset paths to make this easier.
-
-A test suite for docker comes with the pipeline, and can be run by moving to the [`tests` directory](https://github.com/ewels/NGI-MethylSeq/tree/master/tests) and running `./docker_test.sh`. This will download a small lambda genome and some data, and attempt to run the pipeline through docker on that small dataset. This is automatically run using [Travis](https://travis-ci.org/SciLifeLab/NGI-MethylSeq/) whenever changes are made to the pipeline.
-
-#### Singularity
-Running with singularity is very similar. Nextflow will pull the docker image from dockerhub, build a singularity image from this and run using that.
-
-The command is as follows:
-```bash
-nextflow run SciLifeLab/NGI-MethylSeq -profile base -with-singularity docker://scilifelab/ngi-methylseq # rest of normal launch command
-```
-
-
-## 3.4) Configuration: Amazon EC2
-There are multiple ways of running this pipeline over Amazon's EC2 service. Please see the [NGI-RNAseq pipeline docs](https://github.com/SciLifeLab/NGI-RNAseq/blob/master/docs/amazon_web_services.md) for more information.
-
----
-
-[![SciLifeLab](images/SciLifeLab_logo.png)](http://www.scilifelab.se/)
-[![National Genomics Infrastructure](images/NGI_logo.png)](https://ngisweden.scilifelab.se/)
-
----

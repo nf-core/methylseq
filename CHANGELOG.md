@@ -1,6 +1,8 @@
 # NGI-MethylSeq
 
 ## v0.4dev
+* Renaming and moving [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq/) to [nf-core/MethylSeq](https://github.com/nf-core/MethylSeq/)
+* Refactoring multi-core parameters for Bismark alignment and methylation extraction
 * Fix for iGenomes base path in configs
 
 ## [v0.3.1](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3.1) - 2017-09-05
