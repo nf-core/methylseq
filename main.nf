@@ -563,20 +563,20 @@ else {
 if(params.aligner == 'bwameth'){
     process bwamem_align {
         tag "$name"
-        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
+            saveAs: { fn -> params.saveAlignedIntermediates ? fn : null }
 
         input:
         set val(name), file(reads) from trimmed_reads
         file bwa_meth_indices from bwa_meth_indices
 
         output:
-        file '*.bam' into bam_aligned, bam_flagstat
+        file '*.bam' into bam_aligned
 
         script:
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
         """
-        set -o pipefail   # Capture exit codes from bwa-meth
         bwameth.py \\
             --threads ${task.cpus} \\
             --reference $fasta \\
@@ -586,39 +586,25 @@ if(params.aligner == 'bwameth'){
 
 
     /*
-     * STEP 4.1 - samtools flagstat on samples
+     * STEP 4.- samtools flagstat on samples
      */
-    process samtools_flagstat {
+    process samtools_sort_index_flagstat {
         tag "${bam.baseName}"
-        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy'
-
-        input:
-        file bam from bam_flagstat
-
-        output:
-        file "${bam.baseName}_flagstat.txt" into flagstat_results
-        file "${bam.baseName}_stats.txt" into samtools_stats_results
-
-        script:
-        """
-        samtools flagstat $bam > ${bam.baseName}_flagstat.txt
-        samtools stats $bam > ${bam.baseName}_stats.txt
-        """
-    }
-    /*
-     * STEP 4.2 - sort and index alignments
-     */
-    process samtools_sort {
-        tag "${bam.baseName}"
-        publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
-
-        executor 'local'
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
+            saveAs: {filename ->
+                if (filename.indexOf(".txt") > 0) "logs/$filename"
+                else if (params.saveAlignedIntermediates || params.nodedup || params.rrbs) filename
+                else null
+            }
 
         input:
         file bam from bam_aligned
 
         output:
-        file "${bam.baseName}.sorted.bam" into bam_sorted, bam_for_index
+        file "${bam.baseName}.sorted.bam" into bam_sorted
+        file "${bam.baseName}.sorted.bam.bai" into bam_index
+        file "${bam.baseName}_flagstat.txt" into flagstat_results
+        file "${bam.baseName}_stats.txt" into samtools_stats_results
 
         script:
         """
@@ -627,24 +613,9 @@ if(params.aligner == 'bwameth'){
             -m ${task.memory.toBytes() / task.cpus} \\
             -@ ${task.cpus} \\
             > ${bam.baseName}.sorted.bam
-        """
-    }
-    /*
-     * STEP 4.3 - sort and index alignments
-     */
-    process samtools_index {
-        tag "${bam.baseName}"
-        publishDir "${params.outdir}/bwa-mem_alignments_sorted", mode: 'copy'
-
-        input:
-        file bam from bam_for_index
-
-        output:
-        file "${bam}.bai" into bam_index
-
-        script:
-        """
-        samtools index $bam
+        samtools index ${bam.baseName}.sorted.bam
+        samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat.txt
+        samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats.txt
         """
     }
 
@@ -657,13 +628,15 @@ if(params.aligner == 'bwameth'){
     } else {
         process markDuplicates {
             tag "${bam.baseName}"
-            publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy'
+            publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy',
+                saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
             file bam from bam_sorted
 
             output:
             file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
+            file "${bam.baseName}.markDups.bam.bai" into bam_md_bai
             file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
             script:
@@ -676,6 +649,7 @@ if(params.aligner == 'bwameth'){
                 ASSUME_SORTED=true \\
                 PROGRAM_RECORD_ID='null' \\
                 VALIDATION_STRINGENCY=LENIENT
+            samtools index ${bam.baseName}.markDups.bam
             """
         }
     }
@@ -689,6 +663,7 @@ if(params.aligner == 'bwameth'){
 
         input:
         file bam from bam_md
+        file bam_index from bam_md_bai
         file fasta from fasta
         file fasta_index from fasta_index
 
@@ -751,25 +726,25 @@ process get_software_versions {
 
     script:
     """
-    echo "$params.version" > v_ngi_methylseq.txt
-    echo "$workflow.nextflow.version" > v_nextflow.txt
-    bismark_genome_preparation --version > v_bismark_genome_preparation.txt
-    fastqc --version > v_fastqc.txt
-    cutadapt --version > v_cutadapt.txt
-    trim_galore --version > v_trim_galore.txt
-    bismark --version > v_bismark.txt
-    deduplicate_bismark --version > v_deduplicate_bismark.txt
-    bismark_methylation_extractor --version > v_bismark_methylation_extractor.txt
-    bismark2report --version > v_bismark2report.txt
-    bismark2summary --version > v_bismark2summary.txt
-    samtools --version > v_samtools.txt
-    bwa 2> v_bwa.txt
-    bwameth.py --version > v_bwameth.txt
-    picard MarkDuplicates --version 2> v_picard_markdups.txt
-    MethylDackel --version > v_methyldackel.txt
-    qualimap --version > v_qualimap.txt
-    multiqc --version > v_multiqc.txt
-    scrape_software_versions.py > software_versions_mqc.yaml
+    echo "$params.version" &> v_ngi_methylseq.txt
+    echo "$workflow.nextflow.version" &> v_nextflow.txt
+    bismark_genome_preparation --version &> v_bismark_genome_preparation.txt
+    fastqc --version &> v_fastqc.txt
+    cutadapt --version &> v_cutadapt.txt
+    trim_galore --version &> v_trim_galore.txt
+    bismark --version &> v_bismark.txt
+    deduplicate_bismark --version &> v_deduplicate_bismark.txt
+    bismark_methylation_extractor --version &> v_bismark_methylation_extractor.txt
+    bismark2report --version &> v_bismark2report.txt
+    bismark2summary --version &> v_bismark2summary.txt
+    samtools --version &> v_samtools.txt
+    bwa &> v_bwa.txt 2>&1 || true
+    bwameth.py --version &> v_bwameth.txt
+    picard MarkDuplicates --version &> v_picard_markdups.txt 2>&1 || true
+    MethylDackel --version &> v_methyldackel.txt
+    qualimap --version &> v_qualimap.txt
+    multiqc --version &> v_multiqc.txt
+    scrape_software_versions.py &> software_versions_mqc.yaml
     """
 }
 
