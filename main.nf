@@ -571,7 +571,7 @@ if(params.aligner == 'bwameth'){
 
         input:
         set val(name), file(reads) from trimmed_reads
-        file bwa_meth_indices from bwa_meth_indices.toList()
+        file bwa_meth_indices from bwa_meth_indices.collect()
 
         output:
         file '*.bam' into bam_aligned
@@ -627,6 +627,7 @@ if(params.aligner == 'bwameth'){
      */
     if (params.nodedup || params.rrbs) {
         bam_sorted.into { bam_md; bam_dedup_qualimap }
+        bam_index.set { bam_md_bai }
         picard_results = Channel.from(false)
     } else {
         process markDuplicates {
