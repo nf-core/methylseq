@@ -9,12 +9,12 @@ Content-Type: text/html; charset=utf-8
 $email_html
 
 --ngimimeboundary
-Content-Type: image/png;name="MethylSeq_logo.png"
+Content-Type: image/png;name="methylseq_logo.png"
 Content-Transfer-Encoding: base64
 Content-ID: <ngimethylseqlogo>
-Content-Disposition: inline; filename="MethylSeq_logo.png"
+Content-Disposition: inline; filename="methylseq_logo.png"
 
-<% out << new File("$baseDir/assets/MethylSeq_logo.png").
+<% out << new File("$baseDir/assets/methylseq_logo.png").
   bytes.
   encodeBase64().
   toString().

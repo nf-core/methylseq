@@ -1,7 +1,7 @@
 FROM continuumio/miniconda
 MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
 LABEL authors="phil.ewels@scilifelab.se" \
-    description="Docker image containing all requirements for the nf-core/MethylSeq pipeline"
+    description="Docker image containing all requirements for the nf-core/methylseq pipeline"
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml
