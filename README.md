@@ -3,6 +3,13 @@
 [![Build Status](https://travis-ci.org/nf-core/methylseq.svg?branch=master)](https://travis-ci.org/nf-core/methylseq)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.27.6-brightgreen.svg)](https://www.nextflow.io/)
 
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
+[![Docker Repository on Quay](https://img.shields.io/badge/docker-available-green.svg "Docker Repository on Quay")](https://quay.io/repository/nf-core/methylseq)
+![Singularity Container available](
+https://img.shields.io/badge/singularity-available-7E4C74.svg)
+
+
+
 ### Introduction
 
 **nf-core/methylseq** is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis.
