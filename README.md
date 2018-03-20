@@ -2,9 +2,10 @@
 
 [![Build Status](https://travis-ci.org/nf-core/methylseq.svg?branch=master)](https://travis-ci.org/nf-core/methylseq)
 [![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.27.6-brightgreen.svg)](https://www.nextflow.io/)
+[![Gitter](https://img.shields.io/badge/gitter-%20join%20chat%20%E2%86%92-4fb99a.svg)](https://gitter.im/nf-core/Lobby)
 
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
-[![Docker Repository on Quay](https://img.shields.io/badge/docker-available-green.svg "Docker Repository on Quay")](https://quay.io/repository/nf-core/methylseq)
+[![Docker Container available](https://img.shields.io/docker/automated/nf-core/methylseq.svg)](https://hub.docker.com/r/nf-core/methylseq/)
 ![Singularity Container available](
 https://img.shields.io/badge/singularity-available-7E4C74.svg)
 
