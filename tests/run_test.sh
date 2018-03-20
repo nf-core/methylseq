@@ -23,7 +23,7 @@ nextflow -v >/dev/null 2>&1 || { echo >&2 "I require nextflow, but it's not inst
 dockerfl=""
 if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
     echo "Detected repo as '$TRAVIS_REPO_SLUG'"
-    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
+    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}' | sed s/^nf-core/nfcore/)
     if [[ ! -z "$TRAVIS_BRANCH" ]]; then
         echo "Detected branch as '$TRAVIS_BRANCH'"
         dockerimg="$dockerimg:$TRAVIS_BRANCH"
