@@ -21,11 +21,10 @@ nextflow -v >/dev/null 2>&1 || { echo >&2 "I require nextflow, but it's not inst
 
 # Detect Travis fork for dockerhub image if we can
 dockerfl=""
-if [[ ! -z "$TRAVIS_REPO_SLUG" ]]; then
+if [ ! -z "$TRAVIS_REPO_SLUG" ]; then
     echo "Detected repo as '$TRAVIS_REPO_SLUG'"
-    dockerimg="quay.io/"$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}')
-    if [[ ! -z "$TRAVIS_BRANCH" ]]; then
-        echo "Detected branch as '$TRAVIS_BRANCH'"
+    dockerimg=$(echo "$TRAVIS_REPO_SLUG" | awk '{print tolower($0)}' | sed s/^nf-core/nfcore/)
+    if [ ! -z "$TRAVIS_BRANCH" ] && [ "$TRAVIS_BRANCH" != "master"]; then
         dockerimg="$dockerimg:$TRAVIS_BRANCH"
     fi
     echo "Using docker image '$dockerimg'"
@@ -108,7 +107,7 @@ while getopts ":brnpuht:d:s:a:" opt; do
   esac
 done
 
-if [[ ! -z $customrefs ]]; then
+if [ ! -z "$customrefs" ]; then
     refs=$customrefs
 elif [ -d "${data_dir}/references/BismarkIndex/" ] && [ "$aligner" == "bismark" ]; then
     refs="--bismark_index ${data_dir}/references/BismarkIndex/"
@@ -123,7 +122,7 @@ elif [ ! -d "${data_dir}/references/bwameth_index/" ] && [ "$aligner" == "bwamet
     echo "Attempting to use a reference genome from previous run in ./results/reference_genome/"
 fi
 
-if [[ $buildrefs ]] && [[ $bwameth ]]; then
+if [ "$buildrefs" ] && [ "$bwameth" ]; then
   refs="--saveReference --fasta_index ${data_dir}/references/WholeGenomeFasta/genome.fa.fai"
 fi
 
