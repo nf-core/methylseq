@@ -20,7 +20,7 @@ install:
   - cd /tmp/nf-core-tools
   - pip install --user -e .
   # Reset
-  - cd ${TRAVIS_BUILD_DIR}
+  - cd ${TRAVIS_BUILD_DIR}/tests
 
 env:
   - ALIGNER=bismark NXF_VER=0.27.6
@@ -30,7 +30,7 @@ env:
 
 script:
   - "nf-core lint ${TRAVIS_BUILD_DIR}"
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -b" # Run, build reference genome
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER"    # Basic run
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -r" # Run, RRBS mode
-  - "cd ${TRAVIS_BUILD_DIR}/tests && ./run_test.sh -a $ALIGNER -n" # Run, no-trimming mode
+  - "./run_test.sh -a $ALIGNER -b" # Run, build reference genome
+  - "./run_test.sh -a $ALIGNER"    # Basic run
+  - "./run_test.sh -a $ALIGNER -r" # Run, RRBS mode
+  - "./run_test.sh -a $ALIGNER -n" # Run, no-trimming mode
