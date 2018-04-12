@@ -7,7 +7,7 @@ To start using the nf-core/methylseq pipeline, follow the steps below:
     * [Automatic](#21-automatic)
     * [Offline](#22-offline)
     * [Development](#23-development)
-3. [Pipeline configuration](#3-pipeline configuration)
+3. [Pipeline configuration](#3-pipeline-configuration)
     * [Software deps: Docker and Singularity](#31-software-deps-docker-and-singularity)
     * [Software deps: Bioconda](#32-software-deps-bioconda)
     * [Configuration profiles](#33-configuration-profiles)
@@ -42,9 +42,11 @@ This pipeline itself needs no installation - NextFlow will automatically fetch i
 The above method requires an internet connection so that Nextflow can download the pipeline files. If you're running on a system that has no internet connection, you'll need to download and transfer the pipeline files manually:
 
 ```bash
-#TODO: Find correct URL and command
-curl https://github.com/nf-core/methylseq.git
-nextflow run /path/to/pipelines/nf-core-methylseq
+# Download the latest release of the pipeline (see https://github.com/nf-core/methylseq/releases)
+curl -L https://github.com/nf-core/methylseq/archive/1.0.zip -o nf-core-methylseq-v1.0.zip
+unzip nf-core-methylseq-v1.0.zip
+cd /path/to/my/data
+nextflow run /path/to/pipelines/nf-core-methylseq-v1.0 [parameters]
 ```
 
 #### 2.3) Development
@@ -59,6 +61,7 @@ Be warned of two important points about this default configuration:
 
 1. The default profile uses the `local` executor
     * All jobs are run in the login session. If you're using a simple server, this may be fine. If you're using a compute cluster, this is bad as all jobs will run on the head node.
+    * See the [nextflow docs](https://www.nextflow.io/docs/latest/executor.html) for information about running with other hardware backends. Most job scheduler systems are natively supported.
 2. Nextflow will expect all software to be installed and available on the `PATH`
 
 #### 3.1) Software deps: Docker and Singularity
@@ -73,7 +76,7 @@ singularity pull --name nfcore-methylseq-1.4.simg shub://nfcore/methylseq:1.4
 
 Once transferred, use `-with-singularity` but specify the path to the image file:
 
-```
+```bash
 nextflow run /path/to/nf-core-methylseq -with-singularity /path/to/nfcore-methylseq-1.4.simg
 ```
 
@@ -84,10 +87,10 @@ If you're unable to use either Docker or Singularity but you have conda installe
 ```bash
 conda env create -f environment.yml
 conda clean -a # Recommended, not essential
-source activate nfcore-methylseq
+source activate nfcore-methylseq-1.3 # Name depends on version
 ```
 
-The `environment.yml` file is the one that is packaged with the pipeline (you may need to download this file).
+The [`environment.yml`](../environment.yml) file is packaged with the pipeline. Note that you may need to download this file from the [GitHub project page](https://github.com/nf-core/methylseq) if nextflow is automatically fetching the pipeline files. Ensure that the bioconda environment file version matches the pipeline version that you run.
 
 
 #### 3.3) Configuration profiles
@@ -103,10 +106,10 @@ If you think that there are other people using the pipeline who would benefit fr
 The pipeline comes with several such config profiles - see the installation appendices and usage documentation for more information.
 
 ## 4) Reference Genomes
-The nf-core/methylseq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [illumina iGenomes](https://support.illumina.com/sequencing/sequencing_software/igenome.html).
+The nf-core/methylseq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [AWS-iGenomes](https://ewels.github.io/AWS-iGenomes/).
 
-If you don't want to use the illumina iGenomes you can supply either a Bismark / BWA reference or a FASTA file. This can be done on the command line (see the [usage docs](usage.md#)).
-Alternatively, you can add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
+Alternatively, ou can supply either a Bismark / BWA reference or a FASTA file. This can be done on the command line (see the [usage docs](usage.md#supplying-reference-indices)).
+You can use the same pipeline config framework as used with iGenomes to specify multiple referenes of your own. Add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
 
 ```groovy
 params {
@@ -138,3 +141,5 @@ Note that you will need to specify your UPPMAX project ID when running a pipelin
 ```groovy
 params.project = 'project_ID' // eg. b2017123
 ```
+
+Bianca users - see the above docs about using the pipeline and singularity containers offline.

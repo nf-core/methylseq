@@ -1,5 +1,50 @@
 # nf-core/methylseq Usage
 
+## Table of contents
+
+* [Introduction](#bismark-and-bwa-meth-workflow)
+* [Running the pipeline](#running-the-pipeline)
+* [Inputs and outputs](#inputs-and-outputs)
+    * [`--reads`](#--reads)
+    * [`--singleEnd`](#--singleend)
+    * [`--outdir`](#--outdir)
+* [Software](#software)
+    * [`-with-singularity`](#-with-singularity)
+    * [`-with-docker`](#-with-docker)
+* [Reference Genomes](#reference-genomes)
+    * [`--genome`](#--genome)
+    * [Supplying reference indices](#supplying-reference-indices)
+    * [`--saveReference`](#--savereference)
+* [Adapter Trimming](#adapter-trimming)
+* [`--rrbs`](#--rrbs)
+* [`--notrim`](#--notrim)
+* [`--nodedup`](#--nodedup)
+* [Preset configurations](#preset-configurations)
+    * [`-profile`](#-profile)
+* [Additional parameters](#additional-parameters)
+    * [`--pbat`](#--pbat)
+    * [`--non_directional`](#--non_directional)
+    * [`--comprehensive`](#--comprehensive)
+    * [`--relaxMismatches` and `--numMismatches`](##--relaxmismatches-and---nummismatches)
+    * [`--unmapped`](#--unmapped)
+    * [`--saveTrimmed`](#--savetrimmed)
+    * [`--saveAlignedIntermediates`](#--savealignedintermediates)
+    * [`--mindepth`](#--mindepth)
+    * [`--ignoreFlags`](#--ignoreflags)
+* [Job Resources](#job-resources)
+    * [Automatic resubmission](#automatic-resubmission)
+    * [Maximum resource requests](#maximum-resource-requests)
+* [Other command line parameters](#other-command-line-parameters)
+    * [`-name`](#-name-single-dash)
+    * [`-resume`](#-resume-single-dash)
+    * [`--email`](#--email)
+    * [`--plaintext_email`](#--plaintext_email)
+    * [`-c`](#-c-single-dash)
+    * [`--multiqc_config`](#--multiqc_config)
+    * [`--project`](#--project)
+    * [`--clusterOptions`](#--clusteroptions)
+
+
 ## Bismark and bwa-meth workflow
 
 The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/): unless specified otherwise, nf-core/methylseq will run this pipeline.

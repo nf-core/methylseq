@@ -23,15 +23,15 @@ Choose between workflows by using `--aligner bismark` (default) or `--aligner bw
 | Step   | Bismark Workflow | bwa-meth Workflow |
 |--------|------------------|-------------------|
 | Generate Reference Genome Index _(optional)_ | Bismark | bwa-meth |
-| Raw data QC | FastQC |
-| Adapter sequence trimming | Trim Galore! |
+| Raw data QC | FastQC | FastQC |
+| Adapter sequence trimming | Trim Galore! | Trim Galore! |
 | Align Reads | Bismark | bwa-meth |
 | Deduplicate Alignments  | Bismark | Picard MarkDuplicates |
 | Extract methylation calls | Bismark | MethylDackel |
 | Sample report | Bismark | - |
 | Summary Report | Bismark | - |
-| Alignment QC | Qualimap |
-| Project Report | MultiQC |
+| Alignment QC | Qualimap | Qualimap |
+| Project Report | MultiQC | MultiQC |
 
 
 ### Documentation
@@ -45,8 +45,8 @@ The nf-core/methylseq pipeline comes with documentation about the pipeline, foun
 ### Credits
 These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
 
-* Main authors:
+* Main author:
   * Phil Ewels ([@ewels](https://github.com/ewels/))
-  * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
 * Contributors:
+  * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))

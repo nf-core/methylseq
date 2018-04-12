@@ -1,10 +1,10 @@
 # You can use this file to create a conda environment for this pipeline:
 #   conda env create -f environment.yml
-name: nfcore-methylseq
+name: nfcore-methylseq-0.4
 channels:
-  - defaults
-  - conda-forge
   - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   # Default bismark
   - conda-forge::openjdk=8.0.144 # Needed for FastQC docker - see bioconda/bioconda-recipes#5026
