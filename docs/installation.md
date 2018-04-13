@@ -111,7 +111,7 @@ The nf-core/methylseq pipeline needs a reference genome for read alignment. Supp
 Alternatively, ou can supply either a Bismark / BWA reference or a FASTA file. This can be done on the command line (see the [usage docs](usage.md#supplying-reference-indices)).
 You can use the same pipeline config framework as used with iGenomes to specify multiple referenes of your own. Add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
 
-```groovy
+```nextflow
 params {
   genomes {
     'YOUR-ID' {
@@ -138,7 +138,7 @@ Note that you will need to specify your UPPMAX project ID when running a pipelin
 
 **Optional Extra:** To avoid having to specify your project every time you run Nextflow, you can add it to your personal Nextflow config file instead. Add this line to `~/.nextflow/config`:
 
-```groovy
+```nextflow
 params.project = 'project_ID' // eg. b2017123
 ```
 
