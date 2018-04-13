@@ -20,18 +20,18 @@ The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default) or `--aligner bwameth`.
 
-| Step   | Bismark Workflow | bwa-meth Workflow |
-|--------|------------------|-------------------|
-| Generate Reference Genome Index _(optional)_ | Bismark | bwa-meth |
-| Raw data QC | FastQC | FastQC |
-| Adapter sequence trimming | Trim Galore! | Trim Galore! |
-| Align Reads | Bismark | bwa-meth |
-| Deduplicate Alignments  | Bismark | Picard MarkDuplicates |
-| Extract methylation calls | Bismark | MethylDackel |
-| Sample report | Bismark | - |
-| Summary Report | Bismark | - |
-| Alignment QC | Qualimap | Qualimap |
-| Project Report | MultiQC | MultiQC |
+| Step                                         | Bismark workflow | bwa-meth workflow     |
+|----------------------------------------------|------------------|-----------------------|
+| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
+| Raw data QC                                  | FastQC           | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
+| Align Reads                                  | Bismark          | bwa-meth              |
+| Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
+| Extract methylation calls                    | Bismark          | MethylDackel          |
+| Sample report                                | Bismark          | -                     |
+| Summary Report                               | Bismark          | -                     |
+| Alignment QC                                 | Qualimap         | Qualimap              |
+| Project Report                               | MultiQC          | MultiQC               |
 
 
 ### Documentation
