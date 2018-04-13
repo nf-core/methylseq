@@ -9,17 +9,30 @@
 ![Singularity Container available](
 https://img.shields.io/badge/singularity-available-7E4C74.svg)
 
-
-
 ### Introduction
 
 **nf-core/methylseq** is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis.
 
 The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
-### Choice of workflows
+### Pipeline Steps
 
-There are two separate workflows contained in this repository - one using [Bismark](https://github.com/FelixKrueger/Bismark) and one using [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel). The Bismark pipeline is being actively developed and maintained, the bwa-meth workflow is not _(currently)_. The Nextflow manifest specifies the Bismark pipeline as the default workflow, so the bwa-meth script will be ignored unless explicitly run.
+The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
+Choose between workflows by using `--aligner bismark` (default) or `--aligner bwameth`.
+
+| Step                                         | Bismark workflow | bwa-meth workflow     |
+|----------------------------------------------|------------------|-----------------------|
+| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
+| Raw data QC                                  | FastQC           | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
+| Align Reads                                  | Bismark          | bwa-meth              |
+| Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
+| Extract methylation calls                    | Bismark          | MethylDackel          |
+| Sample report                                | Bismark          | -                     |
+| Summary Report                               | Bismark          | -                     |
+| Alignment QC                                 | Qualimap         | Qualimap              |
+| Project Report                               | MultiQC          | MultiQC               |
+
 
 ### Documentation
 The nf-core/methylseq pipeline comes with documentation about the pipeline, found in the `docs/` directory:
@@ -32,32 +45,8 @@ The nf-core/methylseq pipeline comes with documentation about the pipeline, foun
 ### Credits
 These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
 
-* Main authors:
+* Main author:
   * Phil Ewels ([@ewels](https://github.com/ewels/))
-  * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
 * Contributors:
+  * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
-
-
-### Participating Institutes
-**nf-core/methylseq** is used by a number of core sequencing and bioinformatics facilities. Some of these are listed below. If you use this pipeline too, please let us know in an issue and we will add you to the list.
-
-<table>
-  <tr>
-    <td width="200">
-      <img src="docs/images/SciLifeLab_logo.png" width=200">
-      <img src="docs/images/NGI_logo.png" width=200">
-    </td>
-    <td>
-      SciLifeLab National Genomics Infrastructure (NGI), Sweden <br>
-      https://ngisweden.scilifelab.se/
-    </td>
-  </tr>
-  <tr>
-    <td width="200"><img src="https://raw.githubusercontent.com/SciLifeLab/NGI-RNAseq/master/docs/images/QBiC_logo.png" width="120"></td>
-    <td>
-      Quantitative Biology Center (QBiC), Germany <br>
-      https://portal.qbic.uni-tuebingen.de/portal/
-    </td>
-  </tr>
-</table>

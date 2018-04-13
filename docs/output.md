@@ -1,10 +1,8 @@
 # nf-core/methylseq Output
 
-nf-core/methylseq is the new RNA-seq Best Practice pipeline used by the [National Genomics Infrastructure](https://ngisweden.scilifelab.se/) at [SciLifeLab](https://www.scilifelab.se/platforms/ngi/) in Stockholm, Sweden.
-
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
-Note that nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. This document describes the output from the default Bismark workflow.
+Note that nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
 
 ## Pipeline overview
 The pipeline is built using [Nextflow](https://www.nextflow.io/)
@@ -12,14 +10,13 @@ and processes data using the following steps:
 
 * [FastQC](#fastqc) - read quality control
 * [TrimGalore](#trimgalore) - adapter trimming
-* [Bismark](#bismark)
-  * [Alignment](#alignment) - aligning reads to reference genome
-  * [Deduplication](#deduplication) - deduplicating reads
-  * [Methylation Extraction](#methylation-extraction) - calling cytosine methylation steps
-  * [Report](#report) - single-sample analysis report
-  * [Summary](#summary) - multi-sample analysis summary report
-* [Qualimap](#qualimap) - QC package for genome alignments
+* [Alignment](#alignment) - aligning reads to reference genome
+* [Deduplication](#deduplication) - deduplicating reads
+* [Methylation Extraction](#methylation-extraction) - calling cytosine methylation steps
+* [Bismark Reports](#bismark-reports) - single-sample and summary analysis reports
+* [Qualimap](#qualimap) - tool for genome alignments QC
 * [MultiQC](#multiqc) - aggregate report, describing results of the whole pipeline
+* [Pipeline Info](#pipeline-info) - reports from nextflow about the pipeline run
 
 ## FastQC
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your reads. It provides information about the quality score distribution across your reads, the per base sequence content (%T/A/G/C). You get information about adapter contamination and other overrepresented sequences.
@@ -36,9 +33,9 @@ For further reading and documentation see the [FastQC help](http://www.bioinform
   * zip file containing the FastQC report, tab-delimited data file and plot images
 
 ## TrimGalore
-The nf-core/methylseq BP 2.0 pipeline uses [TrimGalore](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore uses [Cutadapt](https://github.com/marcelm/cutadapt) for adapter trimming and runs FastQC after it finishes.
+The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore is a wrapper around [Cutadapt](https://github.com/marcelm/cutadapt) and runs FastQC after it finishes.
 
-MultiQC reports the percentage of bases removed by TrimGalore in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
+MultiQC reports the percentage of bases removed by Cutadapt in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
 
 **Output directory: `results/trim_galore`**
 
@@ -46,7 +43,7 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
 
 * `sample_val_1.fq.gz`, `sample_val_2.fq.gz`
   * Trimmed FastQ data, reads 1 and 2.
-  * NB: Only saved if `--saveTrimmed` has been specified.
+  * **NB:** Only saved if `--saveTrimmed` has been specified.
 * `logs/sample_val_1.fq.gz_trimming_report.txt`
   * Trimming report (describes which parameters that were used)
 * `FastQC/sample_val_1_fastqc.zip`
@@ -54,35 +51,61 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
 
-## Bismark
-The default nf-core/methylseq workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) to process raw sequencing reads into cytosine methylation calls.
-
 ### Alignment
-Bismark converts all Cytosines to Thymine _in-silico_ and then aligns against a three-letter reference genome. It produces a BAM file of genomic alignments.
+Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments.
 
-**Output directory: `results/bismark_alignments/`**
+**Bismark output directory: `results/bismark_alignments/`**
 
 * `sample.bam`
   * Aligned reads in BAM format.
-  * Only saved if `--saveAlignedIntermediates`, `--nodedup` or `--rrbs` is specified when running the pipeline.
+  * **NB:** Only saved if `--saveAlignedIntermediates`, `--nodedup` or `--rrbs` is specified when running the pipeline.
 * `logs/sample_PE_report.txt`
   * Log file giving summary statistics about alignment.
 * `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
   * Unmapped reads in FastQ format.
   * Only saved if `--unmapped` specified when running the pipeline.
 
+**bwa-meth output directory: `results/bwa-mem_alignments/`**
+
+* `sample.bam`
+  * Aligned reads in BAM format.
+  * **NB:** Only saved if `--saveAlignedIntermediates` is used
+* `sample.sorted.bam`
+  * Aligned reads in a sorted BAM file.
+  * **NB:** Only saved if `--saveAlignedIntermediates`, `--nodedup` or `--rrbs` is specified when running the pipeline.
+* `sample.sorted.bam.bai`
+  * Index of sorted BAM file
+  * **NB:** Only saved if `--saveAlignedIntermediates`, `--nodedup` or `--rrbs` is specified when running the pipeline.
+* `logs/sample_flagstat.txt`
+  * Summary file describing the number of reads which aligned in different ways.
+* `logs/sample_stats.txt`
+  * Summary file giving lots of metrics about the aligned BAM file.
+
+
+
 ### Deduplication
 This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--saveAlignedIntermediates`, `--nodedup` or `--rrbs` is specified when running the pipeline.
 
-**Output directory: `results/bismark_deduplicated/`**
+**Bismark output directory: `results/bismark_deduplicated/`**
 
 * `deduplicated.bam`
   * BAM file with only unique alignments.
 * `logs/deduplication_report.txt`
   * Log file giving summary statistics about deduplication.
 
+**bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
+
+> **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
+
+* `sample.sorted.markDups.bam`
+  * BAM file with only unique alignments.
+* `sample.sorted.markDups.bam.bai`
+  * Index for markDups BAM file.
+* `logs/sample.sorted.markDups_metrics.txt`
+  * Log file giving summary statistics about deduplication.
+
 ### Methylation Extraction
-The bismark methylation extractor tool takes a BAM file aligned with Bismark and generates files containing methylation information about cytosines. It produces a few different output formats, described below.
+The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
 Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` when running the pipeline.
 
@@ -93,9 +116,9 @@ Filename abbreviations stand for the following reference alignment strands:
 * `CTOT` - complementary to original top strand
 * `CTOB` - complementary to original bottom strand
 
-(`CTOT` and `CTOB` are not aligned unless `--non_directional` specified).
+**Bismark output directory: `results/bismark_methylation_calls/`**
 
-**Output directory: `results/bismark_methylation_calls/`**
+> **NB:** `CTOT` and `CTOB` are not aligned unless `--non_directional` specified.
 
 * `methylation_calls/XXX_context_sample.txt.gz`
   * Individual methylation calls, sorted into files according to cytosine context.
@@ -108,14 +131,16 @@ Filename abbreviations stand for the following reference alignment strands:
 * `logs/sample_splitting_report.txt`
   * Log file giving summary statistics about methylation extraction.
 
-### Report
-Bismark generates a HTML report describing results for each sample.
+**bwa-meth workflow output directory: `results/MethylDackel/`**
 
-**Output directory: `results/bismark_reports`**
+* `sample.bedGraph`
+  * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-### Summary
-Bismark generates summary text and HTML reports giving an overview of results for all samples in a project.
 
+### Bismark Reports
+Bismark generates a HTML reports describing results for each sample, as well as a summary report for the whole run.
+
+**Output directory: `results/bismark_reports`** <br>
 **Output directory: `results/bismark_summary`**
 
 ## Qualimap
@@ -133,6 +158,8 @@ Bismark generates summary text and HTML reports giving an overview of results fo
 ## MultiQC
 [MultiQC](http://multiqc.info) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in within the report data directory.
 
+The pipeline has special steps which allow the software versions used to be reported in the MultiQC output for future traceability.
+
 **Output directory: `results/multiqc`**
 
 * `Project_multiqc_report.html`
@@ -142,9 +169,22 @@ Bismark generates summary text and HTML reports giving an overview of results fo
 
 For more information about how to use MultiQC reports, see http://multiqc.info
 
----
+## Pipeline Info
+Nextflow has several built-in reporting tools that give information about the pipeline run.
 
-[![SciLifeLab](images/SciLifeLab_logo.png)](http://www.scilifelab.se/)
-[![National Genomics Infrastructure](images/NGI_logo.png)](https://ngisweden.scilifelab.se/)
+**Output directory: `results/pipeline_info`**
 
----
+* `MethylSeq_dag.svg`
+  * DAG graph giving a diagrammatic view of the pipeline run.
+  * NB: If [Graphviz](http://www.graphviz.org/) was not installed when running the pipeline, this file will be in [DOT format](http://www.graphviz.org/content/dot-language) instead of SVG.
+* `MethylSeq_report.html`
+  * Nextflow report describing parameters, computational resource usage and task bash commands used.
+* `MethylSeq_timeline.html`
+  * A waterfall timeline plot showing the running times of the workflow tasks.
+* `MethylSeq_trace.txt`
+  * A text file with machine-readable statistics about every task executed in the pipeline.
+* `pipeline_report.html`
+  * A pipeline-specific HTML report describing the running of the pipeline.
+  * This is the same as sent in an email if `--email` was specified.
+* `pipeline_report.txt`
+  * A text-only version of the same report.

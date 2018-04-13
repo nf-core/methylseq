@@ -314,7 +314,6 @@ if(params.notrim){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
-        non_directional = params.rrbs && params.non_directional ? "--non_directional" : ''
         if (params.singleEnd) {
             """
             trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
