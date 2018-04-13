@@ -70,14 +70,13 @@ Running the pipeline with the option `-with-singularity` or `-with-docker` tells
 If running offline with Singularity, you'll need to download and transfer the Singularity image first:
 
 ```bash
-# Switch 1.4 with the version of the pipeline that you're using
-singularity pull --name nfcore-methylseq-1.4.simg shub://nfcore/methylseq:1.4
+singularity pull --name nfcore-methylseq-[VERSION].simg shub://nfcore/methylseq:[VERSION]
 ```
 
 Once transferred, use `-with-singularity` but specify the path to the image file:
 
 ```bash
-nextflow run /path/to/nf-core-methylseq -with-singularity /path/to/nfcore-methylseq-1.4.simg
+nextflow run /path/to/nf-core-methylseq -with-singularity /path/to/nfcore-methylseq-[VERSION].simg
 ```
 
 #### 3.2) Software deps: bioconda
