@@ -1,8 +1,24 @@
-# NGI-MethylSeq
+# nf-core/methylseq
+
+## v1.0
+Version 1.0 marks the first release of this pipeline under the nf-core flag. It also marks a significant step up in the maturity of the workflow, with everything now in a single script and both aligner workflows fully supported.
+
+* Renamed and moved [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq/) to [nf-core/methylseq](https://github.com/nf-core/methylseq/)
+* Merged bwa-meth and bismark pipeline scripts, now chosen with `--aligner` flag
+* Refactored multi-core parameters for Bismark alignment and methylation extraction
+* Rewrote most of the documentation
+* Changed the Docker container to use Bioconda installations
+
+---
+
+Previous to these releases, this pipeline was called [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq):
 
 ## v0.4dev
-* Renaming and moving [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq/) to [nf-core/methylseq](https://github.com/nf-core/methylseq/)
-* Refactoring multi-core parameters for Bismark alignment and methylation extraction
+* Fixed MultiQC channel bug
+* Integrated config for QBiC Tuebingen
+* Numerous small container bugfixes
+* Refactored how the config is loaded
+* Fix for resource limit function, improved resource request defaults
 * Fix for iGenomes base path in configs
 
 ## [v0.3.1](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3.1) - 2017-09-05
