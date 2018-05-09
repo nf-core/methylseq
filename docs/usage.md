@@ -126,7 +126,7 @@ See [`conf/igenomes.config`](conf/igenomes.config) for a list of all of the supp
 
 ### Supplying reference indices
 
-If you don't want to use the illumina iGenomes references, you can supply your own reference genome.
+If you don't want to use the Illumina iGenomes references, you can supply your own reference genome.
 
 The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth workflow always needs a FASTA file, for methylation calling.
 
@@ -201,7 +201,7 @@ Profiles available with the pipeline are:
     * Designed to be used on the Swedish [UPPMAX](http://uppmax.uu.se/) clusters such as `milou`, `rackham`, `bianca` and `irma`
     * Launches jobs using the SLURM executor.
     * Uses [Singularity](http://singularity.lbl.gov/) to provide all software requirements
-    * Comes with locations for illumina iGenome reference paths built in
+    * Comes with locations for Illumina iGenomes reference paths built in
     * Use with `--project` to provide your UPPMAX project ID.
 * `uppmax_devel`
     * Uses the milou [devel partition](http://www.uppmax.uu.se/support/user-guides/slurm-user-guide/#tocjump_030509106905141747_8) for testing the pipeline quickly.
@@ -219,12 +219,12 @@ Profiles available with the pipeline are:
 Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when aligning with Bismark. It tells Bismark to align complementary strands (the opposite of `--directional`).
 
 ### `--non_directional`
-By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not direcional, use `--non_directional` to align against all four possible strands.
+By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.
 
 Note that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.
 
 ### `--comprehensive`
-By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (eg. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).
+By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).
 
 If specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.
 
@@ -282,7 +282,7 @@ Specify this when restarting a pipeline. Nextflow will used cached results from 
 You can also supply a run name to resume a specific run: `-resume [run-name]`. Use the `nextflow log` command to show previous run names.
 
 ### `--email`
-Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to speicfy this on the command line for every run.
+Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.
 
 ### `--plaintext_email`
 Set to receive plain-text e-mails instead of HTML formatted.
