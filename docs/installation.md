@@ -100,15 +100,15 @@ Whilst most parameters can be specified on the command line, it is usually sensi
 
 If you are the only person to be running this pipeline, you can create your config file as `~/.nextflow/config` and it will be applied every time you run Nextflow. Alternatively, save the file anywhere and reference it when running the pipeline with `-c path/to/config`.
 
-If you think that there are other people using the pipeline who would benefit from your configuration (eg. other common cluster setups), please let us know. We can add a new configuration and profile which can used by specifying `-profile <name>` when running the pipeline.
+If you think that there are other people using the pipeline who would benefit from your configuration (e.g. other common cluster setups), please let us know. We can add a new configuration and profile which can used by specifying `-profile <name>` when running the pipeline.
 
 The pipeline comes with several such config profiles - see the installation appendices and usage documentation for more information.
 
 ## 4) Reference Genomes
 The nf-core/methylseq pipeline needs a reference genome for read alignment. Support for many common genomes is built in if running on UPPMAX or AWS, by using [AWS-iGenomes](https://ewels.github.io/AWS-iGenomes/).
 
-Alternatively, ou can supply either a Bismark / BWA reference or a FASTA file. This can be done on the command line (see the [usage docs](usage.md#supplying-reference-indices)).
-You can use the same pipeline config framework as used with iGenomes to specify multiple referenes of your own. Add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
+Alternatively, you can supply either a Bismark / BWA reference or a FASTA file. This can be done on the command line (see the [usage docs](usage.md#supplying-reference-indices)).
+You can use the same pipeline config framework as used with iGenomes to specify multiple references of your own. Add the paths to your NextFlow config under a relevant id and just specify this id with `--genome ID` when you run the pipeline:
 
 ```nextflow
 params {
