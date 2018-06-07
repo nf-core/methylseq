@@ -2,7 +2,11 @@
 
 ## v1.1dev
 
-_Nothing yet.._
+* Tests simplified - now work by simply using the `test` config profile
+    * `nextflow run nf-core/methylseq -profile test`
+* New `Singularity` build script for direct compatability with [singularity-hub](https://singularity-hub.org/)
+
+
 
 ## [v1.0](https://github.com/nf-core/methylseq/releases/tag/1.0) - 2018-04-17
 Version 1.0 marks the first release of this pipeline under the nf-core flag. It also marks a significant step up in the maturity of the workflow, with everything now in a single script and both aligner workflows fully supported.
