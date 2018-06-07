@@ -20,6 +20,7 @@ install:
   - cd /tmp/nf-core-tools
   - pip install --user -e .
   # Reset
+  - mkdir ${TRAVIS_BUILD_DIR}/tests
   - cd ${TRAVIS_BUILD_DIR}/tests
 
 env:
@@ -29,8 +30,11 @@ env:
   - ALIGNER=bwameth
 
 script:
+  # Lint the pipeline code
   - "nf-core lint ${TRAVIS_BUILD_DIR}"
-  - "./run_test.sh -a $ALIGNER -b" # Run, build reference genome
-  - "./run_test.sh -a $ALIGNER"    # Basic run
-  - "./run_test.sh -a $ALIGNER -r" # Run, RRBS mode
-  - "./run_test.sh -a $ALIGNER -n" # Run, no-trimming mode
+  # Run, build reference genome
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER --saveReference"
+  # Basic run with supplied reference
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  # Run, RRBS mode with no trimming
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER --notrim --rrbs"
