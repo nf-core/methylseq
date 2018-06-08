@@ -3,7 +3,7 @@ Bootstrap:docker
 
 %labels
     MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
-    DESCRIPTION Docker image containing all requirements for the nf-core/methylseq pipeline
+    DESCRIPTION Container image containing all requirements for the nf-core/methylseq pipeline
     VERSION 1.1dev
 
 %environment
