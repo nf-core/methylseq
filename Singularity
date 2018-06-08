@@ -7,7 +7,7 @@ Bootstrap:docker
     VERSION 1.1dev
 
 %environment
-    PATH=/opt/conda/envs/nfcore-methylseq-1.1/bin:$PATH
+    PATH=/opt/conda/envs/nfcore-methylseq-1.1dev/bin:$PATH
     export PATH
 
 %files

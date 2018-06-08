@@ -35,10 +35,10 @@ env:
 
 script:
   # Lint the pipeline code
-  - "nf-core lint ${TRAVIS_BUILD_DIR}"
+  - nf-core lint ${TRAVIS_BUILD_DIR}
   # Run, build reference genome
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference"
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference
   # Basic run with supplied reference
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/
   # Run, RRBS mode with no trimming
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --notrim --rrbs"
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --notrim --rrbs
