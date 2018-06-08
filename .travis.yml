@@ -9,6 +9,10 @@ cache: pip
 matrix:
   fast_finish: true
 
+before_install:
+  # Pull the docker image first so the test doesn't wait for this
+  - docker pull nfcore/methylseq:latest
+
 install:
   # Install Nextflow
   - mkdir /tmp/nextflow
@@ -33,8 +37,8 @@ script:
   # Lint the pipeline code
   - "nf-core lint ${TRAVIS_BUILD_DIR}"
   # Run, build reference genome
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER --saveReference"
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference"
   # Basic run with supplied reference
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
   # Run, RRBS mode with no trimming
-  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test --aligner $ALIGNER --notrim --rrbs"
+  - "nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --notrim --rrbs"
