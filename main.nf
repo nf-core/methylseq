@@ -686,7 +686,7 @@ if(params.aligner == 'bwameth'){
         file fasta_index from fasta_index
 
         output:
-        file '*' into methyldackel_results
+        file "${bam.baseName}*" into methyldackel_results
 
         script:
         allcontexts = params.comprehensive ? '--CHG --CHH' : ''
@@ -694,7 +694,7 @@ if(params.aligner == 'bwameth'){
         ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
         """
         MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
-        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
+        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
 
