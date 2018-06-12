@@ -159,10 +159,18 @@ if(params.readPaths){
         .into { read_files_fastqc; read_files_trimming }
 }
 
-log.info "=================================================="
-log.info " nf-core/methylseq : Bisulfite-Seq Best Practice v${params.version}"
-log.info "=================================================="
+log.info """=======================================================
+                                          ,--./,-.
+          ___     __   __   __   ___     /,-._.--~\'
+    |\\ | |__  __ /  ` /  \\ |__) |__         }  {
+    | \\| |       \\__, \\__/ |  \\ |___     \\`-._,-`-,
+                                          `._,._,\'
+
+nf-core/methylseq : Bisulfite-Seq Best Practice v${params.version}
+======================================================="""
 def summary = [:]
+summary['Pipeline Name']  = 'nf-core/methylseq'
+summary['Pipeline Version'] = params.version
 summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
@@ -198,8 +206,8 @@ summary['Max CPUs']       = params.max_cpus
 summary['Max Time']       = params.max_time
 summary['Output dir']     = params.outdir
 summary['Working dir']    = workflow.workDir
-summary['Container']      = workflow.container
-if(workflow.revision) summary['Pipeline Release'] = workflow.revision
+summary['Container Engine'] = workflow.containerEngine
+if(workflow.containerEngine) summary['Container'] = workflow.container
 summary['Current home']   = "$HOME"
 summary['Current user']   = "$USER"
 summary['Current path']   = "$PWD"
