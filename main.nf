@@ -26,32 +26,6 @@ params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
 params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
-// Check that Nextflow version is up to date enough
-// try / throw / catch works for NF versions < 0.25 when this was implemented
-try {
-  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
-    throw GroovyException('Nextflow version too old')
-  }
-} catch (all) {
-  log.error "====================================================\n" +
-            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
-            "  Pipeline execution will continue, but things may break.\n" +
-            "  Please run `nextflow self-update` to update Nextflow.\n" +
-            "============================================================"
-}
-// Show a big error message if we're running on the base config and an uppmax cluster
-if( workflow.profile == 'standard'){
-    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
-        log.error "====================================================\n" +
-                  "  WARNING! You are running with the default 'standard'\n" +
-                  "  pipeline config profile, which runs on the head node\n" +
-                  "  and assumes all software is on the PATH.\n" +
-                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
-                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
-                  "============================================================"
-    }
-}
-
 // Validate inputs
 if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
     exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
@@ -220,6 +194,31 @@ if(params.email) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
+// Check that Nextflow version is up to date enough
+// try / throw / catch works for NF versions < 0.25 when this was implemented
+try {
+  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
+    throw GroovyException('Nextflow version too old')
+  }
+} catch (all) {
+  log.error "====================================================\n" +
+            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
+            "  Pipeline execution will continue, but things may break.\n" +
+            "  Please run `nextflow self-update` to update Nextflow.\n" +
+            "============================================================"
+}
+// Show a big error message if we're running on the base config and an uppmax cluster
+if( workflow.profile == 'standard'){
+    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+        log.error "====================================================\n" +
+                  "  WARNING! You are running with the default 'standard'\n" +
+                  "  pipeline config profile, which runs on the head node\n" +
+                  "  and assumes all software is on the PATH.\n" +
+                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
+                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                  "============================================================"
+    }
+}
 
 /*
  * PREPROCESSING - Build Bismark index
