@@ -1,8 +1,7 @@
 FROM nfcore/base
 MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
 LABEL authors="phil.ewels@scilifelab.se" \
-    description="Docker image containing all requirements for the nf-core/methylseq pipeline"
+    description="Container image containing all requirements for the nf-core/methylseq pipeline"
 
 COPY environment.yml /
-RUN conda env create -f /environment.yml && conda clean -a
-ENV PATH /opt/conda/envs/nfcore-methylseq-1.0/bin:$PATH
+RUN conda env update -n root -f /environment.yml && conda clean -a

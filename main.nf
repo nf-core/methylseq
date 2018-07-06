@@ -26,32 +26,6 @@ params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
 params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
-// Check that Nextflow version is up to date enough
-// try / throw / catch works for NF versions < 0.25 when this was implemented
-try {
-  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
-    throw GroovyException('Nextflow version too old')
-  }
-} catch (all) {
-  log.error "====================================================\n" +
-            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
-            "  Pipeline execution will continue, but things may break.\n" +
-            "  Please run `nextflow self-update` to update Nextflow.\n" +
-            "============================================================"
-}
-// Show a big error message if we're running on the base config and an uppmax cluster
-if( workflow.profile == 'standard'){
-    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
-        log.error "====================================================\n" +
-                  "  WARNING! You are running with the default 'standard'\n" +
-                  "  pipeline config profile, which runs on the head node\n" +
-                  "  and assumes all software is on the PATH.\n" +
-                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
-                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
-                  "============================================================"
-    }
-}
-
 // Validate inputs
 if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
     exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
@@ -137,15 +111,40 @@ if(params.pbat){
 /*
  * Create a channel for input read files
  */
-Channel
-    .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
-    .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --singleEnd on the command line." }
-    .into { read_files_fastqc; read_files_trimming }
 
-log.info "=================================================="
-log.info " nf-core/methylseq : Bisulfite-Seq Best Practice v${params.version}"
-log.info "=================================================="
+if(params.readPaths){
+    if(params.singleEnd){
+        Channel
+            .from(params.readPaths)
+            .map { row -> [ row[0], [file(row[1][0])]] }
+            .ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
+            .into { read_files_fastqc; read_files_trimming }
+    } else {
+        Channel
+            .from(params.readPaths)
+            .map { row -> [ row[0], [file(row[1][0]), file(row[1][1])]] }
+            .ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
+            .into { read_files_fastqc; read_files_trimming }
+    }
+} else {
+    Channel
+        .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
+        .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --singleEnd on the command line." }
+        .into { read_files_fastqc; read_files_trimming }
+}
+
+log.info """=======================================================
+                                          ,--./,-.
+          ___     __   __   __   ___     /,-._.--~\'
+    |\\ | |__  __ /  ` /  \\ |__) |__         }  {
+    | \\| |       \\__, \\__/ |  \\ |___     \\`-._,-`-,
+                                          `._,._,\'
+
+nf-core/methylseq : Bisulfite-Seq Best Practice v${params.version}
+======================================================="""
 def summary = [:]
+summary['Pipeline Name']  = 'nf-core/methylseq'
+summary['Pipeline Version'] = params.version
 summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
@@ -181,10 +180,10 @@ summary['Max CPUs']       = params.max_cpus
 summary['Max Time']       = params.max_time
 summary['Output dir']     = params.outdir
 summary['Working dir']    = workflow.workDir
-summary['Container']      = workflow.container
-if(workflow.revision) summary['Pipeline Release'] = workflow.revision
+summary['Container Engine'] = workflow.containerEngine
+if(workflow.containerEngine) summary['Container'] = workflow.container
 summary['Current home']   = "$HOME"
-summary['Current user']   = "$USER"
+summary['Current user']   = System.getProperty("user.name")
 summary['Current path']   = "$PWD"
 summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
@@ -195,6 +194,31 @@ if(params.email) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
+// Check that Nextflow version is up to date enough
+// try / throw / catch works for NF versions < 0.25 when this was implemented
+try {
+  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
+    throw GroovyException('Nextflow version too old')
+  }
+} catch (all) {
+  log.error "====================================================\n" +
+            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
+            "  Pipeline execution will continue, but things may break.\n" +
+            "  Please run `nextflow self-update` to update Nextflow.\n" +
+            "============================================================"
+}
+// Show a big error message if we're running on the base config and an uppmax cluster
+if( workflow.profile == 'standard'){
+    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+        log.error "====================================================\n" +
+                  "  WARNING! You are running with the default 'standard'\n" +
+                  "  pipeline config profile, which runs on the head node\n" +
+                  "  and assumes all software is on the PATH.\n" +
+                  "  ALL JOBS ARE RUNNING LOCALLY and stuff will probably break.\n" +
+                  "  Please use `-profile uppmax` to run on UPPMAX clusters.\n" +
+                  "============================================================"
+    }
+}
 
 /*
  * PREPROCESSING - Build Bismark index
@@ -669,7 +693,7 @@ if(params.aligner == 'bwameth'){
         file fasta_index from fasta_index
 
         output:
-        file '*' into methyldackel_results
+        file "${bam.baseName}*" into methyldackel_results
 
         script:
         allcontexts = params.comprehensive ? '--CHG --CHH' : ''
@@ -677,7 +701,7 @@ if(params.aligner == 'bwameth'){
         ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
         """
         MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
-        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName}
+        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
 
