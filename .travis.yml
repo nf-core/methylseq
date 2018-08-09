@@ -11,7 +11,7 @@ matrix:
 
 before_install:
   # Pull the docker image first so the test doesn't wait for this
-  - docker pull nfcore/methylseq:latest
+  - docker pull nfcore/methylseq:1.1
 
 install:
   # Install Nextflow
