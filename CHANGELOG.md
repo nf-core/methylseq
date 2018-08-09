@@ -3,8 +3,12 @@
 ## v1.1dev
 
 * Tests simplified - now work by simply using the `test` config profile
-    * `nextflow run nf-core/methylseq -profile test`
-* New `Singularity` build script for direct compatability with [singularity-hub](https://singularity-hub.org/)
+    * eg: `nextflow run nf-core/methylseq -profile test,docker`
+    * Removed previous `run_test.sh` script and data
+* New `Singularity` build script for direct compatibility with [singularity-hub](https://singularity-hub.org/)
+* Minor improvements to the docs
+* A number of boilerplate nf-core code updates
+* Updated `process$name` nextflow syntax to avoid warnings in new versions of nextflow
 
 
 
