@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## v1.1dev
+## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
     * eg: `nextflow run nf-core/methylseq -profile test,docker`
@@ -9,6 +9,13 @@
 * Minor improvements to the docs
 * A number of boilerplate nf-core code updates
 * Updated `process$name` nextflow syntax to avoid warnings in new versions of nextflow
+* Updated software tools
+    * `trim-galore` `v0.4.5` update to `0.5.0`
+    * `samtools` `v1.8` update to `1.9`
+    * `bowtie2` `v2.3.4.1` update to `2.3.4.2`
+    * `multiqc` `v1.5` update to `1.6`
+    * `picard` `v2.18.2` update to `2.18.11`
+    * `bwameth` `v0.2.0` update to `0.2.2`
 
 
 

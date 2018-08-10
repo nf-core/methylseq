@@ -4,7 +4,7 @@ Bootstrap:docker
 %labels
     MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
     DESCRIPTION Container image containing all requirements for the nf-core/methylseq pipeline
-    VERSION 1.1dev
+    VERSION 1.1
 
 %files
     environment.yml /
