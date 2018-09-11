@@ -1,5 +1,9 @@
 # nf-core/methylseq
 
+## 1.2dev
+
+* Fixed bug in MultiQC process that skipped results from some tools
+
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
