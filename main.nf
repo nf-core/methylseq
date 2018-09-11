@@ -783,20 +783,20 @@ process multiqc {
 
     input:
     file multiqc_config
-    file ('fastqc/*') from fastqc_results.toList()
-    file ('trimgalore/*') from trimgalore_results.toList()
-    file ('bismark/*') from bismark_align_log_3.toList()
-    file ('bismark/*') from bismark_dedup_log_3.toList()
-    file ('bismark/*') from bismark_splitting_report_3.toList()
-    file ('bismark/*') from bismark_mbias_3.toList()
-    file ('bismark/*') from bismark_reports_results.toList()
-    file ('bismark/*') from bismark_summary_results.toList()
-    file ('samtools/*') from flagstat_results.flatten().toList()
-    file ('samtools/*') from samtools_stats_results.flatten().toList()
-    file ('picard/*') from picard_results.flatten().toList()
-    file ('methyldackel/*') from methyldackel_results.flatten().toList()
-    file ('qualimap/*') from qualimap_results.toList()
-    file ('software_versions/*') from software_versions_yaml.toList()
+    file ('fastqc/*') from fastqc_results.collect().ifEmpty([])
+    file ('trimgalore/*') from trimgalore_results.collect().ifEmpty([])
+    file ('bismark/*') from bismark_align_log_3.collect().ifEmpty([])
+    file ('bismark/*') from bismark_dedup_log_3.collect().ifEmpty([])
+    file ('bismark/*') from bismark_splitting_report_3.collect().ifEmpty([])
+    file ('bismark/*') from bismark_mbias_3.collect().ifEmpty([])
+    file ('bismark/*') from bismark_reports_results.collect().ifEmpty([])
+    file ('bismark/*') from bismark_summary_results.collect().ifEmpty([])
+    file ('samtools/*') from flagstat_results.flatten().collect().ifEmpty([])
+    file ('samtools/*') from samtools_stats_results.flatten().collect().ifEmpty([])
+    file ('picard/*') from picard_results.flatten().collect().ifEmpty([])
+    file ('methyldackel/*') from methyldackel_results.flatten().collect().ifEmpty([])
+    file ('qualimap/*') from qualimap_results.collect().ifEmpty([])
+    file ('software_versions/*') from software_versions_yaml.collect().ifEmpty([])
 
     output:
     file "*_report.html" into multiqc_report
