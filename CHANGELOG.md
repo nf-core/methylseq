@@ -3,6 +3,7 @@
 ## 1.2dev
 
 * Fixed bug in MultiQC process that skipped results from some tools
+* Trim 9bp from both ends of both reads for PBAT mode.
 
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 

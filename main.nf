@@ -77,9 +77,9 @@ params.accel = false
 params.zymo = false
 params.cegx = false
 if(params.pbat){
-    params.clip_r1 = 6
+    params.clip_r1 = 9
     params.clip_r2 = 9
-    params.three_prime_clip_r1 = 6
+    params.three_prime_clip_r1 = 9
     params.three_prime_clip_r2 = 9
 } else if(params.single_cell){
     params.clip_r1 = 6
