@@ -140,11 +140,11 @@ log.info """=======================================================
     | \\| |       \\__, \\__/ |  \\ |___     \\`-._,-`-,
                                           `._,._,\'
 
-nf-core/methylseq : Bisulfite-Seq Best Practice v${params.version}
+nf-core/methylseq : Bisulfite-Seq Best Practice v${workflow.manifest.version}
 ======================================================="""
 def summary = [:]
 summary['Pipeline Name']  = 'nf-core/methylseq'
-summary['Pipeline Version'] = params.version
+summary['Pipeline Version'] = workflow.manifest.version
 summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
@@ -194,19 +194,6 @@ if(params.email) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
-// Check that Nextflow version is up to date enough
-// try / throw / catch works for NF versions < 0.25 when this was implemented
-try {
-  if( ! nextflow.version.matches(">= $params.nf_required_version") ){
-    throw GroovyException('Nextflow version too old')
-  }
-} catch (all) {
-  log.error "====================================================\n" +
-            "  Nextflow version $params.nf_required_version required! You are running v$workflow.nextflow.version.\n" +
-            "  Pipeline execution will continue, but things may break.\n" +
-            "  Please run `nextflow self-update` to update Nextflow.\n" +
-            "============================================================"
-}
 // Show a big error message if we're running on the base config and an uppmax cluster
 if( workflow.profile == 'standard'){
     if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
@@ -757,7 +744,7 @@ process get_software_versions {
 
     script:
     """
-    echo "$params.version" &> v_ngi_methylseq.txt
+    echo "$workflow.manifest.version" &> v_ngi_methylseq.txt
     echo "$workflow.nextflow.version" &> v_nextflow.txt
     bismark_genome_preparation --version &> v_bismark_genome_preparation.txt
     fastqc --version &> v_fastqc.txt
@@ -828,7 +815,7 @@ workflow.onComplete {
       subject = "[nf-core/methylseq] FAILED: $workflow.runName"
     }
     def email_fields = [:]
-    email_fields['version'] = params.version
+    email_fields['version'] = workflow.manifest.version
     email_fields['runName'] = workflow.runName
     email_fields['success'] = workflow.success
     email_fields['dateComplete'] = workflow.complete

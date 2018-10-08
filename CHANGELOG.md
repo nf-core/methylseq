@@ -6,6 +6,11 @@
 * Trim 9bp from both ends of both reads for PBAT mode.
 
 #### Software updates
+* Fastqc `0.11.7` > `0.11.8`
+* Bowtie2 `2.3.4.2` > `2.3.4.3`
+* Bismark `0.19.1` > `0.20.0`
+* Qualimap `2.2.2a` > `2.2.2b`
+* Picard `2.18.11` > `2.18.14`
 
 #### Bug fixes
 * Fixed bug in MultiQC process that skipped results from some tools
