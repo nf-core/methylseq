@@ -30,9 +30,9 @@ install:
   - cd ${TRAVIS_BUILD_DIR}/tests
 
 env:
-  - ALIGNER=bismark NXF_VER=0.31.0
+  - ALIGNER=bismark NXF_VER='0.32.0'
   - ALIGNER=bismark
-  - ALIGNER=bwameth NXF_VER=0.31.0
+  - ALIGNER=bwameth NXF_VER='0.32.0'
   - ALIGNER=bwameth
 
 script:
