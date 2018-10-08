@@ -665,8 +665,14 @@ if(params.aligner == 'bwameth'){
             file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
             script:
+            if( !task.memory ){
+                log.info "[Picard MarkDuplicates] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this."
+                avail_mem = 3
+            } else {
+                avail_mem = task.memory.toGiga()
+            }
             """
-            picard MarkDuplicates \\
+            picard -Xmx${avail_mem}g MarkDuplicates \\
                 INPUT=$bam \\
                 OUTPUT=${bam.baseName}.markDups.bam \\
                 METRICS_FILE=${bam.baseName}.markDups_metrics.txt \\

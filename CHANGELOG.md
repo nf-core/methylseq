@@ -2,8 +2,16 @@
 
 ## 1.2dev
 
-* Fixed bug in MultiQC process that skipped results from some tools
+#### New features
 * Trim 9bp from both ends of both reads for PBAT mode.
+
+#### Software updates
+
+#### Bug fixes
+* Fixed bug in MultiQC process that skipped results from some tools
+* Supply available memory as argument to Picard MarkDuplicates
+
+
 
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
