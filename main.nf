@@ -597,7 +597,7 @@ if(params.aligner == 'bwameth'){
         file bwa_meth_indices from bwa_meth_indices.collect()
 
         output:
-        file '*.bam' into bam_aligned
+        set val(name), file('*.bam') into bam_aligned
 
         script:
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
@@ -615,7 +615,7 @@ if(params.aligner == 'bwameth'){
      * STEP 4.- samtools flagstat on samples
      */
     process samtools_sort_index_flagstat {
-        tag "${bam.baseName}"
+        tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
                 if (filename.indexOf(".txt") > 0) "logs/$filename"
@@ -624,10 +624,10 @@ if(params.aligner == 'bwameth'){
             }
 
         input:
-        file bam from bam_aligned
+        set val(name), file(bam) from bam_aligned
 
         output:
-        file "${bam.baseName}.sorted.bam" into bam_sorted
+        set val(name), file("${bam.baseName}.sorted.bam") into bam_sorted
         file "${bam.baseName}.sorted.bam.bai" into bam_index
         file "${bam.baseName}_flagstat.txt" into flagstat_results
         file "${bam.baseName}_stats.txt" into samtools_stats_results
@@ -654,15 +654,15 @@ if(params.aligner == 'bwameth'){
         picard_results = Channel.from(false)
     } else {
         process markDuplicates {
-            tag "${bam.baseName}"
+            tag "$name"
             publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy',
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
-            file bam from bam_sorted
+            set val(name), file(bam) from bam_sorted
 
             output:
-            file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
+            set val(name), file("${bam.baseName}.markDups.bam") into bam_md, bam_dedup_qualimap
             file "${bam.baseName}.markDups.bam.bai" into bam_md_bai
             file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
@@ -685,11 +685,11 @@ if(params.aligner == 'bwameth'){
      * STEP 6 - extract methylation with MethylDackel
      */
     process methyldackel {
-        tag "${bam.baseName}"
+        tag "$name"
         publishDir "${params.outdir}/MethylDackel", mode: 'copy'
 
         input:
-        file bam from bam_md
+        set val(name), file(bam) from bam_md
         file bam_index from bam_md_bai
         file fasta from fasta
         file fasta_index from fasta_index
@@ -720,7 +720,7 @@ else {
  * STEP 8 - Qualimap
  */
 process qualimap {
-    tag "${bam.baseName}"
+    tag "$name"
     publishDir "${params.outdir}/qualimap", mode: 'copy'
 
     input:
