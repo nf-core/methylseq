@@ -838,6 +838,20 @@ workflow.onComplete {
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
 
+    // On success try attach the multiqc report
+    def mqc_report = null
+    try {
+        if (workflow.success) {
+            mqc_report = multiqc_report.getVal()
+            if (mqc_report.getClass() == ArrayList){
+                log.warn "[nfcore/methylseq] Found multiple reports from process 'multiqc', will use only one"
+                mqc_report = mqc_report[0]
+                }
+        }
+    } catch (all) {
+        log.warn "[nfcore/methylseq] Could not attach MultiQC report to summary email"
+    }
+
     // Render the TXT template
     def engine = new groovy.text.GStringTemplateEngine()
     def tf = new File("$baseDir/assets/email_template.txt")
