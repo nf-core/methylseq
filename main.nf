@@ -558,8 +558,8 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_summary", mode: 'copy'
 
         input:
-        file('*') from bam_2.collect()
-        file('*') from bismark_align_log_2.collect()
+        file ('*') from bam_2.collect()
+        file ('*') from bismark_align_log_2.collect()
         file ('*') from bismark_dedup_log_2.collect()
         file ('*') from bismark_splitting_report_2.collect()
         file ('*') from bismark_mbias_2.collect()
