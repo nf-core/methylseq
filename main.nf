@@ -355,8 +355,8 @@ if(params.aligner == 'bismark'){
         file index from bismark_index.collect()
 
         output:
-        file "*.bam" into bam, bam_2
-        file "*report.txt" into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
+        set val(name), file("*.bam") into bam, bam_2
+        set val(name), file("*report.txt") into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
         if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
 
         script:
@@ -416,16 +416,16 @@ if(params.aligner == 'bismark'){
         bismark_dedup_log_3 = Channel.from(false)
     } else {
         process bismark_deduplicate {
-            tag "${bam.baseName}"
+            tag "$name"
             publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
-            file bam
+            set val(name), file(bam) from bam
 
             output:
-            file "${bam.baseName}.deduplicated.bam" into bam_dedup, bam_dedup_qualimap
-            file "${bam.baseName}.deduplication_report.txt" into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+            set val(name), file("*.deduplicated.bam") into bam_dedup, bam_dedup_qualimap
+            set val(name), file("*.deduplication_report.txt") into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
 
             script:
             if (params.singleEnd) {
@@ -444,7 +444,7 @@ if(params.aligner == 'bismark'){
      * STEP 5 - Bismark methylation extraction
      */
     process bismark_methXtract {
-        tag "${bam.baseName}"
+        tag "$name"
         publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
             saveAs: {filename ->
                 if (filename.indexOf("splitting_report.txt") > 0) "logs/$filename"
@@ -455,11 +455,11 @@ if(params.aligner == 'bismark'){
             }
 
         input:
-        file bam from bam_dedup
+        set val(name), file(bam) from bam_dedup
 
         output:
-        file "${bam.baseName}_splitting_report.txt" into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
-        file "${bam.baseName}.M-bias.txt" into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
+        set val(name), file("*splitting_report.txt") into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
+        set val(name), file("*.M-bias.txt") into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
         file '*.{png,gz}' into bismark_methXtract_results
 
         script:
@@ -508,6 +508,12 @@ if(params.aligner == 'bismark'){
         }
     }
 
+    bismark_align_log_1
+     .join(bismark_dedup_log_1)
+     .join(bismark_splitting_report_1)
+     .join(bismark_mbias_1)
+     .set{ bismark_logs }
+
 
     /*
      * STEP 6 - Bismark Sample Report
@@ -517,22 +523,18 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_reports", mode: 'copy'
 
         input:
-        file bismark_align_log_1
-        file bismark_dedup_log_1
-        file bismark_splitting_report_1
-        file bismark_mbias_1
+        set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from bismark_logs
 
         output:
         file '*{html,txt}' into bismark_reports_results
 
         script:
-        name = bismark_align_log_1.toString() - ~/(_R1)?(_trimmed|_val_1).+$/
         """
         bismark2report \\
-            --alignment_report $bismark_align_log_1 \\
-            --dedup_report $bismark_dedup_log_1 \\
-            --splitting_report $bismark_splitting_report_1 \\
-            --mbias_report $bismark_mbias_1
+            --alignment_report $align_log \\
+            --dedup_report $dedup_log \\
+            --splitting_report $splitting_report \\
+            --mbias_report $mbias
         """
     }
 
@@ -582,7 +584,7 @@ if(params.aligner == 'bwameth'){
         file bwa_meth_indices from bwa_meth_indices.collect()
 
         output:
-        file '*.bam' into bam_aligned
+        set val(name), file('*.bam') into bam_aligned
 
         script:
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
@@ -600,7 +602,7 @@ if(params.aligner == 'bwameth'){
      * STEP 4.- samtools flagstat on samples
      */
     process samtools_sort_index_flagstat {
-        tag "${bam.baseName}"
+        tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
                 if (filename.indexOf(".txt") > 0) "logs/$filename"
@@ -609,10 +611,10 @@ if(params.aligner == 'bwameth'){
             }
 
         input:
-        file bam from bam_aligned
+        set val(name), file(bam) from bam_aligned
 
         output:
-        file "${bam.baseName}.sorted.bam" into bam_sorted
+        set val(name), file("${bam.baseName}.sorted.bam") into bam_sorted
         file "${bam.baseName}.sorted.bam.bai" into bam_index
         file "${bam.baseName}_flagstat.txt" into flagstat_results
         file "${bam.baseName}_stats.txt" into samtools_stats_results
@@ -639,15 +641,15 @@ if(params.aligner == 'bwameth'){
         picard_results = Channel.from(false)
     } else {
         process markDuplicates {
-            tag "${bam.baseName}"
+            tag "$name"
             publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy',
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
-            file bam from bam_sorted
+            set val(name), file(bam) from bam_sorted
 
             output:
-            file "${bam.baseName}.markDups.bam" into bam_md, bam_dedup_qualimap
+            set val(name), file("${bam.baseName}.markDups.bam") into bam_md, bam_dedup_qualimap
             file "${bam.baseName}.markDups.bam.bai" into bam_md_bai
             file "${bam.baseName}.markDups_metrics.txt" into picard_results
 
@@ -676,11 +678,11 @@ if(params.aligner == 'bwameth'){
      * STEP 6 - extract methylation with MethylDackel
      */
     process methyldackel {
-        tag "${bam.baseName}"
+        tag "$name"
         publishDir "${params.outdir}/MethylDackel", mode: 'copy'
 
         input:
-        file bam from bam_md
+        set val(name), file(bam) from bam_md
         file bam_index from bam_md_bai
         file fasta from fasta
         file fasta_index from fasta_index
@@ -711,11 +713,11 @@ else {
  * STEP 8 - Qualimap
  */
 process qualimap {
-    tag "${bam.baseName}"
+    tag "$name"
     publishDir "${params.outdir}/qualimap", mode: 'copy'
 
     input:
-    file bam from bam_dedup_qualimap
+    set val(name), file(bam) from bam_dedup_qualimap
 
     output:
     file "${bam.baseName}_qualimap" into qualimap_results
