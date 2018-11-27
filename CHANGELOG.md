@@ -1,5 +1,8 @@
 # nf-core/methylseq
 
+## 2018-11-27
+* Add meth_cutoff = 5 default. Now, 5 reads (previously 1) are required to call methylation via bismark_methylation_extractor. 
+
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
