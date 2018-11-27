@@ -30,6 +30,7 @@
     * [`--saveTrimmed`](#--savetrimmed)
     * [`--saveAlignedIntermediates`](#--savealignedintermediates)
     * [`--mindepth`](#--mindepth)
+    * [`--meth_cutoff`](#--meth_cutoff)
     * [`--ignoreFlags`](#--ignoreflags)
 * [Job Resources](#job-resources)
     * [Automatic resubmission](#automatic-resubmission)
