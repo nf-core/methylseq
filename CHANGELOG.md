@@ -4,6 +4,7 @@
 
 #### New features
 * Trim 9bp from both ends of both reads for PBAT mode.
+* Save `where_are_my_files.txt` to results directory to inform the user about missing intermediate files [#42](https://github.com/nf-core/methylseq/issues/42)
 
 #### Software updates
 * Fastqc `0.11.7` > `0.11.8`

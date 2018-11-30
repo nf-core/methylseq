@@ -55,6 +55,7 @@ else if( params.aligner == 'bwameth') {
     exit 1, "No Fasta reference specified! This is required by MethylDackel."
 }
 multiqc_config = file(params.multiqc_config)
+wherearemyfiles = file("$baseDir/assets/where_are_my_files.txt")
 
 // Validate inputs
 if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
@@ -308,16 +309,20 @@ if(params.notrim){
             saveAs: {filename ->
                 if (filename.indexOf("_fastqc") > 0) "FastQC/$filename"
                 else if (filename.indexOf("trimming_report.txt") > 0) "logs/$filename"
-                else params.saveTrimmed ? filename : null
+                else if (!params.saveTrimmed && filename == "where_are_my_files.txt") filename
+                else if (params.saveTrimmed && filename != "where_are_my_files.txt") filename
+                else null
             }
 
         input:
         set val(name), file(reads) from read_files_trimming
+        file wherearemyfiles
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
         file "*trimming_report.txt" into trimgalore_results
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
+        file "where_are_my_files.txt"
 
         script:
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -346,18 +351,22 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
             saveAs: {filename ->
                 if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
-                else if (filename.indexOf(".bam") == -1) "logs/$filename"
-                else params.saveAlignedIntermediates || params.nodedup || params.rrbs ? filename : null
+                else if (filename.indexOf("report.txt") > 0) "logs/$filename"
+                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                else null
             }
 
         input:
         set val(name), file(reads) from trimmed_reads
         file index from bismark_index.collect()
+        file wherearemyfiles
 
         output:
         set val(name), file("*.bam") into bam, bam_2
         set val(name), file("*report.txt") into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
         if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
+        file "where_are_my_files.txt"
 
         script:
         pbat = params.pbat ? "--pbat" : ''
@@ -577,14 +586,20 @@ if(params.aligner == 'bwameth'){
     process bwamem_align {
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
-            saveAs: { fn -> params.saveAlignedIntermediates ? fn : null }
+            saveAs: {filename ->
+                if (!params.saveAlignedIntermediates && filename == "where_are_my_files.txt") filename
+                else if (params.saveAlignedIntermediates && filename != "where_are_my_files.txt") filename
+                else null
+            }
 
         input:
         set val(name), file(reads) from trimmed_reads
         file bwa_meth_indices from bwa_meth_indices.collect()
+        file wherearemyfiles
 
         output:
         set val(name), file('*.bam') into bam_aligned
+        file "where_are_my_files.txt"
 
         script:
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
@@ -605,19 +620,22 @@ if(params.aligner == 'bwameth'){
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf(".txt") > 0) "logs/$filename"
-                else if (params.saveAlignedIntermediates || params.nodedup || params.rrbs) filename
+                if (filename.indexOf("report.txt") > 0) "logs/$filename"
+                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 
         input:
         set val(name), file(bam) from bam_aligned
+        file wherearemyfiles
 
         output:
         set val(name), file("${bam.baseName}.sorted.bam") into bam_sorted
         file "${bam.baseName}.sorted.bam.bai" into bam_index
-        file "${bam.baseName}_flagstat.txt" into flagstat_results
-        file "${bam.baseName}_stats.txt" into samtools_stats_results
+        file "${bam.baseName}_flagstat_report.txt" into flagstat_results
+        file "${bam.baseName}_stats_report.txt" into samtools_stats_results
+        file "where_are_my_files.txt"
 
         script:
         """
@@ -627,8 +645,8 @@ if(params.aligner == 'bwameth'){
             -@ ${task.cpus} \\
             > ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
-        samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat.txt
-        samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats.txt
+        samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat_report.txt
+        samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats_report.txt
         """
     }
 
