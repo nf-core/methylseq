@@ -365,7 +365,7 @@ if(params.aligner == 'bismark'){
         output:
         set val(name), file("*.bam") into bam, bam_2
         set val(name), file("*report.txt") into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-        if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
+        file "*.fq.gz" optional true into bismark_unmapped
         file "where_are_my_files.txt"
 
         script:
