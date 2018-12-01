@@ -14,6 +14,7 @@
 * Picard `2.18.11` > `2.18.14`
 
 #### Bug fixes
+* Fixed error when running the pipeline with --unmapped
 * Fixed error where single-sample reports could mix up log files [#48](https://github.com/nf-core/methylseq/issues/48)
 * Fixed bug in MultiQC process that skipped results from some tools
 * Supply available memory as argument to Picard MarkDuplicates
