@@ -40,10 +40,6 @@ else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
         .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
         .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
 }
-else if( params.fasta_index && params.aligner == 'bwameth' ){
-    fasta_index = Channel
-        .fromPath(params.fasta_index, checkIfExists: true)
-}
 else if( !params.fasta ) {
     exit 1, "No reference genome index specified!"
 }
@@ -53,8 +49,12 @@ if ( params.fasta ){
         .fromPath(params.fasta, checkIfExists: true)
         .into { fasta_1; fasta_2; fasta_3 }
 }
-else if( params.aligner == 'bwameth') {
-    exit 1, "No Fasta reference specified! This is required by MethylDackel."
+if( params.fasta_index ){
+    fasta_index = Channel
+        .fromPath(params.fasta_index, checkIfExists: true)
+}
+if( params.aligner == 'bwameth' && (!params.fasta_index || !params.fasta )) {
+    exit 1, "Fasta & Fasta index references missing! These are required by MethylDackel."
 }
 
 multiqc_config = Channel
