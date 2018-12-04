@@ -32,29 +32,37 @@ if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
 }
 if( params.bismark_index && params.aligner == 'bismark' ){
     bismark_index = Channel
-        .fromPath(params.bismark_index)
+        .fromPath(params.bismark_index, checkIfExists: true)
         .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
 }
 else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
     bwa_meth_indices = Channel
-        .fromPath( "${params.bwa_meth_index}*" )
+        .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
         .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
 }
 else if( params.fasta_index && params.aligner == 'bwameth' ){
-    fasta_index = file(params.fasta_index)
-    if( !fasta_index.exists() ) exit 1, "Fasta index file not found: ${params.fasta_index}"
+    fasta_index = Channel
+        .fromPath(params.fasta_index, checkIfExists: true)
 }
 else if( !params.fasta ) {
     exit 1, "No reference genome index specified!"
 }
+
 if ( params.fasta ){
-    fasta = file(params.fasta)
-    if( !fasta.exists() ) exit 1, "Fasta file not found: ${params.fasta}"
+    Channel
+        .fromPath(params.fasta, checkIfExists: true)
+        .into { fasta_1; fasta_2; fasta_3 }
 }
 else if( params.aligner == 'bwameth') {
     exit 1, "No Fasta reference specified! This is required by MethylDackel."
 }
-multiqc_config = file(params.multiqc_config)
+
+multiqc_config = Channel
+        .fromPath(params.multiqc_config, checkIfExists: true)
+
+Channel
+    .fromPath(file("$baseDir/assets/where_are_my_files.txt"), checkIfExists: true)
+    .into { wherearemyfiles_1; wherearemyfiles_2; wherearemyfiles_3 }
 
 // Validate inputs
 if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
@@ -216,7 +224,7 @@ if(!params.bismark_index && params.fasta && params.aligner == 'bismark'){
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta from fasta
+        file fasta from fasta_1
 
         output:
         file "BismarkIndex" into bismark_index
@@ -236,11 +244,11 @@ if(!params.bismark_index && params.fasta && params.aligner == 'bismark'){
  */
 if(!params.bwa_meth_index && params.fasta && params.aligner == 'bwameth'){
     process makeBwaMemIndex {
-        tag fasta
+        tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta from fasta
+        file fasta from fasta_1
 
         output:
         file "${fasta}.bwameth.c2t.bwt" into bwa_meth_index
@@ -258,11 +266,11 @@ if(!params.bwa_meth_index && params.fasta && params.aligner == 'bwameth'){
  */
 if(!params.fasta_index && params.fasta && params.aligner == 'bwameth'){
     process makeFastaIndex {
-        tag fasta
+        tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta
+        file fasta from fasta_2
 
         output:
         file "${fasta}.fai" into fasta_index
@@ -308,16 +316,20 @@ if(params.notrim){
             saveAs: {filename ->
                 if (filename.indexOf("_fastqc") > 0) "FastQC/$filename"
                 else if (filename.indexOf("trimming_report.txt") > 0) "logs/$filename"
-                else params.saveTrimmed ? filename : null
+                else if (!params.saveTrimmed && filename == "where_are_my_files.txt") filename
+                else if (params.saveTrimmed && filename != "where_are_my_files.txt") filename
+                else null
             }
 
         input:
         set val(name), file(reads) from read_files_trimming
+        file wherearemyfiles from wherearemyfiles_1
 
         output:
         set val(name), file('*fq.gz') into trimmed_reads
         file "*trimming_report.txt" into trimgalore_results
         file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
+        file "where_are_my_files.txt"
 
         script:
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -346,18 +358,22 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
             saveAs: {filename ->
                 if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
-                else if (filename.indexOf(".bam") == -1) "logs/$filename"
-                else params.saveAlignedIntermediates || params.nodedup || params.rrbs ? filename : null
+                else if (filename.indexOf("report.txt") > 0) "logs/$filename"
+                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                else null
             }
 
         input:
         set val(name), file(reads) from trimmed_reads
         file index from bismark_index.collect()
+        file wherearemyfiles from wherearemyfiles_2
 
         output:
         set val(name), file("*.bam") into bam, bam_2
         set val(name), file("*report.txt") into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-        if(params.unmapped){ file "*.fq.gz" into bismark_unmapped }
+        file "*.fq.gz" optional true into bismark_unmapped
+        file "where_are_my_files.txt"
 
         script:
         pbat = params.pbat ? "--pbat" : ''
@@ -577,14 +593,20 @@ if(params.aligner == 'bwameth'){
     process bwamem_align {
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
-            saveAs: { fn -> params.saveAlignedIntermediates ? fn : null }
+            saveAs: {filename ->
+                if (!params.saveAlignedIntermediates && filename == "where_are_my_files.txt") filename
+                else if (params.saveAlignedIntermediates && filename != "where_are_my_files.txt") filename
+                else null
+            }
 
         input:
         set val(name), file(reads) from trimmed_reads
         file bwa_meth_indices from bwa_meth_indices.collect()
+        file wherearemyfiles from wherearemyfiles_2
 
         output:
         set val(name), file('*.bam') into bam_aligned
+        file "where_are_my_files.txt"
 
         script:
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
@@ -605,19 +627,22 @@ if(params.aligner == 'bwameth'){
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf(".txt") > 0) "logs/$filename"
-                else if (params.saveAlignedIntermediates || params.nodedup || params.rrbs) filename
+                if (filename.indexOf("report.txt") > 0) "logs/$filename"
+                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 
         input:
         set val(name), file(bam) from bam_aligned
+        file wherearemyfiles from wherearemyfiles_3
 
         output:
         set val(name), file("${bam.baseName}.sorted.bam") into bam_sorted
         file "${bam.baseName}.sorted.bam.bai" into bam_index
-        file "${bam.baseName}_flagstat.txt" into flagstat_results
-        file "${bam.baseName}_stats.txt" into samtools_stats_results
+        file "${bam.baseName}_flagstat_report.txt" into flagstat_results
+        file "${bam.baseName}_stats_report.txt" into samtools_stats_results
+        file "where_are_my_files.txt"
 
         script:
         """
@@ -627,8 +652,8 @@ if(params.aligner == 'bwameth'){
             -@ ${task.cpus} \\
             > ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
-        samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat.txt
-        samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats.txt
+        samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat_report.txt
+        samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats_report.txt
         """
     }
 
@@ -684,7 +709,7 @@ if(params.aligner == 'bwameth'){
         input:
         set val(name), file(bam) from bam_md
         file bam_index from bam_md_bai
-        file fasta from fasta
+        file fasta from fasta_3
         file fasta_index from fasta_index
 
         output:
@@ -777,7 +802,7 @@ process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
-    file multiqc_config
+    file multiqc_config from multiqc_config
     file ('fastqc/*') from fastqc_results.collect().ifEmpty([])
     file ('trimgalore/*') from trimgalore_results.collect().ifEmpty([])
     file ('bismark/*') from bismark_align_log_3.collect().ifEmpty([])
