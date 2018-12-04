@@ -1,6 +1,6 @@
 # You can use this file to create a conda environment for this pipeline:
 #   conda env create -f environment.yml
-name: nfcore-methylseq-1.1
+name: nf-core-methylseq-1.2dev
 channels:
   - bioconda
   - conda-forge
@@ -8,14 +8,14 @@ channels:
 dependencies:
   # bismark
   - conda-forge::openjdk=8.0.144 # Needed for FastQC - conda build hangs without this
-  - fastqc=0.11.7
+  - fastqc=0.11.8
   - trim-galore=0.5.0
   - samtools=1.9
-  - bowtie2=2.3.4.2
-  - bismark=0.19.0
-  - qualimap=2.2.2a
+  - bowtie2=2.3.4.3
+  - bismark=0.20.0
+  - qualimap=2.2.2b
   - multiqc=1.6
   # bwa-meth aligner
-  - picard=2.18.11
+  - picard=2.18.14
   - bwameth=0.2.2
   - methyldackel=0.3.0
