@@ -160,7 +160,8 @@ summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
 if(params.bwa_meth_index) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-else if(params.fasta)    summary['Fasta Ref'] = params.fasta
+if(params.fasta)        summary['Fasta Ref'] = params.fasta
+if(params.fasta_index)  summary['Fasta Index'] = params.fasta_index
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
 if(params.notrim)       summary['Trimming Step'] = 'Skipped'
