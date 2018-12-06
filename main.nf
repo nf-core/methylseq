@@ -49,12 +49,12 @@ if ( params.fasta ){
         .fromPath(params.fasta, checkIfExists: true)
         .into { fasta_1; fasta_2; fasta_3 }
 }
+else if( params.aligner == 'bwameth') {
+    exit 1, "No Fasta reference specified! This is required by MethylDackel."
+}
 if( params.fasta_index ){
     fasta_index = Channel
         .fromPath(params.fasta_index, checkIfExists: true)
-}
-if( params.aligner == 'bwameth' && (!params.fasta_index || !params.fasta )) {
-    exit 1, "Fasta & Fasta index references missing! These are required by MethylDackel."
 }
 
 multiqc_config = Channel
