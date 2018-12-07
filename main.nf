@@ -40,10 +40,6 @@ else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
         .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
         .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
 }
-else if( params.fasta_index && params.aligner == 'bwameth' ){
-    fasta_index = Channel
-        .fromPath(params.fasta_index, checkIfExists: true)
-}
 else if( !params.fasta ) {
     exit 1, "No reference genome index specified!"
 }
@@ -55,6 +51,10 @@ if ( params.fasta ){
 }
 else if( params.aligner == 'bwameth') {
     exit 1, "No Fasta reference specified! This is required by MethylDackel."
+}
+if( params.fasta_index ){
+    fasta_index = Channel
+        .fromPath(params.fasta_index, checkIfExists: true)
 }
 
 multiqc_config = Channel
@@ -160,7 +160,8 @@ summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
 if(params.bwa_meth_index) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-else if(params.fasta)    summary['Fasta Ref'] = params.fasta
+if(params.fasta)        summary['Fasta Ref'] = params.fasta
+if(params.fasta_index)  summary['Fasta Index'] = params.fasta_index
 if(params.rrbs) summary['RRBS Mode'] = 'On'
 if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
 if(params.notrim)       summary['Trimming Step'] = 'Skipped'
