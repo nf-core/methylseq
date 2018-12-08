@@ -30,7 +30,7 @@ params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index
 assert params.aligner == 'bwameth' || params.aligner == 'bismark' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
 
 Channel
-    .fromPath(file("$baseDir/assets/where_are_my_files.txt"), checkIfExists: true)
+    .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
     .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
 if( params.aligner == 'bismark' ){
