@@ -34,6 +34,7 @@ Channel
     .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
 if( params.aligner == 'bismark' ){
+    assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
     ch_wherearemyfiles_for_alignment.set { ch_wherearemyfiles_for_bismark_align }
 
     if( params.bismark_index ){
@@ -48,14 +49,9 @@ if( params.aligner == 'bismark' ){
             .ifEmpty { exit 1, "fasta file not found : ${params.fasta}" }
             .set { ch_fasta_for_makeBismarkIndex }
     }
-    else {
-        exit 1, "No reference genome index specified!"
-    }
 }
 else if( params.aligner == 'bwameth' ){
-
     assert params.fasta : "No Fasta reference specified! This is required by MethylDackel."
-
     ch_wherearemyfiles_for_alignment.into { ch_wherearemyfiles_for_bwamem_align; ch_wherearemyfiles_for_samtools_sort_index_flagstat }
 
     Channel
@@ -245,7 +241,7 @@ if( workflow.profile == 'standard' ){
 /*
  * PREPROCESSING - Build Bismark index
  */
-if( !params.bismark_index && params.fasta && params.aligner == 'bismark' ){
+if( !params.bismark_index && params.aligner == 'bismark' ){
     process makeBismarkIndex {
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
@@ -268,7 +264,7 @@ if( !params.bismark_index && params.fasta && params.aligner == 'bismark' ){
 /*
  * PREPROCESSING - Build bwa-mem index
  */
-if( !params.bwa_meth_index && params.fasta && params.aligner == 'bwameth' ){
+if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
     process makeBwaMemIndex {
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
@@ -289,7 +285,7 @@ if( !params.bwa_meth_index && params.fasta && params.aligner == 'bwameth' ){
 /*
  * PREPROCESSING - Index Fasta file
  */
-if( !params.fasta_index && params.fasta && params.aligner == 'bwameth' ){
+if( !params.fasta_index && params.aligner == 'bwameth' ){
     process makeFastaIndex {
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
@@ -602,7 +598,7 @@ if( params.aligner == 'bismark' ){
     }
 } // End of bismark processing block
 else {
-    ch_bismark_align_log_for_multiqc= Channel.from(false)
+    ch_bismark_align_log_for_multiqc = Channel.from(false)
     ch_bismark_dedup_log_for_multiqc = Channel.from(false)
     ch_bismark_splitting_report_for_multiqc = Channel.from(false)
     ch_bismark_mbias_for_multiqc = Channel.from(false)
