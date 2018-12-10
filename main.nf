@@ -27,46 +27,63 @@ params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : 
 params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
 // Validate inputs
-if (params.aligner != 'bismark' && params.aligner != 'bwameth'){
-    exit 1, "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
-}
-if( params.bismark_index && params.aligner == 'bismark' ){
-    bismark_index = Channel
-        .fromPath(params.bismark_index, checkIfExists: true)
-        .ifEmpty { exit 1, "Bismark index not found: ${params.bismark_index}" }
-}
-else if( params.bwa_meth_index && params.aligner == 'bwameth' ){
-    bwa_meth_indices = Channel
-        .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
-        .ifEmpty { exit 1, "bwa-meth index not found: ${params.bwa_meth_index}" }
-}
-else if( !params.fasta ) {
-    exit 1, "No reference genome index specified!"
-}
-
-if ( params.fasta ){
-    Channel
-        .fromPath(params.fasta, checkIfExists: true)
-        .into { fasta_1; fasta_2; fasta_3 }
-}
-else if( params.aligner == 'bwameth') {
-    exit 1, "No Fasta reference specified! This is required by MethylDackel."
-}
-if( params.fasta_index ){
-    fasta_index = Channel
-        .fromPath(params.fasta_index, checkIfExists: true)
-}
-
-multiqc_config = Channel
-        .fromPath(params.multiqc_config, checkIfExists: true)
+assert params.aligner == 'bwameth' || params.aligner == 'bismark' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
 
 Channel
-    .fromPath(file("$baseDir/assets/where_are_my_files.txt"), checkIfExists: true)
-    .into { wherearemyfiles_1; wherearemyfiles_2; wherearemyfiles_3 }
+    .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
+    .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
-// Validate inputs
+if( params.aligner == 'bismark' ){
+    assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
+    ch_wherearemyfiles_for_alignment.set { ch_wherearemyfiles_for_bismark_align }
+
+    if( params.bismark_index ){
+        Channel
+            .fromPath(params.bismark_index, checkIfExists: true)
+            .ifEmpty { exit 1, "Bismark index file not found: ${params.bismark_index}" }
+            .set { ch_bismark_index_for_bismark_align }
+    }
+    else if( params.fasta ){
+        Channel
+            .fromPath(params.fasta, checkIfExists: true)
+            .ifEmpty { exit 1, "fasta file not found : ${params.fasta}" }
+            .set { ch_fasta_for_makeBismarkIndex }
+    }
+}
+else if( params.aligner == 'bwameth' ){
+    assert params.fasta : "No Fasta reference specified! This is required by MethylDackel."
+    ch_wherearemyfiles_for_alignment.into { ch_wherearemyfiles_for_bwamem_align; ch_wherearemyfiles_for_samtools_sort_index_flagstat }
+
+    Channel
+        .fromPath(params.fasta, checkIfExists: true)
+        .ifEmpty { exit 1, "fasta file not found : ${params.fasta}" }
+        .into { ch_fasta_for_makeBwaMemIndex; ch_fasta_for_makeFastaIndex; ch_fasta_for_methyldackel }
+
+    if( params.bwa_meth_index ){
+        Channel
+            .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
+            .ifEmpty { exit 1, "bwa-meth index file(s) not found: ${params.bwa_meth_index}" }
+            .set { ch_bwa_meth_indices_for_bwamem_align }
+        ch_fasta_for_makeBwaMemIndex.close()
+    }
+
+    if( params.fasta_index ){
+        Channel
+            .fromPath(params.fasta_index, checkIfExists: true)
+            .ifEmpty { exit 1, "fasta index file not found: ${params.fasta_index}" }
+            .set { ch_fasta_index_for_methyldackel }
+        ch_fasta_for_makeFastaIndex.close()
+    }
+}
+
+Channel
+    .fromPath(params.multiqc_config, checkIfExists: true)
+    .ifEmpty { exit 1, "multiqc config file not found: ${params.multiqc_config}" }
+    .set { ch_config_for_multiqc }
+
+
 if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
-    if ( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+    if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
 
 // Has the run name been specified by the user?
@@ -89,22 +106,26 @@ if(params.pbat){
     params.clip_r2 = 9
     params.three_prime_clip_r1 = 9
     params.three_prime_clip_r2 = 9
-} else if(params.single_cell){
+}
+else if( params.single_cell ){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 6
     params.three_prime_clip_r2 = 6
-} else if(params.epignome){
+}
+else if( params.epignome ){
     params.clip_r1 = 8
     params.clip_r2 = 8
     params.three_prime_clip_r1 = 8
     params.three_prime_clip_r2 = 8
-} else if(params.accel || params.zymo){
+}
+else if( params.accel || params.zymo ){
     params.clip_r1 = 10
     params.clip_r2 = 15
     params.three_prime_clip_r1 = 10
     params.three_prime_clip_r2 = 10
-} else if(params.cegx){
+}
+else if( params.cegx ){
     params.clip_r1 = 6
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 2
@@ -120,25 +141,25 @@ if(params.pbat){
  * Create a channel for input read files
  */
 
-if(params.readPaths){
-    if(params.singleEnd){
+if( params.readPaths ){
+    if( params.singleEnd ){
         Channel
             .from(params.readPaths)
             .map { row -> [ row[0], [file(row[1][0])]] }
             .ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
-            .into { read_files_fastqc; read_files_trimming }
+            .into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
     } else {
         Channel
             .from(params.readPaths)
             .map { row -> [ row[0], [file(row[1][0]), file(row[1][1])]] }
             .ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
-            .into { read_files_fastqc; read_files_trimming }
+            .into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
     }
 } else {
     Channel
         .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
         .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --singleEnd on the command line." }
-        .into { read_files_fastqc; read_files_trimming }
+        .into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
 }
 
 log.info """=======================================================
@@ -158,19 +179,19 @@ summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
-if(params.bismark_index) summary['Bismark Index'] = params.bismark_index
-if(params.bwa_meth_index) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-if(params.fasta)        summary['Fasta Ref'] = params.fasta
-if(params.fasta_index)  summary['Fasta Index'] = params.fasta_index
-if(params.rrbs) summary['RRBS Mode'] = 'On'
-if(params.relaxMismatches) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
-if(params.notrim)       summary['Trimming Step'] = 'Skipped'
-if(params.pbat)         summary['Trim Profile'] = 'PBAT'
-if(params.single_cell)  summary['Trim Profile'] = 'Single Cell'
-if(params.epignome)     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
-if(params.accel)        summary['Trim Profile'] = 'Accel-NGS (Swift)'
-if(params.zymo)         summary['Trim Profile'] = 'Zymo Pico-Methyl'
-if(params.cegx)         summary['Trim Profile'] = 'CEGX'
+if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
+if( params.bwa_meth_index ) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
+if( params.fasta )    summary['Fasta Ref'] = params.fasta
+if( params.fasta_index )    summary['Fasta Index'] = params.fasta_index
+if( params.rrbs ) summary['RRBS Mode'] = 'On'
+if( params.relaxMismatches ) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
+if( params.notrim )       summary['Trimming Step'] = 'Skipped'
+if( params.pbat )         summary['Trim Profile'] = 'PBAT'
+if( params.single_cell )  summary['Trim Profile'] = 'Single Cell'
+if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
+if( params.accel )        summary['Trim Profile'] = 'Accel-NGS (Swift)'
+if( params.zymo )         summary['Trim Profile'] = 'Zymo Pico-Methyl'
+if( params.cegx )         summary['Trim Profile'] = 'CEGX'
 summary['Trim R1'] = params.clip_r1
 summary['Trim R2'] = params.clip_r2
 summary["Trim 3' R1"] = params.three_prime_clip_r1
@@ -178,8 +199,8 @@ summary["Trim 3' R2"] = params.three_prime_clip_r2
 summary['Deduplication']  = params.nodedup || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
-if(params.mindepth) summary['Minimum Depth'] = params.mindepth
-if(params.ignoreFlags) summary['MethylDackel'] = 'Ignoring SAM Flags'
+if( params.mindepth ) summary['Minimum Depth'] = params.mindepth
+if( params.ignoreFlags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
 summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
@@ -190,7 +211,7 @@ summary['Max Time']       = params.max_time
 summary['Output dir']     = params.outdir
 summary['Working dir']    = workflow.workDir
 summary['Container Engine'] = workflow.containerEngine
-if(workflow.containerEngine) summary['Container'] = workflow.container
+if( workflow.containerEngine ) summary['Container'] = workflow.container
 summary['Current home']   = "$HOME"
 summary['Current user']   = System.getProperty("user.name")
 summary['Current path']   = "$PWD"
@@ -198,14 +219,14 @@ summary['Working dir']    = workflow.workDir
 summary['Output dir']     = params.outdir
 summary['Script dir']     = workflow.projectDir
 summary['Config Profile'] = workflow.profile
-if(params.project) summary['UPPMAX Project'] = params.project
-if(params.email) summary['E-mail Address'] = params.email
+if( params.project ) summary['UPPMAX Project'] = params.project
+if( params.email ) summary['E-mail Address'] = params.email
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "========================================="
 
 // Show a big error message if we're running on the base config and an uppmax cluster
-if( workflow.profile == 'standard'){
-    if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+if( workflow.profile == 'standard' ){
+    if( "hostname".execute().text.contains('.uppmax.uu.se') ) {
         log.error "====================================================\n" +
                   "  WARNING! You are running with the default 'standard'\n" +
                   "  pipeline config profile, which runs on the head node\n" +
@@ -216,19 +237,20 @@ if( workflow.profile == 'standard'){
     }
 }
 
+
 /*
  * PREPROCESSING - Build Bismark index
  */
-if(!params.bismark_index && params.fasta && params.aligner == 'bismark'){
+if( !params.bismark_index && params.aligner == 'bismark' ){
     process makeBismarkIndex {
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta from fasta_1
+        file fasta from ch_fasta_for_makeBismarkIndex
 
         output:
-        file "BismarkIndex" into bismark_index
+        file "BismarkIndex" into ch_bismark_index_for_bismark_align
 
         script:
         """
@@ -239,21 +261,19 @@ if(!params.bismark_index && params.fasta && params.aligner == 'bismark'){
     }
 }
 
-
 /*
  * PREPROCESSING - Build bwa-mem index
  */
-if(!params.bwa_meth_index && params.fasta && params.aligner == 'bwameth'){
+if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
     process makeBwaMemIndex {
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta from fasta_1
+        file fasta from ch_fasta_for_makeBwaMemIndex
 
         output:
-        file "${fasta}.bwameth.c2t.bwt" into bwa_meth_index
-        file "${fasta}*" into bwa_meth_indices
+        file "${fasta}*" into ch_bwa_meth_indices_for_bwamem_align
 
         script:
         """
@@ -265,16 +285,16 @@ if(!params.bwa_meth_index && params.fasta && params.aligner == 'bwameth'){
 /*
  * PREPROCESSING - Index Fasta file
  */
-if(!params.fasta_index && params.fasta && params.aligner == 'bwameth'){
+if( !params.fasta_index && params.aligner == 'bwameth' ){
     process makeFastaIndex {
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
 
         input:
-        file fasta from fasta_2
+        file fasta from ch_fasta_for_makeFastaIndex
 
         output:
-        file "${fasta}.fai" into fasta_index
+        file "${fasta}.fai" into ch_fasta_index_for_methyldackel
 
         script:
         """
@@ -293,10 +313,10 @@ process fastqc {
         saveAs: {filename -> filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"}
 
     input:
-    set val(name), file(reads) from read_files_fastqc
+    set val(name), file(reads) from ch_read_files_for_fastqc
 
     output:
-    file '*_fastqc.{zip,html}' into fastqc_results
+    file '*_fastqc.{zip,html}' into ch_fastqc_results_for_multiqc
 
     script:
     """
@@ -307,29 +327,29 @@ process fastqc {
 /*
  * STEP 2 - Trim Galore!
  */
-if(params.notrim){
-    trimmed_reads = read_files_trimming
-    trimgalore_results = Channel.from(false)
+if( params.notrim ){
+    ch_trimmed_reads_for_alignment = ch_read_files_for_trim_galore
+    ch_trim_galore_results_for_multiqc = Channel.from(false)
 } else {
     process trim_galore {
         tag "$name"
         publishDir "${params.outdir}/trim_galore", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf("_fastqc") > 0) "FastQC/$filename"
-                else if (filename.indexOf("trimming_report.txt") > 0) "logs/$filename"
-                else if (!params.saveTrimmed && filename == "where_are_my_files.txt") filename
-                else if (params.saveTrimmed && filename != "where_are_my_files.txt") filename
+                if( filename.indexOf("_fastqc") > 0 ) "FastQC/$filename"
+                else if( filename.indexOf("trimming_report.txt" ) > 0) "logs/$filename"
+                else if( !params.saveTrimmed && filename == "where_are_my_files.txt" ) filename
+                else if( params.saveTrimmed && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
         input:
-        set val(name), file(reads) from read_files_trimming
-        file wherearemyfiles from wherearemyfiles_1
+        set val(name), file(reads) from ch_read_files_for_trim_galore
+        file wherearemyfiles from ch_wherearemyfiles_for_trimgalore
 
         output:
-        set val(name), file('*fq.gz') into trimmed_reads
-        file "*trimming_report.txt" into trimgalore_results
-        file "*_fastqc.{zip,html}" into trimgalore_fastqc_reports
+        set val(name), file('*fq.gz') into ch_trimmed_reads_for_alignment
+        file "*trimming_report.txt" into ch_trim_galore_results_for_multiqc
+        file "*_fastqc.{zip,html}"
         file "where_are_my_files.txt"
 
         script:
@@ -338,7 +358,7 @@ if(params.notrim){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
-        if (params.singleEnd) {
+        if( params.singleEnd ) {
             """
             trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
@@ -353,27 +373,27 @@ if(params.notrim){
 /*
  * STEP 3.1 - align with Bismark
  */
-if(params.aligner == 'bismark'){
+if( params.aligner == 'bismark' ){
     process bismark_align {
         tag "$name"
         publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf(".fq.gz") > 0) "unmapped/$filename"
-                else if (filename.indexOf("report.txt") > 0) "logs/$filename"
-                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
+                else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
+                else if( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
+                else if( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
         input:
-        set val(name), file(reads) from trimmed_reads
-        file index from bismark_index.collect()
-        file wherearemyfiles from wherearemyfiles_2
+        set val(name), file(reads) from ch_trimmed_reads_for_alignment
+        file index from ch_bismark_index_for_bismark_align.collect()
+        file wherearemyfiles from ch_wherearemyfiles_for_bismark_align
 
         output:
-        set val(name), file("*.bam") into bam, bam_2
-        set val(name), file("*report.txt") into bismark_align_log_1, bismark_align_log_2, bismark_align_log_3
-        file "*.fq.gz" optional true into bismark_unmapped
+        set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary
+        set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
+        file "*.fq.gz" optional true
         file "where_are_my_files.txt"
 
         script:
@@ -382,9 +402,9 @@ if(params.aligner == 'bismark'){
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
         multicore = ''
-        if (task.cpus){
+        if( task.cpus ){
             // Numbers based on recommendation by Felix for a typical mouse genome
-            if(params.single_cell || params.zymo || params.non_directional){
+            if( params.single_cell || params.zymo || params.non_directional ){
                 cpu_per_multicore = 5
                 mem_per_multicore = (18.GB).toBytes()
             } else {
@@ -401,11 +421,11 @@ if(params.aligner == 'bismark'){
             } catch (all) {
                 log.debug "Not able to define bismark align multicore based on available memory"
             }
-            if(ccore > 1){
+            if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
         }
-        if (params.singleEnd) {
+        if( params.singleEnd ) {
             """
             bismark \\
                 --bam $pbat $non_directional $unmapped $mismatches $multicore \\
@@ -426,11 +446,11 @@ if(params.aligner == 'bismark'){
     /*
      * STEP 4 - Bismark deduplicate
      */
-    if (params.nodedup || params.rrbs) {
-        bam.into { bam_dedup; bam_dedup_qualimap }
-        bismark_dedup_log_1 = Channel.from(false)
-        bismark_dedup_log_2 = Channel.from(false)
-        bismark_dedup_log_3 = Channel.from(false)
+    if( params.nodedup || params.rrbs ) {
+        ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap }
+        ch_bismark_dedup_log_for_bismark_report = Channel.from(false)
+        ch_bismark_dedup_log_for_bismark_summary = Channel.from(false)
+        ch_bismark_dedup_log_for_multiqc  = Channel.from(false)
     } else {
         process bismark_deduplicate {
             tag "$name"
@@ -438,14 +458,14 @@ if(params.aligner == 'bismark'){
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
-            set val(name), file(bam) from bam
+            set val(name), file(bam) from ch_bam_for_bismark_deduplicate
 
             output:
-            set val(name), file("*.deduplicated.bam") into bam_dedup, bam_dedup_qualimap
-            set val(name), file("*.deduplication_report.txt") into bismark_dedup_log_1, bismark_dedup_log_2, bismark_dedup_log_3
+            set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap
+            set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
-            if (params.singleEnd) {
+            if( params.singleEnd ) {
                 """
                 deduplicate_bismark -s --bam $bam
                 """
@@ -464,40 +484,40 @@ if(params.aligner == 'bismark'){
         tag "$name"
         publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf("splitting_report.txt") > 0) "logs/$filename"
-                else if (filename.indexOf("M-bias") > 0) "m-bias/$filename"
-                else if (filename.indexOf(".cov") > 0) "methylation_coverage/$filename"
-                else if (filename.indexOf("bedGraph") > 0) "bedGraph/$filename"
+                if( filename.indexOf("splitting_report.txt" ) > 0 ) "logs/$filename"
+                else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
+                else if( filename.indexOf(".cov" ) > 0 ) "methylation_coverage/$filename"
+                else if( filename.indexOf("bedGraph" ) > 0 ) "bedGraph/$filename"
                 else "methylation_calls/$filename"
             }
 
         input:
-        set val(name), file(bam) from bam_dedup
+        set val(name), file(bam) from ch_bam_dedup_for_bismark_methXtract
 
         output:
-        set val(name), file("*splitting_report.txt") into bismark_splitting_report_1, bismark_splitting_report_2, bismark_splitting_report_3
-        set val(name), file("*.M-bias.txt") into bismark_mbias_1, bismark_mbias_2, bismark_mbias_3
-        file '*.{png,gz}' into bismark_methXtract_results
+        set val(name), file("*splitting_report.txt") into ch_bismark_splitting_report_for_bismark_report, ch_bismark_splitting_report_for_bismark_summary, ch_bismark_splitting_report_for_multiqc
+        set val(name), file("*.M-bias.txt") into ch_bismark_mbias_for_bismark_report, ch_bismark_mbias_for_bismark_summary, ch_bismark_mbias_for_multiqc
+        file '*.{png,gz}'
 
         script:
         comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
         multicore = ''
-        if (task.cpus){
+        if( task.cpus ){
             // Numbers based on Bismark docs
             ccore = ((task.cpus as int) / 10) as int
-            if(ccore > 1){
+            if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
         }
         buffer = ''
-        if (task.memory){
+        if( task.memory ){
             mbuffer = (task.memory as nextflow.util.MemoryUnit) - 2.GB
             // only set if we have more than 6GB available
-            if(mbuffer.compareTo(4.GB) == 1){
+            if( mbuffer.compareTo(4.GB) == 1 ){
               buffer = "--buffer_size ${mbuffer.toGiga()}G"
             }
         }
-        if (params.singleEnd) {
+        if(params.singleEnd) {
             """
             bismark_methylation_extractor $comprehensive \\
                 $multicore $buffer \\
@@ -525,11 +545,11 @@ if(params.aligner == 'bismark'){
         }
     }
 
-    bismark_align_log_1
-     .join(bismark_dedup_log_1)
-     .join(bismark_splitting_report_1)
-     .join(bismark_mbias_1)
-     .set{ bismark_logs }
+    ch_bismark_align_log_for_bismark_report
+     .join(ch_bismark_dedup_log_for_bismark_report)
+     .join(ch_bismark_splitting_report_for_bismark_report)
+     .join(ch_bismark_mbias_for_bismark_report)
+     .set{ ch_bismark_logs_for_bismark_report }
 
 
     /*
@@ -540,10 +560,10 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_reports", mode: 'copy'
 
         input:
-        set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from bismark_logs
+        set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from ch_bismark_logs_for_bismark_report
 
         output:
-        file '*{html,txt}' into bismark_reports_results
+        file '*{html,txt}' into ch_bismark_reports_results_for_multiqc
 
         script:
         """
@@ -562,14 +582,14 @@ if(params.aligner == 'bismark'){
         publishDir "${params.outdir}/bismark_summary", mode: 'copy'
 
         input:
-        file ('*') from bam_2.collect()
-        file ('*') from bismark_align_log_2.collect()
-        file ('*') from bismark_dedup_log_2.collect()
-        file ('*') from bismark_splitting_report_2.collect()
-        file ('*') from bismark_mbias_2.collect()
+        file ('*') from ch_bam_for_bismark_summary.collect()
+        file ('*') from ch_bismark_align_log_for_bismark_summary.collect()
+        file ('*') from ch_bismark_dedup_log_for_bismark_summary.collect()
+        file ('*') from ch_bismark_splitting_report_for_bismark_summary.collect()
+        file ('*') from ch_bismark_mbias_for_bismark_summary.collect()
 
         output:
-        file '*{html,txt}' into bismark_summary_results
+        file '*{html,txt}' into ch_bismark_summary_results_for_multiqc
 
         script:
         """
@@ -578,35 +598,35 @@ if(params.aligner == 'bismark'){
     }
 } // End of bismark processing block
 else {
-    bismark_align_log_3 = Channel.from(false)
-    bismark_dedup_log_3 = Channel.from(false)
-    bismark_splitting_report_3 = Channel.from(false)
-    bismark_mbias_3 = Channel.from(false)
-    bismark_reports_results = Channel.from(false)
-    bismark_summary_results = Channel.from(false)
+    ch_bismark_align_log_for_multiqc = Channel.from(false)
+    ch_bismark_dedup_log_for_multiqc = Channel.from(false)
+    ch_bismark_splitting_report_for_multiqc = Channel.from(false)
+    ch_bismark_mbias_for_multiqc = Channel.from(false)
+    ch_bismark_reports_results_for_multiqc = Channel.from(false)
+    ch_bismark_summary_results_for_multiqc = Channel.from(false)
 }
 
 
 /*
  * Process with bwa-mem and assorted tools
  */
-if(params.aligner == 'bwameth'){
+if( params.aligner == 'bwameth' ){
     process bwamem_align {
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if (!params.saveAlignedIntermediates && filename == "where_are_my_files.txt") filename
-                else if (params.saveAlignedIntermediates && filename != "where_are_my_files.txt") filename
+                if( !params.saveAlignedIntermediates && filename == "where_are_my_files.txt" ) filename
+                else if( params.saveAlignedIntermediates && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
         input:
-        set val(name), file(reads) from trimmed_reads
-        file bwa_meth_indices from bwa_meth_indices.collect()
-        file wherearemyfiles from wherearemyfiles_2
+        set val(name), file(reads) from ch_trimmed_reads_for_alignment
+        file bwa_meth_indices from ch_bwa_meth_indices_for_bwamem_align.collect()
+        file wherearemyfiles from ch_wherearemyfiles_for_bwamem_align
 
         output:
-        set val(name), file('*.bam') into bam_aligned
+        set val(name), file('*.bam') into ch_bam_for_samtools_sort_index_flagstat
         file "where_are_my_files.txt"
 
         script:
@@ -628,21 +648,21 @@ if(params.aligner == 'bwameth'){
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if (filename.indexOf("report.txt") > 0) "logs/$filename"
-                else if ( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-                else if ( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                if(filename.indexOf("report.txt") > 0) "logs/$filename"
+                else if( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 
         input:
-        set val(name), file(bam) from bam_aligned
-        file wherearemyfiles from wherearemyfiles_3
+        set val(name), file(bam) from ch_bam_for_samtools_sort_index_flagstat
+        file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat
 
         output:
-        set val(name), file("${bam.baseName}.sorted.bam") into bam_sorted
-        file "${bam.baseName}.sorted.bam.bai" into bam_index
-        file "${bam.baseName}_flagstat_report.txt" into flagstat_results
-        file "${bam.baseName}_stats_report.txt" into samtools_stats_results
+        set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates
+        file "${bam.baseName}.sorted.bam.bai" into ch_bam_index
+        file "${bam.baseName}_flagstat_report.txt" into ch_flagstat_results_for_multiqc
+        file "${bam.baseName}_stats_report.txt" into ch_samtools_stats_results_for_multiqc
         file "where_are_my_files.txt"
 
         script:
@@ -661,10 +681,10 @@ if(params.aligner == 'bwameth'){
     /*
      * STEP 5 - Mark duplicates
      */
-    if (params.nodedup || params.rrbs) {
-        bam_sorted.into { bam_md; bam_dedup_qualimap }
-        bam_index.set { bam_md_bai }
-        picard_results = Channel.from(false)
+    if( params.nodedup || params.rrbs ) {
+        ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
+        ch_bam_index.set { ch_bam_index_for_methyldackel }
+        ch_markDups_results_for_multiqc = Channel.from(false)
     } else {
         process markDuplicates {
             tag "$name"
@@ -672,12 +692,12 @@ if(params.aligner == 'bwameth'){
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
-            set val(name), file(bam) from bam_sorted
+            set val(name), file(bam) from ch_bam_sorted_for_markDuplicates
 
             output:
-            set val(name), file("${bam.baseName}.markDups.bam") into bam_md, bam_dedup_qualimap
-            file "${bam.baseName}.markDups.bam.bai" into bam_md_bai
-            file "${bam.baseName}.markDups_metrics.txt" into picard_results
+            set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap
+            file "${bam.baseName}.markDups.bam.bai" into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
+            file "${bam.baseName}.markDups_metrics.txt" into ch_markDups_results_for_multiqc
 
             script:
             if( !task.memory ){
@@ -708,13 +728,13 @@ if(params.aligner == 'bwameth'){
         publishDir "${params.outdir}/MethylDackel", mode: 'copy'
 
         input:
-        set val(name), file(bam) from bam_md
-        file bam_index from bam_md_bai
-        file fasta from fasta_3
-        file fasta_index from fasta_index
+        set val(name), file(bam) from ch_bam_dedup_for_methyldackel
+        file bam_index from ch_bam_index_for_methyldackel
+        file fasta from ch_fasta_for_methyldackel
+        file fasta_index from ch_fasta_index_for_methyldackel
 
         output:
-        file "${bam.baseName}*" into methyldackel_results
+        file "${bam.baseName}*" into ch_methyldackel_results_for_multiqc
 
         script:
         allcontexts = params.comprehensive ? '--CHG --CHH' : ''
@@ -728,10 +748,10 @@ if(params.aligner == 'bwameth'){
 
 } // end of bwa-meth if block
 else {
-    flagstat_results = Channel.from(false)
-    samtools_stats_results = Channel.from(false)
-    picard_results = Channel.from(false)
-    methyldackel_results = Channel.from(false)
+    ch_flagstat_results_for_multiqc = Channel.from(false)
+    ch_samtools_stats_results_for_multiqc = Channel.from(false)
+    ch_markDups_results_for_multiqc = Channel.from(false)
+    ch_methyldackel_results_for_multiqc = Channel.from(false)
 }
 
 
@@ -743,10 +763,10 @@ process qualimap {
     publishDir "${params.outdir}/qualimap", mode: 'copy'
 
     input:
-    set val(name), file(bam) from bam_dedup_qualimap
+    set val(name), file(bam) from ch_bam_dedup_for_qualimap
 
     output:
-    file "${bam.baseName}_qualimap" into qualimap_results
+    file "${bam.baseName}_qualimap" into ch_qualimap_results_for_multiqc
 
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
@@ -768,7 +788,7 @@ process qualimap {
 process get_software_versions {
 
     output:
-    file 'software_versions_mqc.yaml' into software_versions_yaml
+    file 'software_versions_mqc.yaml' into ch_software_versions_yaml_for_multiqc
 
     script:
     """
@@ -803,26 +823,26 @@ process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
-    file multiqc_config from multiqc_config
-    file ('fastqc/*') from fastqc_results.collect().ifEmpty([])
-    file ('trimgalore/*') from trimgalore_results.collect().ifEmpty([])
-    file ('bismark/*') from bismark_align_log_3.collect().ifEmpty([])
-    file ('bismark/*') from bismark_dedup_log_3.collect().ifEmpty([])
-    file ('bismark/*') from bismark_splitting_report_3.collect().ifEmpty([])
-    file ('bismark/*') from bismark_mbias_3.collect().ifEmpty([])
-    file ('bismark/*') from bismark_reports_results.collect().ifEmpty([])
-    file ('bismark/*') from bismark_summary_results.collect().ifEmpty([])
-    file ('samtools/*') from flagstat_results.flatten().collect().ifEmpty([])
-    file ('samtools/*') from samtools_stats_results.flatten().collect().ifEmpty([])
-    file ('picard/*') from picard_results.flatten().collect().ifEmpty([])
-    file ('methyldackel/*') from methyldackel_results.flatten().collect().ifEmpty([])
-    file ('qualimap/*') from qualimap_results.collect().ifEmpty([])
-    file ('software_versions/*') from software_versions_yaml.collect().ifEmpty([])
+    file multiqc_config from ch_config_for_multiqc
+    file ('fastqc/*') from ch_fastqc_results_for_multiqc.collect().ifEmpty([])
+    file ('trimgalore/*') from ch_trim_galore_results_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_align_log_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_dedup_log_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_splitting_report_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_mbias_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_reports_results_for_multiqc.collect().ifEmpty([])
+    file ('bismark/*') from ch_bismark_summary_results_for_multiqc.collect().ifEmpty([])
+    file ('samtools/*') from ch_flagstat_results_for_multiqc.flatten().collect().ifEmpty([])
+    file ('samtools/*') from ch_samtools_stats_results_for_multiqc.flatten().collect().ifEmpty([])
+    file ('picard/*') from ch_markDups_results_for_multiqc.flatten().collect().ifEmpty([])
+    file ('methyldackel/*') from ch_methyldackel_results_for_multiqc.flatten().collect().ifEmpty([])
+    file ('qualimap/*') from ch_qualimap_results_for_multiqc.collect().ifEmpty([])
+    file ('software_versions/*') from ch_software_versions_yaml_for_multiqc.collect().ifEmpty([])
 
     output:
-    file "*_report.html" into multiqc_report
+    file "*_report.html" into ch_multiqc_report
     file "*_data"
-    file '.command.err' into multiqc_stderr
+    file '.command.err'
 
     script:
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
@@ -839,7 +859,7 @@ workflow.onComplete {
 
     // Set up the e-mail variables
     def subject = "[nf-core/methylseq] Successful: $workflow.runName"
-    if(!workflow.success){
+    if( !workflow.success ){
       subject = "[nf-core/methylseq] FAILED: $workflow.runName"
     }
     def email_fields = [:]
@@ -859,9 +879,9 @@ workflow.onComplete {
     email_fields['summary']['Pipeline script file path'] = workflow.scriptFile
     email_fields['summary']['Pipeline script hash ID'] = workflow.scriptId
     email_fields['summary']['Container'] = workflow.container
-    if(workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
-    if(workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
-    if(workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
+    if( workflow.repository ) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
+    if( workflow.commitId ) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
+    if( workflow.revision ) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
     email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
@@ -869,9 +889,9 @@ workflow.onComplete {
     // On success try attach the multiqc report
     def mqc_report = null
     try {
-        if (workflow.success) {
-            mqc_report = multiqc_report.getVal()
-            if (mqc_report.getClass() == ArrayList){
+        if( workflow.success ) {
+            mqc_report = ch_multiqc_report.getVal()
+            if( mqc_report.getClass() == ArrayList ){
                 log.warn "[nfcore/methylseq] Found multiple reports from process 'multiqc', will use only one"
                 mqc_report = mqc_report[0]
                 }
@@ -898,7 +918,7 @@ workflow.onComplete {
     def sendmail_html = sendmail_template.toString()
 
     // Send the HTML e-mail
-    if (params.email) {
+    if( params.email ) {
         try {
           if( params.plaintext_email ){ throw GroovyException('Send plaintext e-mail, not HTML') }
           // Try to send HTML e-mail using sendmail
@@ -931,9 +951,9 @@ workflow.onComplete {
 
     log.info "[nf-core/methylseq] Pipeline Complete"
 
-    if(!workflow.success){
-        if( workflow.profile == 'standard'){
-            if ( "hostname".execute().text.contains('.uppmax.uu.se') ) {
+    if( !workflow.success ){
+        if( workflow.profile == 'standard' ){
+            if( "hostname".execute().text.contains('.uppmax.uu.se') ) {
                 log.error "====================================================\n" +
                         "  WARNING! You are running with the default 'standard'\n" +
                         "  pipeline config profile, which runs on the head node\n" +
