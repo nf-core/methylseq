@@ -14,8 +14,8 @@ dependencies:
   - bowtie2=2.3.4.3
   - bismark=0.20.0
   - qualimap=2.2.2b
-  - multiqc=1.6
+  - multiqc=1.7
   # bwa-meth aligner
-  - picard=2.18.14
+  - picard=2.18.21
   - bwameth=0.2.2
   - methyldackel=0.3.0
