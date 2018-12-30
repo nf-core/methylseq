@@ -6,16 +6,19 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  # bismark
-  - conda-forge::openjdk=8.0.144 # Needed for FastQC - conda build hangs without this
+  # Dependencies for FastQC
+  - conda-forge::openjdk=8.0.144
+  - font-ttf-dejavu-sans-mono=2.37
+  - fontconfig=2.12.6
   - fastqc=0.11.8
+  # Default bismark pipeline
   - trim-galore=0.5.0
   - samtools=1.9
   - bowtie2=2.3.4.3
   - bismark=0.20.0
   - qualimap=2.2.2b
   - multiqc=1.7
-  # bwa-meth aligner
+  # bwa-meth pipeline
   - picard=2.18.21
   - bwameth=0.2.2
   - methyldackel=0.3.0
