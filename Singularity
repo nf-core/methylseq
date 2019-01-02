@@ -4,10 +4,10 @@ Bootstrap:docker
 %labels
     MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
     DESCRIPTION Container image containing all requirements for the nf-core/methylseq pipeline
-    VERSION 1.2dev
+    VERSION 1.2
 
 %environment
-    PATH=/opt/conda/envs/nf-core-methylseq-1.2dev/bin:$PATH
+    PATH=/opt/conda/envs/nf-core-methylseq-1.2/bin:$PATH
     export PATH
 
 %files
