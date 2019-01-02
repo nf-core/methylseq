@@ -1,39 +1,36 @@
 sudo: required
-language: java
+language: python
 jdk: openjdk8
-services:
-  - docker
-python:
-  - "2.7"
+services: docker
+python: '3.6'
 cache: pip
 matrix:
   fast_finish: true
 
 before_install:
+  # PRs to master are only ok if coming from dev branch
+  - '[ $TRAVIS_PULL_REQUEST = "false" ] || [ $TRAVIS_BRANCH != "master" ] || ([ $TRAVIS_PULL_REQUEST_SLUG = $TRAVIS_REPO_SLUG ] && [ $TRAVIS_PULL_REQUEST_BRANCH = "dev" ])'
   # Pull the docker image first so the test doesn't wait for this
-  - docker pull nfcore/methylseq
+  - docker pull nfcore/methylseq:dev
   # Fake the tag locally so that the pipeline runs properly
-  - docker tag nfcore/methylseq nfcore/methylseq:1.1
+  - docker tag nfcore/methylseq:dev nfcore/methylseq:1.2
 
 install:
   # Install Nextflow
-  - mkdir /tmp/nextflow
-  - cd /tmp/nextflow
+  - mkdir /tmp/nextflow && cd /tmp/nextflow
   - wget -qO- get.nextflow.io | bash
   - sudo ln -s /tmp/nextflow/nextflow /usr/local/bin/nextflow
   # Install nf-core/tools
-  - git clone https://github.com/nf-core/tools.git /tmp/nf-core-tools
-  - cd /tmp/nf-core-tools
-  - pip install --user -e .
+  - pip install --upgrade pip
+  - pip install nf-core
   # Reset
-  - mkdir ${TRAVIS_BUILD_DIR}/tests
-  - cd ${TRAVIS_BUILD_DIR}/tests
+  - mkdir ${TRAVIS_BUILD_DIR}/tests && cd ${TRAVIS_BUILD_DIR}/tests
 
 env:
-  - ALIGNER=bismark NXF_VER=0.30.0
-  - ALIGNER=bismark
-  - ALIGNER=bwameth NXF_VER=0.30.0
-  - ALIGNER=bwameth
+  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='0.32.0'
+  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa" NXF_VER='0.32.0'
+  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa"
 
 script:
   # Lint the pipeline code
@@ -41,6 +38,6 @@ script:
   # Run, build reference genome
   - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference
   # Basic run with supplied reference
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER $ALIGNER_REF
   # Run, RRBS mode with no trimming
   - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --notrim --rrbs

@@ -1,5 +1,28 @@
 # nf-core/methylseq
 
+## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2018-12-26
+
+#### New features
+* Trim 9bp from both ends of both reads for PBAT mode.
+* Save `where_are_my_files.txt` to results directory to inform the user about missing intermediate files [#42](https://github.com/nf-core/methylseq/issues/42)
+
+#### Software updates
+* Fastqc `0.11.7` > `0.11.8`
+* Bowtie2 `2.3.4.2` > `2.3.4.3`
+* Bismark `0.19.1` > `0.20.0`
+* Qualimap `2.2.2a` > `2.2.2b`
+* Picard `2.18.11` > `2.18.21`
+* MultiQC `1.6` > `1.7`
+
+#### Bug fixes
+* Fixed error when running the pipeline with `--unmapped`
+  * Previously, could result in error `Error ~ No such variable: bismark_unmapped`
+* Fixed error where single-sample reports could mix up log files [#48](https://github.com/nf-core/methylseq/issues/48)
+* Fixed bug in MultiQC process that skipped results from some tools
+* Supply available memory as argument to Picard MarkDuplicates
+
+
+
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
