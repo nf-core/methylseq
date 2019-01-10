@@ -1,6 +1,12 @@
 # nf-core/methylseq
 
-## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2018-12-26
+## v1.3dev
+
+_..nothing yet.._
+
+
+
+## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2019-01-02
 
 #### New features
 * Trim 9bp from both ends of both reads for PBAT mode.
