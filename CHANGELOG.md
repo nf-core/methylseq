@@ -2,7 +2,9 @@
 
 ## v1.3dev
 
-_..nothing yet.._
+#### New features
+* Added [preseq](http://smithlabresearch.org/software/preseq/) analysis to calculate sample complexity.
+  * This new step can help decide sufficient sequencing depth has been reached.
 
 
 
