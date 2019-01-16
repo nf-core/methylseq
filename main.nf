@@ -667,11 +667,10 @@ if( params.aligner == 'bwameth' ){
 
         script:
         """
-        samtools sort \\
-            $bam \\
+        samtools sort $bam \\
             -m ${task.memory.toBytes() / task.cpus} \\
             -@ ${task.cpus} \\
-            > ${bam.baseName}.sorted.bam
+            -o ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
         samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat_report.txt
         samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats_report.txt
@@ -772,7 +771,10 @@ process qualimap {
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
     """
-    samtools sort $bam -o ${bam.baseName}.sorted.bam
+    samtools sort $bam \\
+        -m ${task.memory.toBytes() / task.cpus} \\
+        -@ ${task.cpus} \\
+        -o ${bam.baseName}.sorted.bam
     qualimap bamqc $gcref \\
         -bam ${bam.baseName}.sorted.bam \\
         -outdir ${bam.baseName}_qualimap \\
@@ -797,7 +799,10 @@ process preseq {
 
     script:
     """
-    samtools sort $bam -o ${bam.baseName}.sorted.bam
+    samtools sort $bam \\
+        -m ${task.memory.toBytes() / task.cpus} \\
+        -@ ${task.cpus} \\
+        -o ${bam.baseName}.sorted.bam
     preseq lc_extrap -v -B ${bam.baseName}.sorted.bam -o ${bam.baseName}.ccurve.txt
     """
 }
