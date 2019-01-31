@@ -808,7 +808,7 @@ process get_software_versions {
     bwameth.py --version &> v_bwameth.txt
     picard MarkDuplicates --version &> v_picard_markdups.txt 2>&1 || true
     MethylDackel --version &> v_methyldackel.txt
-    qualimap --version &> v_qualimap.txt
+    qualimap --version &> v_qualimap.txt || true
     multiqc --version &> v_multiqc.txt
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
