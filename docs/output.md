@@ -15,6 +15,7 @@ and processes data using the following steps:
 * [Methylation Extraction](#methylation-extraction) - calling cytosine methylation steps
 * [Bismark Reports](#bismark-reports) - single-sample and summary analysis reports
 * [Qualimap](#qualimap) - tool for genome alignments QC
+* [Preseq](#preseq) - tool for estimating sample complexity
 * [MultiQC](#multiqc) - aggregate report, describing results of the whole pipeline
 * [Pipeline Info](#pipeline-info) - reports from nextflow about the pipeline run
 
@@ -153,6 +154,19 @@ Bismark generates a HTML reports describing results for each sample, as well as 
   * Qualimap HTML report
 * `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
   * Text-based statistics that can be loaded into downstream programs
+
+
+
+## Preseq
+
+[Preseq](http://smithlabresearch.org/software/preseq/) estimates the complexity of a library, showing how many additional unique reads are sequenced for increasing the total read count. A shallow curve indicates that the library has reached complexity saturation and further sequencing would likely not add further unique reads. The dashed line shows a perfectly complex library where total reads = unique reads.
+
+Note that these are predictive numbers only, not absolute. The MultiQC plot can sometimes give extreme sequencing depth on the X axis - click and drag from the left side of the plot to zoom in on more realistic numbers.
+
+**Output directory: `results/preseq`**
+
+* `sample_ccurve.txt`
+  * This file contains plot values for the complexity curve, plotted in the MultiQC report.
 
 
 ## MultiQC

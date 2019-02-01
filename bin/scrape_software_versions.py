@@ -21,6 +21,7 @@ regexes = {
     'Picard MarkDuplicates': ['v_picard_markdups.txt', r"([\d\.]+)"],
     'MethylDackel': ['v_methyldackel.txt', r"(.+)"],
     'Qualimap': ['v_qualimap.txt', r"QualiMap v.(\S+)"],
+    'Preseq': ['v_preseq.txt', r"Version: (\S+)"],
     'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
 }
 results = OrderedDict()
@@ -41,6 +42,7 @@ results['bwa-meth'] = '<span style="color:#999999;\">N/A</span>'
 results['Picard MarkDuplicates'] = '<span style="color:#999999;\">N/A</span>'
 results['MethylDackel'] = '<span style="color:#999999;\">N/A</span>'
 results['Qualimap'] = '<span style="color:#999999;\">N/A</span>'
+results['Preseq'] = '<span style="color:#999999;\">N/A</span>'
 results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
 
 # Search each file using its regex

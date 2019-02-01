@@ -17,6 +17,7 @@ dependencies:
   - bowtie2=2.3.4.3
   - bismark=0.20.0
   - qualimap=2.2.2b
+  - preseq=2.0.3
   - multiqc=1.7
   # bwa-meth pipeline
   - picard=2.18.21
