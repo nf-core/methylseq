@@ -1,11 +1,14 @@
 # nf-core/methylseq
 
-## v1.3dev
+## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 
 #### New features
 * Added [preseq](http://smithlabresearch.org/software/preseq/) analysis to calculate sample complexity.
   * This new step can help decide sufficient sequencing depth has been reached.
 
+#### Bug fixes
+* Fixed new bug that meant pipeline only worked with one sample at a time [#66](https://github.com/nf-core/methylseq/issues/66)
+  * Introduced in previous release. TrimGalore onwards would only process one sample.
 
 
 ## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2019-01-02
