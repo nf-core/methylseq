@@ -17,6 +17,7 @@
  */
 params.name = false
 params.project = false
+params.merge = false
 params.clusterOptions = false
 params.email = false
 params.plaintext_email = false
@@ -30,8 +31,8 @@ params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index
 assert params.aligner == 'bwameth' || params.aligner == 'bismark' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
 
 Channel
-    .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
-    .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
+    .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: false)
+    .into {ch_wherearemyfiles_for_fastqc; ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
 if( params.aligner == 'bismark' ){
     assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
@@ -314,15 +315,18 @@ process fastqc {
 
     input:
     set val(name), file(reads) from ch_read_files_for_fastqc
+    //file wherearemyfiles from ch_wherearemyfiles_for_fastqc
 
     output:
     file '*_fastqc.{zip,html}' into ch_fastqc_results_for_multiqc
-
+     
     script:
     """
     fastqc -q $reads
+    
     """
 }
+
 
 /*
  * STEP 2 - Trim Galore!
@@ -344,13 +348,13 @@ if( params.notrim ){
 
         input:
         set val(name), file(reads) from ch_read_files_for_trim_galore
-        file wherearemyfiles from ch_wherearemyfiles_for_trimgalore
+        //file wherearemyfiles from ch_wherearemyfiles_for_trimgalore
 
         output:
         set val(name), file('*fq.gz') into ch_trimmed_reads_for_alignment
         file "*trimming_report.txt" into ch_trim_galore_results_for_multiqc
         file "*_fastqc.{zip,html}"
-        file "where_are_my_files.txt"
+        //file "where_are_my_files.txt"
 
         script:
         c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
@@ -364,7 +368,7 @@ if( params.notrim ){
             """
         } else {
             """
-            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+           trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
             """
         }
     }
@@ -388,13 +392,15 @@ if( params.aligner == 'bismark' ){
         input:
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
         file index from ch_bismark_index_for_bismark_align.collect()
-        file wherearemyfiles from ch_wherearemyfiles_for_bismark_align
+        //file wherearemyfiles from ch_wherearemyfiles_for_bismark_align
 
         output:
-        set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary
-        set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
+        file("*.bam") into ch_bam_for_merge
+        set val(name), file("*.bam") into ch_bam_for_merge_pass, ch_bam_for_bismark_summary
+        set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
+        file("*report.txt") into ch_bismark_align_log_for_bismark_report
         file "*.fq.gz" optional true
-        file "where_are_my_files.txt"
+        //file "where_are_my_files.txt"
 
         script:
         pbat = params.pbat ? "--pbat" : ''
@@ -442,6 +448,32 @@ if( params.aligner == 'bismark' ){
             """
         }
     }
+
+    /*
+     * STEP 3.2 - Bismark merge split bams
+     */
+
+     if( params.merge ) {
+      	process merge_bams {
+	    tag "${params.name}"
+            publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
+	    	saveAs: {filename -> filename.indexOf(".merged.bam") == -1 ? "logs/$filename" : "$filename"}
+            
+            input:
+            file(bams) from ch_bam_for_merge.collect()
+            
+            output:
+            set val(params.name), file("*.merged.bam") into ch_bam_for_bismark_deduplicate
+
+            script:
+            """
+            samtools merge -n ${params.name}.merged.bam ${bams}
+            """
+        }
+     }
+     else{
+        ch_bam_for_merge_pass.into{ch_bam_for_bismark_deduplicate}
+     }
 
     /*
      * STEP 4 - Bismark deduplicate
@@ -544,9 +576,7 @@ if( params.aligner == 'bismark' ){
             """
         }
     }
-
-    ch_bismark_align_log_for_bismark_report
-     .join(ch_bismark_dedup_log_for_bismark_report)
+     ch_bismark_dedup_log_for_bismark_report
      .join(ch_bismark_splitting_report_for_bismark_report)
      .join(ch_bismark_mbias_for_bismark_report)
      .set{ ch_bismark_logs_for_bismark_report }
@@ -560,8 +590,8 @@ if( params.aligner == 'bismark' ){
         publishDir "${params.outdir}/bismark_reports", mode: 'copy'
 
         input:
-        set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from ch_bismark_logs_for_bismark_report
-
+        set val(name), file(dedup_log), file(splitting_report), file(mbias) from ch_bismark_logs_for_bismark_report
+        file(align_log) from ch_bismark_align_log_for_bismark_report.collect()
         output:
         file '*{html,txt}' into ch_bismark_reports_results_for_multiqc
 
