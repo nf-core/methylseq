@@ -344,7 +344,7 @@ if( params.notrim ){
 
         input:
         set val(name), file(reads) from ch_read_files_for_trim_galore
-        file wherearemyfiles from ch_wherearemyfiles_for_trimgalore
+        file wherearemyfiles from ch_wherearemyfiles_for_trimgalore.collect()
 
         output:
         set val(name), file('*fq.gz') into ch_trimmed_reads_for_alignment
@@ -388,10 +388,10 @@ if( params.aligner == 'bismark' ){
         input:
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
         file index from ch_bismark_index_for_bismark_align.collect()
-        file wherearemyfiles from ch_wherearemyfiles_for_bismark_align
+        file wherearemyfiles from ch_wherearemyfiles_for_bismark_align.collect()
 
         output:
-        set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary
+        set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
         set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
         file "*.fq.gz" optional true
         file "where_are_my_files.txt"
@@ -623,10 +623,10 @@ if( params.aligner == 'bwameth' ){
         input:
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
         file bwa_meth_indices from ch_bwa_meth_indices_for_bwamem_align.collect()
-        file wherearemyfiles from ch_wherearemyfiles_for_bwamem_align
+        file wherearemyfiles from ch_wherearemyfiles_for_bwamem_align.collect()
 
         output:
-        set val(name), file('*.bam') into ch_bam_for_samtools_sort_index_flagstat
+        set val(name), file('*.bam') into ch_bam_for_samtools_sort_index_flagstat, ch_bam_for_preseq
         file "where_are_my_files.txt"
 
         script:
@@ -656,7 +656,7 @@ if( params.aligner == 'bwameth' ){
 
         input:
         set val(name), file(bam) from ch_bam_for_samtools_sort_index_flagstat
-        file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat
+        file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat.collect()
 
         output:
         set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates
@@ -667,11 +667,10 @@ if( params.aligner == 'bwameth' ){
 
         script:
         """
-        samtools sort \\
-            $bam \\
+        samtools sort $bam \\
             -m ${task.memory.toBytes() / task.cpus} \\
             -@ ${task.cpus} \\
-            > ${bam.baseName}.sorted.bam
+            -o ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
         samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat_report.txt
         samtools stats ${bam.baseName}.sorted.bam > ${bam.baseName}_stats_report.txt
@@ -772,13 +771,39 @@ process qualimap {
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
     """
-    samtools sort $bam -o ${bam.baseName}.sorted.bam
+    samtools sort $bam \\
+        -m ${task.memory.toBytes() / task.cpus} \\
+        -@ ${task.cpus} \\
+        -o ${bam.baseName}.sorted.bam
     qualimap bamqc $gcref \\
         -bam ${bam.baseName}.sorted.bam \\
         -outdir ${bam.baseName}_qualimap \\
         --collect-overlap-pairs \\
         --java-mem-size=${task.memory.toGiga()}G \\
         -nt ${task.cpus}
+    """
+}
+
+/*
+ * STEP 9 - preseq
+ */
+process preseq {
+    tag "$name"
+    publishDir "${params.outdir}/preseq", mode: 'copy'
+
+    input:
+    set val(name), file(bam) from ch_bam_for_preseq
+
+    output:
+    file "${bam.baseName}.ccurve.txt" into preseq_results
+
+    script:
+    """
+    samtools sort $bam \\
+        -m ${task.memory.toBytes() / task.cpus} \\
+        -@ ${task.cpus} \\
+        -o ${bam.baseName}.sorted.bam
+    preseq lc_extrap -v -B ${bam.baseName}.sorted.bam -o ${bam.baseName}.ccurve.txt
     """
 }
 
@@ -808,7 +833,8 @@ process get_software_versions {
     bwameth.py --version &> v_bwameth.txt
     picard MarkDuplicates --version &> v_picard_markdups.txt 2>&1 || true
     MethylDackel --version &> v_methyldackel.txt
-    qualimap --version &> v_qualimap.txt
+    qualimap --version &> v_qualimap.txt || true
+    preseq &> v_preseq.txt
     multiqc --version &> v_multiqc.txt
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
@@ -817,9 +843,10 @@ process get_software_versions {
 
 
 /*
- * STEP 9 - MultiQC
+ * STEP 10 - MultiQC
  */
 process multiqc {
+    tag "${params.outdir}/MultiQC/$ofilename"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
@@ -837,6 +864,7 @@ process multiqc {
     file ('picard/*') from ch_markDups_results_for_multiqc.flatten().collect().ifEmpty([])
     file ('methyldackel/*') from ch_methyldackel_results_for_multiqc.flatten().collect().ifEmpty([])
     file ('qualimap/*') from ch_qualimap_results_for_multiqc.collect().ifEmpty([])
+    file ('preseq/*') from preseq_results.collect().ifEmpty([])
     file ('software_versions/*') from ch_software_versions_yaml_for_multiqc.collect().ifEmpty([])
 
     output:
@@ -846,7 +874,13 @@ process multiqc {
 
     script:
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
-    rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
+    if(custom_runName){
+      rfilename = "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report"
+      ofilename = rfilename+'.html'
+    } else {
+      rfilename = ''
+      ofilename = 'multiqc_report.html'
+    }
     """
     multiqc -f $rtitle $rfilename --config $multiqc_config .
     """
