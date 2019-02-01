@@ -13,7 +13,7 @@ before_install:
   # Pull the docker image first so the test doesn't wait for this
   - docker pull nfcore/methylseq:dev
   # Fake the tag locally so that the pipeline runs properly
-  - docker tag nfcore/methylseq:dev nfcore/methylseq:latest
+  - docker tag nfcore/methylseq:dev nfcore/methylseq:1.3
 
 install:
   # Install Nextflow
