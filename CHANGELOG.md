@@ -1,5 +1,10 @@
 # nf-core/methylseq
 
+## v1.4dev
+
+_..nothing yet.._
+
+
 ## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 
 #### New features
