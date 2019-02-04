@@ -1,6 +1,6 @@
 # You can use this file to create a conda environment for this pipeline:
 #   conda env create -f environment.yml
-name: nf-core-methylseq-1.3dev
+name: nf-core-methylseq-1.4dev
 channels:
   - bioconda
   - conda-forge
@@ -8,7 +8,7 @@ channels:
 dependencies:
   # Dependencies for FastQC
   - conda-forge::openjdk=8.0.144
-  - font-ttf-dejavu-sans-mono=2.37
+  - anaconda::font-ttf-dejavu-sans-mono=2.37
   - fontconfig=2.12.6
   - fastqc=0.11.8
   # Default bismark pipeline
@@ -17,6 +17,7 @@ dependencies:
   - bowtie2=2.3.4.3
   - bismark=0.20.0
   - qualimap=2.2.2b
+  - preseq=2.0.3
   - multiqc=1.7
   # bwa-meth pipeline
   - picard=2.18.21

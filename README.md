@@ -31,6 +31,7 @@ Choose between workflows by using `--aligner bismark` (default) or `--aligner bw
 | Sample report                                | Bismark          | -                     |
 | Summary Report                               | Bismark          | -                     |
 | Alignment QC                                 | Qualimap         | Qualimap              |
+| Sample complexity                            | Preseq           | Preseq                |
 | Project Report                               | MultiQC          | MultiQC               |
 
 
