@@ -2,8 +2,8 @@
 #   conda env create -f environment.yml
 name: nf-core-methylseq-1.4dev
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - defaults
 dependencies:
   # Dependencies for FastQC
