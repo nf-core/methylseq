@@ -2,8 +2,11 @@
 
 ## v1.4dev
 
-_..nothing yet.._
+#### New features
+* Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 
+#### Bug fixes
+* Fixed a bug that caused conda dependencies to be resolved very slowly
 
 ## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 
