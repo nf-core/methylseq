@@ -6,10 +6,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  # Dependencies for FastQC
-  - conda-forge::openjdk=8.0.144
-  - anaconda::font-ttf-dejavu-sans-mono=2.37
-  - fontconfig=2.12.6
   - fastqc=0.11.8
   # Default bismark pipeline
   - trim-galore=0.5.0
