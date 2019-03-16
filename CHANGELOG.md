@@ -4,6 +4,7 @@
 
 #### New features
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
+* Added `--methylKit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
 
 #### Bug fixes
 * Fixed a bug that caused conda dependencies to be resolved very slowly

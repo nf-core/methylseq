@@ -31,6 +31,7 @@
     * [`--saveAlignedIntermediates`](#--savealignedintermediates)
     * [`--mindepth`](#--mindepth)
     * [`--ignoreFlags`](#--ignoreflags)
+    * [`--methylKit`](#--methylKit)
 * [Job Resources](#job-resources)
     * [Automatic resubmission](#automatic-resubmission)
     * [Maximum resource requests](#maximum-resource-requests)
@@ -250,6 +251,9 @@ Specify to specify a minimum read coverage for MethylDackel to report a methylat
 
 ### `--ignoreFlags`
 Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
+
+### `--methylKit`
+Specify to run MethylDackel with the `--methylKit` flag to produce files suitable for use with the methylKit R package.
 
 
 ## Job Resources
