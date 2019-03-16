@@ -7,6 +7,7 @@
 
 #### Bug fixes
 * Fixed a bug that caused conda dependencies to be resolved very slowly
+* Allowed some spare memory in the samtools sort steps, avoiding crashes for some users ([#81](https://github.com/nf-core/methylseq/issues/81))
 
 ## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 
