@@ -5,6 +5,9 @@
 #### New features
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 
+#### Pipeline updates
+* Changed `params.container` for `process.container`
+
 #### Bug fixes
 * Fixed a bug that caused conda dependencies to be resolved very slowly
 * Allowed some spare memory in the samtools sort steps, avoiding crashes for some users ([#81](https://github.com/nf-core/methylseq/issues/81))
