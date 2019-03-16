@@ -666,7 +666,7 @@ if( params.aligner == 'bwameth' ){
         file "where_are_my_files.txt"
 
         script:
-        def avail_mem = task.memory ? (task.memory.toBytes() - 6000000000) / task.cpus) : false
+        def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
         def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
         """
         samtools sort $bam \\
@@ -771,7 +771,7 @@ process qualimap {
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
-    def avail_mem = task.memory ? (task.memory.toBytes() - 6000000000) / task.cpus) : false
+    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
     def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
     """
     samtools sort $bam \\
@@ -800,7 +800,7 @@ process preseq {
     file "${bam.baseName}.ccurve.txt" into preseq_results
 
     script:
-    def avail_mem = task.memory ? (task.memory.toBytes() - 6000000000) / task.cpus) : false
+    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
     def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
     """
     samtools sort $bam \\
