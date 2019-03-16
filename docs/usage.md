@@ -251,7 +251,6 @@ Specify to specify a minimum read coverage for MethylDackel to report a methylat
 
 ### `--meth_cutoff`
 Use this to specify a minimum read coverage to report a methylation call during Bismark's `bismark_methylation_extractor` step.
-The Bismark software default is `1`, but the pipeline overrides this and sets this to `5` by default.
 
 ### `--ignoreFlags`
 Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.

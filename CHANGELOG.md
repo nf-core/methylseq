@@ -4,10 +4,8 @@
 
 #### New features
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
-* Add `meth_cutoff = 5` default for Bismark
-  * Now, 5 reads (previously 1) are required to call a methylation site with `bismark_methylation_extractor`.
-  * New `--meth_cutoff` option makes this configurable.
-  * Use `--meth_cutoff 1` on the command line or `params.meth_cutoff = 1` in a config file to revert to previous behaviour.
+* Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
+  * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
 
 #### Bug fixes
 * Fixed a bug that caused conda dependencies to be resolved very slowly
