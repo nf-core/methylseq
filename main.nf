@@ -521,6 +521,7 @@ if( params.aligner == 'bismark' ){
             """
             bismark_methylation_extractor $comprehensive \\
                 $multicore $buffer \\
+                --cutoff ${params.meth_cutoff} \\
                 --bedGraph \\
                 --counts \\
                 --gzip \\
@@ -534,6 +535,7 @@ if( params.aligner == 'bismark' ){
                 $multicore $buffer \\
                 --ignore_r2 2 \\
                 --ignore_3prime_r2 2 \\
+                --cutoff ${params.meth_cutoff} \\
                 --bedGraph \\
                 --counts \\
                 --gzip \\
