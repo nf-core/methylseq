@@ -23,6 +23,7 @@
 
 #### New features
 * Trim 9bp from both ends of both reads for PBAT mode.
+* Add `meth_cutoff = 5` default for Bismark. Now, 5 reads (previously 1) are required to call a methylation site with `bismark_methylation_extractor`.
 * Save `where_are_my_files.txt` to results directory to inform the user about missing intermediate files [#42](https://github.com/nf-core/methylseq/issues/42)
 
 #### Software updates
@@ -39,7 +40,6 @@
 * Fixed error where single-sample reports could mix up log files [#48](https://github.com/nf-core/methylseq/issues/48)
 * Fixed bug in MultiQC process that skipped results from some tools
 * Supply available memory as argument to Picard MarkDuplicates
-
 
 
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09

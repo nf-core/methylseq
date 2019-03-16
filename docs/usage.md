@@ -30,6 +30,7 @@
     * [`--saveTrimmed`](#--savetrimmed)
     * [`--saveAlignedIntermediates`](#--savealignedintermediates)
     * [`--mindepth`](#--mindepth)
+    * [`--meth_cutoff`](#--meth_cutoff)
     * [`--ignoreFlags`](#--ignoreflags)
 * [Job Resources](#job-resources)
     * [Automatic resubmission](#automatic-resubmission)
@@ -247,6 +248,9 @@ By default intermediate BAM files will not be saved. The final BAM files created
 
 ### `--mindepth`
 Specify to specify a minimum read coverage for MethylDackel to report a methylation call.
+
+### `--meth_cutoff`
+Specify to specify a minimum read coverage for Bismark's bismark_methylation_extractor to report a methylation call.
 
 ### `--ignoreFlags`
 Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
