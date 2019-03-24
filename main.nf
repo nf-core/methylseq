@@ -502,6 +502,7 @@ if( params.aligner == 'bismark' ){
 
         script:
         comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+        meth_cutoff = params.meth_cutoff ? "--cutoff ${params.meth_cutoff}" : ''
         multicore = ''
         if( task.cpus ){
             // Numbers based on Bismark docs
@@ -520,7 +521,7 @@ if( params.aligner == 'bismark' ){
         }
         if(params.singleEnd) {
             """
-            bismark_methylation_extractor $comprehensive \\
+            bismark_methylation_extractor $comprehensive $meth_cutoff \\
                 $multicore $buffer \\
                 --bedGraph \\
                 --counts \\
@@ -531,7 +532,7 @@ if( params.aligner == 'bismark' ){
             """
         } else {
             """
-            bismark_methylation_extractor $comprehensive \\
+            bismark_methylation_extractor $comprehensive $meth_cutoff \\
                 $multicore $buffer \\
                 --ignore_r2 2 \\
                 --ignore_3prime_r2 2 \\
