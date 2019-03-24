@@ -6,9 +6,16 @@
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 * Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
   * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
+* Added `--methylKit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
+
+#### Pipeline updates
+* Changed `params.container` for `process.container`
+
+
 
 #### Bug fixes
 * Fixed a bug that caused conda dependencies to be resolved very slowly
+* Allowed some spare memory in the samtools sort steps, avoiding crashes for some users ([#81](https://github.com/nf-core/methylseq/issues/81))
 
 ## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 

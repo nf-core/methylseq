@@ -201,6 +201,7 @@ summary['Directional Mode'] = params.single_cell || params.zymo || params.non_di
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if( params.mindepth ) summary['Minimum Depth'] = params.mindepth
 if( params.ignoreFlags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
+if( params.methylKit ) summary['MethylDackel'] = 'Producing methylKit output'
 summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
@@ -667,10 +668,11 @@ if( params.aligner == 'bwameth' ){
         file "where_are_my_files.txt"
 
         script:
+        def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
+        def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
         """
         samtools sort $bam \\
-            -m ${task.memory.toBytes() / task.cpus} \\
-            -@ ${task.cpus} \\
+            -@ ${task.cpus} $sort_mem \\
             -o ${bam.baseName}.sorted.bam
         samtools index ${bam.baseName}.sorted.bam
         samtools flagstat ${bam.baseName}.sorted.bam > ${bam.baseName}_flagstat_report.txt
@@ -740,8 +742,9 @@ if( params.aligner == 'bwameth' ){
         allcontexts = params.comprehensive ? '--CHG --CHH' : ''
         mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
         ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
+        methylKit = params.methylKit ? "--methylKit" : ''
         """
-        MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
+        MethylDackel extract $allcontexts $ignoreFlags $methylKit $mindepth $fasta $bam
         MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
@@ -771,10 +774,11 @@ process qualimap {
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
+    def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
     """
     samtools sort $bam \\
-        -m ${task.memory.toBytes() / task.cpus} \\
-        -@ ${task.cpus} \\
+        -@ ${task.cpus} $sort_mem \\
         -o ${bam.baseName}.sorted.bam
     qualimap bamqc $gcref \\
         -bam ${bam.baseName}.sorted.bam \\
@@ -799,10 +803,11 @@ process preseq {
     file "${bam.baseName}.ccurve.txt" into preseq_results
 
     script:
+    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
+    def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
     """
     samtools sort $bam \\
-        -m ${task.memory.toBytes() / task.cpus} \\
-        -@ ${task.cpus} \\
+        -@ ${task.cpus} $sort_mem \\
         -o ${bam.baseName}.sorted.bam
     preseq lc_extrap -v -B ${bam.baseName}.sorted.bam -o ${bam.baseName}.ccurve.txt
     """

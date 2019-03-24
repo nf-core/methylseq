@@ -32,6 +32,7 @@
     * [`--mindepth`](#--mindepth)
     * [`--meth_cutoff`](#--meth_cutoff)
     * [`--ignoreFlags`](#--ignoreflags)
+    * [`--methylKit`](#--methylKit)
 * [Job Resources](#job-resources)
     * [Automatic resubmission](#automatic-resubmission)
     * [Maximum resource requests](#maximum-resource-requests)
@@ -254,6 +255,9 @@ Use this to specify a minimum read coverage to report a methylation call during 
 
 ### `--ignoreFlags`
 Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
+
+### `--methylKit`
+Specify to run MethylDackel with the `--methylKit` flag to produce files suitable for use with the methylKit R package.
 
 
 ## Job Resources
