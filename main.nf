@@ -201,6 +201,7 @@ summary['Directional Mode'] = params.single_cell || params.zymo || params.non_di
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
 if( params.mindepth ) summary['Minimum Depth'] = params.mindepth
 if( params.ignoreFlags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
+if( params.methylKit ) summary['MethylDackel'] = 'Producing methylKit output'
 summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
@@ -739,8 +740,9 @@ if( params.aligner == 'bwameth' ){
         allcontexts = params.comprehensive ? '--CHG --CHH' : ''
         mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
         ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
+        methylKit = params.methylKit ? "--methylKit" : ''
         """
-        MethylDackel extract $allcontexts $ignoreFlags $mindepth $fasta $bam
+        MethylDackel extract $allcontexts $ignoreFlags $methylKit $mindepth $fasta $bam
         MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
