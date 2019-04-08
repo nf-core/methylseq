@@ -17,7 +17,7 @@ The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow
 ### Pipeline Steps
 
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
-Choose between workflows by using `--aligner bismark` (default) or `--aligner bwameth`.
+Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
 | Step                                         | Bismark workflow | bwa-meth workflow     |
 |----------------------------------------------|------------------|-----------------------|
