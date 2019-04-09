@@ -29,6 +29,8 @@ install:
 env:
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='0.32.0'
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='0.32.0'
+  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
   - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa" NXF_VER='0.32.0'
   - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa"
 
