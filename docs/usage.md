@@ -264,10 +264,10 @@ Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
 Specify to run MethylDackel with the `--methylKit` flag to produce files suitable for use with the methylKit R package.
 
 ### `--known_splices`
-Specify to run bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A textfile containing a list of known splicesites has to be provided. (only works with `--aligner bismark_hisat`)
+Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline. (only works with `--aligner bismark_hisat`)
 
 ### `--slamseq`
-Specify to run bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) (only works with `--aligner bismark_hisat`)
+Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) (only works with `--aligner bismark_hisat`)
 
 
 ## Job Resources

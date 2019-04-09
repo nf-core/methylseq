@@ -406,7 +406,7 @@ if( params.aligner =~ /bismark/ ){
 
         script:
         aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
-        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile ${knownsplices}" : ''
+        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
