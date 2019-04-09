@@ -3,6 +3,7 @@
 ## v1.4dev
 
 #### New features
+* Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 * Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
   * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
