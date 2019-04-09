@@ -180,6 +180,7 @@ summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
 summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
+summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
@@ -258,10 +259,11 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
 
         script:
         aligner = params.aligner == 'bismark_hisat' ? '--hisat2' : '--bowtie2'
+        slam = params.slamseq ? '--slam' : ''
         """
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
-        bismark_genome_preparation $aligner BismarkIndex
+        bismark_genome_preparation $aligner $slam BismarkIndex
         """
     }
 }
@@ -404,7 +406,7 @@ if( params.aligner =~ /bismark/ ){
 
         script:
         aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
-        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile ${splicesites}" : ''
+        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile ${knownsplices}" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''

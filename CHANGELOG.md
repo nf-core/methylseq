@@ -3,6 +3,7 @@
 ## v1.4dev
 
 #### New features
+* Added support for bismark's [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode)
 * Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 * Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`

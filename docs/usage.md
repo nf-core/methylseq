@@ -33,6 +33,8 @@
     * [`--meth_cutoff`](#--meth_cutoff)
     * [`--ignoreFlags`](#--ignoreflags)
     * [`--methylKit`](#--methylKit)
+    * [`--known_splices`](#--known_splices)
+    * [`--slamseq`](#--slamseq) 
 * [Job Resources](#job-resources)
     * [Automatic resubmission](#automatic-resubmission)
     * [Maximum resource requests](#maximum-resource-requests)
@@ -260,6 +262,12 @@ Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
 
 ### `--methylKit`
 Specify to run MethylDackel with the `--methylKit` flag to produce files suitable for use with the methylKit R package.
+
+### `--known_splices`
+Specify to run bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A textfile containing a list of known splicesites has to be provided. (only works with `--aligner bismark_hisat`)
+
+### `--slamseq`
+Specify to run bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) (only works with `--aligner bismark_hisat`)
 
 
 ## Job Resources
