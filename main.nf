@@ -954,7 +954,7 @@ process multiqc {
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
-    file multiqc_config from ch_config_for_multiqc
+    file multiqc_config from ch_multiqc_config
     file ('fastqc/*') from ch_fastqc_results_for_multiqc.collect().ifEmpty([])
     file ('trimgalore/*') from ch_trim_galore_results_for_multiqc.collect().ifEmpty([])
     file ('bismark/*') from ch_bismark_align_log_for_multiqc.collect().ifEmpty([])
