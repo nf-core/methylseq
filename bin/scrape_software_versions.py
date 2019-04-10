@@ -15,6 +15,7 @@ regexes = {
     'Bismark methXtract': ['v_bismark_methylation_extractor.txt', r"Bismark Extractor Version: v(\S+)"],
     'Bismark Report': ['v_bismark2report.txt', r"bismark2report version: v(\S+)"],
     'Bismark Summary': ['v_bismark2summary.txt', r"bismark2summary version: (\S+)"],
+    'HISAT2': ['v_hisat2.txt', r"version (\S+)"],
     'Samtools': ['v_samtools.txt', r"samtools (\S+)"],
     'BWA': ['v_bwa.txt', r"Version: (\S+)"],
     'bwa-meth': ['v_bwameth.txt', r"bwa-meth\.py (\S+)"],
