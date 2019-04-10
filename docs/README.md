@@ -2,7 +2,7 @@
 
 The nf-core/methylseq documentation is split into the following files:
 
-1. [Installation](installation.md)
+1. [Installation](https://nf-co.re/usage/installation)
 2. Pipeline configuration
     * [Local installation](https://nf-co.re/usage/local_installation)
     * [Adding your own system config](https://nf-co.re/usage/adding_own_config)
