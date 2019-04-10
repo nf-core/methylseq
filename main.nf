@@ -28,8 +28,8 @@ def helpMessage() {
                                         Available: conda, docker, singularity, awsbatch, test and more.
 
     Options:
-      --genome    Name of iGenomes reference
-      --singleEnd       Specifies that the input is single end reads
+     --genome    Name of iGenomes reference
+     --singleEnd       Specifies that the input is single end reads
      --comprehensive        Output information for all cytosine contexts
      --ignoreFlags      Run MethylDackel with the flag to ignore SAM flags.
      --meth_cutoff      Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
@@ -143,12 +143,6 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
-Channel
-    .fromPath(params.multiqc_config, checkIfExists: true)
-    .ifEmpty { exit 1, "multiqc config file not found: ${params.multiqc_config}" }
-    .set { ch_config_for_multiqc }
-
-
 if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
@@ -215,7 +209,7 @@ if( workflow.profile == 'awsbatch') {
 }
 
 // Stage config files
-ch_multiqc_config = Channel.fromPath(params.multiqc_config)
+ch_multiqc_config = Channel.fromPath(params.multiqc_config, checkIfExists: true)
 ch_output_docs = Channel.fromPath("$baseDir/docs/output.md")
 
 /*
@@ -306,7 +300,7 @@ log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "\033[2m----------------------------------------------------\033[0m"
 
 // Check the hostnames against configured profiles
-// checkHostname()
+checkHostname()
 
 def create_workflow_summary(summary) {
     def yaml_file = workDir.resolve('workflow_summary_mqc.yaml')
