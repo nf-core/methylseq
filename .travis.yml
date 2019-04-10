@@ -13,6 +13,7 @@ before_install:
   # Pull the docker image first so the test doesn't wait for this
   - docker pull nfcore/methylseq:dev
   # Fake the tag locally so that the pipeline runs properly
+  # Looks weird when this is :dev to :dev, but makes sense when testing code for a release (:dev to :1.0.1)
   - docker tag nfcore/methylseq:dev nfcore/methylseq:dev
 
 install:
@@ -25,7 +26,9 @@ install:
   - pip install nf-core
   # Reset
   - mkdir ${TRAVIS_BUILD_DIR}/tests && cd ${TRAVIS_BUILD_DIR}/tests
-
+  # Install markdownlint-cli
+  - sudo apt-get install npm && npm install -g markdownlint-cli
+  
 env:
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='0.32.0'
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
@@ -35,6 +38,8 @@ env:
 script:
   # Lint the pipeline code
   - nf-core lint ${TRAVIS_BUILD_DIR}
+  # Lint the documentation
+  - markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
   # Run, build reference genome
   - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference
   # Basic run with supplied reference

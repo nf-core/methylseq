@@ -2,5 +2,6 @@
 work/
 data/
 results/
-tests/test_data/ngi-bisulfite_test_set/
 .DS_Store
+tests/test_data
+*.pyc

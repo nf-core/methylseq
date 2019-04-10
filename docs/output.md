@@ -188,14 +188,14 @@ Nextflow has several built-in reporting tools that give information about the pi
 
 **Output directory: `results/pipeline_info`**
 
-* `MethylSeq_dag.svg`
+* `pipeline_dag.svg`
   * DAG graph giving a diagrammatic view of the pipeline run.
   * NB: If [Graphviz](http://www.graphviz.org/) was not installed when running the pipeline, this file will be in [DOT format](http://www.graphviz.org/content/dot-language) instead of SVG.
-* `MethylSeq_report.html`
+* `execution_report.html`
   * Nextflow report describing parameters, computational resource usage and task bash commands used.
-* `MethylSeq_timeline.html`
+* `execution_timeline.html`
   * A waterfall timeline plot showing the running times of the workflow tasks.
-* `MethylSeq_trace.txt`
+* `execution_trace.txt`
   * A text file with machine-readable statistics about every task executed in the pipeline.
 * `pipeline_report.html`
   * A pipeline-specific HTML report describing the running of the pipeline.
