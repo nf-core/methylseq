@@ -3,10 +3,16 @@
 ## v1.4dev
 
 #### New features
+* Added support for bismark's [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode)
+* Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 * Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
   * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
 * Added `--methylKit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
+
+#### Software updates
+* bismark `0.20.0` > `0.21.0`
+* _new dependency_: hisat2 `2.1.0` 
 
 #### Pipeline updates
 * Changed `params.container` for `process.container`
