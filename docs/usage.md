@@ -31,7 +31,7 @@
   * [`--ignoreFlags`](#--ignoreflags)
   * [`--methylKit`](#--methylKit)
   * [`--known_splices`](#--known_splices)
-  * [`--slamseq`](#--slamseq) 
+  * [`--slamseq`](#--slamseq)
 * [Reference genomes](#reference-genomes)
   * [`--genome` (using iGenomes)](#--genome-using-igenomes)
   * [`--igenomesIgnore`](#--igenomesignore)

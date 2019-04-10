@@ -142,7 +142,8 @@ Filename abbreviations stand for the following reference alignment strands:
 ### Bismark Reports
 Bismark generates a HTML reports describing results for each sample, as well as a summary report for the whole run.
 
-**Output directory: `results/bismark_reports`** <br>
+**Output directory: `results/bismark_reports`**
+
 **Output directory: `results/bismark_summary`**
 
 ## Qualimap
@@ -182,7 +183,7 @@ The pipeline has special steps which allow the software versions used to be repo
 * `Project_multiqc_data/`
   * Directory containing parsed statistics from the different tools used in the pipeline
 
-For more information about how to use MultiQC reports, see http://multiqc.info
+For more information about how to use MultiQC reports, see [MultiQC](http://multiqc.info)
 
 ## Pipeline Info
 Nextflow has several built-in reporting tools that give information about the pipeline run.
