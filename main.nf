@@ -22,7 +22,7 @@ def helpMessage() {
 
     Mandatory arguments:
       --aligner                 Alignment tool to use (default: bismark)
-                                        Available: bismark, bwameth
+                                        Available: bismark, bismark_hisat, bwameth
       --reads                   Path to input data (must be surrounded with quotes)
       -profile                  Configuration profile to use. Can use multiple (comma separated)
                                         Available: conda, docker, singularity, awsbatch, test and more.
@@ -42,6 +42,8 @@ def helpMessage() {
      --unmapped     Save unmapped reads to fastq files
      --relaxMismatches      Turn on to relax stringency for alignment (set allowed penalty with --numMismatches)
      --numMismatches        0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
+     --known_splices	Supply a .gtf file containing known splice sites (bismark_hisat only)
+     --slamseq	Run bismark in SLAM-seq mode
 
     References                      If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta                       Path to Fasta reference
@@ -351,6 +353,7 @@ process get_software_versions {
     bismark2report --version &> v_bismark2report.txt
     bismark2summary --version &> v_bismark2summary.txt
     samtools --version &> v_samtools.txt
+    hisat2 --version &> v_hisat2.txt
     bwa &> v_bwa.txt 2>&1 || true
     bwameth.py --version &> v_bwameth.txt
     picard MarkDuplicates --version &> v_picard_markdups.txt 2>&1 || true
