@@ -12,7 +12,8 @@ dependencies:
   - trim-galore=0.5.0
   - samtools=1.9
   - bowtie2=2.3.4.3
-  - bismark=0.20.0
+  - hisat2=2.1.0
+  - bismark=0.21.0
   - qualimap=2.2.2b
   - preseq=2.0.3
   - multiqc=1.7

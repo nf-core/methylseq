@@ -56,6 +56,7 @@ Single-end data will have slightly different file names and only one FastQ file 
 Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments.
 
 **Bismark output directory: `results/bismark_alignments/`**
+_Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
 
 * `sample.bam`
   * Aligned reads in BAM format.

@@ -89,7 +89,7 @@ if (params.help){
 }
 
 // Validate inputs
-assert params.aligner == 'bwameth' || params.aligner == 'bismark' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth'"
+assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.aligner == 'bismark_hisat' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth', 'bismark_hisat'"
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
@@ -100,7 +100,9 @@ Channel
     .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
     .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
-if( params.aligner == 'bismark' ){
+ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath("${params.known_splices}", checkIfExists: true).collect() : file('null')
+
+if( params.aligner =~ /bismark/ ){
     assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
     ch_wherearemyfiles_for_alignment.set { ch_wherearemyfiles_for_bismark_align }
 
@@ -244,6 +246,8 @@ summary['Pipeline Name']  = 'nf-core/methylseq'
 summary['Run Name']       = custom_runName ?: workflow.runName
 summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
+summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
+summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
@@ -361,7 +365,7 @@ process get_software_versions {
 /*
  * PREPROCESSING - Build Bismark index
  */
-if( !params.bismark_index && params.aligner == 'bismark' ){
+if( !params.bismark_index && params.aligner =~ /bismark/ ){
     process makeBismarkIndex {
         publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
                    saveAs: { params.saveReference ? it : null }, mode: 'copy'
@@ -373,10 +377,12 @@ if( !params.bismark_index && params.aligner == 'bismark' ){
         file "BismarkIndex" into ch_bismark_index_for_bismark_align
 
         script:
+        aligner = params.aligner == 'bismark_hisat' ? '--hisat2' : '--bowtie2'
+        slam = params.slamseq ? '--slam' : ''
         """
         mkdir BismarkIndex
         cp $fasta BismarkIndex/
-        bismark_genome_preparation BismarkIndex
+        bismark_genome_preparation $aligner $slam BismarkIndex
         """
     }
 }
@@ -493,7 +499,7 @@ if( params.notrim ){
 /*
  * STEP 3.1 - align with Bismark
  */
-if( params.aligner == 'bismark' ){
+if( params.aligner =~ /bismark/ ){
     process bismark_align {
         tag "$name"
         publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
@@ -509,6 +515,7 @@ if( params.aligner == 'bismark' ){
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
         file index from ch_bismark_index_for_bismark_align.collect()
         file wherearemyfiles from ch_wherearemyfiles_for_bismark_align.collect()
+        file knownsplices from ch_splicesites_for_bismark_hisat_align
 
         output:
         set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
@@ -517,6 +524,8 @@ if( params.aligner == 'bismark' ){
         file "where_are_my_files.txt"
 
         script:
+        aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
+        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
@@ -547,18 +556,20 @@ if( params.aligner == 'bismark' ){
         }
         if( params.singleEnd ) {
             """
-            bismark \\
+            bismark $aligner \\
                 --bam $pbat $non_directional $unmapped $mismatches $multicore \\
                 --genome $index \\
-                $reads
+                $reads \\
+                $splicesites
             """
         } else {
             """
-            bismark \\
+            bismark $aligner \\
                 --bam $pbat $non_directional $unmapped $mismatches $multicore \\
                 --genome $index \\
                 -1 ${reads[0]} \\
-                -2 ${reads[1]}
+                -2 ${reads[1]} \\
+                $splicesites
             """
         }
     }
