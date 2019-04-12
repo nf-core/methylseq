@@ -950,7 +950,6 @@ process preseq {
  * STEP 10 - MultiQC
  */
 process multiqc {
-    tag "${params.outdir}/MultiQC/$ofilename"
     publishDir "${params.outdir}/MultiQC", mode: 'copy'
 
     input:
@@ -969,22 +968,17 @@ process multiqc {
     file ('methyldackel/*') from ch_methyldackel_results_for_multiqc.flatten().collect().ifEmpty([])
     file ('qualimap/*') from ch_qualimap_results_for_multiqc.collect().ifEmpty([])
     file ('preseq/*') from preseq_results.collect().ifEmpty([])
-    file ('software_versions/*') from ch_software_versions_yaml_for_multiqc.collect().ifEmpty([])
+    file ('software_versions/*') from ch_software_versions_yaml_for_multiqc.collect()
+    file workflow_summary from create_workflow_summary(summary)
 
     output:
-    file "*_report.html" into ch_multiqc_report
+    file "*multiqc_report.html" into ch_multiqc_report
     file "*_data"
-    file '.command.err'
+    file "multiqc_plots"
 
     script:
     rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
-    if(custom_runName){
-      rfilename = "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report"
-      ofilename = rfilename+'.html'
-    } else {
-      rfilename = ''
-      ofilename = 'multiqc_report.html'
-    }
+    rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
     """
     multiqc -f $rtitle $rfilename --config $multiqc_config .
     """

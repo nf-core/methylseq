@@ -12,3 +12,4 @@ table_columns_visible:
         percentage_aligned: false
 top_modules:
     - 'bismark'
+export_plots: true
