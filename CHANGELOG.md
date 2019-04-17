@@ -11,9 +11,12 @@
 * Added `--methylKit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
 
 #### Software updates
-* Bismark `0.20.0` > `0.21.0`
 * _new dependency_: hisat2 `2.1.0`
-* _new dependency_: r-markdown `0.8`
+* _new dependency_: r-markdown `0.9`
+* Bismark `0.20.0` > `0.22.0`
+* Bowtie2 `2.3.4.3` > `2.3.5`
+* Picard `2.18.21` > `2.19.0`
+* MethylDackel `0.3.0` > `0.4.0`
 
 
 #### Pipeline updates
