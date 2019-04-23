@@ -13,11 +13,11 @@ dependencies:
   - samtools=1.9
   - bowtie2=2.3.5
   - hisat2=2.1.0
-  - bismark=0.22.0
+  - bismark=0.22.1
   - qualimap=2.2.2b
   - preseq=2.0.3
   - multiqc=1.7
   # bwa-meth pipeline
-  - picard=2.19.0
+  - picard=2.19.1
   - bwameth=0.2.2
   - methyldackel=0.4.0
