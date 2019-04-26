@@ -37,7 +37,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 ### Documentation
 The nf-core/methylseq pipeline comes with documentation about the pipeline, found in the `docs/` directory:
 
-1. [Installation and configuration](docs/installation.md)
+1. [Installation](https://nf-co.re/usage/installation)
 2. [Running the pipeline](docs/usage.md)
 3. [Output and how to interpret the results](docs/output.md)
 

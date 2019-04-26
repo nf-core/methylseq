@@ -7,17 +7,17 @@ channels:
   - defaults
 dependencies:
   - fastqc=0.11.8
-  - r-markdown=0.8
+  - r-markdown=0.9
   # Default bismark pipeline
   - trim-galore=0.5.0
   - samtools=1.9
-  - bowtie2=2.3.4.3
+  - bowtie2=2.3.5
   - hisat2=2.1.0
-  - bismark=0.21.0
+  - bismark=0.22.1
   - qualimap=2.2.2b
   - preseq=2.0.3
   - multiqc=1.7
   # bwa-meth pipeline
-  - picard=2.18.21
+  - picard=2.19.1
   - bwameth=0.2.2
-  - methyldackel=0.3.0
+  - methyldackel=0.4.0
