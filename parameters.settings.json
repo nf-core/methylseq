@@ -514,7 +514,7 @@
         {
             "name": "local_alignment",
             "label": "Soft-clipping of reads",
-            "usage": "Run bismark with --local flag Allow soft-clipping of reads (potentially useful for single-cell experiments)",
+            "usage": "Run bismark with --local flag to allow soft-clipping of reads (potentially useful for single-cell experiments)",
             "render": "none",
             "default_value": false,
             "type": "boolean",

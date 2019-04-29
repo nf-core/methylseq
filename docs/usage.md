@@ -310,7 +310,7 @@ Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-a
 Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) (only works with `--aligner bismark_hisat`)
 
 ### `--local_alignment`
-Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)
+Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125) (doesn't work with `--aligner bwameth`)
 
 ## Job Resources
 ### Automatic resubmission
