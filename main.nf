@@ -44,6 +44,7 @@ def helpMessage() {
      --numMismatches        0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
      --known_splices	Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq	Run bismark in SLAM-seq mode
+     --local_alignment Allow soft-clipping of reads (potentially useful for single-cell experiments)
 
     References                      If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta                       Path to Fasta reference
@@ -250,6 +251,7 @@ summary['Reads']          = params.reads
 summary['Aligner']        = params.aligner
 summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
 summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
+summary['Local alignment']  = params.local_alignment ? 'Yes' : 'No'
 summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
@@ -533,6 +535,7 @@ if( params.aligner =~ /bismark/ ){
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
+        soft_clipping = params.local_alignment ? "--local" : ''
         multicore = ''
         if( task.cpus ){
             // Numbers based on recommendation by Felix for a typical mouse genome
@@ -563,6 +566,7 @@ if( params.aligner =~ /bismark/ ){
                 --bam $pbat $non_directional $unmapped $mismatches $multicore \\
                 --genome $index \\
                 $reads \\
+                $soft_clipping \\
                 $splicesites
             """
         } else {
@@ -572,6 +576,7 @@ if( params.aligner =~ /bismark/ ){
                 --genome $index \\
                 -1 ${reads[0]} \\
                 -2 ${reads[1]} \\
+                $soft_clipping \\
                 $splicesites
             """
         }

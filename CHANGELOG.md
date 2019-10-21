@@ -3,6 +3,7 @@
 ## v1.4dev
 
 #### New features
+* Added `--local_alignment` option to run Bismark with the `--local` flag to allow soft-clipping of reads.
 * Added support for bismark's [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode)
 * Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
