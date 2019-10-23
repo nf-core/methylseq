@@ -807,7 +807,7 @@ if( params.aligner == 'bwameth' ){
 
         script:
         def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus) : false
-        def sort_mem = avail_mem && avail_mem > 2 ? "-m $avail_mem"+"G" : ''
+        def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
         """
         samtools sort $bam \\
             -@ ${task.cpus} $sort_mem \\
