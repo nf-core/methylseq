@@ -52,7 +52,7 @@ def helpMessage() {
       --bismark_index      Path to Bismark index
       --bwa_meth_index  Path to bwameth index
       --saveReference       Save reference(s) to results directory
-    
+
     Trimming options:
      --notrim   Skip read trimming
      --clip_r1  Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
@@ -806,8 +806,8 @@ if( params.aligner == 'bwameth' ){
         file "where_are_my_files.txt"
 
         script:
-        def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
-        def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
+        def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus) : false
+        def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
         """
         samtools sort $bam \\
             -@ ${task.cpus} $sort_mem \\
@@ -912,8 +912,8 @@ process qualimap {
     script:
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
-    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
-    def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
+    def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus) : false
+    def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
     """
     samtools sort $bam \\
         -@ ${task.cpus} $sort_mem \\
@@ -941,8 +941,8 @@ process preseq {
     file "${bam.baseName}.ccurve.txt" into preseq_results
 
     script:
-    def avail_mem = task.memory ? ((task.memory.toBytes() - 6000000000) / task.cpus) : false
-    def sort_mem = avail_mem && avail_mem > 2000000000 ? "-m $avail_mem" : ''
+    def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus) : false
+    def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
     """
     samtools sort $bam \\
         -@ ${task.cpus} $sort_mem \\
