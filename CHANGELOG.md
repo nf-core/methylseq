@@ -21,6 +21,7 @@
 
 
 #### Pipeline updates
+* Keep memory in GB for samtools, to avoid problems with unit conversion ([#99](https://github.com/nf-core/methylseq/issues/99))
 * Changed `params.container` for `process.container`
 * Merged TEMPLATE branch
 
