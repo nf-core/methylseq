@@ -913,7 +913,7 @@ process qualimap {
     gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
     gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
     def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus) : false
-    def sort_mem = avail_mem && avail_mem > 2 ? "-m $avail_mem"+"G" : ''
+    def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
     """
     samtools sort $bam \\
         -@ ${task.cpus} $sort_mem \\
