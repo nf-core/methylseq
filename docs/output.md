@@ -60,7 +60,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 
 * `sample.bam`
   * Aligned reads in BAM format.
-  * **NB:** Only saved if `--save_aligned_intermediates`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+  * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 * `logs/sample_PE_report.txt`
   * Log file giving summary statistics about alignment.
 * `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
@@ -71,13 +71,13 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 
 * `sample.bam`
   * Aligned reads in BAM format.
-  * **NB:** Only saved if `--save_aligned_intermediates` is used
+  * **NB:** Only saved if `--save_align_intermeds` is used
 * `sample.sorted.bam`
   * Aligned reads in a sorted BAM file.
-  * **NB:** Only saved if `--save_aligned_intermediates`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+  * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 * `sample.sorted.bam.bai`
   * Index of sorted BAM file
-  * **NB:** Only saved if `--save_aligned_intermediates`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+  * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 * `logs/sample_flagstat.txt`
   * Summary file describing the number of reads which aligned in different ways.
 * `logs/sample_stats.txt`
@@ -86,7 +86,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 
 
 ### Deduplication
-This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_aligned_intermediates`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 
 **Bismark output directory: `results/bismark_deduplicated/`**
 

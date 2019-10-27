@@ -37,7 +37,7 @@ def helpMessage() {
      --methyl_kit        Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
      --skip_deduplication      Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
      --non_directional      Run alignment against all four possible strands
-     --save_aligned_intermediates     Save aligned intermediates to results directory
+     --save_align_intermeds     Save aligned intermediates to results directory
      --save_trimmed      Save trimmed reads to results directory
      --unmapped     Save unmapped reads to fastq files
      --relax_mismatches      Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
@@ -280,7 +280,7 @@ if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
 summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
-summary['Save Intermediates'] = params.save_aligned_intermediates ? 'Yes' : 'No'
+summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
 summary['Current home']   = "$HOME"
 summary['Current path']   = "$PWD"
 if( params.project ) summary['UPPMAX Project'] = params.project
@@ -511,8 +511,8 @@ if( params.aligner =~ /bismark/ ){
             saveAs: {filename ->
                 if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
                 else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
-                else if( (!params.save_aligned_intermediates && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
-                else if( (params.save_aligned_intermediates || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
+                else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
+                else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
@@ -755,8 +755,8 @@ if( params.aligner == 'bwameth' ){
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if( !params.save_aligned_intermediates && filename == "where_are_my_files.txt" ) filename
-                else if( params.save_aligned_intermediates && filename != "where_are_my_files.txt" ) filename
+                if( !params.save_align_intermeds && filename == "where_are_my_files.txt" ) filename
+                else if( params.save_align_intermeds && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
@@ -789,8 +789,8 @@ if( params.aligner == 'bwameth' ){
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "logs/$filename"
-                else if( (!params.save_aligned_intermediates && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-                else if( (params.save_aligned_intermediates || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 

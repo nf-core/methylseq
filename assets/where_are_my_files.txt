@@ -12,7 +12,7 @@ the below command-line options and they will be copied into the results director
 `--unmapped` (bismark only)
 Specify to save FastQ files containing reads that didn't map to the reference genome to the results directory.
 
-`--save_aligned_intermediates`
+`--save_align_intermeds`
 The final BAM files created after the Bismark deduplicate / Picard MarkDuplicates steps are always saved
 and can be found in the `bismark_deduplicated/` or `bwa-mem_markDuplicates/` folder, respectively.
 Specify this flag to also copy out BAM files from bismark / bwameth alignment and sorting steps.
@@ -34,7 +34,7 @@ the command line, you can save the following to your personal configuration file
 
 params.save_reference = true
 params.save_trimmed = true
-params.save_aligned_intermediates = true
+params.save_align_intermeds = true
 params.unmapped = true
 
 For more help, see the following documentation:

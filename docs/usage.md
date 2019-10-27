@@ -25,7 +25,7 @@
   * [`--relax_mismatches` and `--num_mismatches`](##--relax_mismatches-and---num_mismatches)
   * [`--unmapped`](#--unmapped)
   * [`--save_trimmed`](#--save_trimmed)
-  * [`--save_aligned_intermediates`](#--save_aligned_intermediates)
+  * [`--save_align_intermeds`](#--save_align_intermeds)
   * [`--min_depth`](#--min_depth)
   * [`--meth_cutoff`](#--meth_cutoff)
   * [`--ignore_flags`](#--ignore_flags)
@@ -288,7 +288,7 @@ Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and sa
 ### `--save_trimmed`
 By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete.
 
-### `--save_aligned_intermediates`
+### `--save_align_intermeds`
 By default intermediate BAM files will not be saved. The final BAM files created after the deduplication step are always. Set to true to also copy out BAM files from the initial Bismark alignment step. If `--skip_deduplication` or `--rrbs` is specified then BAMs from the initial alignment will always be saved.
 
 ### `--min_depth`

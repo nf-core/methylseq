@@ -317,7 +317,7 @@
             "type": "boolean"
         },
         {
-            "name": "save_aligned_intermediates",
+            "name": "save_align_intermeds",
             "label": "Save Aligned Intermediate BAM files",
             "usage": "Save intermediate BAM files the the results directory.",
             "group": "Pipeline defaults",
