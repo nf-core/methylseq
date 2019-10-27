@@ -13,23 +13,23 @@
 * [Main arguments](#main-arguments)
   * [`-profile`](#-profile)
   * [`--reads`](#--reads)
-  * [`--singleEnd`](#--singleend)
+  * [`--single_end`](#--single_end)
 * [Additional parameters](#additional-parameters)
   * [Adapter Trimming](#adapter-trimming)
     * [`--rrbs`](#--rrbs)
     * [`--pbat`](#--pbat)
-    * [`--notrim`](#--notrim)
-  * [`--nodedup`](#--nodedup)
+    * [`--skip_trimming`](#--skip_trimming)
+  * [`--skip_deduplication`](#--skip_deduplication)
   * [`--non_directional`](#--non_directional)
   * [`--comprehensive`](#--comprehensive)
-  * [`--relaxMismatches` and `--numMismatches`](##--relaxmismatches-and---nummismatches)
+  * [`--relax_mismatches` and `--num_mismatches`](##--relax_mismatches-and---num_mismatches)
   * [`--unmapped`](#--unmapped)
-  * [`--saveTrimmed`](#--savetrimmed)
-  * [`--saveAlignedIntermediates`](#--savealignedintermediates)
-  * [`--mindepth`](#--mindepth)
+  * [`--save_trimmed`](#--save_trimmed)
+  * [`--save_aligned_intermediates`](#--save_aligned_intermediates)
+  * [`--min_depth`](#--min_depth)
   * [`--meth_cutoff`](#--meth_cutoff)
-  * [`--ignoreFlags`](#--ignoreflags)
-  * [`--methylKit`](#--methylKit)
+  * [`--ignore_flags`](#--ignore_flags)
+  * [`--methyl_kit`](#--methyl_kit)
   * [`--known_splices`](#--known_splices)
   * [`--slamseq`](#--slamseq)
   * [`--local_alignment`](#--local_alignment)
@@ -37,7 +37,7 @@
   * [`--genome` (using iGenomes)](#--genome-using-igenomes)
   * [`--igenomesIgnore`](#--igenomesignore)
   * [Supplying reference indices](#supplying-reference-indices)
-  * [`--saveReference`](#--savereference)
+  * [`--save_reference`](#--save_reference)
 * [Job resources](#job-resources)
   * [Automatic resubmission](#automatic-resubmission)
   * [Custom resource requests](#custom-resource-requests)
@@ -148,11 +148,11 @@ Please note the following requirements:
 
 If left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`
 
-### `--singleEnd`
-By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--singleEnd` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--reads`. For example:
+### `--single_end`
+By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--reads`. For example:
 
 ```bash
---singleEnd --reads '*.fastq'
+--single_end --reads '*.fastq'
 ```
 
 It is not possible to run a mixture of single-end and paired-end files in one run.
@@ -200,7 +200,7 @@ Do not load `igenomes.config` when running the pipeline. You may choose this opt
 
 If you don't want to use the Illumina iGenomes references, you can supply your own reference genome.
 
-The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--saveReference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth workflow always needs a FASTA file, for methylation calling.
+The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth workflow always needs a FASTA file, for methylation calling.
 
 ```bash
 # Single multifasta for genome
@@ -218,7 +218,7 @@ The minimum requirement is just a FASTA file - the pipeline will automatically g
 --fasta_index /path/to/genome.fa.fai
 ```
 
-### `--saveReference`
+### `--save_reference`
 Supply this parameter to save any generated reference genome files to your results folder. These can then be used for future pipeline runs, reducing processing times.
 
 
@@ -255,11 +255,11 @@ Specifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore! See the [
 
 This parameter also makes the pipeline skip the deduplication step.
 
-### `--notrim`
-Specifying `--notrim` will skip the adapter trimming step. Use this if your input FastQ files have already been trimmed outside of the workflow.
+### `--skip_trimming`
+Specifying `--skip_trimming` will skip the adapter trimming step. Use this if your input FastQ files have already been trimmed outside of the workflow.
 
-### `--nodedup`
-By default, the pipeline includes a deduplication step after alignment. Use `--nodedup` on the command line to skip this step. This is automatically set if using `--rrbs` for the workflow.
+### `--skip_deduplication`
+By default, the pipeline includes a deduplication step after alignment. Use `--skip_deduplication` on the command line to skip this step. This is automatically set if using `--rrbs` for the workflow.
 
 ### `--pbat`
 Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when aligning with Bismark. It tells Bismark to align complementary strands (the opposite of `--directional`).
@@ -276,32 +276,32 @@ If specified, this flag instructs the Bismark methylation extractor to use the `
 
 If using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well.
 
-### `--relaxMismatches` and `--numMismatches`
+### `--relax_mismatches` and `--num_mismatches`
 
 By default, Bismark is pretty strict about which alignments it accepts as valid. If you have good reason to believe that your reads will contain more mismatches than normal, these flags can be used to relax the stringency that Bismark uses when accepting alignments. This can greatly improve the number of aligned reads you get back, but may negatively impact the quality of your data.
 
-`--numMismatches` is `0.2` by default in Bismark, or `0.6` if `--relaxMismatches` is specified. `0.6` will allow a penalty of `bp * -0.6` - for 100bp reads, this is `-60`. Mismatches cost `-6`, gap opening `-5` and gap extension `-2`. So, `-60` would allow 10 mismatches or ~ 8 x 1-2bp indels.
+`--num_mismatches` is `0.2` by default in Bismark, or `0.6` if `--relax_mismatches` is specified. `0.6` will allow a penalty of `bp * -0.6` - for 100bp reads, this is `-60`. Mismatches cost `-6`, gap opening `-5` and gap extension `-2`. So, `-60` would allow 10 mismatches or ~ 8 x 1-2bp indels.
 
 ### `--unmapped`
 Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.
 
-### `--saveTrimmed`
+### `--save_trimmed`
 By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete.
 
-### `--saveAlignedIntermediates`
-By default intermediate BAM files will not be saved. The final BAM files created after the deduplication step are always. Set to true to also copy out BAM files from the initial Bismark alignment step. If `--nodedup` or `--rrbs` is specified then BAMs from the initial alignment will always be saved.
+### `--save_aligned_intermediates`
+By default intermediate BAM files will not be saved. The final BAM files created after the deduplication step are always. Set to true to also copy out BAM files from the initial Bismark alignment step. If `--skip_deduplication` or `--rrbs` is specified then BAMs from the initial alignment will always be saved.
 
-### `--mindepth`
+### `--min_depth`
 Specify to specify a minimum read coverage for MethylDackel to report a methylation call.
 
 ### `--meth_cutoff`
 Use this to specify a minimum read coverage to report a methylation call during Bismark's `bismark_methylation_extractor` step.
 
-### `--ignoreFlags`
-Specify to run MethylDackel with the `--ignoreFlags` flag to ignore SAM flags.
+### `--ignore_flags`
+Specify to run MethylDackel with the `--ignore_flags` flag to ignore SAM flags.
 
-### `--methylKit`
-Specify to run MethylDackel with the `--methylKit` flag to produce files suitable for use with the methylKit R package.
+### `--methyl_kit`
+Specify to run MethylDackel with the `--methyl_kit` flag to produce files suitable for use with the methylKit R package.
 
 ### `--known_splices`
 Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline. (only works with `--aligner bismark_hisat`)
