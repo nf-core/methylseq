@@ -34,7 +34,7 @@ def helpMessage() {
      --ignore_flags      Run MethylDackel with the flag to ignore SAM flags.
      --meth_cutoff      Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
      --min_depth     Specify a minimum read coverage for MethylDackel to report a methylation call.
-     --methyl_kit        Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methyl_kit R package.
+     --methyl_kit        Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
      --skip_deduplication      Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
      --non_directional      Run alignment against all four possible strands
      --save_aligned_intermediates     Save aligned intermediates to results directory
