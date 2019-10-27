@@ -877,13 +877,13 @@ if( params.aligner == 'bwameth' ){
         file "${bam.baseName}*" into ch_methyldackel_results_for_multiqc
 
         script:
-        allcontexts = params.comprehensive ? '--CHG --CHH' : ''
-        min_depth = params.min_depth > 0 ? "--min_depth ${params.min_depth}" : ''
-        ignore_flags = params.ignore_flags ? "--ignore_flags" : ''
-        methyl_kit = params.methyl_kit ? "--methyl_kit" : ''
+        all_contexts = params.comprehensive ? '--CHG --CHH' : ''
+        min_depth = params.min_depth > 0 ? "--minDepth ${params.min_depth}" : ''
+        ignore_flags = params.ignore_flags ? "--ignoreFlags" : ''
+        methyl_kit = params.methyl_kit ? "--methylKit" : ''
         """
-        MethylDackel extract $allcontexts $ignore_flags $methyl_kit $min_depth $fasta $bam
-        MethylDackel mbias $allcontexts $ignore_flags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
+        MethylDackel extract $all_contexts $ignore_flags $methyl_kit $min_depth $fasta $bam
+        MethylDackel mbias $all_contexts $ignore_flags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
 
