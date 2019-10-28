@@ -35,7 +35,7 @@
   * [`--local_alignment`](#--local_alignment)
 * [Reference genomes](#reference-genomes)
   * [`--genome` (using iGenomes)](#--genome-using-igenomes)
-  * [`--igenomesIgnore`](#--igenomesignore)
+  * [`--igenomes_ignore`](#--igenomes_ignore)
   * [Supplying reference indices](#supplying-reference-indices)
   * [`--save_reference`](#--save_reference)
 * [Job resources](#job-resources)
@@ -193,7 +193,7 @@ params {
 }
 ```
 
-### `--igenomesIgnore`
+### `--igenomes_ignore`
 Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.
 
 ### Supplying reference indices
