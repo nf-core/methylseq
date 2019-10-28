@@ -21,63 +21,63 @@ def helpMessage() {
     nextflow run nf-core/methylseq --reads '*_R{1,2}.fastq.gz' -profile docker
 
     Mandatory arguments:
-      --aligner                 Alignment tool to use (default: bismark)
-                                        Available: bismark, bismark_hisat, bwameth
-      --reads                   Path to input data (must be surrounded with quotes)
-      -profile                  Configuration profile to use. Can use multiple (comma separated)
-                                        Available: conda, docker, singularity, awsbatch, test and more.
+      --aligner [str]                   Alignment tool to use (default: bismark)
+                                            Available: bismark, bismark_hisat, bwameth
+      --reads [path]                    Path to input data (must be surrounded with quotes)
+      -profile [str]                    Configuration profile to use. Can use multiple (comma separated)
+                                            Available: conda, docker, singularity, awsbatch, test and more.
 
     Options:
-     --genome    Name of iGenomes reference
-     --single_end       Specifies that the input is single end reads
-     --comprehensive        Output information for all cytosine contexts
-     --ignore_flags      Run MethylDackel with the flag to ignore SAM flags.
-     --meth_cutoff      Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
-     --min_depth     Specify a minimum read coverage for MethylDackel to report a methylation call.
-     --methyl_kit        Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
-     --skip_deduplication      Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
-     --non_directional      Run alignment against all four possible strands
-     --save_align_intermeds     Save aligned intermediates to results directory
-     --save_trimmed      Save trimmed reads to results directory
-     --unmapped     Save unmapped reads to fastq files
-     --relax_mismatches      Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
-     --num_mismatches        0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
-     --known_splices	Supply a .gtf file containing known splice sites (bismark_hisat only)
-     --slamseq	Run bismark in SLAM-seq mode
-     --local_alignment Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --genome [str]                     Name of iGenomes reference
+     --single_end [bool]                Specifies that the input is single end reads
+     --comprehensive [bool]             Output information for all cytosine contexts
+     --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
+     --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
+     --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
+     --methyl_kit [bool]                Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
+     --skip_deduplication [bool]        Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
+     --non_directional [bool]           Run alignment against all four possible strands
+     --save_align_intermeds [bool]      Save aligned intermediates to results directory
+     --save_trimmed [bool]              Save trimmed reads to results directory
+     --unmapped [bool]                  Save unmapped reads to fastq files
+     --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
+     --num_mismatches [float]           0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
+     --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
+     --slamseq [bool]                   Run bismark in SLAM-seq mode
+     --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
 
-    References                      If not specified in the configuration file or you wish to overwrite any of the references.
-      --fasta                       Path to Fasta reference
-      --fasta_index           Path to Fasta Index
-      --bismark_index      Path to Bismark index
-      --bwa_meth_index  Path to bwameth index
-      --save_reference       Save reference(s) to results directory
+    References                          If not specified in the configuration file or you wish to overwrite any of the references.
+      --fasta [file]                    Path to Fasta reference
+      --fasta_index [path]              Path to Fasta Index
+      --bismark_index [path]            Path to Bismark index
+      --bwa_meth_index [path]           Path to bwameth index
+      --save_reference [bool]           Save reference(s) to results directory
 
     Trimming options:
-     --skip_trimming   Skip read trimming
-     --clip_r1  Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
-     --clip_r2  Trim the specified number of bases from the 5' end of read 2 (paired-end only).
-     --three_prime_clip_r1 Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
-     --three_prime_clip_r2 Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
-     --rrbs Turn on if dealing with MspI digested material.
+     --skip_trimming [bool]             Skip read trimming
+     --clip_r1 [int]                    Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
+     --clip_r2 [int]                    Trim the specified number of bases from the 5' end of read 2 (paired-end only).
+     --three_prime_clip_r1 [int]        Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
+     --three_prime_clip_r2 [int]        Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
+     --rrbs [bool]                      Turn on if dealing with MspI digested material.
 
     Trimming presets:
-     --pbat
-     --single_cell
-     --epignome
-     --accell
-     --zymo
-     --cegx
+     --pbat [bool]
+     --single_cell [bool]
+     --epignome [bool]
+     --accell [bool]
+     --zymo [bool]
+     --cegx [bool]
 
     Other options:
-      --outdir                      The output directory where the results will be saved
-      --email                       Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
-      --max_multiqc_email_size      Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
-      -name                         Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
+      --outdir [path]                   The output directory where the results will be saved
+      --email [email]                   Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
+      --max_multiqc_email_size [str]    Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
+      -name [str]                       Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
 
     AWSBatch options:
-      --awsqueue                    The AWSBatch JobQueue that needs to be set when running on AWSBatch
-      --awsregion                   The AWS Region for your AWS Batch job to run on
+      --awsqueue [str]                  The AWSBatch JobQueue that needs to be set when running on AWSBatch
+      --awsregion [str]                 The AWS Region for your AWS Batch job to run on
     """.stripIndent()
 }
 
