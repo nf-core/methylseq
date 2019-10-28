@@ -1,7 +1,7 @@
 # ![nf-core/methylseq](docs/images/methylseq_logo.png)
 
-[![Build Status](https://travis-ci.org/nf-core/methylseq.svg?branch=master)](https://travis-ci.org/nf-core/methylseq)
-[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A50.32.0-brightgreen.svg)](https://www.nextflow.io/)
+[![Build Status](https://travis-ci.com/nf-core/methylseq.svg?branch=master)](https://travis-ci.com/nf-core/methylseq)
+[![Nextflow](https://img.shields.io/badge/nextflow-%E2%89%A519.04.0-brightgreen.svg)](https://www.nextflow.io/)
 [![DOI](https://zenodo.org/badge/124913037.svg)](https://zenodo.org/badge/latestdoi/124913037)
 [![Gitter](https://img.shields.io/badge/gitter-%20join%20chat%20%E2%86%92-4fb99a.svg)](https://gitter.im/nf-core/Lobby)
 
@@ -50,3 +50,4 @@ These scripts were originally written for use at the [National Genomics Infrastr
 * Contributors:
   * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
+

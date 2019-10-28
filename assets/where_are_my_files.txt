@@ -12,15 +12,15 @@ the below command-line options and they will be copied into the results director
 `--unmapped` (bismark only)
 Specify to save FastQ files containing reads that didn't map to the reference genome to the results directory.
 
-`--saveAlignedIntermediates`
+`--save_align_intermeds`
 The final BAM files created after the Bismark deduplicate / Picard MarkDuplicates steps are always saved
 and can be found in the `bismark_deduplicated/` or `bwa-mem_markDuplicates/` folder, respectively.
 Specify this flag to also copy out BAM files from bismark / bwameth alignment and sorting steps.
 
-`--saveTrimmed`
+`--save_trimmed`
 Specify to save trimmed FastQ files to the results directory.
 
-`--saveReference`
+`--save_reference`
 Save any downloaded or generated reference genome files to your results folder.
 These can then be used for future pipeline runs, reducing processing times.
 
@@ -32,9 +32,9 @@ If you would always like these files to be saved without having to specify this 
 the command line, you can save the following to your personal configuration file
 (eg. `~/.nextflow/config`):
 
-params.saveReference = true
-params.saveTrimmed = true
-params.saveAlignedIntermediates = true
+params.save_reference = true
+params.save_trimmed = true
+params.save_align_intermeds = true
 params.unmapped = true
 
 For more help, see the following documentation:

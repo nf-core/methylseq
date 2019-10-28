@@ -21,63 +21,63 @@ def helpMessage() {
     nextflow run nf-core/methylseq --reads '*_R{1,2}.fastq.gz' -profile docker
 
     Mandatory arguments:
-      --aligner                 Alignment tool to use (default: bismark)
-                                        Available: bismark, bismark_hisat, bwameth
-      --reads                   Path to input data (must be surrounded with quotes)
-      -profile                  Configuration profile to use. Can use multiple (comma separated)
-                                        Available: conda, docker, singularity, awsbatch, test and more.
+      --aligner [str]                   Alignment tool to use (default: bismark)
+                                            Available: bismark, bismark_hisat, bwameth
+      --reads [path]                    Path to input data (must be surrounded with quotes)
+      -profile [str]                    Configuration profile to use. Can use multiple (comma separated)
+                                            Available: conda, docker, singularity, awsbatch, test and more.
 
     Options:
-     --genome    Name of iGenomes reference
-     --singleEnd       Specifies that the input is single end reads
-     --comprehensive        Output information for all cytosine contexts
-     --ignoreFlags      Run MethylDackel with the flag to ignore SAM flags.
-     --meth_cutoff      Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
-     --mindepth     Specify a minimum read coverage for MethylDackel to report a methylation call.
-     --methylKit        Run MethylDackel with the --methylKit flag to produce files suitable for use with the methylKit R package.
-     --nodedup      Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
-     --non_directional      Run alignment against all four possible strands
-     --saveAlignedIntermediates     Save aligned intermediates to results directory
-     --saveTrimmed      Save trimmed reads to results directory
-     --unmapped     Save unmapped reads to fastq files
-     --relaxMismatches      Turn on to relax stringency for alignment (set allowed penalty with --numMismatches)
-     --numMismatches        0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
-     --known_splices	Supply a .gtf file containing known splice sites (bismark_hisat only)
-     --slamseq	Run bismark in SLAM-seq mode
-     --local_alignment Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --genome [str]                     Name of iGenomes reference
+     --single_end [bool]                Specifies that the input is single end reads
+     --comprehensive [bool]             Output information for all cytosine contexts
+     --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
+     --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
+     --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
+     --methyl_kit [bool]                Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
+     --skip_deduplication [bool]        Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
+     --non_directional [bool]           Run alignment against all four possible strands
+     --save_align_intermeds [bool]      Save aligned intermediates to results directory
+     --save_trimmed [bool]              Save trimmed reads to results directory
+     --unmapped [bool]                  Save unmapped reads to fastq files
+     --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
+     --num_mismatches [float]           0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
+     --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
+     --slamseq [bool]                   Run bismark in SLAM-seq mode
+     --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
 
-    References                      If not specified in the configuration file or you wish to overwrite any of the references.
-      --fasta                       Path to Fasta reference
-      --fasta_index           Path to Fasta Index
-      --bismark_index      Path to Bismark index
-      --bwa_meth_index  Path to bwameth index
-      --saveReference       Save reference(s) to results directory
+    References                          If not specified in the configuration file or you wish to overwrite any of the references.
+      --fasta [file]                    Path to Fasta reference
+      --fasta_index [path]              Path to Fasta Index
+      --bismark_index [path]            Path to Bismark index
+      --bwa_meth_index [path]           Path to bwameth index
+      --save_reference [bool]           Save reference(s) to results directory
 
     Trimming options:
-     --notrim   Skip read trimming
-     --clip_r1  Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
-     --clip_r2  Trim the specified number of bases from the 5' end of read 2 (paired-end only).
-     --three_prime_clip_r1 Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
-     --three_prime_clip_r2 Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
-     --rrbs Turn on if dealing with MspI digested material.
+     --skip_trimming [bool]             Skip read trimming
+     --clip_r1 [int]                    Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
+     --clip_r2 [int]                    Trim the specified number of bases from the 5' end of read 2 (paired-end only).
+     --three_prime_clip_r1 [int]        Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
+     --three_prime_clip_r2 [int]        Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
+     --rrbs [bool]                      Turn on if dealing with MspI digested material.
 
     Trimming presets:
-     --pbat
-     --single_cell
-     --epignome
-     --accell
-     --zymo
-     --cegx
+     --pbat [bool]
+     --single_cell [bool]
+     --epignome [bool]
+     --accell [bool]
+     --zymo [bool]
+     --cegx [bool]
 
     Other options:
-      --outdir                      The output directory where the results will be saved
-      --email                       Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
-      --maxMultiqcEmailFileSize     Theshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
-      -name                         Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
+      --outdir [path]                   The output directory where the results will be saved
+      --email [email]                   Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
+      --max_multiqc_email_size [str]    Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
+      -name [str]                       Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
 
     AWSBatch options:
-      --awsqueue                    The AWSBatch JobQueue that needs to be set when running on AWSBatch
-      --awsregion                   The AWS Region for your AWS Batch job to run on
+      --awsqueue [str]                  The AWSBatch JobQueue that needs to be set when running on AWSBatch
+      --awsregion [str]                 The AWS Region for your AWS Batch job to run on
     """.stripIndent()
 }
 
@@ -221,7 +221,7 @@ ch_output_docs = Channel.fromPath("$baseDir/docs/output.md")
  * Create a channel for input read files
  */
 if( params.readPaths ){
-    if( params.singleEnd ){
+    if( params.single_end ){
         Channel
             .from(params.readPaths)
             .map { row -> [ row[0], [file(row[1][0])]] }
@@ -236,8 +236,8 @@ if( params.readPaths ){
     }
 } else {
     Channel
-        .fromFilePairs( params.reads, size: params.singleEnd ? 1 : 2 )
-        .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --singleEnd on the command line." }
+        .fromFilePairs( params.reads, size: params.single_end ? 1 : 2 )
+        .ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
         .into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
 }
 
@@ -252,15 +252,15 @@ summary['Aligner']        = params.aligner
 summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
 summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
 summary['Local alignment']  = params.local_alignment ? 'Yes' : 'No'
-summary['Data Type']      = params.singleEnd ? 'Single-End' : 'Paired-End'
+summary['Data Type']      = params.single_end ? 'Single-End' : 'Paired-End'
 summary['Genome']         = params.genome
 if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
 if( params.bwa_meth_index ) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
 if( params.fasta )    summary['Fasta Ref'] = params.fasta
 if( params.fasta_index )    summary['Fasta Index'] = params.fasta_index
 if( params.rrbs ) summary['RRBS Mode'] = 'On'
-if( params.relaxMismatches ) summary['Mismatch Func'] = "L,0,-${params.numMismatches} (Bismark default = L,0,-0.2)"
-if( params.notrim )       summary['Trimming Step'] = 'Skipped'
+if( params.relax_mismatches ) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
+if( params.skip_trimming )       summary['Trimming Step'] = 'Skipped'
 if( params.pbat )         summary['Trim Profile'] = 'PBAT'
 if( params.single_cell )  summary['Trim Profile'] = 'Single Cell'
 if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
@@ -271,16 +271,16 @@ summary['Trim R1'] = params.clip_r1
 summary['Trim R2'] = params.clip_r2
 summary["Trim 3' R1"] = params.three_prime_clip_r1
 summary["Trim 3' R2"] = params.three_prime_clip_r2
-summary['Deduplication']  = params.nodedup || params.rrbs ? 'No' : 'Yes'
+summary['Deduplication']  = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
-if( params.mindepth ) summary['Minimum Depth'] = params.mindepth
-if( params.ignoreFlags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
-if( params.methylKit ) summary['MethylDackel'] = 'Producing methylKit output'
-summary['Save Reference'] = params.saveReference ? 'Yes' : 'No'
-summary['Save Trimmed']   = params.saveTrimmed ? 'Yes' : 'No'
+if( params.min_depth ) summary['Minimum Depth'] = params.min_depth
+if( params.ignore_flags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
+if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
+summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
+summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
-summary['Save Intermediates'] = params.saveAlignedIntermediates ? 'Yes' : 'No'
+summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
 summary['Current home']   = "$HOME"
 summary['Current path']   = "$PWD"
 if( params.project ) summary['UPPMAX Project'] = params.project
@@ -302,7 +302,7 @@ if(params.config_profile_contact)     summary['Config Contact']     = params.con
 if(params.config_profile_url)         summary['Config URL']         = params.config_profile_url
 if(params.email) {
   summary['E-mail Address']  = params.email
-  summary['MultiQC maxsize'] = params.maxMultiqcEmailFileSize
+  summary['MultiQC maxsize'] = params.max_multiqc_email_size
 }
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "\033[2m----------------------------------------------------\033[0m"
@@ -372,8 +372,8 @@ process get_software_versions {
  */
 if( !params.bismark_index && params.aligner =~ /bismark/ ){
     process makeBismarkIndex {
-        publishDir path: { params.saveReference ? "${params.outdir}/reference_genome" : params.outdir },
-                   saveAs: { params.saveReference ? it : null }, mode: 'copy'
+        publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
+                   saveAs: { params.save_reference ? it : null }, mode: 'copy'
 
         input:
         file fasta from ch_fasta_for_makeBismarkIndex
@@ -398,7 +398,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
 if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
     process makeBwaMemIndex {
         tag "$fasta"
-        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
 
         input:
         file fasta from ch_fasta_for_makeBwaMemIndex
@@ -419,7 +419,7 @@ if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
 if( !params.fasta_index && params.aligner == 'bwameth' ){
     process makeFastaIndex {
         tag "$fasta"
-        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.saveReference ? it : null }, mode: 'copy'
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
 
         input:
         file fasta from ch_fasta_for_makeFastaIndex
@@ -458,7 +458,7 @@ process fastqc {
 /*
  * STEP 2 - Trim Galore!
  */
-if( params.notrim ){
+if( params.skip_trimming ){
     ch_trimmed_reads_for_alignment = ch_read_files_for_trim_galore
     ch_trim_galore_results_for_multiqc = Channel.from(false)
 } else {
@@ -468,8 +468,8 @@ if( params.notrim ){
             saveAs: {filename ->
                 if( filename.indexOf("_fastqc") > 0 ) "FastQC/$filename"
                 else if( filename.indexOf("trimming_report.txt" ) > 0) "logs/$filename"
-                else if( !params.saveTrimmed && filename == "where_are_my_files.txt" ) filename
-                else if( params.saveTrimmed && filename != "where_are_my_files.txt" ) filename
+                else if( !params.save_trimmed && filename == "where_are_my_files.txt" ) filename
+                else if( params.save_trimmed && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
@@ -489,7 +489,7 @@ if( params.notrim ){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
-        if( params.singleEnd ) {
+        if( params.single_end ) {
             """
             trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
@@ -511,8 +511,8 @@ if( params.aligner =~ /bismark/ ){
             saveAs: {filename ->
                 if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
                 else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
-                else if( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
-                else if( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
+                else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
+                else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
@@ -534,7 +534,7 @@ if( params.aligner =~ /bismark/ ){
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
-        mismatches = params.relaxMismatches ? "--score_min L,0,-${params.numMismatches}" : ''
+        mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
         soft_clipping = params.local_alignment ? "--local" : ''
         multicore = ''
         if( task.cpus ){
@@ -560,7 +560,7 @@ if( params.aligner =~ /bismark/ ){
               multicore = "--multicore $ccore"
             }
         }
-        if( params.singleEnd ) {
+        if( params.single_end ) {
             """
             bismark $aligner \\
                 --bam $pbat $non_directional $unmapped $mismatches $multicore \\
@@ -585,7 +585,7 @@ if( params.aligner =~ /bismark/ ){
     /*
      * STEP 4 - Bismark deduplicate
      */
-    if( params.nodedup || params.rrbs ) {
+    if( params.skip_deduplication || params.rrbs ) {
         ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap }
         ch_bismark_dedup_log_for_bismark_report = Channel.from(false)
         ch_bismark_dedup_log_for_bismark_summary = Channel.from(false)
@@ -604,7 +604,7 @@ if( params.aligner =~ /bismark/ ){
             set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
-            if( params.singleEnd ) {
+            if( params.single_end ) {
                 """
                 deduplicate_bismark -s --bam $bam
                 """
@@ -657,7 +657,7 @@ if( params.aligner =~ /bismark/ ){
               buffer = "--buffer_size ${mbuffer.toGiga()}G"
             }
         }
-        if(params.singleEnd) {
+        if(params.single_end) {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
                 $multicore $buffer \\
@@ -755,8 +755,8 @@ if( params.aligner == 'bwameth' ){
         tag "$name"
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
-                if( !params.saveAlignedIntermediates && filename == "where_are_my_files.txt" ) filename
-                else if( params.saveAlignedIntermediates && filename != "where_are_my_files.txt" ) filename
+                if( !params.save_align_intermeds && filename == "where_are_my_files.txt" ) filename
+                else if( params.save_align_intermeds && filename != "where_are_my_files.txt" ) filename
                 else null
             }
 
@@ -789,8 +789,8 @@ if( params.aligner == 'bwameth' ){
         publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "logs/$filename"
-                else if( (!params.saveAlignedIntermediates && !params.nodedup && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-                else if( (params.saveAlignedIntermediates || params.nodedup || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 
@@ -821,7 +821,7 @@ if( params.aligner == 'bwameth' ){
     /*
      * STEP 5 - Mark duplicates
      */
-    if( params.nodedup || params.rrbs ) {
+    if( params.skip_deduplication || params.rrbs ) {
         ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
         ch_bam_index.set { ch_bam_index_for_methyldackel }
         ch_markDups_results_for_multiqc = Channel.from(false)
@@ -877,13 +877,13 @@ if( params.aligner == 'bwameth' ){
         file "${bam.baseName}*" into ch_methyldackel_results_for_multiqc
 
         script:
-        allcontexts = params.comprehensive ? '--CHG --CHH' : ''
-        mindepth = params.mindepth > 0 ? "--minDepth ${params.mindepth}" : ''
-        ignoreFlags = params.ignoreFlags ? "--ignoreFlags" : ''
-        methylKit = params.methylKit ? "--methylKit" : ''
+        all_contexts = params.comprehensive ? '--CHG --CHH' : ''
+        min_depth = params.min_depth > 0 ? "--minDepth ${params.min_depth}" : ''
+        ignore_flags = params.ignore_flags ? "--ignoreFlags" : ''
+        methyl_kit = params.methyl_kit ? "--methylKit" : ''
         """
-        MethylDackel extract $allcontexts $ignoreFlags $methylKit $mindepth $fasta $bam
-        MethylDackel mbias $allcontexts $ignoreFlags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
+        MethylDackel extract $all_contexts $ignore_flags $methyl_kit $min_depth $fasta $bam
+        MethylDackel mbias $all_contexts $ignore_flags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
 
@@ -1070,7 +1070,7 @@ workflow.onComplete {
     def email_html = html_template.toString()
 
     // Render the sendmail template
-    def smail_fields = [ email: params.email, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$baseDir", mqcFile: mqc_report, mqcMaxSize: params.maxMultiqcEmailFileSize.toBytes() ]
+    def smail_fields = [ email: params.email, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$baseDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
     def sf = new File("$baseDir/assets/sendmail_template.txt")
     def sendmail_template = engine.createTemplate(sf).make(smail_fields)
     def sendmail_html = sendmail_template.toString()
