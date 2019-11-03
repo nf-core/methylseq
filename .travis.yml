@@ -28,7 +28,7 @@ install:
   - mkdir ${TRAVIS_BUILD_DIR}/tests && cd ${TRAVIS_BUILD_DIR}/tests
   # Install markdownlint-cli
   - sudo apt-get install npm && npm install -g markdownlint-cli
-  
+
 env:
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='19.04.0'
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
@@ -43,8 +43,8 @@ script:
   # Lint the documentation
   - markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
   # Run, build reference genome
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --save_reference
+  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-$ALIGNER-buildref" -profile test,docker --aligner $ALIGNER --save_reference
   # Basic run with supplied reference
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER $ALIGNER_REF
+  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-$ALIGNER-withref" -profile test,docker --aligner $ALIGNER $ALIGNER_REF
   # Run, RRBS mode with no trimming
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --skip_trimming --rrbs
+  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-$ALIGNER-skiptrim-rrbs" -profile test,docker --aligner $ALIGNER --skip_trimming --rrbs
