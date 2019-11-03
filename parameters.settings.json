@@ -361,6 +361,14 @@
             "group": "Skip pipeline steps"
         },
         {
+            "name": "skip_preseq",
+            "label": "Skip running Preseq",
+            "render": "check-box",
+            "default_value": false,
+            "type": "boolean",
+            "group": "Skip preseq QC step"
+        },
+        {
             "name": "project",
             "label": "Cluster project",
             "usage": "For use on HPC systems where a project ID is required for job submission",

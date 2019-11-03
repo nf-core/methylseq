@@ -36,6 +36,7 @@ def helpMessage() {
      --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
      --methyl_kit [bool]                Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
      --skip_deduplication [bool]        Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
+     --skip_preseq [bool]               Skip running preseq analysis.
      --non_directional [bool]           Run alignment against all four possible strands
      --save_align_intermeds [bool]      Save aligned intermediates to results directory
      --save_trimmed [bool]              Save trimmed reads to results directory
@@ -261,6 +262,7 @@ if( params.fasta_index )    summary['Fasta Index'] = params.fasta_index
 if( params.rrbs ) summary['RRBS Mode'] = 'On'
 if( params.relax_mismatches ) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
 if( params.skip_trimming )       summary['Trimming Step'] = 'Skipped'
+if( params.skip_preseq )       summary['Preseq QC'] = 'Skipped'
 if( params.pbat )         summary['Trim Profile'] = 'PBAT'
 if( params.single_cell )  summary['Trim Profile'] = 'Single Cell'
 if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
@@ -939,6 +941,9 @@ process preseq {
 
     output:
     file "${bam.baseName}.ccurve.txt" into preseq_results
+
+    when:
+    !params.skip_preseq
 
     script:
     def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
