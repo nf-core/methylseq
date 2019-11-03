@@ -30,12 +30,26 @@ install:
   - sudo apt-get install npm && npm install -g markdownlint-cli
 
 env:
-  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='19.04.0'
-  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
-  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='19.04.0'
-  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
-  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa" NXF_VER='19.04.0'
-  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa"
+  global:
+    # https://tower.nf/ with email nf-core@mailinator.com
+    # Tower login mailbox: https://www.mailinator.com/v3/index.jsp?zone=public&query=nf-core
+    - TOWER_ACCESS_TOKEN="1c1f493bc2703472d6f1b9f6fb9e9d117abab7b1"
+    - JOBNAME="methylseq-${TRAVIS_EVENT_TYPE}-${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT:0:6}-"
+    # Refs built by initial jobs
+    - BISMARK_R="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+    - BWA_R="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa"
+    # Disable ansi log as doesn't work well on Travis
+    - NXF_ANSI_LOG=0
+    # Convenience var to hold common portion of nextflow run command
+    - NFC="nextflow run ${TRAVIS_BUILD_DIR} -with-tower -profile test,docker --aligner"
+
+  jobs:
+    - ALN="bismark"         AREF=$BISMARK_R   NXF_VER='19.10.0'
+    - ALN="bismark"         AREF=$BISMARK_R
+    - ALN="bismark_hisat"   AREF=$BISMARK_R   NXF_VER='19.10.0'
+    - ALN="bismark_hisat"   AREF=$BISMARK_R
+    - ALN="bwameth"         AREF=$BWA_R       NXF_VER='19.10.0'
+    - ALN="bwameth"         AREF=$BWA_R
 
 script:
   # Lint the pipeline code
@@ -43,8 +57,8 @@ script:
   # Lint the documentation
   - markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
   # Run, build reference genome
-  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-${TRAVIS_EVENT_TYPE}${TRAVIS_PULL_REQUEST}-$ALIGNER-buildref-${TRAVIS_JOB_WEB_URL}" -profile test,docker --aligner $ALIGNER --save_reference
+  - $NFC ${ALN} -name "${JOBNAME}${ALN}-buildref" --save_reference
   # Basic run with supplied reference
-  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-${TRAVIS_EVENT_TYPE}${TRAVIS_PULL_REQUEST}-$ALIGNER-withref-${TRAVIS_JOB_WEB_URL}" -profile test,docker --aligner $ALIGNER $ALIGNER_REF
+  - $NFC ${ALN} -name "${JOBNAME}${ALN}-withref" $AREF
   # Run, RRBS mode with no trimming
-  - nextflow run ${TRAVIS_BUILD_DIR} -name "methylseq-${TRAVIS_EVENT_TYPE}${TRAVIS_PULL_REQUEST}-$ALIGNER-skiptrim-rrbs-${TRAVIS_JOB_WEB_URL}" -profile test,docker --aligner $ALIGNER --skip_trimming --rrbs
+  - $NFC ${ALN} -name "${JOBNAME}${ALN}-skiptrim-rrbs" --skip_trimming --rrbs
