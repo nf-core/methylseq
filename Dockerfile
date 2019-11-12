@@ -1,4 +1,4 @@
-FROM nfcore/base:dev
+FROM nfcore/base:1.7
 LABEL authors="Phil Ewels" \
       description="Docker image containing all requirements for nf-core/methylseq pipeline"
 
