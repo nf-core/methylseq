@@ -48,11 +48,14 @@ results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
 
 # Search each file using its regex
 for k, v in regexes.items():
-    with open(v[0]) as x:
-        versions = x.read()
-        match = re.search(v[1], versions)
-        if match:
-            results[k] = "v{}".format(match.group(1))
+    try:
+        with open(v[0]) as x:
+            versions = x.read()
+            match = re.search(v[1], versions)
+            if match:
+                results[k] = "v{}".format(match.group(1))
+    except IOError:
+        results[k] = False
 
 # Remove empty keys (defining them above ensures correct order)
 for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel']:
