@@ -250,7 +250,6 @@ Bisulfite libraries often require additional base pairs to be removed from the e
 * `--three_prime_clip_r2 <NUMBER>`
   * Instructs Trim Galore to re move bp from the 3' end of read 2 _AFTER_ adapter/quality trimming has been performed.
 
-
 The pipeline also accepts a number of presets for common bisulfite library preparation methods:
 
 | Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |
@@ -265,7 +264,6 @@ The pipeline also accepts a number of presets for common bisulfite library prepa
 ### `--rrbs`
 
 Specifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore! See the [TrimGalore! documentation](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md#rrbs-specific-options-mspi-digested-material) to read more about the effects of this option.
-
 
 This parameter also makes the pipeline skip the deduplication step.
 
@@ -368,7 +366,6 @@ The JobQueue that you intend to use on AWS Batch.
 The AWS region to run your job in. Default is set to `eu-west-1` but can be adjusted to your needs.
 
 Please make sure to also set the `-w/--work-dir` and `--outdir` parameters to a S3 storage bucket of your choice - you'll get an error message notifying you if you didn't.
-
 
 ## Other command line parameters
 

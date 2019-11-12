@@ -10,10 +10,6 @@
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg)](http://bioconda.github.io/)
 [![Docker Container available](https://img.shields.io/docker/automated/nfcore/methylseq.svg)](https://hub.docker.com/r/nfcore/methylseq/)
 
-### Introduction
-
-**nf-core/methylseq** is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis.
-
 The pipeline uses [Nextflow](https://www.nextflow.io), a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
 ### Pipeline Steps
@@ -76,7 +72,6 @@ The nf-core/methylseq pipeline comes with documentation about the pipeline, foun
 4. [Output and how to interpret the results](docs/output.md)
 5. [Troubleshooting](https://nf-co.re/usage/troubleshooting)
 
-
 ## Credits
 
 These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
@@ -86,7 +81,7 @@ These scripts were originally written for use at the [National Genomics Infrastr
 * Contributors:
   * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
-  * Patrick Hüther ([@apeltzer](https://github.com/phue/))
+  * Patrick Hüther ([@phue](https://github.com/phue/))
 
 ## Contributions and Support
 

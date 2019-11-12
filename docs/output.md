@@ -142,8 +142,8 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.bedGraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-
 ### Bismark Reports
+
 Bismark generates a HTML reports describing results for each sample, as well as a summary report for the whole run.
 
 **Output directory: `results/bismark_reports`**
