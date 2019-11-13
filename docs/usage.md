@@ -279,6 +279,7 @@ Specifying `--skip_trimming` will skip the adapter trimming step. Use this if yo
 By default, the pipeline includes a deduplication step after alignment. Use `--skip_deduplication` on the command line to skip this step. This is automatically set if using `--rrbs` for the workflow.
 
 ### `--skip_preseq`
+
 Use `--skip_preseq` to skip the QC step where the pipeline runs Preseq. This often fails with low complexity libraries.
 
 ### `--pbat`
