@@ -1,6 +1,6 @@
 FROM nfcore/base:1.7
 LABEL authors="Phil Ewels" \
-      description="Docker image containing all requirements for nf-core/methylseq pipeline"
+      description="Docker image containing all software requirements for the nf-core/methylseq pipeline"
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
