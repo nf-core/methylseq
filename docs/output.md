@@ -5,6 +5,7 @@ This document describes the output produced by the pipeline. Most of the plots a
 Note that nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
 
 ## Pipeline overview
+
 The pipeline is built using [Nextflow](https://www.nextflow.io/)
 and processes data using the following steps:
 
@@ -20,6 +21,7 @@ and processes data using the following steps:
 * [Pipeline Info](#pipeline-info) - reports from nextflow about the pipeline run
 
 ## FastQC
+
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your reads. It provides information about the quality score distribution across your reads, the per base sequence content (%T/A/G/C). You get information about adapter contamination and other overrepresented sequences.
 
 For further reading and documentation see the [FastQC help](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
@@ -34,6 +36,7 @@ For further reading and documentation see the [FastQC help](http://www.bioinform
   * zip file containing the FastQC report, tab-delimited data file and plot images
 
 ## TrimGalore
+
 The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore is a wrapper around [Cutadapt](https://github.com/marcelm/cutadapt) and runs FastQC after it finishes.
 
 MultiQC reports the percentage of bases removed by Cutadapt in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
@@ -53,6 +56,7 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
 Single-end data will have slightly different file names and only one FastQ file per sample.
 
 ### Alignment
+
 Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments.
 
 **Bismark output directory: `results/bismark_alignments/`**
@@ -83,9 +87,8 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 * `logs/sample_stats.txt`
   * Summary file giving lots of metrics about the aligned BAM file.
 
-
-
 ### Deduplication
+
 This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 
 **Bismark output directory: `results/bismark_deduplicated/`**
@@ -107,6 +110,7 @@ This step removes alignments with identical mapping position to avoid technical 
   * Log file giving summary statistics about deduplication.
 
 ### Methylation Extraction
+
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
 Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` when running the pipeline.
@@ -138,8 +142,8 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.bedGraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-
 ### Bismark Reports
+
 Bismark generates a HTML reports describing results for each sample, as well as a summary report for the whole run.
 
 **Output directory: `results/bismark_reports`**
@@ -157,8 +161,6 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 * `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
   * Text-based statistics that can be loaded into downstream programs
 
-
-
 ## Preseq
 
 [Preseq](http://smithlabresearch.org/software/preseq/) estimates the complexity of a library, showing how many additional unique reads are sequenced for increasing the total read count. A shallow curve indicates that the library has reached complexity saturation and further sequencing would likely not add further unique reads. The dashed line shows a perfectly complex library where total reads = unique reads.
@@ -170,8 +172,8 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 * `sample_ccurve.txt`
   * This file contains plot values for the complexity curve, plotted in the MultiQC report.
 
-
 ## MultiQC
+
 [MultiQC](http://multiqc.info) is a visualisation tool that generates a single HTML report summarising all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in within the report data directory.
 
 The pipeline has special steps which allow the software versions used to be reported in the MultiQC output for future traceability.
@@ -186,6 +188,7 @@ The pipeline has special steps which allow the software versions used to be repo
 For more information about how to use MultiQC reports, see [MultiQC](http://multiqc.info)
 
 ## Pipeline Info
+
 Nextflow has several built-in reporting tools that give information about the pipeline run.
 
 **Output directory: `results/pipeline_info`**
