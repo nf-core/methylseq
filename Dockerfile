@@ -4,5 +4,5 @@ LABEL authors="Phil Ewels" \
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
-RUN conda env export --name nf-core-methylseq-1.4dev > nf-core-methylseq-1.4dev.yml
-ENV PATH /opt/conda/envs/nf-core-methylseq-1.4dev/bin:$PATH
+RUN conda env export --name nf-core-methylseq-1.4 > nf-core-methylseq-1.4.yml
+ENV PATH /opt/conda/envs/nf-core-methylseq-1.4/bin:$PATH
