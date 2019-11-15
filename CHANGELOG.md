@@ -16,17 +16,19 @@
 ### Software updates
 
 * _new dependency_: hisat2 `2.1.0`
-* _new dependency_: r-markdown `0.9`
-* Bismark `0.20.0` > `0.22.1`
+* _new dependency_: r-markdown `1.1`
+* TrimGalore! `0.5.0` > `0.6.4`
+* Bismark `0.20.0` > `0.22.2`
 * Bowtie2 `2.3.4.3` > `2.3.5`
-* Picard `2.18.21` > `2.19.1`
+* Picard `2.18.21` > `2.21.3`
+* Qualimap `2.2.2b` > `2.2.2c`
 * MethylDackel `0.3.0` > `0.4.0`
 
 ### Pipeline updates
 
 * Keep memory in GB for samtools, to avoid problems with unit conversion ([#99](https://github.com/nf-core/methylseq/issues/99))
 * Changed `params.container` for `process.container`
-* Merged TEMPLATE branch
+* Synchronised with version 1.7 of the nf-core/tools template
 
 ### Bug fixes
 
