@@ -8,8 +8,6 @@ However, don't be put off by this template - other more general issues and sugge
 
 > If you need help using or modifying nf-core/methylseq then the best place to ask is on the pipeline channel on [Slack](https://nf-co.re/join/slack/).
 
-
-
 ## Contribution workflow
 If you'd like to write some code for nf-core/methylseq, the standard workflow
 is as follows:

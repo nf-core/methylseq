@@ -203,7 +203,7 @@ else if( params.cegx ){
     params.three_prime_clip_r2 = 0
 }
 
-if (workflow.profile == 'awsbatch') {
+if (workflow.profile.contains('awsbatch')) {
   // AWSBatch sanity checking
   if (!params.awsqueue || !params.awsregion) exit 1, "Specify correct --awsqueue and --awsregion parameters on AWSBatch!"
   // Check outdir paths to be S3 buckets if running on AWSBatch
@@ -292,7 +292,7 @@ summary['Launch dir']       = workflow.launchDir
 summary['Working dir']      = workflow.workDir
 summary['Script dir']       = workflow.projectDir
 summary['User']             = workflow.userName
-if (workflow.profile == 'awsbatch') {
+if (workflow.profile.contains('awsbatch')) {
     summary['AWS Region']   = params.awsregion
     summary['AWS Queue']    = params.awsqueue
 }
@@ -533,13 +533,21 @@ if( params.aligner =~ /bismark/ ){
         file "where_are_my_files.txt"
 
         script:
+        // Paired-end or single end input files
+        input = params.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
+
+        // Choice of read aligner
         aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
+
+        // Optional extra bismark parameters
         splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
         soft_clipping = params.local_alignment ? "--local" : ''
+
+        // Try to assign sensible bismark memory units according to what the task was given
         multicore = ''
         if( task.cpus ){
             // Numbers based on recommendation by Felix for a typical mouse genome
@@ -558,32 +566,23 @@ if( params.aligner =~ /bismark/ ){
                 mcore = (tmem / mem_per_multicore) as int
                 ccore = Math.min(ccore, mcore)
             } catch (all) {
-                log.debug "Not able to define bismark align multicore based on available memory"
+                log.debug "Warning: Not able to define bismark align multicore based on available memory"
             }
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
         }
-        if( params.single_end ) {
-            """
-            bismark $aligner \\
-                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-                --genome $index \\
-                $reads \\
-                $soft_clipping \\
-                $splicesites
-            """
-        } else {
-            """
-            bismark $aligner \\
-                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-                --genome $index \\
-                -1 ${reads[0]} \\
-                -2 ${reads[1]} \\
-                $soft_clipping \\
-                $splicesites
-            """
-        }
+
+        // Main command
+        """
+        bismark $input \\
+            $aligner \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+            --genome $index \\
+            $reads \\
+            $soft_clipping \\
+            $splicesites
+        """
     }
 
     /*
@@ -608,15 +607,10 @@ if( params.aligner =~ /bismark/ ){
             set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
-            if( params.single_end ) {
-                """
-                deduplicate_bismark -s --bam $bam
-                """
-            } else {
-                """
-                deduplicate_bismark -p --bam $bam
-                """
-            }
+            fq_type = params.single_end ? '-s' : '-p'
+            """
+            deduplicate_bismark $fq_type --bam $bam
+            """
         }
     }
 
@@ -1041,7 +1035,6 @@ workflow.onComplete {
     if (workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
     if (workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if (workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
-    if (workflow.container) email_fields['summary']['Docker image'] = workflow.container
     email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
@@ -1107,10 +1100,10 @@ workflow.onComplete {
     def output_tf = new File(output_d, "pipeline_report.txt")
     output_tf.withWriter { w -> w << email_txt }
 
-    c_reset = params.monochrome_logs ? '' : "\033[0m";
-    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_green = params.monochrome_logs ? '' : "\033[0;32m";
+    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_red = params.monochrome_logs ? '' : "\033[0;31m";
+    c_reset = params.monochrome_logs ? '' : "\033[0m";
 
     if (workflow.stats.ignoredCount > 0 && workflow.success) {
         log.info "${c_purple}Warning, pipeline completed, but with errored process(es) ${c_reset}"
@@ -1129,15 +1122,15 @@ workflow.onComplete {
 
 def nfcoreHeader() {
     // Log colors ANSI codes
-    c_reset = params.monochrome_logs ? '' : "\033[0m";
-    c_dim = params.monochrome_logs ? '' : "\033[2m";
     c_black = params.monochrome_logs ? '' : "\033[0;30m";
-    c_green = params.monochrome_logs ? '' : "\033[0;32m";
-    c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
     c_blue = params.monochrome_logs ? '' : "\033[0;34m";
-    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_cyan = params.monochrome_logs ? '' : "\033[0;36m";
+    c_dim = params.monochrome_logs ? '' : "\033[2m";
+    c_green = params.monochrome_logs ? '' : "\033[0;32m";
+    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
+    c_reset = params.monochrome_logs ? '' : "\033[0m";
     c_white = params.monochrome_logs ? '' : "\033[0;37m";
+    c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
 
     return """    -${c_dim}--------------------------------------------------${c_reset}-
                                             ${c_green},--.${c_black}/${c_green},-.${c_reset}
