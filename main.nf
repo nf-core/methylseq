@@ -908,8 +908,8 @@ process qualimap {
     file "${bam.baseName}_qualimap" into ch_qualimap_results_for_multiqc
 
     script:
-    gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
-    gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    gcref = params.genome.contains('GRCh') ? '-gd HUMAN' : ''
+    gcref = params.genome.contains('GRCm') ? '-gd MOUSE' : ''
     def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
     def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
     """
