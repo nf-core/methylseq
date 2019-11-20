@@ -9,11 +9,12 @@ matrix:
 
 before_install:
   # PRs to master are only ok if coming from dev branch
-  - '[ $TRAVIS_PULL_REQUEST = "false" ] || [ $TRAVIS_BRANCH != "master" ] || ([ $TRAVIS_PULL_REQUEST_SLUG = $TRAVIS_REPO_SLUG ] && [ $TRAVIS_PULL_REQUEST_BRANCH = "dev" ])'
+  - '[ $TRAVIS_PULL_REQUEST = "false" ] || [ $TRAVIS_BRANCH != "master" ] || ([ $TRAVIS_PULL_REQUEST_SLUG = $TRAVIS_REPO_SLUG ] && ([ $TRAVIS_PULL_REQUEST_BRANCH = "dev" ] || [ $TRAVIS_PULL_REQUEST_BRANCH = "patch" ]))'
   # Pull the docker image first so the test doesn't wait for this
   - docker pull nfcore/methylseq:dev
   # Fake the tag locally so that the pipeline runs properly
-  - docker tag nfcore/methylseq:dev nfcore/methylseq:1.3
+  # Looks weird when this is :dev to :dev, but makes sense when testing code for a release (:dev to :1.0.1)
+  - docker tag nfcore/methylseq:dev nfcore/methylseq:1.4
 
 install:
   # Install Nextflow
@@ -25,19 +26,25 @@ install:
   - pip install nf-core
   # Reset
   - mkdir ${TRAVIS_BUILD_DIR}/tests && cd ${TRAVIS_BUILD_DIR}/tests
-
+  # Install markdownlint-cli
+  - sudo apt-get install npm && npm install -g markdownlint-cli
+  
 env:
-  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='0.32.0'
+  - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='19.04.0'
   - ALIGNER=bismark ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
-  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa" NXF_VER='0.32.0'
+  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/" NXF_VER='19.04.0'
+  - ALIGNER=bismark_hisat ALIGNER_REF="--bismark_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/BismarkIndex/"
+  - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa" NXF_VER='19.04.0'
   - ALIGNER=bwameth ALIGNER_REF="--bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa"
 
 script:
   # Lint the pipeline code
   - nf-core lint ${TRAVIS_BUILD_DIR}
+  # Lint the documentation
+  - markdownlint ${TRAVIS_BUILD_DIR} -c ${TRAVIS_BUILD_DIR}/.github/markdownlint.yml
   # Run, build reference genome
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --saveReference
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --save_reference
   # Basic run with supplied reference
   - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER $ALIGNER_REF
   # Run, RRBS mode with no trimming
-  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --notrim --rrbs
+  - nextflow run ${TRAVIS_BUILD_DIR} -profile test,docker --aligner $ALIGNER --skip_trimming --rrbs

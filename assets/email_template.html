@@ -4,30 +4,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="description" content="nf-core/methylseq: a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis at the National Genomics Infrastructure at SciLifeLab Stockholm, Sweden.">
+  <meta name="description" content="nf-core/methylseq: Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline, part of the nf-core community.">
   <title>nf-core/methylseq Pipeline Report</title>
 </head>
 <body>
 <div style="font-family: Helvetica, Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto;">
 
-<img src="cid:ngimethylseqlogo">
+<img src="cid:nfcorepipelinelogo">
 
-<h1>nf-core/methylseq: Bisulfite-Seq Best Practice v${version}</h1>
+<h1>nf-core/methylseq v${version}</h1>
 <h2>Run Name: $runName</h2>
 
-<% if (success){
-    out << """
-    <div style="color: #3c763d; background-color: #dff0d8; border-color: #d6e9c6; padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px;">
-        nf-core/methylseq execution completed successfully!
-    </div>
-    """
-} else {
+<% if (!success){
     out << """
     <div style="color: #a94442; background-color: #f2dede; border-color: #ebccd1; padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px;">
         <h4 style="margin-top:0; color: inherit;">nf-core/methylseq execution completed unsuccessfully!</h4>
         <p>The exit status of the task that caused the workflow execution to fail was: <code>$exitStatus</code>.</p>
         <p>The full error message was:</p>
         <pre style="white-space: pre-wrap; overflow: visible; margin-bottom: 0;">${errorReport}</pre>
+    </div>
+    """
+} else {
+    out << """
+    <div style="color: #3c763d; background-color: #dff0d8; border-color: #d6e9c6; padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px;">
+        nf-core/methylseq execution completed successfully!
     </div>
     """
 }
@@ -44,15 +44,8 @@
     </tbody>
 </table>
 
-<p>nf-core/methylseq is a bioinformatics best-practice analysis pipeline used for Methylation (BS-Seq) data analysis at the National Genomics Infrastructure at SciLifeLab Stockholm, Sweden.</p>
-<p>The pipeline uses Nextflow, a bioinformatics workflow tool. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.</p>
-<p>For more information, please see the pipeline homepage: <a href="https://github.com/nf-core/methylseq">https://github.com/nf-core/methylseq</a></p>
-
-<hr style="height: 3px; padding: 0; margin: 24px 0; background-color: #e1e4e8; border: 0;">
-
-<img src="cid:scilifelablogo">
-<img src="cid:ngilogo">
-
+<p>nf-core/methylseq</p>
+<p><a href="https://github.com/nf-core/methylseq">https://github.com/nf-core/methylseq</a></p>
 
 </div>
 

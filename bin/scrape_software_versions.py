@@ -15,6 +15,7 @@ regexes = {
     'Bismark methXtract': ['v_bismark_methylation_extractor.txt', r"Bismark Extractor Version: v(\S+)"],
     'Bismark Report': ['v_bismark2report.txt', r"bismark2report version: v(\S+)"],
     'Bismark Summary': ['v_bismark2summary.txt', r"bismark2summary version: (\S+)"],
+    'HISAT2': ['v_hisat2.txt', r"version (\S+)"],
     'Samtools': ['v_samtools.txt', r"samtools (\S+)"],
     'BWA': ['v_bwa.txt', r"Version: (\S+)"],
     'bwa-meth': ['v_bwameth.txt', r"bwa-meth\.py (\S+)"],
@@ -47,11 +48,14 @@ results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
 
 # Search each file using its regex
 for k, v in regexes.items():
-    with open(v[0]) as x:
-        versions = x.read()
-        match = re.search(v[1], versions)
-        if match:
-            results[k] = "v{}".format(match.group(1))
+    try:
+        with open(v[0]) as x:
+            versions = x.read()
+            match = re.search(v[1], versions)
+            if match:
+                results[k] = "v{}".format(match.group(1))
+    except IOError:
+        results[k] = False
 
 # Remove empty keys (defining them above ensures correct order)
 for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel']:
@@ -69,5 +73,10 @@ data: |
     <dl class="dl-horizontal">
 ''')
 for k,v in results.items():
-    print("        <dt>{}</dt><dd>{}</dd>".format(k,v))
+    print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k,v))
 print ("    </dl>")
+
+# Write out regexes as csv file:
+with open('software_versions.csv', 'w') as f:
+    for k,v in results.items():
+        f.write("{}\t{}\n".format(k,v))

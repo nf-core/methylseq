@@ -1,8 +1,8 @@
-FROM nfcore/base
-MAINTAINER Phil Ewels <phil.ewels@scilifelab.se>
-LABEL authors="phil.ewels@scilifelab.se" \
-    description="Container image containing all requirements for the nf-core/methylseq pipeline"
+FROM nfcore/base:1.7
+LABEL authors="Phil Ewels" \
+      description="Docker image containing all software requirements for the nf-core/methylseq pipeline"
 
 COPY environment.yml /
 RUN conda env create -f /environment.yml && conda clean -a
-ENV PATH /opt/conda/envs/nf-core-methylseq-1.3/bin:$PATH
+RUN conda env export --name nf-core-methylseq-1.4 > nf-core-methylseq-1.4.yml
+ENV PATH /opt/conda/envs/nf-core-methylseq-1.4/bin:$PATH

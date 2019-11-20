@@ -1,23 +1,61 @@
 # nf-core/methylseq
 
+## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
+
+### New features
+
+* Changed all parameter names to `snake_case`
+* Added `--local_alignment` option to run Bismark with the `--local` flag to allow soft-clipping of reads.
+* Added support for bismark's [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode)
+* Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
+* Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
+* Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
+  * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
+* Added `--methyl_kit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
+
+### Software updates
+
+* _new dependency_: hisat2 `2.1.0`
+* _new dependency_: r-markdown `1.1`
+* TrimGalore! `0.5.0` > `0.6.4`
+* Bismark `0.20.0` > `0.22.2`
+* Bowtie2 `2.3.4.3` > `2.3.5`
+* Picard `2.18.21` > `2.21.3`
+* Qualimap `2.2.2b` > `2.2.2c`
+* MethylDackel `0.3.0` > `0.4.0`
+
+### Pipeline updates
+
+* Keep memory in GB for samtools, to avoid problems with unit conversion ([#99](https://github.com/nf-core/methylseq/issues/99))
+* Changed `params.container` for `process.container`
+* Synchronised with version 1.7 of the nf-core/tools template
+
+### Bug fixes
+
+* Fixed a bug that caused conda dependencies to be resolved very slowly
+* Allowed some spare memory in the samtools sort steps, avoiding crashes for some users ([#81](https://github.com/nf-core/methylseq/issues/81))
+
 ## [v1.3](https://github.com/nf-core/methylseq/releases/tag/1.3) - 2019-02-01
 
-#### New features
+### New features
+
 * Added [preseq](http://smithlabresearch.org/software/preseq/) analysis to calculate sample complexity.
   * This new step can help decide sufficient sequencing depth has been reached.
 
-#### Bug fixes
+### Bug fixes
+
 * Fixed new bug that meant pipeline only worked with one sample at a time [#66](https://github.com/nf-core/methylseq/issues/66)
   * Introduced in previous release. TrimGalore onwards would only process one sample.
 
-
 ## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2019-01-02
 
-#### New features
+### New features
+
 * Trim 9bp from both ends of both reads for PBAT mode.
 * Save `where_are_my_files.txt` to results directory to inform the user about missing intermediate files [#42](https://github.com/nf-core/methylseq/issues/42)
 
-#### Software updates
+### Software updates
+
 * Fastqc `0.11.7` > `0.11.8`
 * Bowtie2 `2.3.4.2` > `2.3.4.3`
 * Bismark `0.19.1` > `0.20.0`
@@ -25,35 +63,33 @@
 * Picard `2.18.11` > `2.18.21`
 * MultiQC `1.6` > `1.7`
 
-#### Bug fixes
+### Bug fixes
+
 * Fixed error when running the pipeline with `--unmapped`
   * Previously, could result in error `Error ~ No such variable: bismark_unmapped`
 * Fixed error where single-sample reports could mix up log files [#48](https://github.com/nf-core/methylseq/issues/48)
 * Fixed bug in MultiQC process that skipped results from some tools
 * Supply available memory as argument to Picard MarkDuplicates
 
-
-
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
-    * eg: `nextflow run nf-core/methylseq -profile test,docker`
-    * Removed previous `run_test.sh` script and data
+  * eg: `nextflow run nf-core/methylseq -profile test,docker`
+  * Removed previous `run_test.sh` script and data
 * New `Singularity` build script for direct compatibility with [singularity-hub](https://singularity-hub.org/)
 * Minor improvements to the docs
 * A number of boilerplate nf-core code updates
 * Updated `process$name` nextflow syntax to avoid warnings in new versions of nextflow
 * Updated software tools
-    * `trim-galore` `v0.4.5` update to `0.5.0`
-    * `samtools` `v1.8` update to `1.9`
-    * `bowtie2` `v2.3.4.1` update to `2.3.4.2`
-    * `multiqc` `v1.5` update to `1.6`
-    * `picard` `v2.18.2` update to `2.18.11`
-    * `bwameth` `v0.2.0` update to `0.2.2`
-
-
+  * `trim-galore` `v0.4.5` update to `0.5.0`
+  * `samtools` `v1.8` update to `1.9`
+  * `bowtie2` `v2.3.4.1` update to `2.3.4.2`
+  * `multiqc` `v1.5` update to `1.6`
+  * `picard` `v2.18.2` update to `2.18.11`
+  * `bwameth` `v0.2.0` update to `0.2.2`
 
 ## [v1.0](https://github.com/nf-core/methylseq/releases/tag/1.0) - 2018-04-17
+
 Version 1.0 marks the first release of this pipeline under the nf-core flag. It also marks a significant step up in the maturity of the workflow, with everything now in a single script and both aligner workflows fully supported.
 
 * Renamed and moved [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq/) to [nf-core/methylseq](https://github.com/nf-core/methylseq/)
@@ -67,6 +103,7 @@ Version 1.0 marks the first release of this pipeline under the nf-core flag. It 
 Previous to these releases, this pipeline was called [SciLifeLab/NGI-MethylSeq](https://github.com/SciLifeLab/NGI-MethylSeq):
 
 ## v0.4dev
+
 * Fixed MultiQC channel bug
 * Integrated config for QBiC Tuebingen
 * Numerous small container bugfixes
@@ -75,11 +112,12 @@ Previous to these releases, this pipeline was called [SciLifeLab/NGI-MethylSeq](
 * Fix for iGenomes base path in configs
 
 ## [v0.3.1](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3.1) - 2017-09-05
+
 * Include base profile name and documentation about Singularity.
 * Testing automated docker hub image tagging for releases.
 
-
 ## [v0.3](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.3) - 2017-09-01
+
 * Fix `--rrbs` mode ([#24](https://github.com/SciLifeLab/NGI-MethylSeq/issues/24))
 * Fixed fairly major bug where only a single sample would run past alignment
 * Merged test scripts and rewrote to use command line flags / new travis script.
@@ -87,4 +125,5 @@ Previous to these releases, this pipeline was called [SciLifeLab/NGI-MethylSeq](
 * Dropped support for environment modules and added support for use of Singularity on UPPMAX
 
 ## [v0.2](https://github.com/SciLifeLab/NGI-MethylSeq/releases/tag/0.2) - 2017-07-17
+
 First (semi-) stable release of the new NGI-MethylSeq pipeline, as we head towards deployment in production.
