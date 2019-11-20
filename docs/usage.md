@@ -184,6 +184,7 @@ You can find the keys to specify the genomes in the [iGenomes config file](../co
 
 * Human
   * `--genome GRCh37`
+  * `--genome GRCh38`
 * Mouse
   * `--genome GRCm38`
 * _Drosophila_
