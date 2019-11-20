@@ -135,7 +135,7 @@
         {
             "name": "aligner",
             "label": "Alignment tool",
-            "usage": "Choose whether to align reads with bismark (Bowtie2), bismark_hisat (HISAT2) or bwameth(BWA)",
+            "usage": "Choose whether to align reads with bismark (Bowtie2), bismark_hisat (HISAT2) or bwameth (BWA)",
             "type": "string",
             "render": "radio-button",
             "choices": [
@@ -155,6 +155,7 @@
             "type": "string",
             "choices": [
                     "",
+                    "GRCh38",
                     "GRCh37",
                     "GRCm38",
                     "TAIR10",
@@ -244,7 +245,7 @@
             "name": "container",
             "label": "Software container",
             "usage": "Dockerhub address for pipeline container",
-            "default_value": "nfcore/rnaseq:latest",
+            "default_value": "nfcore/methylseq:latest",
             "render": "textfield",
             "pattern": ".*",
             "type": "string",
@@ -495,8 +496,8 @@
         },
         {
             "name": "methyl_kit",
-            "label": "methyl_kit output",
-            "usage": "Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methyl_kit R package.",
+            "label": "methylKit output",
+            "usage": "Run MethylDackel with the --methylKit flag to produce files suitable for use with the methylKit R package.",
             "render": "none",
             "default_value": false,
             "type": "boolean",
