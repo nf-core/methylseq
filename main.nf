@@ -642,7 +642,7 @@ if( params.aligner =~ /bismark/ ){
         multicore = ''
         if( task.cpus ){
             // Numbers based on Bismark docs
-            ccore = ((task.cpus as int) / 10) as int
+            ccore = ((task.cpus as int) / 3) as int
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
