@@ -1,5 +1,22 @@
 # nf-core/methylseq
 
+## 1.5dev
+
+### New features
+
+* Added multicore support for `TrimGalore!`
+
+### Software updates
+
+* _new dependency_: pigz `2.3.4`
+* TrimGalore! `0.6.4` > `0.6.5`
+* Bismark `0.22.2` > `0.22.3`
+* MultiQC `1.7` > `1.8`
+
+### Pipeline Updates
+
+* Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
+
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 
 ### New features

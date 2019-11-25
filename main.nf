@@ -493,13 +493,21 @@ if( params.skip_trimming ){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
+        multicore = ''
+        if( task.cpus ){
+            ccore = (((task.cpus as int) - 3) / 3) as int
+            if( ccore > 1 ){
+              multicore = "--cores $ccore"
+            }
+        }
+
         if( params.single_end ) {
             """
-            trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore $multicore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
         } else {
             """
-            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore $multicore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
             """
         }
     }
