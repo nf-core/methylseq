@@ -495,7 +495,7 @@ if( params.skip_trimming ){
         rrbs = params.rrbs ? "--rrbs" : ''
         multicore = ''
         if( task.cpus ){
-            ccore = ((task.cpus as int) / 3) as int
+            ccore = (((task.cpus as int) - 3) / 3) as int
             if( ccore > 1 ){
               multicore = "--cores $ccore"
             }
