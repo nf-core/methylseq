@@ -5,6 +5,7 @@
 ### New features
 
 * Added multicore support for `TrimGalore!`
+* Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
 
 ### Software updates
 
