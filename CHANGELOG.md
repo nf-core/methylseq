@@ -5,6 +5,7 @@
 ### New features
 
 * Added multicore support for `TrimGalore!`
+* Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
 
 ### Software updates
 
@@ -15,6 +16,7 @@
 
 ### Pipeline Updates
 
+* Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
 * Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19

@@ -94,6 +94,12 @@ assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.alig
  * SET UP CONFIGURATION VARIABLES
  */
 
+// These params need to be set late, after the iGenomes config is loaded
+bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
+bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
+fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
+
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
     exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
