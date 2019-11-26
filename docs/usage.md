@@ -354,8 +354,8 @@ Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. 
 The pipeline makes use of the `--multicore` option for Bismark align. When using this option,
 Bismark uses a large number of CPUs for every `--multicore` specified. The pipeline
 calculates the number of `--multicore` based on the resources available to the task.
-It divides the available CPUs by 3, or by 5 if `--single_cell`, `--zymo` or `--non_directional`
-is specified. This is based on usage for a typical mouse genome.
+It divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional`
+are specified. This is based on usage for a typical mouse genome.
 
 You may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the
 usage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline
@@ -366,8 +366,8 @@ for more information.
 
 ### `--bismark_align_mem_per_multicore`
 
-Exactly as above, but for memory. By default, the pipeline divides the available memory by `13.GB`
-or `18.GB` if `--single_cell`, `--zymo` or `--non_directional` is specified.
+Exactly as above, but for memory. By default, the pipeline divides the available memory by `13.GB`,
+or `18.GB` if any of `--single_cell`, `--zymo` or `--non_directional` are specified.
 
 Note that the final `--multicore` value is based on the lowest limiting factor of both CPUs and memory.
 
