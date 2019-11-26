@@ -13,7 +13,6 @@
 * _new dependency_: pigz `2.3.4`
 * TrimGalore! `0.6.4` > `0.6.5`
 * Bismark `0.22.2` > `0.22.3`
-* MultiQC `1.7` > `1.8`
 
 ### Pipeline Updates
 

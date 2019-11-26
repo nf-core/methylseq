@@ -6,7 +6,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - python=3.7
   - conda-forge::pigz=2.3.4
   - conda-forge::r-markdown=1.1
   - bioconda::fastqc=0.11.8
@@ -18,7 +17,7 @@ dependencies:
   - bioconda::bismark=0.22.3
   - bioconda::qualimap=2.2.2c
   - bioconda::preseq=2.0.3
-  - bioconda::multiqc=1.8
+  - bioconda::multiqc=1.7
   # bwa-meth pipeline
   - bioconda::picard=2.21.3
   - bioconda::bwameth=0.2.2
