@@ -6,13 +6,13 @@
 
 * Added multicore support for `TrimGalore!`
 * Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Added options `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` to customise how Bismark align `--multicore` is decided ([#124](https://github.com/nf-core/methylseq/issues/124)).
 
 ### Software updates
 
 * _new dependency_: pigz `2.3.4`
 * TrimGalore! `0.6.4` > `0.6.5`
 * Bismark `0.22.2` > `0.22.3`
-* MultiQC `1.7` > `1.8`
 
 ### Pipeline Updates
 

@@ -44,6 +44,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --bismark_align_cpu_per_multicore [int]     Specify how many CPUs are required per --multicore for bismark align (default = 3)
+     --bismark_align_mem_per_multicore [memory]  Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
     References                          If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta [file]                    Path to Fasta reference
@@ -287,6 +289,8 @@ summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
 summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
+if( params.bismark_align_cpu_per_multicore ) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
+if( params.bismark_align_mem_per_multicore ) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 summary['Current home']   = "$HOME"
 summary['Current path']   = "$PWD"
 if( params.project ) summary['UPPMAX Project'] = params.project
@@ -571,6 +575,13 @@ if( params.aligner =~ /bismark/ ){
             } else {
                 cpu_per_multicore = 3
                 mem_per_multicore = (13.GB).toBytes()
+            }
+            // Check if the user has specified this and overwrite if so
+            if(params.bismark_align_cpu_per_multicore) {
+                cpu_per_multicore = (params.bismark_align_cpu_per_multicore as int)
+            }
+            if(params.bismark_align_mem_per_multicore) {
+                mem_per_multicore = (params.bismark_align_mem_per_multicore as nextflow.util.MemoryUnit).toBytes()
             }
             // How many multicore splits can we afford with the cpus we have?
             ccore = ((task.cpus as int) / cpu_per_multicore) as int
