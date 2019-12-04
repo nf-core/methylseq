@@ -6,9 +6,7 @@ We try to manage the required tasks for nf-core/methylseq using GitHub issues, y
 
 However, don't be put off by this template - other more general issues and suggestions are welcome! Contributions to the code are even more welcome ;)
 
-> If you need help using or modifying nf-core/methylseq then the best place to ask is on the pipeline channel on [Slack](https://nf-co.re/join/slack/).
-
-
+> If you need help using or modifying nf-core/methylseq then the best place to ask is on the pipeline channel on [Slack](https://nfcore.slack.com/channels/methylseq).
 
 ## Contribution workflow
 If you'd like to write some code for nf-core/methylseq, the standard workflow

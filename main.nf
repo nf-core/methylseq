@@ -45,6 +45,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --bismark_align_cpu_per_multicore [int]     Specify how many CPUs are required per --multicore for bismark align (default = 3)
+     --bismark_align_mem_per_multicore [memory]  Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
     References                          If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta [file]                    Path to Fasta reference
@@ -94,6 +96,12 @@ assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.alig
 /*
  * SET UP CONFIGURATION VARIABLES
  */
+
+// These params need to be set late, after the iGenomes config is loaded
+bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
+bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
+fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
@@ -204,14 +212,14 @@ else if( params.cegx ){
     params.three_prime_clip_r2 = 0
 }
 
-if (workflow.profile == 'awsbatch') {
+if (workflow.profile.contains('awsbatch')) {
   // AWSBatch sanity checking
   if (!params.awsqueue || !params.awsregion) exit 1, "Specify correct --awsqueue and --awsregion parameters on AWSBatch!"
   // Check outdir paths to be S3 buckets if running on AWSBatch
   // related: https://github.com/nextflow-io/nextflow/issues/813
   if (!params.outdir.startsWith('s3:')) exit 1, "Outdir not on S3 - specify S3 Bucket to run on AWSBatch!"
   // Prevent trace files to be stored on S3 since S3 does not support rolling files.
-  if (workflow.tracedir.startsWith('s3:')) exit 1, "Specify a local tracedir or run without trace! S3 cannot be used for tracefiles."
+  if (params.tracedir.startsWith('s3:')) exit 1, "Specify a local tracedir or run without trace! S3 cannot be used for tracefiles."
 }
 
 // Stage config files
@@ -283,6 +291,8 @@ summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
 summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
 summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
+if( params.bismark_align_cpu_per_multicore ) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
+if( params.bismark_align_mem_per_multicore ) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 summary['Current home']   = "$HOME"
 summary['Current path']   = "$PWD"
 if( params.project ) summary['UPPMAX Project'] = params.project
@@ -294,7 +304,7 @@ summary['Launch dir']       = workflow.launchDir
 summary['Working dir']      = workflow.workDir
 summary['Script dir']       = workflow.projectDir
 summary['User']             = workflow.userName
-if (workflow.profile == 'awsbatch') {
+if (workflow.profile.contains('awsbatch')) {
     summary['AWS Region']   = params.awsregion
     summary['AWS Queue']    = params.awsqueue
 }
@@ -495,13 +505,21 @@ if( params.skip_trimming ){
         tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
         tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
+        multicore = ''
+        if( task.cpus ){
+            ccore = (((task.cpus as int) - 3) / 3) as int
+            if( ccore > 1 ){
+              multicore = "--cores $ccore"
+            }
+        }
+
         if( params.single_end ) {
             """
-            trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore $multicore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
             """
         } else {
             """
-            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore $multicore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
             """
         }
     }
@@ -535,13 +553,21 @@ if( params.aligner =~ /bismark/ ){
         file "where_are_my_files.txt"
 
         script:
+        // Paired-end or single end input files
+        input = params.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
+
+        // Choice of read aligner
         aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
+
+        // Optional extra bismark parameters
         splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
         soft_clipping = params.local_alignment ? "--local" : ''
+
+        // Try to assign sensible bismark memory units according to what the task was given
         multicore = ''
         if( task.cpus ){
             // Numbers based on recommendation by Felix for a typical mouse genome
@@ -552,6 +578,13 @@ if( params.aligner =~ /bismark/ ){
                 cpu_per_multicore = 3
                 mem_per_multicore = (13.GB).toBytes()
             }
+            // Check if the user has specified this and overwrite if so
+            if(params.bismark_align_cpu_per_multicore) {
+                cpu_per_multicore = (params.bismark_align_cpu_per_multicore as int)
+            }
+            if(params.bismark_align_mem_per_multicore) {
+                mem_per_multicore = (params.bismark_align_mem_per_multicore as nextflow.util.MemoryUnit).toBytes()
+            }
             // How many multicore splits can we afford with the cpus we have?
             ccore = ((task.cpus as int) / cpu_per_multicore) as int
             // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
@@ -560,32 +593,23 @@ if( params.aligner =~ /bismark/ ){
                 mcore = (tmem / mem_per_multicore) as int
                 ccore = Math.min(ccore, mcore)
             } catch (all) {
-                log.debug "Not able to define bismark align multicore based on available memory"
+                log.debug "Warning: Not able to define bismark align multicore based on available memory"
             }
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
         }
-        if( params.single_end ) {
-            """
-            bismark $aligner \\
-                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-                --genome $index \\
-                $reads \\
-                $soft_clipping \\
-                $splicesites
-            """
-        } else {
-            """
-            bismark $aligner \\
-                --bam $pbat $non_directional $unmapped $mismatches $multicore \\
-                --genome $index \\
-                -1 ${reads[0]} \\
-                -2 ${reads[1]} \\
-                $soft_clipping \\
-                $splicesites
-            """
-        }
+
+        // Main command
+        """
+        bismark $input \\
+            $aligner \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+            --genome $index \\
+            $reads \\
+            $soft_clipping \\
+            $splicesites
+        """
     }
 
     /*
@@ -610,15 +634,10 @@ if( params.aligner =~ /bismark/ ){
             set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
-            if( params.single_end ) {
-                """
-                deduplicate_bismark -s --bam $bam
-                """
-            } else {
-                """
-                deduplicate_bismark -p --bam $bam
-                """
-            }
+            fq_type = params.single_end ? '-s' : '-p'
+            """
+            deduplicate_bismark $fq_type --bam $bam
+            """
         }
     }
 
@@ -650,7 +669,7 @@ if( params.aligner =~ /bismark/ ){
         multicore = ''
         if( task.cpus ){
             // Numbers based on Bismark docs
-            ccore = ((task.cpus as int) / 10) as int
+            ccore = ((task.cpus as int) / 3) as int
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
@@ -916,8 +935,8 @@ process qualimap {
     file "${bam.baseName}_qualimap" into ch_qualimap_results_for_multiqc
 
     script:
-    gcref = params.genome == 'GRCh37' ? '-gd HUMAN' : ''
-    gcref = params.genome == 'GRCm38' ? '-gd MOUSE' : ''
+    gcref = params.genome.toString().startsWith('GRCh') ? '-gd HUMAN' : ''
+    gcref = params.genome.toString().startsWith('GRCm') ? '-gd MOUSE' : ''
     def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
     def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
     """
@@ -1046,7 +1065,6 @@ workflow.onComplete {
     if (workflow.repository) email_fields['summary']['Pipeline repository Git URL'] = workflow.repository
     if (workflow.commitId) email_fields['summary']['Pipeline repository Git Commit'] = workflow.commitId
     if (workflow.revision) email_fields['summary']['Pipeline Git branch/tag'] = workflow.revision
-    if (workflow.container) email_fields['summary']['Docker image'] = workflow.container
     email_fields['summary']['Nextflow Version'] = workflow.nextflow.version
     email_fields['summary']['Nextflow Build'] = workflow.nextflow.build
     email_fields['summary']['Nextflow Compile Timestamp'] = workflow.nextflow.timestamp
@@ -1112,10 +1130,10 @@ workflow.onComplete {
     def output_tf = new File(output_d, "pipeline_report.txt")
     output_tf.withWriter { w -> w << email_txt }
 
-    c_reset = params.monochrome_logs ? '' : "\033[0m";
-    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_green = params.monochrome_logs ? '' : "\033[0;32m";
+    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_red = params.monochrome_logs ? '' : "\033[0;31m";
+    c_reset = params.monochrome_logs ? '' : "\033[0m";
 
     if (workflow.stats.ignoredCount > 0 && workflow.success) {
         log.info "${c_purple}Warning, pipeline completed, but with errored process(es) ${c_reset}"
@@ -1134,15 +1152,15 @@ workflow.onComplete {
 
 def nfcoreHeader() {
     // Log colors ANSI codes
-    c_reset = params.monochrome_logs ? '' : "\033[0m";
-    c_dim = params.monochrome_logs ? '' : "\033[2m";
     c_black = params.monochrome_logs ? '' : "\033[0;30m";
-    c_green = params.monochrome_logs ? '' : "\033[0;32m";
-    c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
     c_blue = params.monochrome_logs ? '' : "\033[0;34m";
-    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
     c_cyan = params.monochrome_logs ? '' : "\033[0;36m";
+    c_dim = params.monochrome_logs ? '' : "\033[2m";
+    c_green = params.monochrome_logs ? '' : "\033[0;32m";
+    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
+    c_reset = params.monochrome_logs ? '' : "\033[0m";
     c_white = params.monochrome_logs ? '' : "\033[0;37m";
+    c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
 
     return """    -${c_dim}--------------------------------------------------${c_reset}-
                                             ${c_green},--.${c_black}/${c_green},-.${c_reset}

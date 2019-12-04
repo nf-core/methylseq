@@ -1,6 +1,25 @@
 # nf-core/methylseq
 
-## v1.4dev
+## 1.5dev
+
+### New features
+
+* Added multicore support for `TrimGalore!`
+* Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Added options `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` to customise how Bismark align `--multicore` is decided ([#124](https://github.com/nf-core/methylseq/issues/124))
+
+### Software updates
+
+* _new dependency_: pigz `2.3.4`
+* TrimGalore! `0.6.4` > `0.6.5`
+* Bismark `0.22.2` > `0.22.3`
+
+### Pipeline Updates
+
+* Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
+
+## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 
 ### New features
 
@@ -16,17 +35,19 @@
 ### Software updates
 
 * _new dependency_: hisat2 `2.1.0`
-* _new dependency_: r-markdown `0.9`
-* Bismark `0.20.0` > `0.22.1`
+* _new dependency_: r-markdown `1.1`
+* TrimGalore! `0.5.0` > `0.6.4`
+* Bismark `0.20.0` > `0.22.2`
 * Bowtie2 `2.3.4.3` > `2.3.5`
-* Picard `2.18.21` > `2.19.1`
+* Picard `2.18.21` > `2.21.3`
+* Qualimap `2.2.2b` > `2.2.2c`
 * MethylDackel `0.3.0` > `0.4.0`
 
 ### Pipeline updates
 
 * Keep memory in GB for samtools, to avoid problems with unit conversion ([#99](https://github.com/nf-core/methylseq/issues/99))
 * Changed `params.container` for `process.container`
-* Merged TEMPLATE branch
+* Synchronised with version 1.7 of the nf-core/tools template
 
 ### Bug fixes
 
