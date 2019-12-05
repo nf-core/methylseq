@@ -6,6 +6,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - python=3.7
   - conda-forge::pigz=2.3.4
   - conda-forge::r-markdown=1.1
   - bioconda::fastqc=0.11.8
