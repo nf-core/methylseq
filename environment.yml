@@ -1,11 +1,12 @@
 # You can use this file to create a conda environment for this pipeline:
 #   conda env create -f environment.yml
-name: nf-core-methylseq-1.5dev
+name: nf-core-methylseq-1.4.1
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
+  - python=3.7
   - conda-forge::pigz=2.3.4
   - conda-forge::r-markdown=1.1
   - bioconda::fastqc=0.11.8
