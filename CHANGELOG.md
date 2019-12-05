@@ -11,8 +11,12 @@
 ### Software updates
 
 * _new dependency_: pigz `2.3.4`
+* Python base `2.7` > `3.7.3`
 * TrimGalore! `0.6.4` > `0.6.5`
 * Bismark `0.22.2` > `0.22.3`
+* Qualimap `2.2.2c` > `2.2.2d`
+* Picard `2.21.3` > `2.21.4`
+* MultiQC `1.7` > `1.8`
 
 ### Pipeline Updates
 
