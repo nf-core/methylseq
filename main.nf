@@ -30,6 +30,7 @@ def helpMessage() {
      --genome [str]                     Name of iGenomes reference
      --single_end [bool]                Specifies that the input is single end reads
      --comprehensive [bool]             Output information for all cytosine contexts
+     --cytosine_report [bool]           Output stranded cytosine report during Bismark's bismark_methylation_extractor step.
      --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
      --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
      --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
@@ -113,7 +114,7 @@ if( params.aligner =~ /bismark/ ){
         Channel
             .fromPath(params.bismark_index, checkIfExists: true)
             .ifEmpty { exit 1, "Bismark index file not found: ${params.bismark_index}" }
-            .set { ch_bismark_index_for_bismark_align }
+            .into { ch_bismark_index_for_bismark_align; ch_bismark_index_for_bismark_methXtract }
     }
     else if( params.fasta ){
         Channel
@@ -274,6 +275,7 @@ summary["Trim 3' R2"] = params.three_prime_clip_r2
 summary['Deduplication']  = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
+summary['Cytosine report'] = params.cytosine_report ? 'Yes' : 'No'
 if( params.min_depth ) summary['Minimum Depth'] = params.min_depth
 if( params.ignore_flags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
 if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
@@ -380,7 +382,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
         file fasta from ch_fasta_for_makeBismarkIndex
 
         output:
-        file "BismarkIndex" into ch_bismark_index_for_bismark_align
+        file "BismarkIndex" into ch_bismark_index_for_bismark_align, ch_bismark_index_for_bismark_methXtract
 
         script:
         aligner = params.aligner == 'bismark_hisat' ? '--hisat2' : '--bowtie2'
@@ -625,11 +627,13 @@ if( params.aligner =~ /bismark/ ){
                 else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
                 else if( filename.indexOf(".cov" ) > 0 ) "methylation_coverage/$filename"
                 else if( filename.indexOf("bedGraph" ) > 0 ) "bedGraph/$filename"
+                else if( filename.indexOf("CpG_report" ) > 0 ) "stranded_CpG_report/$filename"
                 else "methylation_calls/$filename"
             }
 
         input:
         set val(name), file(bam) from ch_bam_dedup_for_bismark_methXtract
+        file index from ch_bismark_index_for_bismark_methXtract.collect()
 
         output:
         set val(name), file("*splitting_report.txt") into ch_bismark_splitting_report_for_bismark_report, ch_bismark_splitting_report_for_bismark_summary, ch_bismark_splitting_report_for_multiqc
@@ -638,6 +642,7 @@ if( params.aligner =~ /bismark/ ){
 
         script:
         comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+        cytosine_report = params.cytosine_report ? "--cytosine_report --genome_folder ${index} " : ''
         meth_cutoff = params.meth_cutoff ? "--cutoff ${params.meth_cutoff}" : ''
         multicore = ''
         if( task.cpus ){
@@ -658,7 +663,7 @@ if( params.aligner =~ /bismark/ ){
         if(params.single_end) {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --bedGraph \\
                 --counts \\
                 --gzip \\
@@ -669,7 +674,7 @@ if( params.aligner =~ /bismark/ ){
         } else {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --ignore_r2 2 \\
                 --ignore_3prime_r2 2 \\
                 --bedGraph \\
