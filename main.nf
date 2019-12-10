@@ -483,11 +483,11 @@ if( params.skip_trimming ){
         file "where_are_my_files.txt"
 
         script:
-        c_r1 = clip_r1 > 0 ? "--clip_r1 $clip_r1" : ''
-        c_r2 = clip_r2 > 0 ? "--clip_r2 $clip_r2" : ''
-        tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
-        tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
-        rrbs = params.rrbs ? "--rrbs" : ''
+        def c_r1 = clip_r1 > 0 ? "--clip_r1 $clip_r1" : ''
+        def c_r2 = clip_r2 > 0 ? "--clip_r2 $clip_r2" : ''
+        def tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
+        def tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
+        def rrbs = params.rrbs ? "--rrbs" : ''
         def cores = 1
         if(task.cpus){
             cores = (task.cpus as int) - 4
