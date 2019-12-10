@@ -492,8 +492,8 @@ if( params.skip_trimming ){
         if(task.cpus){
             cores = (task.cpus as int) - 4
             if (params.single_end) cores = (task.cpus as int) - 3
-            if (tcores < 1) cores = 1
-            if (tcores > 4) cores = 4
+            if (cores < 1) cores = 1
+            if (cores > 4) cores = 4
         }
         if( params.single_end ) {
             """
