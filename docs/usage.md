@@ -306,7 +306,7 @@ If using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH c
 
 ### `--cytosine_report`
 
-By default, the bismark pipeline do not produces stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide content and methylation state.
+By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.
 
 ### `--relax_mismatches` and `--num_mismatches`
 
