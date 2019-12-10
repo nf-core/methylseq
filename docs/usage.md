@@ -28,6 +28,7 @@
   * [`--skip_deduplication`](#--skip_deduplication)
   * [`--non_directional`](#--non_directional)
   * [`--comprehensive`](#--comprehensive)
+  * [`--cytosine_report`](#--cytosine_report)
   * [`--relax_mismatches` and `--num_mismatches`](##--relax_mismatches-and---num_mismatches)
   * [`--unmapped`](#--unmapped)
   * [`--save_trimmed`](#--save_trimmed)
@@ -302,6 +303,10 @@ By default, the pipeline only produces data for cytosine methylation states in C
 If specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.
 
 If using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well.
+
+### `--cytosine_report`
+
+By default, the bismark pipeline do not produces stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide content and methylation state.
 
 ### `--relax_mismatches` and `--num_mismatches`
 
