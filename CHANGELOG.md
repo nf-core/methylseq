@@ -22,6 +22,9 @@
 
 * Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
 * Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
+* Tidied up the summary log messages when starting the pipeline
+  * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
+* Slightly refactored the code for trimming parameters
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 
