@@ -1,11 +1,12 @@
 # nf-core/methylseq
 
-## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2019-12-05
+## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2019-12-11
 
 ### New features
 
 * Added multicore support for `TrimGalore!`
 * Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Added `--cytosine_report` option to tell Bismark to give reports for all cytosines in the genome.
 * Added options `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` to customise how Bismark align `--multicore` is decided ([#124](https://github.com/nf-core/methylseq/issues/124))
 
 ### Software updates
@@ -22,6 +23,9 @@
 
 * Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
 * Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
+* Tidied up the summary log messages when starting the pipeline
+  * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
+* Slightly refactored the code for trimming parameters
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 

@@ -45,8 +45,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
-     --bismark_align_cpu_per_multicore [int]     Specify how many CPUs are required per --multicore for bismark align (default = 3)
-     --bismark_align_mem_per_multicore [memory]  Specify how much memory is required per --multicore for bismark align (default = 13.GB)
+     --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
+     --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
     References                          If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta [file]                    Path to Fasta reference
@@ -157,7 +157,7 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
-if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
+if( workflow.profile == 'uppmax' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
 
@@ -168,48 +168,40 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
     custom_runName = workflow.runName
 }
 
-// Library prep presets
-params.rrbs = false
-params.pbat = false
-params.single_cell = false
-params.epignome = false
-params.accel = false
-params.zymo = false
-params.cegx = false
+// Trimming presets
+clip_r1 = params.clip_r1
+clip_r2 = params.clip_r2
+three_prime_clip_r1 = params.three_prime_clip_r1
+three_prime_clip_r2 = params.three_prime_clip_r2
 if(params.pbat){
-    params.clip_r1 = 9
-    params.clip_r2 = 9
-    params.three_prime_clip_r1 = 9
-    params.three_prime_clip_r2 = 9
+    clip_r1 = 9
+    clip_r2 = 9
+    three_prime_clip_r1 = 9
+    three_prime_clip_r2 = 9
 }
 else if( params.single_cell ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 6
-    params.three_prime_clip_r2 = 6
+    clip_r1 = 6
+    clip_r2 = 6
+    three_prime_clip_r1 = 6
+    three_prime_clip_r2 = 6
 }
 else if( params.epignome ){
-    params.clip_r1 = 8
-    params.clip_r2 = 8
-    params.three_prime_clip_r1 = 8
-    params.three_prime_clip_r2 = 8
+    clip_r1 = 8
+    clip_r2 = 8
+    three_prime_clip_r1 = 8
+    three_prime_clip_r2 = 8
 }
 else if( params.accel || params.zymo ){
-    params.clip_r1 = 10
-    params.clip_r2 = 15
-    params.three_prime_clip_r1 = 10
-    params.three_prime_clip_r2 = 10
+    clip_r1 = 10
+    clip_r2 = 15
+    three_prime_clip_r1 = 10
+    three_prime_clip_r2 = 10
 }
 else if( params.cegx ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 2
-    params.three_prime_clip_r2 = 2
-} else {
-    params.clip_r1 = 0
-    params.clip_r2 = 0
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
+    clip_r1 = 6
+    clip_r2 = 6
+    three_prime_clip_r1 = 2
+    three_prime_clip_r2 = 2
 }
 
 if (workflow.profile.contains('awsbatch')) {
@@ -253,70 +245,61 @@ if (params.readPaths) {
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
-if (workflow.revision) summary['Pipeline Release'] = workflow.revision
-summary['Pipeline Name']  = 'nf-core/methylseq'
-summary['Run Name']       = custom_runName ?: workflow.runName
-summary['Reads']          = params.reads
-summary['Aligner']        = params.aligner
-summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
-summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
-summary['Local alignment']  = params.local_alignment ? 'Yes' : 'No'
-summary['Data Type']      = params.single_end ? 'Single-End' : 'Paired-End'
-summary['Genome']         = params.genome
-if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
-if( params.bwa_meth_index ) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-if( params.fasta )    summary['Fasta Ref'] = params.fasta
-if( params.fasta_index )    summary['Fasta Index'] = params.fasta_index
-if( params.rrbs ) summary['RRBS Mode'] = 'On'
-if( params.relax_mismatches ) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
-if( params.skip_trimming )       summary['Trimming Step'] = 'Skipped'
-if( params.pbat )         summary['Trim Profile'] = 'PBAT'
-if( params.single_cell )  summary['Trim Profile'] = 'Single Cell'
-if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
-if( params.accel )        summary['Trim Profile'] = 'Accel-NGS (Swift)'
-if( params.zymo )         summary['Trim Profile'] = 'Zymo Pico-Methyl'
-if( params.cegx )         summary['Trim Profile'] = 'CEGX'
-summary['Trim R1'] = params.clip_r1
-summary['Trim R2'] = params.clip_r2
-summary["Trim 3' R1"] = params.three_prime_clip_r1
-summary["Trim 3' R2"] = params.three_prime_clip_r2
-summary['Deduplication']  = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
+summary['Run Name']  = custom_runName ?: workflow.runName
+summary['Reads']     = params.reads
+summary['Aligner']   = params.aligner
+summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
+if(params.known_splices)    summary['Spliced alignment'] =  'Yes'
+if(params.slamseq)          summary['SLAM-seq'] = 'Yes'
+if(params.local_alignment)  summary['Local alignment'] = 'Yes'
+if(params.genome)           summary['Genome']    = params.genome
+if(params.bismark_index)    summary['Bismark Index'] = params.bismark_index
+if(params.bwa_meth_index)   summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
+if(params.fasta)            summary['Fasta Ref'] = params.fasta
+if(params.fasta_index)      summary['Fasta Index'] = params.fasta_index
+if(params.rrbs)             summary['RRBS Mode'] = 'On'
+if(params.relax_mismatches) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
+if(params.skip_trimming)    summary['Trimming Step'] = 'Skipped'
+if(params.pbat)             summary['Trim Profile'] = 'PBAT'
+if(params.single_cell)      summary['Trim Profile'] = 'Single Cell'
+if(params.epignome)         summary['Trim Profile'] = 'TruSeq (EpiGnome)'
+if(params.accel)            summary['Trim Profile'] = 'Accel-NGS (Swift)'
+if(params.zymo)             summary['Trim Profile'] = 'Zymo Pico-Methyl'
+if(params.cegx)             summary['Trim Profile'] = 'CEGX'
+summary['Trimming']         = "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
+summary['Deduplication']    = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
-summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
-summary['Cytosine report'] = params.cytosine_report ? 'Yes' : 'No'
-if( params.min_depth ) summary['Minimum Depth'] = params.min_depth
-if( params.ignore_flags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
-if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
-summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
-summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
-summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
-summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
-if( params.bismark_align_cpu_per_multicore ) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
-if( params.bismark_align_mem_per_multicore ) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
-summary['Current home']   = "$HOME"
-summary['Current path']   = "$PWD"
-if( params.project ) summary['UPPMAX Project'] = params.project
-
-summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
-if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
+summary['All C Contexts']   = params.comprehensive ? 'Yes' : 'No'
+summary['Cytosine report']  = params.cytosine_report ? 'Yes' : 'No'
+if(params.min_depth)        summary['Minimum Depth'] = params.min_depth
+if(params.ignore_flags)     summary['MethylDackel'] = 'Ignoring SAM Flags'
+if(params.methyl_kit)       summary['MethylDackel'] = 'Producing methyl_kit output'
+save_intermeds = [];
+if(params.save_reference)   save_intermeds.add('Reference genome build')
+if(params.save_trimmed)     save_intermeds.add('Trimmed FastQ files')
+if(params.unmapped)         save_intermeds.add('Unmapped reads')
+if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
+if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
+if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
+if(params.bismark_align_mem_per_multicore) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 summary['Output dir']       = params.outdir
 summary['Launch dir']       = workflow.launchDir
 summary['Working dir']      = workflow.workDir
-summary['Script dir']       = workflow.projectDir
+summary['Pipeline dir']     = workflow.projectDir
 summary['User']             = workflow.userName
+summary['Config Profile']   = workflow.profile
+if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 if (workflow.profile.contains('awsbatch')) {
     summary['AWS Region']   = params.awsregion
     summary['AWS Queue']    = params.awsqueue
 }
-summary['Config Profile'] = workflow.profile
+if(params.project) summary['Cluster Project'] = params.project
 if (params.config_profile_description) summary['Config Description'] = params.config_profile_description
 if (params.config_profile_contact)     summary['Config Contact']     = params.config_profile_contact
 if (params.config_profile_url)         summary['Config URL']         = params.config_profile_url
-if (params.email || params.email_on_fail) {
-    summary['E-mail Address']    = params.email
-    summary['E-mail on failure'] = params.email_on_fail
-    summary['MultiQC maxsize']   = params.max_multiqc_email_size
-}
+summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
+if(params.email)            summary['E-mail Address'] = params.email
+if(params.email_on_fail)    summary['E-mail on failure'] = params.email_on_fail
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
@@ -500,26 +483,27 @@ if( params.skip_trimming ){
         file "where_are_my_files.txt"
 
         script:
-        c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
-        c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
-        tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
-        tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
-        rrbs = params.rrbs ? "--rrbs" : ''
-        multicore = ''
-        if( task.cpus ){
-            ccore = (((task.cpus as int) - 3) / 3) as int
-            if( ccore > 1 ){
-              multicore = "--cores $ccore"
-            }
+        def c_r1 = clip_r1 > 0 ? "--clip_r1 $clip_r1" : ''
+        def c_r2 = clip_r2 > 0 ? "--clip_r2 $clip_r2" : ''
+        def tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
+        def tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
+        def rrbs = params.rrbs ? "--rrbs" : ''
+        def cores = 1
+        if(task.cpus){
+            cores = (task.cpus as int) - 4
+            if (params.single_end) cores = (task.cpus as int) - 3
+            if (cores < 1) cores = 1
+            if (cores > 4) cores = 4
         }
-
         if( params.single_end ) {
             """
-            trim_galore $multicore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore --fastqc --gzip $reads \
+              $rrbs $c_r1 $tpc_r1 --cores $cores
             """
         } else {
             """
-            trim_galore $multicore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore --fastqc --gzip --paired $reads \
+              $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 --cores $cores
             """
         }
     }
