@@ -44,8 +44,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
-     --bismark_align_cpu_per_multicore [int]     Specify how many CPUs are required per --multicore for bismark align (default = 3)
-     --bismark_align_mem_per_multicore [memory]  Specify how much memory is required per --multicore for bismark align (default = 13.GB)
+     --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
+     --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
     References                          If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta [file]                    Path to Fasta reference
@@ -486,21 +486,22 @@ if( params.skip_trimming ){
         tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
         tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
         rrbs = params.rrbs ? "--rrbs" : ''
-        multicore = ''
-        if( task.cpus ){
-            ccore = (((task.cpus as int) - 3) / 3) as int
-            if( ccore > 1 ){
-              multicore = "--cores $ccore"
-            }
+        cores = 1
+        if(task.cpus){
+            cores = (task.cpus as int) - 4
+            if (params.single_end) cores = (task.cpus as int) - 3
+            if (tcores < 1) cores = 1
+            if (tcores > 4) cores = 4
         }
-
         if( params.single_end ) {
             """
-            trim_galore $multicore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore --fastqc --gzip $reads \
+              $rrbs $c_r1 $tpc_r1 --cores $cores
             """
         } else {
             """
-            trim_galore $multicore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore --fastqc --gzip --paired $reads \
+              $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 --cores $cores
             """
         }
     }
