@@ -798,7 +798,7 @@ if( params.aligner == 'bwameth' ){
 
         output:
         set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates
-        file "${bam.baseName}.sorted.bam.bai" into ch_bam_index
+        set val(name), file("${bam.baseName}.sorted.bam.bai") into ch_bam_index
         file "${bam.baseName}_flagstat_report.txt" into ch_flagstat_results_for_multiqc
         file "${bam.baseName}_stats_report.txt" into ch_samtools_stats_results_for_multiqc
         file "where_are_my_files.txt"
@@ -834,7 +834,7 @@ if( params.aligner == 'bwameth' ){
 
             output:
             set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap
-            file "${bam.baseName}.markDups.bam.bai" into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
+            set val(name), file("${bam.baseName}.markDups.bam.bai") into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
             file "${bam.baseName}.markDups_metrics.txt" into ch_markDups_results_for_multiqc
 
             script:
@@ -861,15 +861,21 @@ if( params.aligner == 'bwameth' ){
     /*
      * STEP 6 - extract methylation with MethylDackel
      */
+
     process methyldackel {
         tag "$name"
         publishDir "${params.outdir}/MethylDackel", mode: 'copy'
 
         input:
-        set val(name), file(bam) from ch_bam_dedup_for_methyldackel
-        file bam_index from ch_bam_index_for_methyldackel
-        file fasta from ch_fasta_for_methyldackel
-        file fasta_index from ch_fasta_index_for_methyldackel
+        set val(name),
+            file(bam),
+            file(bam_index),
+            file(fasta),
+            file(fasta_index) from ch_bam_dedup_for_methyldackel
+            .join(ch_bam_index_for_methyldackel)
+            .combine(ch_fasta_for_methyldackel)
+            .combine(ch_fasta_index_for_methyldackel)
+
 
         output:
         file "${bam.baseName}*" into ch_methyldackel_results_for_multiqc
