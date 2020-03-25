@@ -1,6 +1,5 @@
 # ![nf-core/methylseq](docs/images/nf-core-methylseq_logo.png)
 
-**Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline, part of the nf-core community.**.
 
 [![Build Status](https://travis-ci.com/nf-core/methylseq.svg?branch=master)](https://travis-ci.com/nf-core/methylseq)
 [![DOI](https://zenodo.org/badge/124913037.svg)](https://zenodo.org/badge/latestdoi/124913037)
