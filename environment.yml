@@ -12,17 +12,17 @@ dependencies:
   - conda-forge::pymdown-extensions=6.0
   - conda-forge::pygments=2.5.2
   - bioconda::fastqc=0.11.8
-  - bioconda::multiqc=1.7
   # Default bismark pipeline
-  - bioconda::trim-galore=0.6.4
+  - bioconda::trim-galore=0.6.5
   - bioconda::samtools=1.9
   - bioconda::bowtie2=2.3.5
   - bioconda::hisat2=2.1.0
-  - bioconda::bismark=0.22.2
-  - bioconda::qualimap=2.2.2c
+  - bioconda::bismark=0.22.3
+  - bioconda::qualimap=2.2.2d
   - bioconda::preseq=2.0.3
-  - bioconda::multiqc=1.7
+  - bioconda::multiqc=1.8
   # bwa-meth pipeline
-  - bioconda::picard=2.21.3
+  - bioconda::picard=2.21.4
   - bioconda::bwameth=0.2.2
   - bioconda::methyldackel=0.4.0
+

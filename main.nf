@@ -76,9 +76,9 @@ def helpMessage() {
      -name [str]                        Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
 
     AWSBatch options:
-      --awsqueue [str]                   The AWSBatch JobQueue that needs to be set when running on AWSBatch
-      --awsregion [str]                  The AWS Region for your AWS Batch job to run on
-      --awscli [str]                     Path to the AWS CLI tool
+      --awsqueue [str]                  The AWSBatch JobQueue that needs to be set when running on AWSBatch
+      --awsregion [str]                 The AWS Region for your AWS Batch job to run on
+      --awscli [str]                    Path to the AWS CLI tool
 
     """.stripIndent()
 }
