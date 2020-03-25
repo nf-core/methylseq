@@ -83,6 +83,15 @@
             "default_value": false,
             "type": "boolean"
         },
+		{
+            "name": "swift",
+            "label": "Library type: Swift",
+            "usage": "Set trimming settings for Wwift libraries",
+            "group": "Trimming presets",
+            "render": "check-box",
+            "default_value": false,
+            "type": "boolean"
+        },
         {
             "name": "single_end",
             "label": "Single-end sequencing input",
@@ -141,7 +150,8 @@
             "choices": [
                     "bismark",
                     "bismark_hisat",
-                    "bwameth"
+                    "bwameth",
+					"biscuit"
             ],
             "default_value": "bismark",
             "group": "Alignment"
@@ -177,7 +187,19 @@
                     "EF2",
                     "Sbi1",
                     "Sscrofa10.2",
-                    "AGPv3"
+                    "AGPv3",
+					"hg38",
+					"hg19",
+					"mm10",
+					"bosTau8",
+					"ce10",
+					"canFam3",
+					"danRer10",
+					"dm6",
+					"panTro4",
+					"rn6",
+					"sacCer3",
+					"susScr3"
             ],
             "default_value": ""
         },
@@ -201,6 +223,16 @@
             "pattern": ".*",
             "default_value": ""
         },
+		{
+            "name": "bwa_biscuit_index",
+            "label": "bwa biscuit index",
+            "usage": "Path to bwa-biscuit index",
+            "group": "Alignment",
+            "render": "file",
+            "type": "string",
+            "pattern": ".*",
+            "default_value": ""
+        },
         {
             "name": "fasta_index",
             "label": "fasta index",
@@ -216,6 +248,26 @@
             "label": "FASTA",
             "usage": "Path to Fasta reference",
             "group": "Alignment",
+            "render": "file",
+            "type": "string",
+            "pattern": ".*",
+            "default_value": ""
+        },
+		{
+            "name": "assets_dir",
+            "label": "assets directory",
+            "usage": "Path to assets directory for biscuit_QC",
+            "group": "Advanced: biscuit workflow only"
+            "render": "file",
+            "type": "string",
+            "pattern": ".*",
+            "default_value": ""
+        },
+		{
+            "name": "soloWCGW_file",
+            "label": "soloWCGW file",
+            "usage": "Path to soloWCGW file to intersect with biscuit bedgraph files",
+            "group": "Advanced: biscuit workflow only"
             "render": "file",
             "type": "string",
             "pattern": ".*",
@@ -279,6 +331,16 @@
             "type": "string",
             "default_value": ""
         },
+		 {
+            "name": "email_on_fail",
+            "label": "Your email address",
+            "usage": "Your email address, required to receive failture notification.",
+            "group": "Pipeline defaults",
+            "render": "textfield",
+            "pattern": "^$|(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)",
+            "type": "string",
+            "default_value": ""
+        },
         {
             "name": "max_cpus",
             "label": "Maximum available CPUs",
@@ -311,7 +373,16 @@
         {
             "name": "save_trimmed",
             "label": "Save Trimmed FastQ files",
-            "usage": "Save the trimmed FastQ files the the results directory.",
+            "usage": "Save the trimmed FastQ files to the results directory.",
+            "group": "Pipeline defaults",
+            "render": "check-box",
+            "default_value": false,
+            "type": "boolean"
+        },
+		{
+            "name": "save_pileup_file",
+            "label": "Save vcf-pileup and index-vcf files",
+            "usage": "Save the vcf-pileup and index-vcf files from biscuit aligner to  the results directory.",
             "group": "Pipeline defaults",
             "render": "check-box",
             "default_value": false,
@@ -471,15 +542,6 @@
             "name": "comprehensive",
             "label": "Comprehensive output",
             "usage": "Output information for all cytosine contexts",
-            "render": "none",
-            "default_value": false,
-            "type": "boolean",
-            "group": "Advanced: bismark workflow only"
-        },
-        {
-            "name": "cytosine_report",
-            "label": "Cytosine report",
-            "usage": "Reports position, strand, trinucleotide context and methylation state of all cytosines",
             "render": "none",
             "default_value": false,
             "type": "boolean",

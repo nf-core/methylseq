@@ -20,10 +20,17 @@ regexes = {
     'BWA': ['v_bwa.txt', r"Version: (\S+)"],
     'bwa-meth': ['v_bwameth.txt', r"bwa-meth\.py (\S+)"],
     'Picard MarkDuplicates': ['v_picard_markdups.txt', r"([\d\.]+)"],
-    'MethylDackel': ['v_methyldackel.txt', r"(.+)"],
+    'Picard CreateSequenceDictionary': ['v_picard_createseqdict.txt', r"([\d\.]+)"],
+    'Picard CollectInsertSizeMetrics': ['v_picard_collectinssize.txt', r"([\d\.]+)"],
+    'Picard CollectGcBiasMetrics': ['v_picard_collectgcbias.txt', r"([\d\.]+)"],
+    'samblaster': ['v_samblaster.txt', r"samblaster: Version (\S+)"],
+    'biscuit': ['v_biscuit.txt', r"Version: (\S+)"],
+	'fastasort': ['v_fastasort.txt', r"fastasort from exonerate version (\S+)"],
+	'MethylDackel': ['v_methyldackel.txt', r"(.+)"],
     'Qualimap': ['v_qualimap.txt', r"QualiMap v.(\S+)"],
     'Preseq': ['v_preseq.txt', r"Version: (\S+)"],
     'MultiQC': ['v_multiqc.txt', r"multiqc, version (\S+)"],
+	
 }
 results = OrderedDict()
 results['nf-core/methylseq'] = '<span style="color:#999999;\">N/A</span>'
@@ -45,6 +52,12 @@ results['MethylDackel'] = '<span style="color:#999999;\">N/A</span>'
 results['Qualimap'] = '<span style="color:#999999;\">N/A</span>'
 results['Preseq'] = '<span style="color:#999999;\">N/A</span>'
 results['MultiQC'] = '<span style="color:#999999;\">N/A</span>'
+results['samblaster'] = '<span style="color:#999999;\">N/A</span>'
+results['biscuit'] = '<span style="color:#999999;\">N/A</span>'
+results['fastasort'] = '<span style="color:#999999;\">N/A</span>'
+results['Picard CreateSequenceDictionary'] = '<span style="color:#999999;\">N/A</span>'
+results['Picard CollectInsertSizeMetrics'] = '<span style="color:#999999;\">N/A</span>'
+results['Picard CollectGcBiasMetrics'] = '<span style="color:#999999;\">N/A</span>'
 
 # Search each file using its regex
 for k, v in regexes.items():
@@ -58,7 +71,7 @@ for k, v in regexes.items():
         results[k] = False
 
 # Remove empty keys (defining them above ensures correct order)
-for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel']:
+for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel','samblaster','biscuit','fastasort','Picard CreateSequenceDictionary','Picard CollectInsertSizeMetrics','Picard CollectGcBiasMetrics']:
     if results[k] == '<span style="color:#999999;\">N/A</span>':
         del(results[k])
 
