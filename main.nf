@@ -1081,11 +1081,10 @@ if( params.aligner == 'biscuit' ){
         assembly = fasta.replaceAll(/\.\w+/,"")
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?(\.bz2)?$/
         non_directional = params.non_directional ? 0 : 1
-        // Paired-end or single end input files
+        // Paired-end or single end input files and pbat or not 
         input = params.pbat ? params.single_end ? reads + " -b 3" : "${reads[1]} ${reads[0]}" :  reads
 
 		
-		//pbat or not
 		
       		"""
         biscuit align -M -b $non_directional -t ${task.cpus} $fasta $input | samtools view -Sb > ${name}.${assembly}.bam
@@ -1096,7 +1095,7 @@ if( params.aligner == 'biscuit' ){
 * STEP 4 - Mark duplicates
 */
     if( params.skip_deduplication || params.rrbs ) {
-        ch_bam_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap; ch_samblaster_for_samtools_sort_index_flagstat }
+        ch_bam_for_markDuplicates.into { ch_bam_dedup_for_qualimap; ch_samblaster_for_samtools_sort_index_flagstat }
         ch_markDups_results_for_multiqc = Channel.from(false)
     } else {
         process markDuplicates_samblaster {
@@ -1113,7 +1112,7 @@ if( params.aligner == 'biscuit' ){
             file wherearemyfiles from ch_wherearemyfiles_for_samblaster.collect()
 
             output:
-            set val(name), file("${bam.baseName}.samblaster.bam") into ch_bam_dedup_for_methyldackel, ch_samblaster_for_samtools_sort_index_flagstat
+            set val(name), file("${bam.baseName}.samblaster.bam") into ch_samblaster_for_samtools_sort_index_flagstat
            	file "*log" into ch_samblaster_for_multiqc
             
 			script:
@@ -1135,10 +1134,10 @@ if( params.aligner == 'biscuit' ){
         tag "$name"
         publishDir "${params.outdir}", mode: 'copy',
             saveAs: {filename ->
-                if(filename.indexOf("report.txt") > 0) "samtools/logs/$filename"
-				else if(filename.indexOf("sorted.bam") > 0) "biscuit_alignments/$filename"
-                else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-                else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+                if(filename.indexOf("report.txt") > 0) "biscuit_alignments/logs/$filename"
+				else if( (params.save_align_intermeds || params.skip_deduplication  || params.rrbs).any() && filename.indexOf("sorted.bam") > 0) "biscuit_alignments/$filename"
+                else if( (!params.save_align_intermeds && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+                else if( (params.save_align_intermeds || params.skip_deduplication  || params.rrbs).any() && filename != "where_are_my_files.txt") filename
                 else null
             }
 
@@ -1189,23 +1188,22 @@ if( params.aligner == 'biscuit' ){
 		file fasta_index from ch_fasta_index_for_createVCF.collect()
 
         output:
-		file "${bam.baseName}.*" 
-		set val(name), file("*.vcf.gz*") into ch_vcf_biscuit_qc ,ch_vcf_for_bedgraph,ch_vcf_for_epiread
-				
+		set val(name), file("${name}.vcf.gz*") into ch_vcf_biscuit_qc ,ch_vcf_for_bedgraph,ch_vcf_for_epiread
+				 
 	    script:
 		filter_duplication = params.skip_deduplication || params.rrbs ? '-u' : ''
 		all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
 		"""
-		biscuit pileup  -q ${task.cpus} $filter_duplication $fasta ${bam} -o "${bam.baseName}".vcf 
-		bgzip -@ ${task.cpus} -f "${bam.baseName}.vcf"
-		tabix -f -p vcf "${bam.baseName}.vcf.gz"
+		biscuit pileup  -q ${task.cpus} $filter_duplication $fasta ${bam} -o ${name}.vcf 
+		bgzip -@ ${task.cpus} -f ${name}.vcf
+		tabix -f -p vcf ${name}.vcf.gz
 		"""
     }  
 	
 	
 
     /*
-     * STEP 7 - intersect vcf file with soloWCGW file
+     * STEP 7 - create bedgraph file from vcf
      */
 		process createBedgraph {
 			tag "$name"
@@ -1222,11 +1220,13 @@ if( params.aligner == 'biscuit' ){
 		  min_depth = params.min_depth > 0 ? "${params.min_depth}" : '1'
 		  all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
 		  """
-			biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${vcf[0].baseName}.bedgraph"   
+			biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${name}.bedgraph"   
 			
 		  """
 		}
-		
+		/***************
+		*EXPERIMENTAL!!*
+		***************/
 	if (params.soloWCGW_file) {
 		process intersect_soloWCGW {
 			tag "$name"
@@ -1239,10 +1239,9 @@ if( params.aligner == 'biscuit' ){
 
 		  output:
 		  file "*bedgraph" 
-
 		  script:
 		  """
-		   bedtools intersect -wa -a "${bedgraph[0].baseName}.bedgraph"  -b $soloWGCW > "${bedgraph[0].baseName}_soloWCGW.bedgraph"  
+		   bedtools intersect -wa -a "${bedgraph[0].baseName}.bedgraph"  -b $soloWGCW > ${name}_soloWCGW.bedgraph 
 		  """
 		}
 	}	
@@ -1264,10 +1263,10 @@ if( params.aligner == 'biscuit' ){
 			set val(name), file(vcf) from ch_vcf_for_epiread
 
 		  output:
-		  file "${vcf[0].baseName}.snp.bed" into ch_snp_for_epiread
+		  file "${name}.snp.bed" into ch_snp_for_epiread
 		  script:
 		   """
-			biscuit vcf2bed -t snp "${vcf[0]}" > "${vcf[0].baseName}.snp.bed"
+			biscuit vcf2bed -t snp "${vcf[0]}" > "${name}.snp.bed"
 		  """
 		}
 		
@@ -1289,11 +1288,11 @@ if( params.aligner == 'biscuit' ){
 		  snp_file = (snp.size()>0) ? "-B " + snp.toString() : ''
 		  if (params.single_end) {
 		  """
-		  biscuit epiread -q ${task.cpus} $fasta $bam $snp_file -o "${bam.baseName}".epiread 
+		  biscuit epiread -q ${task.cpus} $fasta $bam $snp_file -o ${name}.epiread 
 		  """
 		  } else {
 			"""
-			biscuit epiread -q ${task.cpus} $fasta $bam $snp_file | sort --parallel=${task.cpus} -T .  -k2,2 -k3,3n | awk 'BEGIN{qname="";rec=""} qname==\$2{print rec"\t"\$5"\t"\$6"\t"\$7"\t"\$8;qname=""} qname!=\$2{qname=\$2;rec=\$1"\t"\$4"\t"\$5"\t"\$6"\t"\$7"\t"\$8;pair=\$3}' > "${bam.baseName}".epiread 
+			biscuit epiread -q ${task.cpus} $fasta $bam $snp_file | sort --parallel=${task.cpus} -T .  -k2,2 -k3,3n | awk 'BEGIN{qname="";rec=""} qname==\$2{print rec"\t"\$5"\t"\$6"\t"\$7"\t"\$8;qname=""} qname!=\$2{qname=\$2;rec=\$1"\t"\$4"\t"\$5"\t"\$6"\t"\$7"\t"\$8;pair=\$3}' > ${name}.epiread 
 			"""
 		  }
 		}
@@ -1376,7 +1375,7 @@ process qualimap {
  */
   process prepareGenomeToPicard {
 	publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
-                   saveAs: { (params.save_reference && it.indexOf("dict") >0) ? it : null }, mode: 'copy'
+                   saveAs: { (params.save_reference && it.indexOf("dict") >0) ? it : null }, mode: 'copy' 
 
       input:
       file fasta from ch_fasta_for_picard
@@ -1420,8 +1419,8 @@ process qualimap {
 		file dict from ch_fasta_picard_dict_for_picard.collect()
 
 		output:
-		file "${bam.baseName}.*.pdf"  
-		file "${bam.baseName}.*.txt" into ch_picard_results_for_multiqc
+		file "${name}.*.pdf"  
+		file "${name}.*.txt" into ch_picard_results_for_multiqc
 		
 		script:
 		if( !task.memory ){
@@ -1433,8 +1432,8 @@ process qualimap {
 		"""
 		 picard -Xmx${avail_mem}g CollectInsertSizeMetrics \\
 		 INPUT=$bam \\
-		 OUTPUT=${bam.baseName}.insert_size_metrics.txt \\
-		 HISTOGRAM_FILE=${bam.baseName}.insert_size_histogram.pdf \\
+		 OUTPUT=${name}.insert_size_metrics.txt \\
+		 HISTOGRAM_FILE=${name}.insert_size_histogram.pdf \\
 		 ASSUME_SORTED=true \\
 		 VALIDATION_STRINGENCY=LENIENT
 		 		set +e 
@@ -1442,9 +1441,9 @@ process qualimap {
 		 
 		 picard -Xmx${avail_mem}g CollectGcBiasMetrics \\
 		 INPUT=$bam \\
-		 OUTPUT=${bam.baseName}.gc_bias_metrics.txt \\
-		 CHART=${bam.baseName}.gc_bias_metrics.pdf \\
-		 SUMMARY_OUTPUT=${bam.baseName}.summary_metrics.txt \\
+		 OUTPUT=${name}.gc_bias_metrics.txt \\
+		 CHART=${name}.gc_bias_metrics.pdf \\
+		 SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
 		 ASSUME_SORTED=true \\
 		 IS_BISULFITE_SEQUENCED=true \\
 		 REFERENCE_SEQUENCE=$fasta \\
@@ -1452,9 +1451,9 @@ process qualimap {
 
 		[ ! "\$?" -eq "0" ] && picard -Xmx${avail_mem}g ReorderSam I=$bam O=${bam.baseName}.picard.bam SEQUENCE_DICTIONARY=$fasta VALIDATION_STRINGENCY=LENIENT TMP_DIR=. && picard -Xmx${avail_mem}g CollectGcBiasMetrics \\
 		 INPUT=${bam.baseName}.picard.bam  \\
-		 OUTPUT=${bam.baseName}.gc_bias_metrics.txt \\
-		 CHART=${bam.baseName}.gc_bias_metrics.pdf \\
-		 SUMMARY_OUTPUT=${bam.baseName}.summary_metrics.txt \\
+		 OUTPUT=${name}.gc_bias_metrics.txt \\
+		 CHART=${name}.gc_bias_metrics.pdf \\
+		 SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
 		 ASSUME_SORTED=true \\
 		 IS_BISULFITE_SEQUENCED=true \\
 		 REFERENCE_SEQUENCE=$fasta \\

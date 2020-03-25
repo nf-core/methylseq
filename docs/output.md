@@ -1,3 +1,4 @@
+
 # nf-core/methylseq Output
 
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
@@ -15,8 +16,10 @@ and processes data using the following steps:
 * [Deduplication](#deduplication) - deduplicating reads
 * [Methylation Extraction](#methylation-extraction) - calling cytosine methylation steps
 * [Bismark Reports](#bismark-reports) - single-sample and summary analysis reports
+* [Biscuit Reports](#biscuit reports) - single-sample analysis reports for biscuit aligner
 * [Qualimap](#qualimap) - tool for genome alignments QC
 * [Preseq](#preseq) - tool for estimating sample complexity
+* [Picard](#picard) - tool for generating metrics of statistics
 * [MultiQC](#multiqc) - aggregate report, describing results of the whole pipeline
 * [Pipeline Info](#pipeline-info) - reports from nextflow about the pipeline run
 
@@ -57,7 +60,7 @@ Single-end data will have slightly different file names and only one FastQ file 
 
 ### Alignment
 
-Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments.
+Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments. _+__________
 
 **Bismark output directory: `results/bismark_alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
@@ -87,9 +90,27 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 * `logs/sample_stats.txt`
   * Summary file giving lots of metrics about the aligned BAM file.
 
+**biscuit output directory: `results/biscuit_alignnts/`**
+
+* `sample.assembly.bam`
+  * Aligned reads in BAM format.
+  * **NB:** Only saved if `--save_align_intermeds` is used
+* `sample.assembly.sorted.bam`
+  * Aligned reads in a sorted BAM file.
+  * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+  * **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam`
+* `sample.assembly.sorted.bam.bai`
+  * Index of sorted BAM file
+  * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+  *  **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam.bai`
+* `logs/sample_flagstat.txt`
+  * Summary file describing the number of reads which aligned in different ways.
+* `logs/sample_stats.txt`
+  * Summary file giving lots of metrics about the aligned BAM file.
+
 ### Deduplication
 
-This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if  `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 
 **Bismark output directory: `results/bismark_deduplicated/`**
 
@@ -101,6 +122,7 @@ This step removes alignments with identical mapping position to avoid technical 
 **bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
 
 > **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
+> 
 
 * `sample.sorted.markDups.bam`
   * BAM file with only unique alignments.
@@ -109,11 +131,21 @@ This step removes alignments with identical mapping position to avoid technical 
 * `logs/sample.sorted.markDups_metrics.txt`
   * Log file giving summary statistics about deduplication.
 
+
+**biscuit output directory: `results/biscuit_markDuplicates/`**
+
+> **NB:** The biscuit (samblaster) step doesn't remove duplicate reads from the BAM file, it just labels them.
+> 
+
+
+* `sample.assembly.txt`
+  * Log file giving summary statistics about deduplication.
+  
 ### Methylation Extraction
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
-Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` when running the pipeline.
+Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional`  or `--skip_deduplication` or `--rrbs`when running the pipeline.
 
 Filename abbreviations stand for the following reference alignment strands:
 
@@ -142,6 +174,28 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.bedGraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
+**biscuit workflow output directory: `results/methylation_extract/`**
+
+* `sample.bedgraph`
+  * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
+* `sample.bedgraph`
+  * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW file.
+  *  **NB:** Created only if `--soloWCGW_file` is specified. **EXPERIMENTAL!**
+ * `sample.vcf.gz` 
+	 * VCF file with the pileup information, used for creating the bedgraph file.
+	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+ * `sample.vcf.gz.tbi` 
+	 * Index file for `sample.vcf.gz`
+	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+> **NB** if `--epriread` is specified in the pipeline, then:
+> **output directory:** `results/epireads` :
+	> * `sample.epiread` 
+			 Storing CpG retention pattern as well as SNP information on the same read in a compact way 
+> * `snp/sample.snp.bed`
+	> 	Storing the SNP information of the `sample.epiread` file. **EXTRACTING SNP PROCSS IS IN PROGRESS!**
+		**NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
+> 
+
 ### Bismark Reports
 
 Bismark generates a HTML reports describing results for each sample, as well as a summary report for the whole run.
@@ -149,6 +203,14 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 **Output directory: `results/bismark_reports`**
 
 **Output directory: `results/bismark_summary`**
+
+### Biscuit Reports
+
+Biscuit generates a directory with different statistical reports describing results for each sample. The statistical reports are converted to plots plotted in the MultiQC report.
+
+**Output directory: `results/biscuit_QC/sample_biscuitQC/`**
+
+
 
 ## Qualimap
 
@@ -171,6 +233,30 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 
 * `sample_ccurve.txt`
   * This file contains plot values for the complexity curve, plotted in the MultiQC report.
+
+## Picard
+
+[Picard]([https://broadinstitute.github.io/picard/picard-metric-definitions.html](https://broadinstitute.github.io/picard/picard-metric-definitions.html)) is a set of command line tools (in Java) for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF.
+The two metrics created here are:
+* [GcBiasMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics))
+* [InsertSizeMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics)) - Metrics about the insert size distribution of a paired-end library, created by the CollectInsertSizeMetrics program and usually written to a file with the extension ".insert_size_metrics".
+
+
+**Output directory: `results/picardMetrics`**
+
+* `sample.insert_size_metrics.txt`
+  * This file contains plot values for the number of reads at a given insert size, plotted in the MultiQC report.
+* `sample.gc_bias_metrics.txt`
+  * This file contains plot values for the bias in coverage across regions of the genome with varying GC content, plotted in the MultiQC report.
+* `sample.summary_metrics.txt`
+  * This file contains a table summerizing the `sample.gc_bias_metrics.txt` data.
+ * `pdf/sample.insert_size_histogram.pdf`
+	 * This file contains a plot of insert size histogram, created by Picard.
+ * `pdf/sample.gc_bias_metrics.pdf` 
+	 *  This file contains a plot of GC bias of all reads, created by Picard.
+
+
+
 
 ## MultiQC
 

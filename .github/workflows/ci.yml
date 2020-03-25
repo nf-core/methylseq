@@ -22,7 +22,7 @@ jobs:
       - name: Pull docker image
         run: |
           docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:dev
+          docker tag nfcore/methylseq:dev nfcore/methylseq:1.4.1
       - name: Run pipeline with test data
         run: |
           # TODO nf-core: You can customise CI pipeline run tests as required

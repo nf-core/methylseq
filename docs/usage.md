@@ -1,3 +1,5 @@
+
+
 # nf-core/methylseq: Usage
 
 ## Table of contents
@@ -6,7 +8,7 @@
 <!-- TOC START min:2 max:3 link:true asterisk:true update:true -->
 * [Table of contents](#table-of-contents)
 * [Introduction](#introduction)
-  * [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+  * [Bismark, bwa-meth and biscuit workflow](#bismark-and-bwa-meth-workflow)
 * [Running the pipeline](#running-the-pipeline)
   * [Updating the pipeline](#updating-the-pipeline)
   * [Reproducibility](#reproducibility)
@@ -33,6 +35,11 @@
   * [`--unmapped`](#--unmapped)
   * [`--save_trimmed`](#--save_trimmed)
   * [`--save_align_intermeds`](#--save_align_intermeds)
+  * [`--save_pileup_file`](#--save_pileup_file)
+  * [`--epiread`](#--epiread)
+  * [`--save_snp_file`](#--save_snp_file)
+  * [`--soloWCGW_file`](#--soloWCGW_file)
+  * [`--assets_dir`](#--assets_dir)
   * [`--min_depth`](#--min_depth)
   * [`--meth_cutoff`](#--meth_cutoff)
   * [`--ignore_flags`](#--ignore_flags)
@@ -76,13 +83,15 @@ It is recommended to limit the Nextflow Java virtual machines memory. We recomme
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
 
-### Bismark and bwa-meth workflow
+### Bismark, bwa-meth and biscuit workflow
 
-The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.
+The nf-core/methylseq package is actually threepipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.
 
 Since bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.
 
 The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.
+
+The third workflow uses [biscuit]([https://github.com/huishenlab/biscuit](https://github.com/huishenlab/biscuit)) . This workflow uses biscuit as an aligner, and biscuit-QC for quality control.  To run this workflow, run the pipeline with the command line flag `--aligner biscuit`
 
 ## Running the pipeline
 
@@ -216,7 +225,7 @@ params {
 
 If you don't want to use the Illumina iGenomes references, you can supply your own reference genome.
 
-The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth workflow always needs a FASTA file, for methylation calling.
+The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth and biscuit workflows always need a FASTA file, for methylation calling. The FASTA is also required for the Picard metrics generating.
 
 ### `--fasta`
 
@@ -232,6 +241,11 @@ If you prefer, you can specify the full path to your reference genome when you r
 # bwa-meth index filename base
 # where for example the index files are called:
 # /path/to/ref/genome.fa.bwameth.c2t.bwt
+--bwa_meth_index /path/to/ref/genome.fa
+
+# biscuit index filename base
+# where for example the index files are called:
+# /path/to/ref/genome.fa.bis.amb
 --bwa_meth_index /path/to/ref/genome.fa
 
 # Genome Fasta index file
@@ -271,6 +285,7 @@ The pipeline also accepts a number of presets for common bisulfite library prepa
 | `--accel`       | 10         | 15         | 10         | 10         |
 | `--zymo`        | 10         | 15         | 10         | 10         |
 | `--cegx`        | 6          | 6          | 2          | 2          |
+| `--swift`       | 0          | 14         | 0          | 0          |
 
 ### `--rrbs`
 
@@ -288,11 +303,13 @@ By default, the pipeline includes a deduplication step after alignment. Use `--s
 
 ### `--pbat`
 
-Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when aligning with Bismark. It tells Bismark to align complementary strands (the opposite of `--directional`).
+Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when aligning with Bismark and biscuit.
+For bismark, it tells the aligner to align complementary strands (the opposite of `--directional`).
+For biscuit, it tells the aligner to switch between reads in paired-end (or align to synthesized strand on single-end).
 
 ### `--non_directional`
 
-By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.
+By default, Bismark and biscuit assume that libraries are directional and do not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.
 
 Note that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.
 
@@ -303,6 +320,8 @@ By default, the pipeline only produces data for cytosine methylation states in C
 If specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.
 
 If using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well.
+
+if using the biscuit aligner, the flag generate the bedgraph file extracting all possible types from the pileup file (including c, cg, ch, hcg, gch).
 
 ### `--cytosine_report`
 
@@ -326,9 +345,33 @@ By default, trimmed FastQ files will not be saved to the results directory. Spec
 
 By default intermediate BAM files will not be saved. The final BAM files created after the deduplication step are always. Set to true to also copy out BAM files from the initial Bismark alignment step. If `--skip_deduplication` or `--rrbs` is specified then BAMs from the initial alignment will always be saved.
 
+### `--save_pileup_file`
+
+When running with biscuit aligner, the methylation extraction is based on vcf file. By default these vcf files will not be saved. Set to true to also copy out the vcf-file and the index-vcf file.
+
+### `--epiread`
+
+[Epiread]([https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format](https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format)) format is a compact way of storing CpG retention pattern as well as SNP information on the same read. This option will tell the biscuit workflow to generate epiread file. The SNP file used for the epiread format can be saved using `--save_snp_file`.
+
+### `--save_snp_file`
+
+SNP file created from a sample in order to be used in the epiread file is not saved in final output directory. Set to true to copy out the SNP file. 
+> **NB: The SNP detection is in progress of development within the biscuit tool**
+
+### `--soloWCGW_file`
+
+This will generatea  methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW after extracting methylation from vcf, using biscuit workflow.
+> **NB: The soloWCGW is experimental, and currently available only for hg38**
+> 
+
+### `--assets_dir`
+
+Path to a directory containing needed file for biscuit-QC step. The needed files for hg38,hg19 and mm10 can be found in [here](https://www.cse.huji.ac.il/~ekushele/assets.html). 
+**This paramater is mandatory when running the pipeline using biscuit workflow**
+
 ### `--min_depth`
 
-Specify to specify a minimum read coverage for MethylDackel to report a methylation call.
+Specify to specify a minimum read coverage for MethylDackel or biscuit vcf2bed to report a methylation call.
 
 ### `--meth_cutoff`
 
