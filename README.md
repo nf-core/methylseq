@@ -1,6 +1,5 @@
 # ![nf-core/methylseq](docs/images/nf-core-methylseq_logo.png)
 
-
 [![Build Status](https://travis-ci.com/nf-core/methylseq.svg?branch=master)](https://travis-ci.com/nf-core/methylseq)
 [![DOI](https://zenodo.org/badge/124913037.svg)](https://zenodo.org/badge/latestdoi/124913037)
 [![GitHub Actions CI Status](https://github.com/nf-core/methylseq/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/methylseq/actions)
