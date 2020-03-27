@@ -15,7 +15,9 @@ jobs:
         nxf_ver: ['19.10.0', '']
         aligner: ['bismark', 'bismark_hisat', 'bwameth']
         include:
-          - aligner: ['bismark', 'bismark_hisat']
+          - aligner: 'bismark'
+            options: --bismark_index ${GITHUB_WORKSPACE}/tests/results/reference_genome/BismarkIndex/'
+          - aligner: 'bismark_hisat'
             options: --bismark_index ${GITHUB_WORKSPACE}/tests/results/reference_genome/BismarkIndex/'
           - aligner: 'bwameth'
             options: --bwa_meth_index ${TRAVIS_BUILD_DIR}/tests/results/reference_genome/genome.fa
