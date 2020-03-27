@@ -1,12 +1,31 @@
 # nf-core/methylseq
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2019-12-11
 
-## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2019-03-25
+### New features
 
-### Added
+* Added multicore support for `TrimGalore!`
+* Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Added `--cytosine_report` option to tell Bismark to give reports for all cytosines in the genome.
+* Added options `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` to customise how Bismark align `--multicore` is decided ([#124](https://github.com/nf-core/methylseq/issues/124))
 
+### Software updates
+
+* _new dependency_: pigz `2.3.4`
+* Python base `2.7` > `3.7.3`
+* TrimGalore! `0.6.4` > `0.6.5`
+* Bismark `0.22.2` > `0.22.3`
+* Qualimap `2.2.2c` > `2.2.2d`
+* Picard `2.21.3` > `2.21.4`
+* MultiQC `1.7` > `1.8`
+
+### Pipeline Updates
+
+* Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
+* Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
+* Tidied up the summary log messages when starting the pipeline
+  * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
+* Slightly refactored the code for trimming parameters
 * Updated template to tools 1.9
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19

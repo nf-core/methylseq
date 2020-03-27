@@ -30,6 +30,7 @@ def helpMessage() {
      --genome [str]                     Name of iGenomes reference
      --single_end [bool]                Specifies that the input is single end reads
      --comprehensive [bool]             Output information for all cytosine contexts
+     --cytosine_report [bool]           Output stranded cytosine report during Bismark's bismark_methylation_extractor step.
      --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
      --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
      --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
@@ -44,6 +45,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
+     --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
     References                          If not specified in the configuration file or you wish to overwrite any of the references.
       --fasta [file]                    Path to fasta reference
@@ -96,6 +99,12 @@ assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.alig
  * SET UP CONFIGURATION VARIABLES
  */
 
+// These params need to be set late, after the iGenomes config is loaded
+params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
+params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
+params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
+params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
+
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
     exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
@@ -115,7 +124,7 @@ if( params.aligner =~ /bismark/ ){
         Channel
             .fromPath(params.bismark_index, checkIfExists: true)
             .ifEmpty { exit 1, "Bismark index file not found: ${params.bismark_index}" }
-            .set { ch_bismark_index_for_bismark_align }
+            .into { ch_bismark_index_for_bismark_align; ch_bismark_index_for_bismark_methXtract }
     }
     else if( params.fasta ){
         Channel
@@ -150,7 +159,7 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
-if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
+if( workflow.profile == 'uppmax' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
 
@@ -161,48 +170,40 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
     custom_runName = workflow.runName
 }
 
-// Library prep presets
-params.rrbs = false
-params.pbat = false
-params.single_cell = false
-params.epignome = false
-params.accel = false
-params.zymo = false
-params.cegx = false
+// Trimming presets
+clip_r1 = params.clip_r1
+clip_r2 = params.clip_r2
+three_prime_clip_r1 = params.three_prime_clip_r1
+three_prime_clip_r2 = params.three_prime_clip_r2
 if(params.pbat){
-    params.clip_r1 = 9
-    params.clip_r2 = 9
-    params.three_prime_clip_r1 = 9
-    params.three_prime_clip_r2 = 9
+    clip_r1 = 9
+    clip_r2 = 9
+    three_prime_clip_r1 = 9
+    three_prime_clip_r2 = 9
 }
 else if( params.single_cell ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 6
-    params.three_prime_clip_r2 = 6
+    clip_r1 = 6
+    clip_r2 = 6
+    three_prime_clip_r1 = 6
+    three_prime_clip_r2 = 6
 }
 else if( params.epignome ){
-    params.clip_r1 = 8
-    params.clip_r2 = 8
-    params.three_prime_clip_r1 = 8
-    params.three_prime_clip_r2 = 8
+    clip_r1 = 8
+    clip_r2 = 8
+    three_prime_clip_r1 = 8
+    three_prime_clip_r2 = 8
 }
 else if( params.accel || params.zymo ){
-    params.clip_r1 = 10
-    params.clip_r2 = 15
-    params.three_prime_clip_r1 = 10
-    params.three_prime_clip_r2 = 10
+    clip_r1 = 10
+    clip_r2 = 15
+    three_prime_clip_r1 = 10
+    three_prime_clip_r2 = 10
 }
 else if( params.cegx ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 2
-    params.three_prime_clip_r2 = 2
-} else {
-    params.clip_r1 = 0
-    params.clip_r2 = 0
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
+    clip_r1 = 6
+    clip_r2 = 6
+    three_prime_clip_r1 = 2
+    three_prime_clip_r2 = 2
 }
 
 if (workflow.profile.contains('awsbatch')) {
@@ -247,68 +248,62 @@ if (params.readPaths) {
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
-if (workflow.revision) summary['Pipeline Release'] = workflow.revision
-summary['Pipeline Name']  = 'nf-core/methylseq'
-summary['Run Name']       = custom_runName ?: workflow.runName
-summary['Reads']          = params.reads
-summary['Aligner']        = params.aligner
-summary['Spliced alignment']  = params.known_splices ? 'Yes' : 'No'
-summary['SLAM-seq']  = params.slamseq ? 'Yes' : 'No'
-summary['Local alignment']  = params.local_alignment ? 'Yes' : 'No'
-summary['Data Type']      = params.single_end ? 'Single-End' : 'Paired-End'
-summary['Genome']         = params.genome
-if( params.bismark_index ) summary['Bismark Index'] = params.bismark_index
-if( params.bwa_meth_index ) summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-if( params.fasta )    summary['Fasta Ref'] = params.fasta
-if( params.fasta_index )    summary['Fasta Index'] = params.fasta_index
-if( params.rrbs ) summary['RRBS Mode'] = 'On'
-if( params.relax_mismatches ) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
-if( params.skip_trimming )       summary['Trimming Step'] = 'Skipped'
-if( params.pbat )         summary['Trim Profile'] = 'PBAT'
-if( params.single_cell )  summary['Trim Profile'] = 'Single Cell'
-if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
-if( params.accel )        summary['Trim Profile'] = 'Accel-NGS (Swift)'
-if( params.zymo )         summary['Trim Profile'] = 'Zymo Pico-Methyl'
-if( params.cegx )         summary['Trim Profile'] = 'CEGX'
-summary['Trim R1'] = params.clip_r1
-summary['Trim R2'] = params.clip_r2
-summary["Trim 3' R1"] = params.three_prime_clip_r1
-summary["Trim 3' R2"] = params.three_prime_clip_r2
-summary['Deduplication']  = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
+summary['Run Name']  = custom_runName ?: workflow.runName
+summary['Reads']     = params.reads
+summary['Aligner']   = params.aligner
+summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
+if(params.known_splices)    summary['Spliced alignment'] =  'Yes'
+if(params.slamseq)          summary['SLAM-seq'] = 'Yes'
+if(params.local_alignment)  summary['Local alignment'] = 'Yes'
+if(params.genome)           summary['Genome']    = params.genome
+if(params.bismark_index)    summary['Bismark Index'] = params.bismark_index
+if(params.bwa_meth_index)   summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
+if(params.fasta)            summary['Fasta Ref'] = params.fasta
+if(params.fasta_index)      summary['Fasta Index'] = params.fasta_index
+if(params.rrbs)             summary['RRBS Mode'] = 'On'
+if(params.relax_mismatches) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
+if(params.skip_trimming)    summary['Trimming Step'] = 'Skipped'
+if(params.pbat)             summary['Trim Profile'] = 'PBAT'
+if(params.single_cell)      summary['Trim Profile'] = 'Single Cell'
+if(params.epignome)         summary['Trim Profile'] = 'TruSeq (EpiGnome)'
+if(params.accel)            summary['Trim Profile'] = 'Accel-NGS (Swift)'
+if(params.zymo)             summary['Trim Profile'] = 'Zymo Pico-Methyl'
+if(params.cegx)             summary['Trim Profile'] = 'CEGX'
+summary['Trimming']         = "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
+summary['Deduplication']    = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
-summary['All C Contexts'] = params.comprehensive ? 'Yes' : 'No'
-if( params.min_depth ) summary['Minimum Depth'] = params.min_depth
-if( params.ignore_flags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
-if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
-summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
-summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
-summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
-summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
-summary['Current home']   = "$HOME"
-summary['Current path']   = "$PWD"
-if( params.project ) summary['UPPMAX Project'] = params.project
-
-summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
-if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
+summary['All C Contexts']   = params.comprehensive ? 'Yes' : 'No'
+summary['Cytosine report']  = params.cytosine_report ? 'Yes' : 'No'
+if(params.min_depth)        summary['Minimum Depth'] = params.min_depth
+if(params.ignore_flags)     summary['MethylDackel'] = 'Ignoring SAM Flags'
+if(params.methyl_kit)       summary['MethylDackel'] = 'Producing methyl_kit output'
+save_intermeds = [];
+if(params.save_reference)   save_intermeds.add('Reference genome build')
+if(params.save_trimmed)     save_intermeds.add('Trimmed FastQ files')
+if(params.unmapped)         save_intermeds.add('Unmapped reads')
+if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
+if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
+if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
+if(params.bismark_align_mem_per_multicore) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 summary['Output dir']       = params.outdir
 summary['Launch dir']       = workflow.launchDir
 summary['Working dir']      = workflow.workDir
-summary['Script dir']       = workflow.projectDir
+summary['Pipeline dir']     = workflow.projectDir
 summary['User']             = workflow.userName
+summary['Config Profile']   = workflow.profile
+if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 if (workflow.profile.contains('awsbatch')) {
     summary['AWS Region']   = params.awsregion
     summary['AWS Queue']    = params.awsqueue
     summary['AWS CLI']      = params.awscli
 }
-summary['Config Profile'] = workflow.profile
+if(params.project) summary['Cluster Project'] = params.project
 if (params.config_profile_description) summary['Config Description'] = params.config_profile_description
 if (params.config_profile_contact)     summary['Config Contact']     = params.config_profile_contact
 if (params.config_profile_url)         summary['Config URL']         = params.config_profile_url
-if (params.email || params.email_on_fail) {
-    summary['E-mail Address']    = params.email
-    summary['E-mail on failure'] = params.email_on_fail
-    summary['MultiQC maxsize']   = params.max_multiqc_email_size
-}
+summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
+if(params.email)            summary['E-mail Address'] = params.email
+if(params.email_on_fail)    summary['E-mail on failure'] = params.email_on_fail
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
@@ -383,7 +378,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
         file fasta from ch_fasta_for_makeBismarkIndex
 
         output:
-        file "BismarkIndex" into ch_bismark_index_for_bismark_align
+        file "BismarkIndex" into ch_bismark_index_for_bismark_align, ch_bismark_index_for_bismark_methXtract
 
         script:
         aligner = params.aligner == 'bismark_hisat' ? '--hisat2' : '--bowtie2'
@@ -491,18 +486,27 @@ if( params.skip_trimming ){
         file "where_are_my_files.txt"
 
         script:
-        c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
-        c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
-        tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
-        tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
-        rrbs = params.rrbs ? "--rrbs" : ''
+        def c_r1 = clip_r1 > 0 ? "--clip_r1 $clip_r1" : ''
+        def c_r2 = clip_r2 > 0 ? "--clip_r2 $clip_r2" : ''
+        def tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
+        def tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
+        def rrbs = params.rrbs ? "--rrbs" : ''
+        def cores = 1
+        if(task.cpus){
+            cores = (task.cpus as int) - 4
+            if (params.single_end) cores = (task.cpus as int) - 3
+            if (cores < 1) cores = 1
+            if (cores > 4) cores = 4
+        }
         if( params.single_end ) {
             """
-            trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore --fastqc --gzip $reads \
+              $rrbs $c_r1 $tpc_r1 --cores $cores
             """
         } else {
             """
-            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore --fastqc --gzip --paired $reads \
+              $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 --cores $cores
             """
         }
     }
@@ -560,6 +564,13 @@ if( params.aligner =~ /bismark/ ){
             } else {
                 cpu_per_multicore = 3
                 mem_per_multicore = (13.GB).toBytes()
+            }
+            // Check if the user has specified this and overwrite if so
+            if(params.bismark_align_cpu_per_multicore) {
+                cpu_per_multicore = (params.bismark_align_cpu_per_multicore as int)
+            }
+            if(params.bismark_align_mem_per_multicore) {
+                mem_per_multicore = (params.bismark_align_mem_per_multicore as nextflow.util.MemoryUnit).toBytes()
             }
             // How many multicore splits can we afford with the cpus we have?
             ccore = ((task.cpus as int) / cpu_per_multicore) as int
@@ -628,11 +639,13 @@ if( params.aligner =~ /bismark/ ){
                 else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
                 else if( filename.indexOf(".cov" ) > 0 ) "methylation_coverage/$filename"
                 else if( filename.indexOf("bedGraph" ) > 0 ) "bedGraph/$filename"
+                else if( filename.indexOf("CpG_report" ) > 0 ) "stranded_CpG_report/$filename"
                 else "methylation_calls/$filename"
             }
 
         input:
         set val(name), file(bam) from ch_bam_dedup_for_bismark_methXtract
+        file index from ch_bismark_index_for_bismark_methXtract.collect()
 
         output:
         set val(name), file("*splitting_report.txt") into ch_bismark_splitting_report_for_bismark_report, ch_bismark_splitting_report_for_bismark_summary, ch_bismark_splitting_report_for_multiqc
@@ -641,11 +654,12 @@ if( params.aligner =~ /bismark/ ){
 
         script:
         comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+        cytosine_report = params.cytosine_report ? "--cytosine_report --genome_folder ${index} " : ''
         meth_cutoff = params.meth_cutoff ? "--cutoff ${params.meth_cutoff}" : ''
         multicore = ''
         if( task.cpus ){
             // Numbers based on Bismark docs
-            ccore = ((task.cpus as int) / 10) as int
+            ccore = ((task.cpus as int) / 3) as int
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
@@ -661,7 +675,7 @@ if( params.aligner =~ /bismark/ ){
         if(params.single_end) {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --bedGraph \\
                 --counts \\
                 --gzip \\
@@ -672,7 +686,7 @@ if( params.aligner =~ /bismark/ ){
         } else {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --ignore_r2 2 \\
                 --ignore_3prime_r2 2 \\
                 --bedGraph \\
