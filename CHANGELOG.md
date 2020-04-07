@@ -33,6 +33,10 @@
 * Slightly refactored the code for trimming parameters
 * Updated template to tools 1.9
 
+### Bug fixes
+
+* Fixed error where MethylDackel would consume the Nextflow channels and not work with more than one sample [#140](https://github.com/nf-core/methylseq/issues/140)
+
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 
 ### New features
