@@ -16,7 +16,7 @@ jobs:
         aligner: ['bismark', 'bismark_hisat', 'bwameth']
         include:
           - aligner: 'bismark'
-            options: --bismark_index ${GITHUB_WORKSPACE}/tests/results/reference_genome/BismarkIndex/'
+            options: --bismark_index ${GITHUB_WORKSPACE}/results/reference_genome/BismarkIndex/'
           - aligner: 'bismark_hisat'
             options: --bismark_index ${GITHUB_WORKSPACE}/tests/results/reference_genome/BismarkIndex/'
           - aligner: 'bwameth'
