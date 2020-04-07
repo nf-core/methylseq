@@ -1,0 +1,39 @@
+name: nf-core CI
+# This workflow is triggered on pushes and PRs to the repository.
+# It runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+on: [push, pull_request]
+
+jobs:
+  test:
+    env:
+      NXF_VER: ${{ matrix.nxf_ver }}
+      NXF_ANSI_LOG: false
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Nextflow versions: check pipeline minimum and current latest
+        nxf_ver: ['19.10.0', '']
+        aligner: ['bismark', 'bismark_hisat', 'bwameth']
+        include:
+          - aligner: 'bismark'
+            options: --bismark_index ${GITHUB_WORKSPACE}/results/reference_genome/BismarkIndex/
+          - aligner: 'bismark_hisat'
+            options: --bismark_index ${GITHUB_WORKSPACE}/results/reference_genome/BismarkIndex/
+          - aligner: 'bwameth'
+            options: --bwa_meth_index ${GITHUB_WORKSPACE}/results/reference_genome/genome.fa
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+      - name: Pull docker image
+        run: |
+          docker pull nfcore/methylseq:dev
+          docker tag nfcore/methylseq:dev nfcore/methylseq:1.4.1
+      - name: Run pipeline with test data
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.options}}
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs

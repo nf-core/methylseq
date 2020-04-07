@@ -26,6 +26,7 @@
 * Tidied up the summary log messages when starting the pipeline
   * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
 * Slightly refactored the code for trimming parameters
+* Updated template to tools 1.9
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 
