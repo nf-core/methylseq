@@ -7,7 +7,7 @@ channels:
   - defaults
 dependencies:
   # nf-core dependencies
-  - conda-forge::python=3.8.2
+  - conda-forge::python=3.7.3
   - conda-forge::markdown=3.2.1
   - conda-forge::pymdown-extensions=6.0
   - conda-forge::pygments=2.6.1
@@ -15,8 +15,8 @@ dependencies:
   - bioconda::fastqc=0.11.9
   # Default bismark pipeline
   - bioconda::trim-galore=0.6.5
-  - bioconda::samtools=1.10
-  - bioconda::bowtie2=2.4.1
+  - bioconda::samtools=1.9
+  - bioconda::bowtie2=2.3.5
   - bioconda::hisat2=2.2.0
   - bioconda::bismark=0.22.3
   - bioconda::qualimap=2.2.2d
