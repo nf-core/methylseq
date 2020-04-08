@@ -12,14 +12,12 @@
 ### Software updates
 
 * _new dependency_: pigz `2.3.4`
-* Python base `2.7` > `3.8.2`
+* Python base `2.7` > `3.7.3`
 * FastQC `0.11.8` > `0.11.9`
 * TrimGalore! `0.6.4` > `0.6.5`
-* Bowtie2 `2.3.5` > `2.4.1`
 * HiSAT2 `2.1.0` > `2.2.0`
 * Bismark `0.22.2` > `0.22.3`
 * Qualimap `2.2.2c` > `2.2.2d`
-* Samtools `1.9` > `1.10`
 * Picard `2.21.3` > `2.22.2`
 * MethylDackel `0.4.0` > `0.5.0`
 * MultiQC `1.7` > `1.8`
