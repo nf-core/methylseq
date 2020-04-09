@@ -12,6 +12,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-      - uses: docker://continuumio/miniconda3:4.8.2
+      - uses: docker://nfcore/base:latest
       - name: Build conda environment
         run: conda env create -f ${GITHUB_WORKSPACE}/environment.yml
