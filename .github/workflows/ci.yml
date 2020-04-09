@@ -16,11 +16,11 @@ jobs:
         aligner: ['bismark', 'bismark_hisat', 'bwameth']
         include:
           - aligner: 'bismark'
-            options: --bismark_index ${GITHUB_WORKSPACE}/results/reference_genome/BismarkIndex/
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
           - aligner: 'bismark_hisat'
-            options: --bismark_index ${GITHUB_WORKSPACE}/results/reference_genome/BismarkIndex/
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
           - aligner: 'bwameth'
-            options: --bwa_meth_index ${GITHUB_WORKSPACE}/results/reference_genome/genome.fa
+            ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - uses: actions/checkout@v2
       - name: Install Nextflow
@@ -30,10 +30,9 @@ jobs:
       - name: Pull docker image
         run: |
           docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:1.4.1
+          docker tag nfcore/methylseq:dev nfcore/methylseq:1.5
       - name: Run pipeline with test data
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.options}}
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs

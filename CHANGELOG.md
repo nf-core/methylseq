@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2020-04-08
+## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 
 ### New features
 
@@ -11,7 +11,7 @@
 
 ### Software updates
 
-* _new dependency_: pigz `2.3.4`
+* _New_: pigz `2.3.4`
 * Python base `2.7` > `3.7.3`
 * FastQC `0.11.8` > `0.11.9`
 * TrimGalore! `0.6.4` > `0.6.5`
