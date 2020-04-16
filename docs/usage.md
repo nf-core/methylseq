@@ -256,9 +256,9 @@ Bisulfite libraries often require additional base pairs to be removed from the e
 * `--clip_r2 <NUMBER>`
   * Instructs Trim Galore to remove bp from the 5' end of read 2 (paired-end reads only).
 * `--three_prime_clip_r1 <NUMBER>`
-  * Instructs Trim Galore to remove bp from the 3' end of read 1 _AFTER_ adapter/quality trimming has been
+  * Instructs Trim Galore to remove bp from the 3' end of read 1 _AFTER_ adapter/quality trimming has been performed.
 * `--three_prime_clip_r2 <NUMBER>`
-  * Instructs Trim Galore to re move bp from the 3' end of read 2 _AFTER_ adapter/quality trimming has been performed.
+  * Instructs Trim Galore to remove bp from the 3' end of read 2 _AFTER_ adapter/quality trimming has been performed.
 
 The pipeline also accepts a number of presets for common bisulfite library preparation methods:
 
