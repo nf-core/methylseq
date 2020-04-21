@@ -1,7 +1,7 @@
 
 # nf-core/methylseq
 
-## V new-my-updates
+## [v1.6dev] 
 
 ### New features
 
@@ -15,7 +15,7 @@
 * _new dependect_: bedtools `2.29.1`
 *  _new_: biscuit tool `0.3.11`
 
-## [v1.4.1](https://github.com/nf-core/methylseq/releases/tag/1.4.1) - 2019-12-11
+## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 
 ### New features
 
@@ -26,12 +26,15 @@
 
 ### Software updates
 
-* _new dependency_: pigz `2.3.4`
+* _New_: pigz `2.3.4`
 * Python base `2.7` > `3.7.3`
+* FastQC `0.11.8` > `0.11.9`
 * TrimGalore! `0.6.4` > `0.6.5`
+* HiSAT2 `2.1.0` > `2.2.0`
 * Bismark `0.22.2` > `0.22.3`
 * Qualimap `2.2.2c` > `2.2.2d`
-* Picard `2.21.3` > `2.21.4`
+* Picard `2.21.3` > `2.22.2`
+* MethylDackel `0.4.0` > `0.5.0`
 * MultiQC `1.7` > `1.8`
 
 ### Pipeline Updates
@@ -41,6 +44,11 @@
 * Tidied up the summary log messages when starting the pipeline
   * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
 * Slightly refactored the code for trimming parameters
+* Updated template to tools 1.9
+
+### Bug fixes
+
+* Fixed error where MethylDackel would consume the Nextflow channels and not work with more than one sample [#140](https://github.com/nf-core/methylseq/issues/140)
 
 ## [v1.4](https://github.com/nf-core/methylseq/releases/tag/1.4) - 2019-11-19
 

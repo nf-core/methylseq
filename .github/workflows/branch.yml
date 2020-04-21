@@ -14,4 +14,3 @@ jobs:
       - name: Check PRs
         run: |
           { [[ $(git remote get-url origin) == *nf-core/methylseq ]] && [[ ${GITHUB_HEAD_REF} = "dev" ]]; } || [[ ${GITHUB_HEAD_REF} == "patch" ]]
-

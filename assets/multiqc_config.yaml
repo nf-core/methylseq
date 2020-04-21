@@ -5,6 +5,8 @@ report_comment: >
 report_section_order:
     software_versions:
         order: -1000
+    nf-core-methylseq-summary:
+        order: -1001
 table_columns_visible:
     QualiMap:
         avg_gc: false

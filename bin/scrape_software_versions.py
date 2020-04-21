@@ -70,9 +70,9 @@ for k, v in regexes.items():
     except IOError:
         results[k] = False
 
-# Remove empty keys (defining them above ensures correct order)
-for k in ['Bismark', 'Bismark Deduplication', 'Bismark methXtract', 'Bismark Report', 'Bismark Summary', 'Samtools', 'BWA', 'bwa-meth', 'Picard MarkDuplicates', 'MethylDackel','samblaster','biscuit','fastasort','Picard CreateSequenceDictionary','Picard CollectInsertSizeMetrics','Picard CollectGcBiasMetrics']:
-    if results[k] == '<span style="color:#999999;\">N/A</span>':
+# Remove software set to false in results
+for k in list(results):
+    if not results[k]:
         del(results[k])
 
 # Dump to YAML
