@@ -27,3 +27,4 @@ dependencies:
 # added
   - bioconda::samblaster=0.1.24
   - bioconda::bedtools=2.29.1
+  - bioconda::biscuit=0.3.15
