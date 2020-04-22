@@ -122,7 +122,6 @@ This step removes alignments with identical mapping position to avoid technical 
 **bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
 
 > **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
-> 
 
 * `sample.sorted.markDups.bam`
   * BAM file with only unique alignments.
