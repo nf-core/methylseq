@@ -359,7 +359,7 @@ SNP file created from a sample in order to be used in the epiread file is not sa
 
 ### `--soloWCGW_file`
 
-This will generatea  methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW after extracting methylation from vcf, using biscuit workflow.
+This will generate methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW after extracting methylation from vcf, using biscuit workflow.
 > **NB: The soloWCGW is experimental, and currently available only for hg38**
 > 
 
