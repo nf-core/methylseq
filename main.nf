@@ -112,6 +112,10 @@ params.bwa_biscuit_index =  false
 params.soloWCGW_file =  false
 assembly_name = (params.fasta.toString().lastIndexOf('/') == -1) ?: params.fasta.toString().substring( params.fasta.toString().lastIndexOf('/')+1)
 
+params.save_pileup_file = false
+params.epiread = false
+params.save_snp_file = false
+params.assets_dir = false
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
