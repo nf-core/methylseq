@@ -400,8 +400,6 @@ process get_software_versions {
 
     output:
     file 'software_versions_mqc.yaml' into ch_software_versions_yaml_for_multiqc
-    file "software_versions.csv" into ch_try
-    //fastasort --version &> v_fastasort.txt 2>&1 || true
 
     script:
     """
@@ -1399,7 +1397,6 @@ process qualimap {
 
       input:
       file fasta from ch_fasta_for_picard
-	file file_try from ch_try
       output:
       file "${fasta.baseName}.picard.fa" into ch_fasta_picard_for_picard
       file "${fasta.baseName}.picard.dict" into ch_fasta_picard_dict_for_picard
