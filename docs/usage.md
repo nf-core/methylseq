@@ -224,7 +224,7 @@ params {
 
 If you don't want to use the Illumina iGenomes references, you can supply your own reference genome.
 
-The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth and biscuit workflows always need a FASTA file, for methylation calling. The FASTA is also required for the Picard metrics generating.
+The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth and biscuit workflows always need a FASTA file, for methylation calling. The FASTA is also required for the generation of Picard metrics.
 
 ### `--fasta`
 
