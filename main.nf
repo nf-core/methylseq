@@ -783,7 +783,7 @@ if( params.aligner =~ /bismark/ ){
     /*
      * STEP 7 - Bismark methylation extraction
      */
-    process bismark_methXtract {
+  process bismark_methXtract {
         tag "$name"
         publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
             saveAs: {filename ->
@@ -791,11 +791,13 @@ if( params.aligner =~ /bismark/ ){
                 else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
                 else if( filename.indexOf(".cov" ) > 0 ) "methylation_coverage/$filename"
                 else if( filename.indexOf("bedGraph" ) > 0 ) "bedGraph/$filename"
+                else if( filename.indexOf("CpG_report" ) > 0 ) "stranded_CpG_report/$filename"
                 else "methylation_calls/$filename"
             }
 
         input:
         set val(name), file(bam) from ch_bam_dedup_for_bismark_methXtract
+        file index from ch_bismark_index_for_bismark_methXtract.collect()
 
         output:
         set val(name), file("*splitting_report.txt") into ch_bismark_splitting_report_for_bismark_report, ch_bismark_splitting_report_for_bismark_summary, ch_bismark_splitting_report_for_multiqc
@@ -804,11 +806,12 @@ if( params.aligner =~ /bismark/ ){
 
         script:
         comprehensive = params.comprehensive ? '--comprehensive --merge_non_CpG' : ''
+        cytosine_report = params.cytosine_report ? "--cytosine_report --genome_folder ${index} " : ''
         meth_cutoff = params.meth_cutoff ? "--cutoff ${params.meth_cutoff}" : ''
         multicore = ''
         if( task.cpus ){
             // Numbers based on Bismark docs
-            ccore = ((task.cpus as int) / 10) as int
+            ccore = ((task.cpus as int) / 3) as int
             if( ccore > 1 ){
               multicore = "--multicore $ccore"
             }
@@ -824,7 +827,7 @@ if( params.aligner =~ /bismark/ ){
         if(params.single_end) {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --bedGraph \\
                 --counts \\
                 --gzip \\
@@ -835,7 +838,7 @@ if( params.aligner =~ /bismark/ ){
         } else {
             """
             bismark_methylation_extractor $comprehensive $meth_cutoff \\
-                $multicore $buffer \\
+                $multicore $buffer $cytosine_report \\
                 --ignore_r2 2 \\
                 --ignore_3prime_r2 2 \\
                 --bedGraph \\
