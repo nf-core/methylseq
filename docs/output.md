@@ -122,7 +122,6 @@ This step removes alignments with identical mapping position to avoid technical 
 **bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
 
 > **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
-> 
 
 * `sample.sorted.markDups.bam`
   * BAM file with only unique alignments.
@@ -145,7 +144,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
-Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional`  or `--skip_deduplication` or `--rrbs`when running the pipeline.
+Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional`  or `--skip_deduplication` or `--rrbs` when running the pipeline.
 
 Filename abbreviations stand for the following reference alignment strands:
 

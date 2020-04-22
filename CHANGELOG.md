@@ -7,7 +7,7 @@
 
 * Added Picard CollectInsertSizeMetrics and Picard CollectGcBiasMetrics
 * Improved qulimap and preseq by adding `samtools sort` and `samtools index` step in the Bismark aligner
-* Added biscuit aligner as an optional aligner, with all relative steps (alignment, mark duplicates, methylation extraction, QC for biscuit, and opptional epiread file creation).
+* Added biscuit aligner as an optional aligner, with all relative steps (alignment, mark duplicates, methylation extraction, QC for biscuit, and optional epiread file creation).
 
 ### Software updates
 
