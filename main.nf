@@ -581,18 +581,27 @@ if( params.skip_trimming ){
         file "where_are_my_files.txt"
 
         script:
-        c_r1 = params.clip_r1 > 0 ? "--clip_r1 ${params.clip_r1}" : ''
-        c_r2 = params.clip_r2 > 0 ? "--clip_r2 ${params.clip_r2}" : ''
-        tpc_r1 = params.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${params.three_prime_clip_r1}" : ''
-        tpc_r2 = params.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${params.three_prime_clip_r2}" : ''
-        rrbs = params.rrbs ? "--rrbs" : ''
+	def c_r1 = clip_r1 > 0 ? "--clip_r1 $clip_r1" : ''
+        def c_r2 = clip_r2 > 0 ? "--clip_r2 $clip_r2" : ''
+        def tpc_r1 = three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 $three_prime_clip_r1" : ''
+        def tpc_r2 = three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 $three_prime_clip_r2" : ''
+        def rrbs = params.rrbs ? "--rrbs" : ''
+        def cores = 1
+        if(task.cpus){
+            cores = (task.cpus as int) - 4
+            if (params.single_end) cores = (task.cpus as int) - 3
+            if (cores < 1) cores = 1
+            if (cores > 4) cores = 4
+        }
         if( params.single_end ) {
             """
-            trim_galore --fastqc --gzip $rrbs $c_r1 $tpc_r1 $reads
+            trim_galore --fastqc --gzip $reads \
+              $rrbs $c_r1 $tpc_r1 --cores $cores
             """
         } else {
             """
-            trim_galore --paired --fastqc --gzip $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 $reads
+            trim_galore --fastqc --gzip --paired $reads \
+              $rrbs $c_r1 $c_r2 $tpc_r1 $tpc_r2 --cores $cores
             """
         }
     }
