@@ -12,7 +12,7 @@
 ### Software updates
 
 * _new dependency_: samblaster`0.1.24`
-* _new dependect_: bedtools `2.29.1`
+* _new dependency_: bedtools `2.29.1`
 *  _new_: biscuit tool `0.3.11`
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
