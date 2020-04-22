@@ -39,7 +39,6 @@ def helpMessage() {
      --save_align_intermeds [bool]      Save aligned intermediates to results directory
      --save_trimmed [bool]              Save trimmed reads to results directory
 	 --save_pileup_file [bool]          Save vcf-pileup and index-vcf files from biscuit aligner to results directory
-	 --save_snp_file					Save SNP bed-file from biscuit to results directory. Relevant only if '--epiread' is specified
      --unmapped [bool]                  Save unmapped reads to fastq files
      --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
      --num_mismatches [float]           0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
@@ -114,7 +113,6 @@ assembly_name = (params.fasta.toString().lastIndexOf('/') == -1) ?: params.fasta
 
 params.save_pileup_file = false
 params.epiread = false
-params.save_snp_file = false
 params.assets_dir = false
 
 // Check if genome exists in the config file
@@ -342,7 +340,6 @@ summary['Save Trimmed']   = params.save_trimmed ? 'Yes' : 'No'
 summary['Save Unmapped']  = params.unmapped ? 'Yes' : 'No'
 summary['Save Intermediates'] = params.save_align_intermeds ? 'Yes' : 'No'
 summary['Save Pileups'] = params.save_pileup_file ? 'Yes' : 'No' 
-summary['Save SNP bed-file'] = params.save_snp_file ? 'Yes' : 'No'
 
 
 summary['Current home']   = "$HOME"
@@ -1270,28 +1267,6 @@ if( params.aligner == 'biscuit' ){
 	
     
 	if (params.epiread) {
-		/***************************
-		 THE PROCESS IS IN PROGRESS!
-		****************************/
-		process get_SNP_file { 
-			tag "$name"
-		  publishDir "${params.outdir}", mode: 'copy',
-			 saveAs: {filename ->
-					if(params.save_snp_file &&  filename != "where_are_my_files.txt") "epireads/snp/$filename"
-					else null
-			 }
-			 
-		  input:
-			set val(name), file(vcf) from ch_vcf_for_epiread
-
-		  output:
-		  file "${name}.snp.bed" into ch_snp_for_epiread
-		  script:
-		   """
-			biscuit vcf2bed -t snp "${vcf[0]}" > "${name}.snp.bed"
-		  """
-		}
-		
 		process epiread_convertion {
 			tag "$name"
 			publishDir "${params.outdir}/epireads", mode: 'copy'
@@ -1301,20 +1276,18 @@ if( params.aligner == 'biscuit' ){
 			file bam_index from ch_bam_index_for_epiread
 			file fasta from ch_fasta_for_epiread.collect()
 			file fasta_index from ch_fasta_index_for_epiread.collect()
-			file snp from ch_snp_for_epiread
 			
 		  output:
 			file "*epiread" 
 
 		  script:
-		  snp_file = (snp.size()>0) ? "-B " + snp.toString() : ''
 		  if (params.single_end) {
 		  """
-		  biscuit epiread -q ${task.cpus} $fasta $bam $snp_file -o ${name}.epiread 
+		  biscuit epiread -q ${task.cpus} $fasta $bam  -o ${name}.epiread 
 		  """
 		  } else {
 			"""
-			biscuit epiread -q ${task.cpus} $fasta $bam $snp_file | sort --parallel=${task.cpus} -T .  -k2,2 -k3,3n | awk 'BEGIN{qname="";rec=""} qname==\$2{print rec"\t"\$5"\t"\$6"\t"\$7"\t"\$8;qname=""} qname!=\$2{qname=\$2;rec=\$1"\t"\$4"\t"\$5"\t"\$6"\t"\$7"\t"\$8;pair=\$3}' > ${name}.epiread 
+			biscuit epiread -q ${task.cpus} $fasta $bam | sort --parallel=${task.cpus} -T .  -k2,2 -k3,3n | awk 'BEGIN{qname="";rec=""} qname==\$2{print rec"\t"\$5"\t"\$6"\t"\$7"\t"\$8;qname=""} qname!=\$2{qname=\$2;rec=\$1"\t"\$4"\t"\$5"\t"\$6"\t"\$7"\t"\$8;pair=\$3}' > ${name}.epiread 
 			"""
 		  }
 		}

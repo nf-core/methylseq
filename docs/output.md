@@ -189,10 +189,7 @@ Filename abbreviations stand for the following reference alignment strands:
 > **NB** if `--epriread` is specified in the pipeline, then:
 > **output directory:** `results/epireads` :
 	> * `sample.epiread` 
-			 Storing CpG retention pattern as well as SNP information on the same read in a compact way 
-> * `snp/sample.snp.bed`
-	> 	Storing the SNP information of the `sample.epiread` file. **EXTRACTING SNP PROCSS IS IN PROGRESS!**
-		**NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
+			 Storing CpG retention pattern on the read in a compact way 
 > 
 
 ### Bismark Reports

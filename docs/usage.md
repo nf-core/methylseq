@@ -35,7 +35,6 @@
   * [`--save_align_intermeds`](#--save_align_intermeds)
   * [`--save_pileup_file`](#--save_pileup_file)
   * [`--epiread`](#--epiread)
-  * [`--save_snp_file`](#--save_snp_file)
   * [`--soloWCGW_file`](#--soloWCGW_file)
   * [`--assets_dir`](#--assets_dir)
   * [`--min_depth`](#--min_depth)
@@ -350,12 +349,7 @@ When running with biscuit aligner, the methylation extraction is based on vcf fi
 
 ### `--epiread`
 
-[Epiread]([https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format](https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format)) format is a compact way of storing CpG retention pattern as well as SNP information on the same read. This option will tell the biscuit workflow to generate epiread file. The SNP file used for the epiread format can be saved using `--save_snp_file`.
-
-### `--save_snp_file`
-
-SNP file created from a sample in order to be used in the epiread file is not saved in final output directory. Set to true to copy out the SNP file. 
-> **NB: The SNP detection is in progress of development within the biscuit tool**
+[Epiread]([https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format](https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format)) format is a compact way of storing CpG retention pattern on the same read. This option will tell the biscuit workflow to generate epiread file. 
 
 ### `--soloWCGW_file`
 
