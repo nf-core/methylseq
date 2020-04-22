@@ -366,7 +366,7 @@ This will generate methylation statuses in [bedGraph](http://genome.ucsc.edu/gol
 ### `--assets_dir`
 
 Path to a directory containing needed file for biscuit-QC step. The needed files for hg38,hg19 and mm10 can be found in [here](https://www.cse.huji.ac.il/~ekushele/assets.html). 
-**This paramater is mandatory when running the pipeline using biscuit workflow**
+**This parameter is mandatory when running the pipeline using biscuit workflow**
 
 ### `--min_depth`
 
