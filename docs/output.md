@@ -178,7 +178,7 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.bedgraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 * `sample.bedgraph`
-  * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW file.
+  * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW-commonPMDs file.
   *  **NB:** Created only if `--soloWCGW_file` is specified. **EXPERIMENTAL!**
  * `sample.vcf.gz` 
 	 * VCF file with the pileup information, used for creating the bedgraph file.

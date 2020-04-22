@@ -45,7 +45,7 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
-	 --soloWCGW_file [path]             soloWCGW file, to intersect with methyl_extract bed file. soloWCGW for hg38 can be downlaod from: http://zwdzwd.io/pmd/solo_WCGW_hg38.bed.gz  EXPERMINTAL!
+	 --soloWCGW_file [path]             soloWCGW in common-PMDs file, to intersect with methyl_extract bed file. soloWCGW in common PMDs for hg38 can be downlaod from: http://zwdzwd.io/pmd/solo_WCGW_inCommonPMDs_hg38.bed.gz  EXPERMINTAL!
 	 --assets_dir [path]                Assets directory for biscuit_QC, REQUIRED IF IN BISCUIT ALIGNER. can be found at: https://www.cse.huji.ac.il/~ekushele/assets.html
 	 --epiread [bool]                	Convert bam to biscuit epiread format
 
