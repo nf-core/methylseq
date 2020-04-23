@@ -35,7 +35,6 @@
   * [`--save_align_intermeds`](#--save_align_intermeds)
   * [`--save_pileup_file`](#--save_pileup_file)
   * [`--epiread`](#--epiread)
-  * [`--soloWCGW_file`](#--soloWCGW_file)
   * [`--assets_dir`](#--assets_dir)
   * [`--min_depth`](#--min_depth)
   * [`--meth_cutoff`](#--meth_cutoff)
@@ -350,12 +349,6 @@ When running with biscuit aligner, the methylation extraction is based on vcf fi
 ### `--epiread`
 
 [Epiread]([https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format](https://github.com/zhou-lab/biscuit/wiki/Convert-to-epiread-format)) format is a compact way of storing CpG retention pattern on the same read. This option will tell the biscuit workflow to generate epiread file. 
-
-### `--soloWCGW_file`
-
-This will generate methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, intersected with soloWCGW in common-PMDs after extracting methylation from vcf, using biscuit workflow.
-> **NB: The soloWCGW is experimental, and currently available only for hg38**
-> 
 
 ### `--assets_dir`
 

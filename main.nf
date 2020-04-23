@@ -45,7 +45,6 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
-	 --soloWCGW_file [path]             soloWCGW in common-PMDs file, to intersect with methyl_extract bed file. soloWCGW in common PMDs for hg38 can be downlaod from: http://zwdzwd.io/pmd/solo_WCGW_inCommonPMDs_hg38.bed.gz  EXPERMINTAL!
 	 --assets_dir [path]                Assets directory for biscuit_QC, REQUIRED IF IN BISCUIT ALIGNER. can be found at: https://www.cse.huji.ac.il/~ekushele/assets.html
 	 --epiread [bool]                	Convert bam to biscuit epiread format
 
@@ -108,7 +107,6 @@ params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
 params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 params.bwa_biscuit_index =  false 
-params.soloWCGW_file =  false
 assembly_name = (params.fasta.toString().lastIndexOf('/') == -1) ?: params.fasta.toString().substring( params.fasta.toString().lastIndexOf('/')+1)
 
 params.save_pileup_file = false
@@ -287,11 +285,6 @@ if (params.readPaths) {
         .into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
 }
 
-if (params.soloWCGW_file) {
-	Channel
-	.fromPath(params.soloWCGW_file)
-	 .into { ch_soloWCGW_for_biscuitVCF; }
-}
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
@@ -332,7 +325,6 @@ if( params.min_depth ) summary['Minimum Depth'] = params.min_depth
 if( params.ignore_flags ) summary['MethylDackel'] = 'Ignoring SAM Flags'
 if( params.methyl_kit ) summary['MethylDackel'] = 'Producing methyl_kit output'
 if( params.assets_dir ) summary['Assets Directory'] = params.assets_dir	
-if( params.soloWCGW_file ) summary['soloWCGW File'] = params.soloWCGW_file
 if( params.epiread ) summary['Epiread'] = params.epiread ? 'Yes' : 'No'
 
 summary['Save Reference'] = params.save_reference ? 'Yes' : 'No'
@@ -1224,46 +1216,24 @@ if( params.aligner == 'biscuit' ){
     /*
      * STEP 7 - create bedgraph file from vcf
      */
-		process createBedgraph {
-			tag "$name"
-		  publishDir "${params.outdir}/methylation_extract", mode: 'copy'
+	process createBedgraph {
+		tag "$name"
+	  publishDir "${params.outdir}/methylation_extract", mode: 'copy'
 	
 			 
-		  input:
-		  set val(name), file(vcf) from ch_vcf_for_bedgraph
+	  input:
+	  set val(name), file(vcf) from ch_vcf_for_bedgraph
 
-		  output:
-		  set val(name), file("*bedgraph" ) into ch_bedgraph_for_intersect_soloWCGW
+	  output:
+	  set val(name), file("*bedgraph" ) 
 
-		  script:
-		  min_depth = params.min_depth > 0 ? "${params.min_depth}" : '1'
-		  all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
-		  """
-			biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${name}.bedgraph"   
-			
-		  """
-		}
-		/***************
-		*EXPERIMENTAL!!*
-		***************/
-	if (params.soloWCGW_file) {
-		process intersect_soloWCGW {
-			tag "$name"
-		  publishDir "${params.outdir}/methylation_extract", mode: 'copy'
-	
-			 
-		  input:
-		  set val(name), file(bedgraph) from ch_bedgraph_for_intersect_soloWCGW
-		  file soloWGCW from ch_soloWCGW_for_biscuitVCF.collect()
-
-		  output:
-		  file "*bedgraph" 
-		  script:
-		  """
-		   bedtools intersect -wa -a "${bedgraph[0].baseName}.bedgraph"  -b $soloWGCW > ${name}_soloWCGW.bedgraph 
-		  """
-		}
-	}	
+	  script:
+	  min_depth = params.min_depth > 0 ? "${params.min_depth}" : '1'
+	  all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
+	  """
+          biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${name}.bedgraph"
+	  """
+	}
 	
     
 	if (params.epiread) {
