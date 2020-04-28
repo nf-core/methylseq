@@ -72,7 +72,6 @@ def helpMessage() {
      --accell [bool]
      --zymo [bool]
      --cegx [bool]
-	 --swift [bool]
 
     Other options:
      --outdir [file]                    The output directory where the results will be saved
@@ -203,7 +202,6 @@ params.epignome = false
 params.accel = false
 params.zymo = false
 params.cegx = false
-params.swift = false
 if(params.pbat){
     params.clip_r1 = 9
     params.clip_r2 = 9
@@ -233,12 +231,6 @@ else if( params.cegx ){
     params.clip_r2 = 6
     params.three_prime_clip_r1 = 2
     params.three_prime_clip_r2 = 2
-}
-else if( params.swift ){
-    params.clip_r1 = 0
-    params.clip_r2 = 14
-    params.three_prime_clip_r1 = 0
-    params.three_prime_clip_r2 = 0
 } else {
     params.clip_r1 = 0
     params.clip_r2 = 0
@@ -312,7 +304,6 @@ if( params.epignome )     summary['Trim Profile'] = 'TruSeq (EpiGnome)'
 if( params.accel )        summary['Trim Profile'] = 'Accel-NGS (Swift)'
 if( params.zymo )         summary['Trim Profile'] = 'Zymo Pico-Methyl'
 if( params.cegx )         summary['Trim Profile'] = 'CEGX'
-if( params.swift )        summary['Trim Profile'] = 'Swift'
 
 summary['Trim R1'] = params.clip_r1
 summary['Trim R2'] = params.clip_r2

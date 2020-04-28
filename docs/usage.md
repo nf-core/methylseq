@@ -282,7 +282,6 @@ The pipeline also accepts a number of presets for common bisulfite library prepa
 | `--accel`       | 10         | 15         | 10         | 10         |
 | `--zymo`        | 10         | 15         | 10         | 10         |
 | `--cegx`        | 6          | 6          | 2          | 2          |
-| `--swift`       | 0          | 14         | 0          | 0          |
 
 ### `--rrbs`
 
