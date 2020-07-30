@@ -4,7 +4,7 @@ from collections import OrderedDict
 import re
 
 regexes = {
-    'nf-core/methylseq': ['v_ngi_methylseq.txt', r"(\S+)"],
+    'nf-core/methylseq': ['v_pipeline.txt', r"(\S+)"],
     'Nextflow': ['v_nextflow.txt', r"(\S+)"],
     'Bismark genomePrep': ['v_bismark_genome_preparation.txt', r"Bismark Genome Preparation Version: v(\S+)"],
     'FastQC': ['v_fastqc.txt', r"FastQC v(\S+)"],
@@ -60,10 +60,11 @@ for k, v in regexes.items():
 # Remove software set to false in results
 for k in list(results):
     if not results[k]:
-        del(results[k])
+        del results[k]
 
 # Dump to YAML
-print ('''
+print(
+    """
 id: 'software_versions'
 section_name: 'nf-core/methylseq Software Versions'
 section_href: 'https://github.com/nf-core/methylseq'
@@ -71,12 +72,13 @@ plot_type: 'html'
 description: 'are collected at run time from the software output.'
 data: |
     <dl class="dl-horizontal">
-''')
-for k,v in results.items():
-    print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k,v))
-print ("    </dl>")
+"""
+)
+for k, v in results.items():
+    print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k, v))
+print("    </dl>")
 
 # Write out regexes as csv file:
-with open('software_versions.csv', 'w') as f:
-    for k,v in results.items():
-        f.write("{}\t{}\n".format(k,v))
+with open("software_versions.csv", "w") as f:
+    for k, v in results.items():
+        f.write("{}\t{}\n".format(k, v))
