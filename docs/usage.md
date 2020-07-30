@@ -9,7 +9,6 @@
   * [Updating the pipeline](#updating-the-pipeline)
   * [Reproducibility](#reproducibility)
 * [Main arguments](#main-arguments)
-  * [`-profile`](#-profile)
   * [`--input`](#--input)
   * [`--single_end`](#--single_end)
 * [Reference genomes](#reference-genomes)
@@ -40,6 +39,11 @@
   * [`--local_alignment`](#--local_alignment)
   * [`--bismark_align_cpu_per_multicore`](#--bismark_align_cpu_per_multicore)
   * [`--bismark_align_mem_per_multicore`](#--bismark_align_mem_per_multicore)
+* [Core Nextflow arguments](#core-nextflow-arguments)
+  * [`-profile`](#-profile)
+  * [`-name`](#-name)
+  * [`-resume`](#-resume)
+  * [`-c`](#-c)
 * [Job resources](#job-resources)
   * [Automatic resubmission](#automatic-resubmission)
   * [Custom resource requests](#custom-resource-requests)
@@ -52,9 +56,6 @@
   * [`--email`](#--email)
   * [`--email_on_fail`](#--email_on_fail)
   * [`--max_multiqc_email_size`](#--max_multiqc_email_size)
-  * [`-name`](#-name)
-  * [`-resume`](#-resume)
-  * [`-c`](#-c)
   * [`--custom_config_version`](#--custom_config_version)
   * [`--custom_config_base`](#--custom_config_base)
   * [`--max_memory`](#--max_memory)
@@ -118,6 +119,8 @@ First, go to the [nf-core/methylseq releases page](https://github.com/nf-core/me
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
+## Main arguments
+
 ### `--input`
 
 Use this to specify the location of your input FastQ files. For example:
@@ -136,10 +139,10 @@ If left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`
 
 ### `--single_end`
 
-By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--reads`. For example:
+By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--input`. For example:
 
 ```bash
---single_end --reads '*.fastq'
+--single_end --input '*.fastq'
 ```
 
 It is not possible to run a mixture of single-end and paired-end files in one run.
