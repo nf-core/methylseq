@@ -11,7 +11,8 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
-                "input"
+                "input",
+                "single_end"
             ],
             "properties": {
                 "input": {
@@ -255,5 +256,161 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
+    ],
+    "properties": {
+        "aligner": {
+            "type": "string",
+            "default": "bismark",
+            "description": "Alignment tool to use. Available: bismark, bismark_hisat, bwameth"
+        },
+        "clip_r1": {
+            "type": "integer",
+            "description": "Trim the specified number of bases from the 5' end of read 1 (or single-end reads).",
+            "default": "0"
+        },
+        "clip_r2": {
+            "type": "integer",
+            "description": "Trim the specified number of bases from the 5' end of read 2 (paired-end only).",
+            "default": "0"
+        },
+        "three_prime_clip_r1": {
+            "type": "integer",
+            "description": "Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming.",
+            "default": "0"
+        },
+        "three_prime_clip_r2": {
+            "type": "integer",
+            "description": "Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming",
+            "default": "0"
+        },
+        "rrbs": {
+            "type": "boolean",
+            "description": "Turn on if dealing with MspI digested material."
+        },
+        "pbat": {
+            "type": "boolean"
+        },
+        "single_cell": {
+            "type": "boolean"
+        },
+        "epignome": {
+            "type": "boolean"
+        },
+        "accel": {
+            "type": "boolean"
+        },
+        "zymo": {
+            "type": "boolean"
+        },
+        "cegx": {
+            "type": "boolean"
+        },
+        "comprehensive": {
+            "type": "boolean",
+            "description": "Output information for all cytosine contexts."
+        },
+        "cytosine_report": {
+            "type": "boolean",
+            "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step."
+        },
+        "ignore_flags": {
+            "type": "boolean",
+            "description": "Run MethylDackel with the flag to ignore SAM flags."
+        },
+        "meth_cutoff": {
+            "type": "integer",
+            "description": "Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.",
+            "default": "0"
+        },
+        "methyl_kit": {
+            "type": "boolean",
+            "description": "Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package."
+        },
+        "min_depth": {
+            "type": "integer",
+            "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
+            "default": "0"
+        },
+        "skip_deduplication": {
+            "type": "boolean",
+            "description": "Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified."
+        },
+        "non_directional": {
+            "type": "boolean",
+            "description": "Run alignment against all four possible strands."
+        },
+        "skip_trimming": {
+            "type": "boolean",
+            "description": "Skip read trimming."
+        },
+        "save_align_intermeds": {
+            "type": "boolean",
+            "description": "Save aligned intermediates to results directory"
+        },
+        "known_splices": {
+            "type": "string",
+            "description": "Supply a .gtf file containing known splice sites (bismark_hisat only)."
+        },
+        "slamseq": {
+            "type": "boolean",
+            "description": "Run bismark in SLAM-seq mode."
+        },
+        "local_alignment": {
+            "type": "boolean",
+            "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments)."
+        },
+        "save_reference": {
+            "type": "boolean",
+            "description": "Save reference(s) to results directory"
+        },
+        "save_trimmed": {
+            "type": "boolean",
+            "description": "Save trimmed reads to results directory."
+        },
+        "unmapped": {
+            "type": "boolean",
+            "description": "Save unmapped reads to fastq files"
+        },
+        "relax_mismatches": {
+            "type": "boolean",
+            "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)."
+        },
+        "num_mismatches": {
+            "type": "number",
+            "default": 0.6,
+            "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)"
+        },
+        "bismark_align_cpu_per_multicore": {
+            "type": "number",
+            "default": 3,
+            "description": "Specify how many CPUs are required per --multicore for bismark align"
+        },
+        "bismark_align_mem_per_multicore": {
+            "type": "string",
+            "default": "13.GB",
+            "description": "Specify how much memory is required per --multicore for bismark align"
+        },
+        "project": {
+            "type": "string",
+            "description": "Cluster Project"
+        },
+        "clusterOptions": {
+            "type": "string"
+        },
+        "bismark_index": {
+            "type": "string",
+            "description": "Path to Bismark index"
+        },
+        "bwa_meth_index": {
+            "type": "string",
+            "description": "Path to bwameth index"
+        },
+        "fasta_index": {
+            "type": "string",
+            "description": "Path to Fasta Index"
+        }
+    },
+    "required": [
+        "aligner"
     ]
 }
