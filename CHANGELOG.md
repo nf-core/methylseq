@@ -4,7 +4,7 @@
 
 ### Pipeline Updates
 
-* Updated template to tools 1.10.1
+* Updated template to tools 1.10.2
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 

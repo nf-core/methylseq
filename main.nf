@@ -253,7 +253,7 @@ log.info nfcoreHeader()
 def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
 summary['Run Name']  = custom_runName ?: workflow.runName
-summary['Reads']     = params.input
+summary['Input']     = params.input
 summary['Aligner']   = params.aligner
 summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
 if(params.known_splices)    summary['Spliced alignment'] =  'Yes'
