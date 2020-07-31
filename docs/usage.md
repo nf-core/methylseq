@@ -196,6 +196,7 @@ If you prefer, you can specify the full path to your reference genome when you r
 
 # Genome Fasta index file
 --fasta_index /path/to/genome.fa.fai
+```
 
 ### `--igenomes_ignore`
 
