@@ -381,7 +381,7 @@ process get_software_versions {
 if( !params.bismark_index && params.aligner =~ /bismark/ ){
     process makeBismarkIndex {
         publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
-                   saveAs: { params.save_reference ? it : null }, mode: 'copy'
+                   saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
         input:
         file fasta from ch_fasta_for_makeBismarkIndex
@@ -406,7 +406,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
 if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
     process makeBwaMemIndex {
         tag "$fasta"
-        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
         input:
         file fasta from ch_fasta_for_makeBwaMemIndex
@@ -427,7 +427,7 @@ if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
 if( !params.fasta_index && params.aligner == 'bwameth' ){
     process makeFastaIndex {
         tag "$fasta"
-        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+        publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
         input:
         file fasta from ch_fasta_for_makeFastaIndex
@@ -475,7 +475,7 @@ if( params.skip_trimming ){
 } else {
     process trim_galore {
         tag "$name"
-        publishDir "${params.outdir}/trim_galore", mode: 'copy',
+        publishDir "${params.outdir}/trim_galore", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( filename.indexOf("_fastqc") > 0 ) "FastQC/$filename"
                 else if( filename.indexOf("trimming_report.txt" ) > 0) "logs/$filename"
@@ -527,7 +527,7 @@ if( params.skip_trimming ){
 if( params.aligner =~ /bismark/ ){
     process bismark_align {
         tag "$name"
-        publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
+        publishDir "${params.outdir}/bismark_alignments", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
                 else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
@@ -619,7 +619,7 @@ if( params.aligner =~ /bismark/ ){
     } else {
         process bismark_deduplicate {
             tag "$name"
-            publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
+            publishDir "${params.outdir}/bismark_deduplicated", mode: params.publish_dir_mode,
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
@@ -642,7 +642,7 @@ if( params.aligner =~ /bismark/ ){
      */
     process bismark_methXtract {
         tag "$name"
-        publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
+        publishDir "${params.outdir}/bismark_methylation_calls", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( filename.indexOf("splitting_report.txt" ) > 0 ) "logs/$filename"
                 else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
@@ -721,7 +721,7 @@ if( params.aligner =~ /bismark/ ){
      */
     process bismark_report {
         tag "$name"
-        publishDir "${params.outdir}/bismark_reports", mode: 'copy'
+        publishDir "${params.outdir}/bismark_reports", mode: params.publish_dir_mode
 
         input:
         set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from ch_bismark_logs_for_bismark_report
@@ -743,7 +743,7 @@ if( params.aligner =~ /bismark/ ){
      * STEP 7 - Bismark Summary Report
      */
     process bismark_summary {
-        publishDir "${params.outdir}/bismark_summary", mode: 'copy'
+        publishDir "${params.outdir}/bismark_summary", mode: params.publish_dir_mode
 
         input:
         file ('*') from ch_bam_for_bismark_summary.collect()
@@ -777,7 +777,7 @@ else {
 if( params.aligner == 'bwameth' ){
     process bwamem_align {
         tag "$name"
-        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( !params.save_align_intermeds && filename == "where_are_my_files.txt" ) filename
                 else if( params.save_align_intermeds && filename != "where_are_my_files.txt" ) filename
@@ -810,7 +810,7 @@ if( params.aligner == 'bwameth' ){
      */
     process samtools_sort_index_flagstat {
         tag "$name"
-        publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
+        publishDir "${params.outdir}/bwa-mem_alignments", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "logs/$filename"
                 else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
@@ -852,7 +852,7 @@ if( params.aligner == 'bwameth' ){
     } else {
         process markDuplicates {
             tag "$name"
-            publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy',
+            publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: params.publish_dir_mode,
                 saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
             input:
@@ -890,7 +890,7 @@ if( params.aligner == 'bwameth' ){
 
     process methyldackel {
         tag "$name"
-        publishDir "${params.outdir}/MethylDackel", mode: 'copy'
+        publishDir "${params.outdir}/MethylDackel", mode: params.publish_dir_mode
 
         input:
         set val(name),
@@ -931,7 +931,7 @@ else {
  */
 process qualimap {
     tag "$name"
-    publishDir "${params.outdir}/qualimap", mode: 'copy'
+    publishDir "${params.outdir}/qualimap", mode: params.publish_dir_mode
 
     input:
     set val(name), file(bam) from ch_bam_dedup_for_qualimap
@@ -962,7 +962,7 @@ process qualimap {
  */
 process preseq {
     tag "$name"
-    publishDir "${params.outdir}/preseq", mode: 'copy'
+    publishDir "${params.outdir}/preseq", mode: params.publish_dir_mode
 
     input:
     set val(name), file(bam) from ch_bam_for_preseq
