@@ -170,6 +170,8 @@ params {
       fasta   = '<path to the genome fasta file>' // Used if no index given
     }
     // Any number of additional genomes, key is used with --genome
+  }
+}
 ```
 
 ### Supplying reference indices
