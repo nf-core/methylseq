@@ -1,6 +1,6 @@
 # nf-core/methylseq Output
 
-## :warning: Please read this documentation on the nf-core website: https://nf-co.re/methylseq :warning:
+## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/methylseq](https://nf-co.re/methylseq) :warning:
 
 > _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
 
