@@ -1,5 +1,13 @@
 # nf-core/methylseq Output
 
+**:warning: Please read this documentation on the nf-core website: https://nf-co.re/methylseq**
+
+Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files.
+
+## Introduction
+
+Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files.
+
 This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
 
 Note that nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
@@ -189,7 +197,7 @@ For more information about how to use MultiQC reports, see [https://multiqc.info
 
 **Output files:**
 
-* `multiqc/`  
+* `multiqc/`
   * `multiqc_report.html`: a standalone HTML file that can be viewed in your web browser.
   * `multiqc_data/`: directory containing parsed statistics from the different tools used in the pipeline.
   * `multiqc_plots/`: directory containing static images from the report in various formats.

@@ -1,5 +1,9 @@
 # nf-core/methylseq: Usage
 
+**:warning: Please read this documentation on the nf-core website: https://nf-co.re/methylseq**
+
+Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files.
+
 ## Table of contents
 
 * [Table of contents](#table-of-contents)
