@@ -67,174 +67,11 @@ First, go to the [nf-core/methylseq releases page](https://github.com/nf-core/me
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
-## Main arguments
-
-### `--input`
-
-Use this to specify the location of your input FastQ files. For example:
-
-```bash
---input 'path/to/data/sample_*_{1,2}.fastq'
-```
-
-Please note the following requirements:
-
-1. The path must be enclosed in quotes
-2. The path must have at least one `*` wildcard character
-3. When using the pipeline with paired end data, the path must use `{1,2}` notation to specify read pairs.
-
-If left unspecified, a default pattern is used: `data/*{1,2}.fastq.gz`
-
-### `--single_end`
-
-By default, the pipeline expects paired-end data. If you have single-end data, you need to specify `--single_end` on the command line when you launch the pipeline. A normal glob pattern, enclosed in quotation marks, can then be used for `--input`. For example:
-
-```bash
---single_end --input '*.fastq'
-```
-
-It is not possible to run a mixture of single-end and paired-end files in one run.
-
-## Reference genomes
-
-The pipeline config files come bundled with paths to the illumina iGenomes reference index files. If running with docker or AWS, the configuration is set up to use the [AWS-iGenomes](https://ewels.github.io/AWS-iGenomes/) resource.
-
-### `--genome` (using iGenomes)
-
-* Human
-  * `--genome GRCh37`
-  * `--genome GRCh38`
-* Mouse
-  * `--genome GRCm38`
-* _Drosophila_
-  * `--genome BDGP6`
-* _S. cerevisiae_
-  * `--genome 'R64-1-1'`
-
-```nextflow
-params {
-  genomes {
-    'GRCh37' {
-      fasta   = '<path to the genome fasta file>' // Used if no index given
-    }
-    // Any number of additional genomes, key is used with --genome
-  }
-}
-```
-
-### Supplying reference indices
-
-If you don't want to use the Illumina iGenomes references, you can supply your own reference genome.
-
-The minimum requirement is just a FASTA file - the pipeline will automatically generate the relevant reference index from this. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. The bwa-meth workflow always needs a FASTA file, for methylation calling.
-
-### `--fasta`
-
-If you prefer, you can specify the full path to your reference genome when you run the pipeline:
-
-```bash
-# Single multifasta for genome
---fasta /path/to/genome.fa
-
-# Bismark index directory
---bismark_index /path/to/ref/BismarkIndex/
-
-# bwa-meth index filename base
-# where for example the index files are called:
-# /path/to/ref/genome.fa.bwameth.c2t.bwt
---bwa_meth_index /path/to/ref/genome.fa
-
-# Genome Fasta index file
---fasta_index /path/to/genome.fa.fai
-```
-
-### `--igenomes_ignore`
-
-Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`.
-
-### `--save_reference`
-
-Supply this parameter to save any generated reference genome files to your results folder. These can then be used for future pipeline runs, reducing processing times.
-
-## Additional parameters
-
-### Adapter Trimming
-
-Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment. You can specify these custom trimming parameters as follows:
-
-* `--clip_r1 <NUMBER>`
-  * Instructs Trim Galore to remove bp from the 5' end of read 1 (or single-end reads).
-* `--clip_r2 <NUMBER>`
-  * Instructs Trim Galore to remove bp from the 5' end of read 2 (paired-end reads only).
-* `--three_prime_clip_r1 <NUMBER>`
-  * Instructs Trim Galore to remove bp from the 3' end of read 1 _AFTER_ adapter/quality trimming has been performed.
-* `--three_prime_clip_r2 <NUMBER>`
-  * Instructs Trim Galore to remove bp from the 3' end of read 2 _AFTER_ adapter/quality trimming has been performed.
-
-The pipeline also accepts a number of presets for common bisulfite library preparation methods:
-
-| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |
-|-----------------|------------|------------|------------|------------|
-| `--pbat`        | 6          | 9          | 6          | 9          |
-| `--single_cell` | 6          | 6          | 6          | 6          |
-| `--epignome`    | 8          | 8          | 8          | 8          |
-| `--accel`       | 10         | 15         | 10         | 10         |
-| `--zymo`        | 10         | 15         | 10         | 10         |
-| `--cegx`        | 6          | 6          | 2          | 2          |
-
-### `--rrbs`
-
-Specifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore! See the [TrimGalore! documentation](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md#rrbs-specific-options-mspi-digested-material) to read more about the effects of this option.
-
-This parameter also makes the pipeline skip the deduplication step.
-
-### `--skip_trimming`
-
-Specifying `--skip_trimming` will skip the adapter trimming step. Use this if your input FastQ files have already been trimmed outside of the workflow.
-
-### `--skip_deduplication`
-
-By default, the pipeline includes a deduplication step after alignment. Use `--skip_deduplication` on the command line to skip this step. This is automatically set if using `--rrbs` for the workflow.
-
-### `--pbat`
-
-Using the `--pbat` parameter will affect the trimming (see above) and also set the `--pbat` flag when aligning with Bismark. It tells Bismark to align complementary strands (the opposite of `--directional`).
-
-### `--non_directional`
-
-By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.
-
-Note that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.
-
-### `--comprehensive`
-
-By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).
-
-If specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.
-
-If using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well.
-
-### `--cytosine_report`
-
-By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.
-
-### `--relax_mismatches` and `--num_mismatches`
-
-By default, Bismark is pretty strict about which alignments it accepts as valid. If you have good reason to believe that your reads will contain more mismatches than normal, these flags can be used to relax the stringency that Bismark uses when accepting alignments. This can greatly improve the number of aligned reads you get back, but may negatively impact the quality of your data.
-
-`--num_mismatches` is `0.2` by default in Bismark, or `0.6` if `--relax_mismatches` is specified. `0.6` will allow a penalty of `bp * -0.6` - for 100bp reads, this is `-60`. Mismatches cost `-6`, gap opening `-5` and gap extension `-2`. So, `-60` would allow 10 mismatches or ~ 8 x 1-2bp indels.
-
 ### `--unmapped`
 
 Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.
 
-### `--save_trimmed`
-
-By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete.
-
 ### `--save_align_intermeds`
-
-By default intermediate BAM files will not be saved. The final BAM files created after the deduplication step are always. Set to true to also copy out BAM files from the initial Bismark alignment step. If `--skip_deduplication` or `--rrbs` is specified then BAMs from the initial alignment will always be saved.
 
 ### `--min_depth`
 
@@ -255,10 +92,6 @@ Specify to run MethylDackel with the `--methyl_kit` flag to produce files suitab
 ### `--known_splices`
 
 Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline. (only works with `--aligner bismark_hisat`)
-
-### `--slamseq`
-
-Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) (only works with `--aligner bismark_hisat`)
 
 ### `--local_alignment`
 
