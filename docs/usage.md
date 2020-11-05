@@ -15,17 +15,6 @@
 
 ## Introduction
 
-Nextflow handles job submissions on SLURM or other environments, and supervises running the jobs. Thus the Nextflow process must run until the pipeline is finished. We recommend that you put the process running in the background through `screen` / `tmux` or similar tool. Alternatively you can run nextflow within a cluster job submitted your job scheduler.
-
-In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
-We recommend adding the following line to your environment to limit this (typically in `~/.bashrc` or `~./bash_profile`):
-
-```bash
-NXF_OPTS='-Xms1g -Xmx4g'
-```
-
-### Bismark and bwa-meth workflow
-
 The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.
 
 Since bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.
@@ -67,58 +56,6 @@ First, go to the [nf-core/methylseq releases page](https://github.com/nf-core/me
 
 This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
-### `--unmapped`
-
-Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.
-
-### `--save_align_intermeds`
-
-### `--min_depth`
-
-Specify to specify a minimum read coverage for MethylDackel to report a methylation call.
-
-### `--meth_cutoff`
-
-Use this to specify a minimum read coverage to report a methylation call during Bismark's `bismark_methylation_extractor` step.
-
-### `--ignore_flags`
-
-Specify to run MethylDackel with the `--ignore_flags` flag to ignore SAM flags.
-
-### `--methyl_kit`
-
-Specify to run MethylDackel with the `--methyl_kit` flag to produce files suitable for use with the methylKit R package.
-
-### `--known_splices`
-
-Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline. (only works with `--aligner bismark_hisat`)
-
-### `--local_alignment`
-
-Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125) (doesn't work with `--aligner bwameth`)
-
-### `--bismark_align_cpu_per_multicore`
-
-The pipeline makes use of the `--multicore` option for Bismark align. When using this option,
-Bismark uses a large number of CPUs for every `--multicore` specified. The pipeline
-calculates the number of `--multicore` based on the resources available to the task.
-It divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional`
-are specified. This is based on usage for a typical mouse genome.
-
-You may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the
-usage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline
-will divide the available CPUs by this value instead.
-
-See the [bismark documentation](https://github.com/FelixKrueger/Bismark/tree/master/Docs#alignment)
-for more information.
-
-### `--bismark_align_mem_per_multicore`
-
-Exactly as above, but for memory. By default, the pipeline divides the available memory by `13.GB`,
-or `18.GB` if any of `--single_cell`, `--zymo` or `--non_directional` are specified.
-
-Note that the final `--multicore` value is based on the lowest limiting factor of both CPUs and memory.
-
 ## Core Nextflow arguments
 
 > **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
@@ -155,12 +92,6 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   * A profile with a complete configuration for automated testing
   * Includes links to test data so needs no other parameters
 
-### `-name`
-
-Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic.
-
-This is used in the MultiQC report (if not default) and in the summary HTML / e-mail (always).
-
 ### `-resume`
 
 Specify this when restarting a pipeline. Nextflow will used cached results from any pipeline steps where the inputs are the same, continuing from where it got to previously.
@@ -171,19 +102,11 @@ You can also supply a run name to resume a specific run: `-resume [run-name]`. U
 
 Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/usage/configuration) for more information.
 
-## Job resources
-
-### Automatic resubmission
+#### Custom resource requests
 
 Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the steps in the pipeline, if the job exits with an error code of `143` (exceeded requested resources) it will automatically resubmit with higher requests (2 x original, then 3 x original). If it still fails after three times then the pipeline is stopped.
 
-### Custom resource requests
-
-Wherever process-specific requirements are set in the pipeline, the default value can be changed by creating a custom config file. See the files hosted at [`nf-core/configs`](https://github.com/nf-core/configs/tree/master/conf) for examples.
-
-Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the steps in the pipeline, if the job exits with an error code of `143` (exceeded requested resources) it will automatically resubmit with higher requests (2 x original, then 3 x original). If it still fails after three times then the pipeline is stopped.
-
-Whilst these default requirements will hopefully work for most people with most data, you may find that you want to customise the compute resources that the pipeline requests. You can do this by creating a custom config file. For example, to give the workflow process `bismark_align` 32GB of memory, you could use the following config:
+Whilst these default requirements will hopefully work for most people with most data, you may find that you want to customise the compute resources that the pipeline requests. You can do this by creating a custom config file. For example, to give the workflow process `star` 32GB of memory, you could use the following config:
 
 ```nextflow
 process {
@@ -208,85 +131,11 @@ The Nextflow `-bg` flag launches Nextflow in the background, detached from your 
 Alternatively, you can use `screen` / `tmux` or similar tool to create a detached session which you can log back into at a later time.
 Some HPC setups also allow you to run nextflow within a cluster job submitted your job scheduler (from where it submits more jobs).
 
-## Other command line parameters
+#### Nextflow memory requirements
 
-### `--outdir`
-
-The output directory where the results will be saved.
-
-### `--email`
-
-Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.
-
-### `--email_on_fail`
-
-This works exactly as with `--email`, except emails are only sent if the workflow is not successful.
-
-### `--max_multiqc_email_size`
-
-Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB).
-
-### `--custom_config_version`
-
-Provide git commit id for custom Institutional configs hosted at `nf-core/configs`. This was implemented for reproducibility purposes. Default: `master`.
+In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
+We recommend adding the following line to your environment to limit this (typically in `~/.bashrc` or `~./bash_profile`):
 
 ```bash
-## Download and use config file with following git commid id
---custom_config_version d52db660777c4bf36546ddb188ec530c3ada1b96
+NXF_OPTS='-Xms1g -Xmx4g'
 ```
-
-### `--custom_config_base`
-
-If you're running offline, nextflow will not be able to fetch the institutional config files
-from the internet. If you don't need them, then this is not a problem. If you do need them,
-you should download the files from the repo and tell nextflow where to find them with the
-`custom_config_base` option. For example:
-
-```bash
-## Download and unzip the config files
-cd /path/to/my/configs
-wget https://github.com/nf-core/configs/archive/master.zip
-unzip master.zip
-
-## Run the pipeline
-cd /path/to/my/data
-nextflow run /path/to/pipeline/ --custom_config_base /path/to/my/configs/configs-master/
-```
-
-> Note that the nf-core/tools helper package has a `download` command to download all required pipeline
-> files + singularity containers + institutional configs in one go for you, to make this process easier.
-
-### `--max_memory`
-
-Use to set a top-limit for the default memory requirement for each process.
-Should be a string in the format integer-unit. eg. `--max_memory '8.GB'`
-
-### `--max_time`
-
-Use to set a top-limit for the default time requirement for each process.
-Should be a string in the format integer-unit. eg. `--max_time '2.h'`
-
-### `--max_cpus`
-
-Use to set a top-limit for the default CPU requirement for each process.
-Should be a string in the format integer-unit. eg. `--max_cpus 1`
-
-### `--plaintext_email`
-
-Set to receive plain-text e-mails instead of HTML formatted.
-
-### `--multiqc_config`
-
-If you would like to supply a custom config file to MultiQC, you can specify a path with `--multiqc_config`. This is used _instead of_ the [config file](../conf/multiqc_config.yaml) that comes with the pipeline.
-
-### `--monochrome_logs`
-
-Set to disable colourful command line output and live life in monochrome.
-
-### `--project`
-
-UPPMAX profile only: Cluster project for SLURM job submissions.
-
-### `--clusterOptions`
-
-UPPMAX profile only: Submit arbitrary SLURM options.
