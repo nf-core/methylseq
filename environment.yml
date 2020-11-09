@@ -21,7 +21,7 @@ dependencies:
   - bioconda::bismark=0.22.3
   - bioconda::qualimap=2.2.2d
   - bioconda::preseq=2.0.3
-  - bioconda::multiqc=1.8
+  - bioconda::multiqc=1.9
   # bwa-meth pipeline
   - bioconda::picard=2.22.2
   - bioconda::bwameth=0.2.2

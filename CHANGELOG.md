@@ -4,7 +4,8 @@
 
 ### Pipeline Updates
 
-* Updated template to tools 1.10.2
+* Updated template to tools 1.11
+* Moved parameter documentation into new `nextflow_schema.json` file.
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 

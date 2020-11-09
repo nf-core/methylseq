@@ -1,5 +1,5 @@
 {
-    "$schema": "https://json-schema.org/draft-07/schema",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/methylseq/master/nextflow_schema.json",
     "title": "nf-core/methylseq pipeline parameters",
     "description": "Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline, part of the nf-core community.",
@@ -11,8 +11,7 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "required": [
-                "input",
-                "single_end"
+                "input"
             ],
             "properties": {
                 "input": {
@@ -42,6 +41,99 @@
                 }
             }
         },
+        "alignment_options": {
+            "title": "Alignment options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "aligner": {
+                    "type": "string",
+                    "default": "bismark",
+                    "description": "Alignment tool to use.",
+                    "fa_icon": "fas fa-dot-circle",
+                    "enum": [
+                        "bismark",
+                        "bismark_hisat",
+                        "bwameth"
+                    ],
+                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
+                },
+                "comprehensive": {
+                    "type": "boolean",
+                    "description": "Output information for all cytosine contexts.",
+                    "fa_icon": "fas fa-arrows-alt",
+                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
+                },
+                "save_align_intermeds": {
+                    "type": "boolean",
+                    "description": "Save aligned intermediates to results directory",
+                    "fa_icon": "fas fa-save",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "aligner"
+            ],
+            "fa_icon": "fas fa-braille"
+        },
+        "special_library_types": {
+            "title": "Special library types",
+            "type": "object",
+            "description": "Presets for working with specific bisulfite library preparation methods.",
+            "default": "",
+            "properties": {
+                "pbat": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-outdent",
+                    "description": "Preset for working with PBAT libraries.",
+                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 6` `--clip_r2 9` `--three_prime_clip_r1 6` `--three_prime_clip_r2 9`"
+                },
+                "rrbs": {
+                    "type": "boolean",
+                    "description": "Turn on if dealing with MspI digested material.",
+                    "help_text": "Use this parameter when working with RRBS _(Reduced Representation Bisulfite Sequencing)_ data, that is digested using MspI.\n\nSpecifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore! See the [TrimGalore! documentation](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md#rrbs-specific-options-mspi-digested-material) to read more about the effects of this option.\n\nThis parameter also makes the pipeline skip the deduplication step.",
+                    "fa_icon": "fas fa-compress"
+                },
+                "slamseq": {
+                    "type": "boolean",
+                    "description": "Run bismark in SLAM-seq mode.",
+                    "fa_icon": "fas fa-wave-square",
+                    "help_text": "Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) \n\n> NB: Only works with when using the `bismark_hisat` aligner (`--aligner bismark_hisat`)"
+                },
+                "single_cell": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for single-cell bisulfite libraries.",
+                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 6` `--three_prime_clip_r2 6`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                },
+                "accel": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`",
+                    "description": "Trimming preset for the Accel kit."
+                },
+                "cegx": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the CEGX bisfulite kit.",
+                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
+                },
+                "epignome": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the Epignome kit.",
+                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`"
+                },
+                "zymo": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the Zymo kit.",
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                }
+            },
+            "fa_icon": "fas fa-prescription-bottle"
+        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
@@ -58,7 +150,29 @@
                     "type": "string",
                     "fa_icon": "fas fa-font",
                     "description": "Path to FASTA genome file.",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible."
+                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future.\n\nNote that the `bwa-meth` workflow always needs a FASTA file, for methylation calling."
+                },
+                "fasta_index": {
+                    "type": "string",
+                    "description": "Path to Fasta index file.",
+                    "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
+                    "fa_icon": "fas fa-bookmark"
+                },
+                "bismark_index": {
+                    "type": "string",
+                    "description": "Path to a directory containing a Bismark reference index.",
+                    "fa_icon": "fas fa-dot-circle"
+                },
+                "bwa_meth_index": {
+                    "type": "string",
+                    "description": "bwameth index filename base",
+                    "help_text": "The base filename for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but rather a common filename _base_. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/genome.fa`.",
+                    "fa_icon": "far fa-dot-circle"
+                },
+                "save_reference": {
+                    "type": "boolean",
+                    "description": "Save reference(s) to results directory",
+                    "fa_icon": "far fa-save"
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -75,6 +189,169 @@
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
                 }
             }
+        },
+        "adapter_trimming": {
+            "title": "Adapter Trimming",
+            "type": "object",
+            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.",
+            "default": "",
+            "properties": {
+                "clip_r1": {
+                    "type": "integer",
+                    "description": "Trim the specified number of bases from the 5' end of read 1 (or single-end reads).",
+                    "default": "0",
+                    "fa_icon": "fas fa-cut"
+                },
+                "clip_r2": {
+                    "type": "integer",
+                    "description": "Trim the specified number of bases from the 5' end of read 2 (paired-end only).",
+                    "default": "0",
+                    "fa_icon": "fas fa-cut"
+                },
+                "three_prime_clip_r1": {
+                    "type": "integer",
+                    "description": "Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming.",
+                    "default": "0",
+                    "fa_icon": "fas fa-cut"
+                },
+                "three_prime_clip_r2": {
+                    "type": "integer",
+                    "description": "Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming",
+                    "default": "0",
+                    "fa_icon": "fas fa-cut"
+                },
+                "save_trimmed": {
+                    "type": "boolean",
+                    "description": "Save trimmed reads to results directory.",
+                    "fa_icon": "fas fa-save",
+                    "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete.",
+                    "hidden": true
+                }
+            },
+            "fa_icon": "fas fa-cut",
+            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |\n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 6          | 9          | 6          | 9          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n| `--epignome`    | 8          | 8          | 8          | 8          |\n| `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         |\n| `--cegx`        | 6          | 6          | 2          | 2          |\n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
+        },
+        "bismark_options": {
+            "title": "Bismark options",
+            "type": "object",
+            "description": "Parameters specific to the Bismark workflow",
+            "default": "",
+            "fa_icon": "fas fa-circle",
+            "properties": {
+                "non_directional": {
+                    "type": "boolean",
+                    "description": "Run alignment against all four possible strands.",
+                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
+                    "fa_icon": "fas fa-exchange-alt"
+                },
+                "cytosine_report": {
+                    "type": "boolean",
+                    "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step.",
+                    "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
+                    "fa_icon": "fas fa-clipboard"
+                },
+                "relax_mismatches": {
+                    "type": "boolean",
+                    "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches).",
+                    "help_text": "By default, Bismark is pretty strict about which alignments it accepts as valid. If you have good reason to believe that your reads will contain more mismatches than normal, this flags can be used to relax the stringency that Bismark uses when accepting alignments. This can greatly improve the number of aligned reads you get back, but may negatively impact the quality of your data.\n\nBismark uses the Bowtie alignment scoring mechanism to filter reads. Mismatches cost `-6`, gap opening `-5` and gap extension `-2`. So, a threshold of`-60` would allow 10 mismatches or ~ 8 x 1-2bp indels. The threshold is dependent on the length of reads, so a penalty value is used where `penalty * bp read length = threshold`.\n\nThe penalty value used by Bismark by default is `0.2`, so for 100bp reads this would be a threshold of `-20`. \n\nIf you specifying the `--relax_mismatches` pipeline flag, Bismark instead uses `0.6`, or a threshold of `-60`. This adds the Bismark flag `--score_min L,0,-0.6` to the alignment command.\n\nThe penalty value can be modified using the `--num_mismatches` pipeline option.",
+                    "fa_icon": "fas fa-bullseye"
+                },
+                "num_mismatches": {
+                    "type": "number",
+                    "default": 0.6,
+                    "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)",
+                    "help_text": "Customise the penalty in the function used to filter reads based on mismatches. The parameter `--relax_mismatches` must also be specified.\n\nSee the parameter documentation for `--relax_mismatches` for an explanation.",
+                    "fa_icon": "fas fa-calculator"
+                },
+                "unmapped": {
+                    "type": "boolean",
+                    "description": "Save unmapped reads to FastQ files",
+                    "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.",
+                    "fa_icon": "fas fa-recycle"
+                },
+                "meth_cutoff": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage to report a methylation call",
+                    "default": "0",
+                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+                "known_splices": {
+                    "type": "string",
+                    "description": "Supply a .gtf file containing known splice sites (bismark_hisat only).",
+                    "help_text": "Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline\n\n> NB: This only works when using the `bismark_hisat` aligner with `--align`",
+                    "fa_icon": "fas fa-barcode"
+                },
+                "local_alignment": {
+                    "type": "boolean",
+                    "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments).",
+                    "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
+                    "fa_icon": "fas fa-search"
+                },
+                "bismark_align_cpu_per_multicore": {
+                    "type": "integer",
+                    "default": 3,
+                    "description": "Specify how many CPUs are required per --multicore for bismark align",
+                    "hidden": true,
+                    "help_text": "The pipeline makes use of the `--multicore` option for Bismark align. When using this option, Bismark uses a large number of CPUs for every `--multicore` specified. The pipeline calculates the number of `--multicore` based on the resources available to the task. It divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional` are specified. This is based on usage for a typical mouse genome.\n\nYou may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the usage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline will divide the available CPUs by this value instead.\n\nSee the [bismark documentation](https://github.com/FelixKrueger/Bismark/tree/master/Docs#alignment) for more information.",
+                    "fa_icon": "fas fa-cogs"
+                },
+                "bismark_align_mem_per_multicore": {
+                    "type": "string",
+                    "default": "13.GB",
+                    "description": "Specify how much memory is required per --multicore for bismark align",
+                    "hidden": true,
+                    "help_text": "Exactly the same as with `--bismark_align_cpu_per_multicore`, but for memory. By default, the pipeline divides the available memory by `13.GB`, or `18.GB` if any of `--single_cell`, `--zymo` or `--non_directional` are specified.\n\nNote that the final `--multicore` value is based on the lowest limiting factor of both CPUs and memory.",
+                    "fa_icon": "fas fa-cogs"
+                }
+            }
+        },
+        "bwa_meth_options": {
+            "title": "bwa-meth options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "min_depth": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
+                    "default": "0",
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+                "ignore_flags": {
+                    "type": "boolean",
+                    "description": "MethylDackel - ignore SAM flags",
+                    "fa_icon": "fas fa-eye-slash",
+                    "help_text": "Run MethylDackel with the `--ignore_flags` option, to ignore SAM flags."
+                },
+                "methyl_kit": {
+                    "type": "boolean",
+                    "description": "Save files for use with methylKit",
+                    "help_text": "Run MethylDackel with the `--methyl_kit` option, to produce files suitable for use with the methylKit R package.",
+                    "fa_icon": "fas fa-ellipsis-h"
+                }
+            },
+            "fa_icon": "far fa-circle"
+        },
+        "skip_pipeline_steps": {
+            "title": "Skip pipeline steps",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "skip_trimming": {
+                    "type": "boolean",
+                    "description": "Skip read trimming.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_deduplication": {
+                    "type": "boolean",
+                    "description": "Skip deduplication step after alignment.",
+                    "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
+                    "fa_icon": "fas fa-fast-forward"
+                }
+            },
+            "fa_icon": "fas fa-fast-forward"
         },
         "generic_options": {
             "title": "Generic options",
@@ -102,7 +379,7 @@
                         "link",
                         "copy",
                         "copyNoFollow",
-                        "mov"
+                        "move"
                     ]
                 },
                 "name": {
@@ -236,6 +513,17 @@
                     "description": "Institutional config URL link.",
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
+                },
+                "project": {
+                    "type": "string",
+                    "description": "Cluster Project",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "clusterOptions": {
+                    "type": "string",
+                    "fa_icon": "fas fa-users-cog",
+                    "hidden": true
                 }
             }
         }
@@ -245,7 +533,25 @@
             "$ref": "#/definitions/input_output_options"
         },
         {
+            "$ref": "#/definitions/alignment_options"
+        },
+        {
+            "$ref": "#/definitions/special_library_types"
+        },
+        {
             "$ref": "#/definitions/reference_genome_options"
+        },
+        {
+            "$ref": "#/definitions/adapter_trimming"
+        },
+        {
+            "$ref": "#/definitions/bismark_options"
+        },
+        {
+            "$ref": "#/definitions/bwa_meth_options"
+        },
+        {
+            "$ref": "#/definitions/skip_pipeline_steps"
         },
         {
             "$ref": "#/definitions/generic_options"
@@ -256,161 +562,5 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
-    ],
-    "properties": {
-        "aligner": {
-            "type": "string",
-            "default": "bismark",
-            "description": "Alignment tool to use. Available: bismark, bismark_hisat, bwameth"
-        },
-        "clip_r1": {
-            "type": "integer",
-            "description": "Trim the specified number of bases from the 5' end of read 1 (or single-end reads).",
-            "default": "0"
-        },
-        "clip_r2": {
-            "type": "integer",
-            "description": "Trim the specified number of bases from the 5' end of read 2 (paired-end only).",
-            "default": "0"
-        },
-        "three_prime_clip_r1": {
-            "type": "integer",
-            "description": "Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming.",
-            "default": "0"
-        },
-        "three_prime_clip_r2": {
-            "type": "integer",
-            "description": "Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming",
-            "default": "0"
-        },
-        "rrbs": {
-            "type": "boolean",
-            "description": "Turn on if dealing with MspI digested material."
-        },
-        "pbat": {
-            "type": "boolean"
-        },
-        "single_cell": {
-            "type": "boolean"
-        },
-        "epignome": {
-            "type": "boolean"
-        },
-        "accel": {
-            "type": "boolean"
-        },
-        "zymo": {
-            "type": "boolean"
-        },
-        "cegx": {
-            "type": "boolean"
-        },
-        "comprehensive": {
-            "type": "boolean",
-            "description": "Output information for all cytosine contexts."
-        },
-        "cytosine_report": {
-            "type": "boolean",
-            "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step."
-        },
-        "ignore_flags": {
-            "type": "boolean",
-            "description": "Run MethylDackel with the flag to ignore SAM flags."
-        },
-        "meth_cutoff": {
-            "type": "integer",
-            "description": "Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.",
-            "default": "0"
-        },
-        "methyl_kit": {
-            "type": "boolean",
-            "description": "Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package."
-        },
-        "min_depth": {
-            "type": "integer",
-            "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
-            "default": "0"
-        },
-        "skip_deduplication": {
-            "type": "boolean",
-            "description": "Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified."
-        },
-        "non_directional": {
-            "type": "boolean",
-            "description": "Run alignment against all four possible strands."
-        },
-        "skip_trimming": {
-            "type": "boolean",
-            "description": "Skip read trimming."
-        },
-        "save_align_intermeds": {
-            "type": "boolean",
-            "description": "Save aligned intermediates to results directory"
-        },
-        "known_splices": {
-            "type": "string",
-            "description": "Supply a .gtf file containing known splice sites (bismark_hisat only)."
-        },
-        "slamseq": {
-            "type": "boolean",
-            "description": "Run bismark in SLAM-seq mode."
-        },
-        "local_alignment": {
-            "type": "boolean",
-            "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments)."
-        },
-        "save_reference": {
-            "type": "boolean",
-            "description": "Save reference(s) to results directory"
-        },
-        "save_trimmed": {
-            "type": "boolean",
-            "description": "Save trimmed reads to results directory."
-        },
-        "unmapped": {
-            "type": "boolean",
-            "description": "Save unmapped reads to fastq files"
-        },
-        "relax_mismatches": {
-            "type": "boolean",
-            "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)."
-        },
-        "num_mismatches": {
-            "type": "number",
-            "default": 0.6,
-            "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)"
-        },
-        "bismark_align_cpu_per_multicore": {
-            "type": "number",
-            "default": 3,
-            "description": "Specify how many CPUs are required per --multicore for bismark align"
-        },
-        "bismark_align_mem_per_multicore": {
-            "type": "string",
-            "default": "13.GB",
-            "description": "Specify how much memory is required per --multicore for bismark align"
-        },
-        "project": {
-            "type": "string",
-            "description": "Cluster Project"
-        },
-        "clusterOptions": {
-            "type": "string"
-        },
-        "bismark_index": {
-            "type": "string",
-            "description": "Path to Bismark index"
-        },
-        "bwa_meth_index": {
-            "type": "string",
-            "description": "Path to bwameth index"
-        },
-        "fasta_index": {
-            "type": "string",
-            "description": "Path to Fasta Index"
-        }
-    },
-    "required": [
-        "aligner"
     ]
 }
