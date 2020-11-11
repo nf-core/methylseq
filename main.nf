@@ -45,6 +45,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --minins [int]                     Bismark: The minimum insert size for valid paired-end alignments.
+     --maxins [int]                     Bismark: The maximum insert size for valid paired-end alignments.
      --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
      --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
@@ -562,6 +564,8 @@ if( params.aligner =~ /bismark/ ){
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
         soft_clipping = params.local_alignment ? "--local" : ''
+        minins = params.minins ? "--minins ${params.minins}" : ''
+        maxins = params.maxins ? "--maxins ${params.maxins}" : ''
 
         // Try to assign sensible bismark memory units according to what the task was given
         multicore = ''
@@ -600,7 +604,7 @@ if( params.aligner =~ /bismark/ ){
         """
         bismark $input \\
             $aligner \\
-            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
             --genome $index \\
             $reads \\
             $soft_clipping \\
