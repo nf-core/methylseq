@@ -45,6 +45,8 @@ def helpMessage() {
      --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
      --slamseq [bool]                   Run bismark in SLAM-seq mode
      --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+     --minins [int]                     Bismark: The minimum insert size for valid paired-end alignments.
+     --maxins [int]                     Bismark: The maximum insert size for valid paired-end alignments.
      --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
      --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
 
@@ -70,6 +72,7 @@ def helpMessage() {
      --accell [bool]
      --zymo [bool]
      --cegx [bool]
+     --em_seq [bool]
 
     Other options:
       --outdir [file]                 The output directory where the results will be saved
@@ -171,11 +174,13 @@ if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
     custom_runName = workflow.runName
 }
 
-// Trimming presets
+// Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
 three_prime_clip_r1 = params.three_prime_clip_r1
 three_prime_clip_r2 = params.three_prime_clip_r2
+bismark_minins = params.minins
+bismark_maxins = params.maxins
 if(params.pbat){
     clip_r1 = 9
     clip_r2 = 9
@@ -205,6 +210,13 @@ else if( params.cegx ){
     clip_r2 = 6
     three_prime_clip_r1 = 2
     three_prime_clip_r2 = 2
+}
+else if( params.em_seq ){
+    bismark_maxins = 1000
+    clip_r1 = 8
+    clip_r2 = 8
+    three_prime_clip_r1 = 8
+    three_prime_clip_r2 = 8
 }
 
 // Check AWS batch settings
@@ -273,6 +285,7 @@ if(params.epignome)         summary['Trim Profile'] = 'TruSeq (EpiGnome)'
 if(params.accel)            summary['Trim Profile'] = 'Accel-NGS (Swift)'
 if(params.zymo)             summary['Trim Profile'] = 'Zymo Pico-Methyl'
 if(params.cegx)             summary['Trim Profile'] = 'CEGX'
+if(params.em_seq)           summary['Trim Profile'] = 'EM Seq'
 summary['Trimming']         = "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
 summary['Deduplication']    = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
 summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
@@ -287,6 +300,8 @@ if(params.save_trimmed)     save_intermeds.add('Trimmed FastQ files')
 if(params.unmapped)         save_intermeds.add('Unmapped reads')
 if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
 if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
+if(params.minins)           summary['Bismark min insert size'] = bismark_minins
+if(params.maxins || params.em_seq) summary['Bismark max insert size'] = bismark_maxins
 if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
 if(params.bismark_align_mem_per_multicore) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 summary['Output dir']       = params.outdir
@@ -562,6 +577,8 @@ if( params.aligner =~ /bismark/ ){
         unmapped = params.unmapped ? "--unmapped" : ''
         mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
         soft_clipping = params.local_alignment ? "--local" : ''
+        minins = bismark_minins ? "--minins $bismark_minins" : ''
+        maxins = bismark_maxins ? "--maxins $bismark_maxins" : ''
 
         // Try to assign sensible bismark memory units according to what the task was given
         multicore = ''
@@ -600,7 +617,7 @@ if( params.aligner =~ /bismark/ ){
         """
         bismark $input \\
             $aligner \\
-            --bam $pbat $non_directional $unmapped $mismatches $multicore \\
+            --bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
             --genome $index \\
             $reads \\
             $soft_clipping \\

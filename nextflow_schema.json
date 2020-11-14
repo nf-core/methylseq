@@ -101,6 +101,12 @@
                     "fa_icon": "fas fa-wave-square",
                     "help_text": "Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) \n\n> NB: Only works with when using the `bismark_hisat` aligner (`--aligner bismark_hisat`)"
                 },
+                "em_seq": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cubes",
+                    "description": "Preset for EM-seq libraries.",
+                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
+                },
                 "single_cell": {
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
@@ -287,6 +293,18 @@
                     "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments).",
                     "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
                     "fa_icon": "fas fa-search"
+                },
+                "minins": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-compress-alt",
+                    "description": "The minimum insert size for valid paired-end alignments.",
+                    "help_text": "For example, if `--minins 60` is specified and a paired-end alignment consists of two 20-bp alignments in the appropriate orientation with a 20-bp gap between them, that alignment is considered valid (as long as `--maxins` is also satisfied). A 19-bp gap would not be valid in that case.\n\nDefault: no flag (Bismark default: `0`)."
+                },
+                "maxins": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-expand-alt",
+                    "description": "The maximum insert size for valid paired-end alignments.",
+                    "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
                 },
                 "bismark_align_cpu_per_multicore": {
                     "type": "integer",
