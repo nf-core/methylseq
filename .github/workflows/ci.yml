@@ -41,11 +41,11 @@ jobs:
             environment.yml
 
       - name: Build new docker image
-        if: env.GIT_DIFF
+        if: env.MATCHED_FILES
         run: docker build --no-cache . -t nfcore/methylseq:dev
 
       - name: Pull docker image
-        if: ${{ !env.GIT_DIFF }}
+        if: ${{ !env.MATCHED_FILES }}
         run: |
           docker pull nfcore/methylseq:dev
           docker tag nfcore/methylseq:dev nfcore/methylseq:dev
