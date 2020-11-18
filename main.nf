@@ -428,6 +428,7 @@ if( !params.bwa_meth_index && params.aligner == 'bwameth' ){
 
         output:
         file "${fasta}*" into ch_bwa_meth_indices_for_bwamem_align
+        file fasta
 
         script:
         """
