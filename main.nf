@@ -118,7 +118,7 @@ Channel
     .fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
     .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
-ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath("${params.known_splices}", checkIfExists: true).collect() : file('null')
+ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath("${params.known_splices}", checkIfExists: true).collect() : null
 
 if( params.aligner =~ /bismark/ ){
     assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
