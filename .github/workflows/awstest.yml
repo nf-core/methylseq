@@ -23,7 +23,7 @@ jobs:
             ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Setup Miniconda
-        uses: goanpeca/setup-miniconda@v1.0.2
+        uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: 3.7
