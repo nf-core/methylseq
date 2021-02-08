@@ -53,7 +53,6 @@ def helpMessage() {
 	 --epiread [bool]                   Convert bam to biscuit epiread format
 	 --whitelist [file]					The complement of blacklist, needed for SNP extraction For more instuctions: https://www.cse.huji.ac.il/~ekushele/assets.html#whitelist
 	 --common_dbsnp	[file]				Common dbSNP for the relevant genome, for SNP filteration
-	 --cpg_file [file]                  Path to CpG file for the relevant genome (0-besed coordinates, not compressed)
 	 --debug_epiread                    Debug epiread merging for paired end-keep original epiread file and merged epiread file in debug mode
 	 --debug_epiread_merging            Debug epiread merging. Output merged epiread in debug mode
 
@@ -184,12 +183,6 @@ if( params.aligner == 'biscuit' && params.assets_dir ) {
 		.ifEmpty { exit 1, "Assets directory for biscuit QC not found: ${params.assets_dir}" }
 		.into { ch_assets_dir_for_biscuit_qc; ch_assets_dir_with_cpg_for_epiread }
 	ch_fasta_for_buildBiscuitQCAssets.close()
-	
-	// Channel
-		// .fromPath("${params.assets_dir}/cpg.bed.gz", checkIfExists: true)
-		// .ifEmpty { exit 1, "CpG file not found : ${params.cpg_file}" }
-	 // .set { ch_cpg_for_epiread; ch_cpg_file_for_cpg_index; }
-	 // }
 }
 
 if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
@@ -292,20 +285,6 @@ if (params.epiread) {
 		.ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
 		.set { ch_commonSNP_for_SNP; }
 	}
-	// if (!params.single_end)
-		// assert params.cpg_file: "No CpG file specified"
-
-	// ch_cpg_for_epiread = Channel.empty()
-	// if (!params.single_end) {
-			// if (params.cpg_file) {
-				// Channel
-					// .fromPath(params.cpg_file, checkIfExists: true)
-					// .ifEmpty { exit 1, "CpG file not found : ${params.cpg_file}" }
-					// .set { ch_cpg_for_epiread; ch_cpg_file_for_cpg_index; }
-				// }
-	// }
-
-	
 }
 // Header log info
 log.info nfcoreHeader()
@@ -355,10 +334,8 @@ if(debug_mode.size() > 0) summary['Debug mode'] = debug_mode.join(', ')
 if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
 if(params.bismark_align_mem_per_multicore) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
 if(params.assets_dir)        summary['Assets Directory'] = params.assets_dir	
-if(params.soloWCGW_file)     summary['soloWCGW File'] = params.soloWCGW_file
 if(params.whitelist)         summary['Whitelist'] = params.whitelist
 if(params.common_dbsnp)      summary['Common SNP'] = params.common_dbsnp
-if(params.cpg_file)			 summary['CpG File'] = params.cpg_file
 if(params.epiread)           summary['Epiread'] = 'Yes'
 summary['Output dir']        = params.outdir
 summary['Launch dir']        = workflow.launchDir
@@ -549,13 +526,14 @@ if( !params.assets_dir &&  params.aligner == 'biscuit' ) {
 		file fasta from ch_fasta_for_buildBiscuitQCAssets
 
 		output:
-		file "assets" into ch_assets_dir_for_biscuit_qc, ch_assets_dir_with_cpg_for_epiread
-	//	file "cpg.bed" into ch_cpg_for_epiread
+		file "*assets" into ch_assets_dir_for_biscuit_qc, ch_assets_dir_with_cpg_for_epiread
 
 
 		script:
+		assembly = fasta.toString().replaceAll(/\.\w+/,"")
+
 		"""
-		build_biscuit_QC_assets.pl -r $fasta -o assets
+	build_biscuit_QC_assets.pl -r $fasta -o ${assembly}_assets
 		"""
 	}
 }
@@ -1134,13 +1112,12 @@ if( params.aligner == 'biscuit' ){
 			}
 
 		input:
-		set val(name), file(bam) from ch_bam_for_samtools_sort_index_flagstat
-		set val(name_samblaster), file(samblaster_bam) from ch_samblaster_for_samtools_sort_index_flagstat
+		set val(name), file(samblaster_bam) from ch_samblaster_for_samtools_sort_index_flagstat
 		file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat.collect()
 
 		output:
-		set val(name_samblaster), file("*.sorted.bam") into ch_bam_dedup_for_qualimap,ch_bam_for_preseq,ch_bam_sorted_for_pileup, ch_bam_sorted_for_epiread, ch_bam_noDups_for_QC,ch_bam_sorted_for_picard
-		file "*.sorted.bam.bai" into ch_bam_index_sorted_for_pileup,ch_bam_index_for_epiread,ch_bam_index_noDups_for_QC
+		set val(name), file("*.sorted.bam") into ch_bam_dedup_for_qualimap,ch_bam_for_preseq,ch_bam_sorted_for_pileup, ch_bam_sorted_for_epiread, ch_bam_noDups_for_QC,ch_bam_sorted_for_picard
+		set val(name), file ("*.sorted.bam.bai") into ch_bam_index_sorted_for_pileup,ch_bam_index_for_epiread,ch_bam_index_noDups_for_QC
 		file "${samblaster_bam.baseName}_flagstat_report.txt" into ch_flagstat_results_biscuit_for_multiqc
 		file "${samblaster_bam.baseName}_stats_report.txt" into ch_samtools_stats_results_biscuit_for_multiqc
 		file "where_are_my_files.txt"
@@ -1271,7 +1248,7 @@ if( params.aligner == 'biscuit' ){
 			set val(name),
 			file(bam),
 			file(bam_index),
-			file (snp),
+			file(snp),
 			file(fasta),
 			file(fasta_index),
 			file(whitelist)   from ch_bam_sorted_for_epiread 
@@ -1280,7 +1257,7 @@ if( params.aligner == 'biscuit' ){
 			.combine(ch_fasta_for_epiread)
 			.combine(ch_fasta_index_for_epiread)
 			.combine(ch_whitelist_for_epiread)
-			set val(cpg), file ("assets/cpg.bed.gz") from ch_assets_dir_with_cpg_for_epiread.collect()
+			file (assets) from ch_assets_dir_with_cpg_for_epiread.collect()
 
 
 			output:
@@ -1289,6 +1266,7 @@ if( params.aligner == 'biscuit' ){
 			
 			script:
 			snp_file = (snp.size()>0) ? "-B " + snp.toString() : ''
+			cpg_file = assets.toString() + "/cpg.bed.gz"
 			debug_merging_epiread = (params.debug_epiread_merging || params.debug_epiread) ? "debug" : ''
 			no_filter_reverse = params.rrbs ? "-p" : ''
 			if (params.single_end) {
@@ -1300,10 +1278,12 @@ if( params.aligner == 'biscuit' ){
 			"""
 			} else if (params.debug_epiread) {
 			"""
+				zcat $cpg_file > cpg.bed
+				
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
 				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n > ${name}.original.epiread
-				less ${name}.original.epiread | $baseDir/bin/epiread_pairedEnd_convertion $cpg $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
+				less ${name}.original.epiread | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
 				sort -k1,1Vf -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz				
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz 
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.original.epiread | bgzip > ${name}.original.epiread.gz
@@ -1314,9 +1294,11 @@ if( params.aligner == 'biscuit' ){
 			}
 			else {
 			"""
+				zcat $cpg_file > cpg.bed
+
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
-				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $baseDir/bin/epiread_pairedEnd_convertion $cpg $snp  ${name}.epiread  $debug_merging_epiread > ${name}.err
+				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp  ${name}.epiread  $debug_merging_epiread > ${name}.err
 				sort -k1,1Vf  -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz 
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz  
 				tabix -0 -p bed ${name}.epiread.gz 
@@ -1348,7 +1330,7 @@ if( params.aligner == 'biscuit' ){
 		script:
 		assembly = fasta.toString().replaceAll(/\.\w+/,"")
 		"""
-		biscuit_QC.sh -v ${vcf[0]} -o ${name}.${assembly}_biscuitQC $assets $fasta ${name}.${assembly} ${bam} 				
+		QC.sh -v ${vcf[0]} -o ${name}.${assembly}_biscuitQC $assets $fasta ${name}.${assembly} ${bam} 				
 		"""
 	}
 
@@ -1378,7 +1360,13 @@ process qualimap {
 	script:
 	gcref = params.genome.toString().startsWith('GRCh') ? '-gd HUMAN' : ''
 	gcref = params.genome.toString().startsWith('GRCm') ? '-gd MOUSE' : ''
+	 def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
+    def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
+
 	"""
+	samtools sort $bam \\
+        -@ ${task.cpus} $sort_mem \\
+        -o ${bam.baseName}.sorted.bam
 	qualimap bamqc $gcref \\
 		-bam ${bam.baseName}.bam \\
 		-outdir ${bam.baseName}_qualimap \\
