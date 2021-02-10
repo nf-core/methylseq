@@ -20,77 +20,84 @@ def helpMessage() {
 	nextflow run nf-core/methylseq --reads '*_R{1,2}.fastq.gz' -profile docker
 
 	Mandatory arguments:
-	  --aligner [str]                   Alignment tool to use (default: bismark)
-											Available: bismark, bismark_hisat, bwameth, biscuit
-	  --reads [file]                    Path to input data (must be surrounded with quotes)
-	  -profile [str]                    Configuration profile to use. Can use multiple (comma separated)
-											Available: conda, docker, singularity, test, awsbatch, <institute> and more
+	  --aligner [str]				  Alignment tool to use (default: bismark)
+									  Available: bismark, bismark_hisat, bwameth, biscuit
+	  --reads [file]				  Path to input data (must be surrounded with quotes)
+	  -profile [str]				  Configuration profile to use. Can use multiple (comma separated)
+									  Available: conda, docker, singularity, test, awsbatch, <institute> and more
 
 	Options:
-	 --genome [str]                     Name of iGenomes reference
-	 --single_end [bool]                Specifies that the input is single end reads
-	 --comprehensive [bool]             Output information for all cytosine contexts
-	 --cytosine_report [bool]           Output stranded cytosine report during Bismark's bismark_methylation_extractor step.
-	 --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
-	 --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
-	 --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call or for biscuit pileup.
-	 --methyl_kit [bool]                Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
-	 --skip_deduplication [bool]        Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
-	 --non_directional [bool]           Run alignment against all four possible strands
-	 --save_align_intermeds [bool]      Save aligned intermediates to results directory
-	 --save_trimmed [bool]              Save trimmed reads to results directory
-	 --save_pileup_file [bool]          Save vcf-pileup and index-vcf files from biscuit aligner to results directory
+	 --genome [str]						Name of iGenomes reference
+	 --single_end [bool]				Specifies that the input is single end reads
+	 --comprehensive [bool]				Output information for all cytosine contexts
+	 --cytosine_report [bool]			Output stranded cytosine report during Bismark's bismark_methylation_extractor step.
+	 --ignore_flags [bool]				Run MethylDackel with the flag to ignore SAM flags.
+	 --meth_cutoff [int]				Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
+	 --min_depth [int]					Specify a minimum read coverage for MethylDackel to report a methylation call (used in bwa-meth)
+	 --min_coverage [int]				Specify a minimum read covarage for information extraction from the VCF file to bed file (used in BISCUIT)
+	 --methyl_kit [bool]				Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
+	 --skip_deduplication [bool]		Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
+	 --non_directional [bool]			Run alignment against all four possible strands for Bismark aligner
+	 --nondirectional_library [bool]	Run alignment against all four possible strands for Biscuit aligner
+	 --save_align_intermeds [bool]		Save aligned intermediates to results directory
+	 --save_trimmed [bool]				Save trimmed reads to results directory
+	 --save_pileup_file [bool]			Save VCF-pileup and VCF-index files from biscuit aligner to results directory
 	 --save_snp_file [bool]				Save SNP bed-file from biscuit to results directory. Relevant only if '--epiread' is specified
-	 --unmapped [bool]                  Save unmapped reads to fastq files
-	 --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
-	 --num_mismatches [float]           0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
-	 --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
-	 --slamseq [bool]                   Run bismark in SLAM-seq mode
-	 --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
+	 --unmapped [bool]					Save unmapped reads to fastq files
+	 --relax_mismatches [bool]			Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
+	 --num_mismatches [float]			0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
+	 --known_splices [file]				Supply a .gtf file containing known splice sites (bismark_hisat only)
+	 --slamseq [bool]					Run bismark in SLAM-seq mode
+	 --local_alignment [bool]			Allow soft-clipping of reads (potentially useful for single-cell experiments)
+	 --minins [int]						Bismark: The minimum insert size for valid paired-end alignments.
+	 --maxins [int]						Bismark: The maximum insert size for valid paired-end alignments.
 	 --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
 	 --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
-	 --assets_dir [path]                Path to assets directory for biscuit_QC
-	 --epiread [bool]                   Convert bam to biscuit epiread format
-	 --whitelist [file]					The complement of blacklist, needed for SNP extraction For more instuctions: https://www.cse.huji.ac.il/~ekushele/assets.html#whitelist
-	 --common_dbsnp	[file]				Common dbSNP for the relevant genome, for SNP filteration
-	 --debug_epiread                    Debug epiread merging for paired end-keep original epiread file and merged epiread file in debug mode
-	 --debug_epiread_merging            Debug epiread merging. Output merged epiread in debug mode
+	 --assets_dir [path]				Path to assets directory for biscuit_QC
+	 --epiread [bool]					Convert bam to biscuit epiread format
+	 --whitelist [file]					Path to the file that is the complement of blacklist, needed for SNP extraction For more instuctions: https://www.cse.huji.ac.il/~ekushele/assets.html#whitelist
+	 --common_dbsnp	[file]				Common dbSNP table of the relevant genome, for SNP filteration
+	 --debug_epiread					Debug epiread merging for paired end-keep original epiread file and merged epiread file in debug mode
+	 --debug_epiread_merging			Debug epiread merging. Output merged epiread in debug mode
 
-	References                          If not specified in the configuration file or you wish to overwrite any of the references.
-	  --fasta [file]                    Path to fasta reference
-	  --fasta_index [path]              Path to Fasta Index
-	  --bismark_index [path]            Path to Bismark index
-	  --bwa_biscuit_index [path]        Path to Biscuit index
-	  --bwa_meth_index [path]           Path to bwameth index
-	  --save_reference [bool]           Save reference(s) to results directory
+	References							If not specified in the configuration file or you wish to overwrite any of the references.
+	  --fasta [file]					Path to fasta reference
+	  --fasta_index [path]				Path to Fasta Index
+	  --bismark_index [path]			Path to Bismark index
+	  --bwa_biscuit_index [path]		Path to Biscuit index
+	  --bwa_meth_index [path]			Path to bwameth index
+	  --save_reference [bool]			Save reference(s) to results directory
 
 	Trimming options:
-	 --skip_trimming [bool]             Skip read trimming
-	 --clip_r1 [int]                    Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
-	 --clip_r2 [int]                    Trim the specified number of bases from the 5' end of read 2 (paired-end only).
-	 --three_prime_clip_r1 [int]        Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
-	 --three_prime_clip_r2 [int]        Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
-	 --rrbs [bool]                      Turn on if dealing with MspI digested material.
+	 --skip_trimming [bool]				Skip read trimming
+	 --clip_r1 [int]					Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
+	 --clip_r2 [int]					Trim the specified number of bases from the 5' end of read 2 (paired-end only).
+	 --three_prime_clip_r1 [int]		Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
+	 --three_prime_clip_r2 [int]		Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
+	 --rrbs [bool]						Turn on if dealing with MspI digested material.
 
 	Trimming presets:
 	 --pbat [bool]
 	 --single_cell [bool]
 	 --epignome [bool]
-	 --accell [bool]
+	 --accel [bool]
 	 --zymo [bool]
 	 --cegx [bool]
+	 --em_seq [bool]
+	 
 
 	Other options:
-	 --outdir [file]                    The output directory where the results will be saved
-	 --email [email]                    Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
-	 --email_on_fail [email]            Same as --email, except only send mail if the workflow is not successful
-	 --max_multiqc_email_size [str]     Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
-	 -name [str]                        Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
+	 --outdir [file]					The output directory where the results will be saved
+	  --publish_dir_mode [str]		  Mode for publishing results in the output directory. Available: symlink, rellink, link, copy, copyNoFollow, move (Default: copy)
+	 --email [email]					Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
+	 --email_on_fail [email]			Same as --email, except only send mail if the workflow is not successful
+	 --max_multiqc_email_size [str]		Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
+	 -name [str]						Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
 
 	AWSBatch options:
-	  --awsqueue [str]                  The AWSBatch JobQueue that needs to be set when running on AWSBatch
-	  --awsregion [str]                 The AWS Region for your AWS Batch job to run on
-	  --awscli [str]                    Path to the AWS CLI tool
+	  --awsqueue [str]					The AWSBatch JobQueue that needs to be set when running on AWSBatch
+	  --awsregion [str]					The AWS Region for your AWS Batch job to run on
+	  --awscli [str]					Path to the AWS CLI tool
 
 	""".stripIndent()
 }
@@ -121,10 +128,10 @@ if (params.genomes && params.genome && !params.genomes.containsKey(params.genome
 }
 
 Channel
-	.fromPath("$baseDir/assets/where_are_my_files.txt", checkIfExists: true)
+	.fromPath("$projectDir/assets/where_are_my_files.txt", checkIfExists: true)
 	.into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
-ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath("${params.known_splices}", checkIfExists: true).collect() : file('null')
+ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath(params.known_splices, checkIfExists: true).collect() : []
 
 if( params.aligner =~ /bismark/ ){
 	assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
@@ -164,7 +171,7 @@ else if( params.aligner == 'bwameth' || params.aligner == 'biscuit'){
 		Channel
 			.fromPath("${params.bwa_biscuit_index}*", checkIfExists: true)
 			.ifEmpty { exit 1, "bwa (biscuit) index file(s) not found: ${params.bwa_biscuit_index}" }
-			.set { ch_bwa_index_for_biscuit  }
+			.set { ch_bwa_index_for_biscuit	 }
 		ch_fasta_for_makeBwaMemIndex.close()
 	}
 
@@ -190,17 +197,19 @@ if( workflow.profile == 'uppmax' || workflow.profile == 'uppmax_devel' ){
 }
 
 // Has the run name been specified by the user?
-//  this has the bonus effect of catching both -name and --name
+// this has the bonus effect of catching both -name and --name
 custom_runName = params.name
 if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
 	custom_runName = workflow.runName
 }
 
-// Trimming presets
+// Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
 three_prime_clip_r1 = params.three_prime_clip_r1
 three_prime_clip_r2 = params.three_prime_clip_r2
+bismark_minins = params.minins
+bismark_maxins = params.maxins
 if(params.pbat){
 	clip_r1 = 9
 	clip_r2 = 9
@@ -231,7 +240,15 @@ else if( params.cegx ){
 	three_prime_clip_r1 = 2
 	three_prime_clip_r2 = 2
 }
+else if( params.em_seq ){
+	bismark_maxins = 1000
+	clip_r1 = 8
+	clip_r2 = 8
+	three_prime_clip_r1 = 8
+	three_prime_clip_r2 = 8
+}
 
+// Check AWS batch settings
 if (workflow.profile.contains('awsbatch')) {
 	// AWSBatch sanity checking
 	if (!params.awsqueue || !params.awsregion) exit 1, "Specify correct --awsqueue and --awsregion parameters on AWSBatch!"
@@ -243,32 +260,33 @@ if (workflow.profile.contains('awsbatch')) {
 }
 
 // Stage config files
-ch_multiqc_config = file("$baseDir/assets/multiqc_config.yaml", checkIfExists: true)
+ch_multiqc_config = file("$projectDir/assets/multiqc_config.yaml", checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config, checkIfExists: true) : Channel.empty()
-ch_output_docs = file("$baseDir/docs/output.md", checkIfExists: true)
+ch_output_docs = file("$projectDir/docs/output.md", checkIfExists: true)
+ch_output_docs_images = file("$projectDir/docs/images/", checkIfExists: true)
 
 /*
  * Create a channel for input read files
  */
-if (params.readPaths) {
+if (params.input_paths) {
 	if (params.single_end) {
 		Channel
-			.from(params.readPaths)
+			.from(params.input_paths)
 			.map { row -> [ row[0], [ file(row[1][0], checkIfExists: true) ] ] }
-			.ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
-			.into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
+			.ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
+			.into { ch_read_files_for_fastqc; ch_read_files_trimming }
 	} else {
 		Channel
-			.from(params.readPaths)
+			.from(params.input_paths)
 			.map { row -> [ row[0], [ file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] ] }
-			.ifEmpty { exit 1, "params.readPaths was empty - no input files supplied" }
-			.into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
+			.ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
+			.into { ch_read_files_for_fastqc; ch_read_files_trimming }
 	}
 } else {
 	Channel
 		.fromFilePairs( params.reads, size: params.single_end ? 1 : 2 )
 		.ifEmpty { exit 1, "Cannot find any reads matching: ${params.reads}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
-		.into { ch_read_files_for_fastqc; ch_read_files_for_trim_galore }
+		.into { ch_read_files_for_fastqc; ch_read_files_trimming }
 }
 
 if (params.epiread) {
@@ -281,7 +299,7 @@ if (params.epiread) {
 
 	if (params.common_dbsnp) {
 		Channel
-		.fromPath(params.common_dbsnp,  checkIfExists: true)
+		.fromPath(params.common_dbsnp,	checkIfExists: true)
 		.ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
 		.set { ch_commonSNP_for_SNP; }
 	}
@@ -289,73 +307,81 @@ if (params.epiread) {
 // Header log info
 log.info nfcoreHeader()
 def summary = [:]
-summary['Run Name']  = custom_runName ?: workflow.runName
-summary['Reads']     = params.reads
-summary['Aligner']   = params.aligner
+if (workflow.revision) summary['Pipeline Release'] = workflow.revision
+summary['Run Name']	 = custom_runName ?: workflow.runName
+summary['Input']	 = params.input
+summary['Aligner']	 = params.aligner
 summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
-if(params.known_splices)     summary['Spliced alignment'] =  'Yes'
-if(params.slamseq)           summary['SLAM-seq'] = 'Yes'
-if(params.local_alignment)   summary['Local alignment'] = 'Yes'
-if(params.genome)            summary['Genome']    = params.genome
-if(params.bismark_index)     summary['Bismark Index'] = params.bismark_index
-if(params.bwa_meth_index)    summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
-if(params.bwa_biscuit_index) summary['BWA Index'] = "${params.bwa_biscuit_index}*"
-if(params.fasta)             summary['Fasta Ref'] = params.fasta
-if(params.fasta_index)       summary['Fasta Index'] = params.fasta_index
-if(params.rrbs)              summary['RRBS Mode'] = 'On'
-if(params.relax_mismatches)  summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
-if(params.skip_trimming)     summary['Trimming Step'] = 'Skipped'
-if(params.pbat)              summary['Trim Profile'] = 'PBAT'
-if(params.single_cell)       summary['Trim Profile'] = 'Single Cell'
-if(params.epignome)          summary['Trim Profile'] = 'TruSeq (EpiGnome)'
-if(params.accel)             summary['Trim Profile'] = 'Accel-NGS (Swift)'
-if(params.zymo)              summary['Trim Profile'] = 'Zymo Pico-Methyl'
-if(params.cegx)              summary['Trim Profile'] = 'CEGX'
-summary['Trimming']          = "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
-summary['Deduplication']     = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
-summary['Directional Mode']  = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
-summary['All C Contexts']    = params.comprehensive ? 'Yes' : 'No'
-summary['Cytosine report']   = params.cytosine_report ? 'Yes' : 'No'
-if(params.min_depth)         summary['Minimum Depth'] = params.min_depth
-if(params.ignore_flags)      summary['MethylDackel'] = 'Ignoring SAM Flags'
-if(params.methyl_kit)        summary['MethylDackel'] = 'Producing methyl_kit output'
-save_intermeds = [];         
-if(params.save_reference)    save_intermeds.add('Reference genome build')
-if(params.save_trimmed)      save_intermeds.add('Trimmed FastQ files')
-if(params.unmapped)          save_intermeds.add('Unmapped reads')
+if(params.known_splices)	summary['Spliced alignment'] =	'Yes'
+if(params.slamseq)			summary['SLAM-seq'] = 'Yes'
+if(params.local_alignment)	summary['Local alignment'] = 'Yes'
+if(params.genome)			summary['Genome']	 = params.genome
+if(params.bismark_index)	summary['Bismark Index'] = params.bismark_index
+if(params.bwa_meth_index)	summary['BWA-Meth Index'] = "${params.bwa_meth_index}*"
+if(params.bwa_biscuit_index)summary['BWA Index'] = "${params.bwa_biscuit_index}*"
+if(params.fasta)			summary['Fasta Ref'] = params.fasta
+if(params.fasta_index)		summary['Fasta Index'] = params.fasta_index
+if(params.rrbs)				summary['RRBS Mode'] = 'On'
+if(params.relax_mismatches) summary['Mismatch Func'] = "L,0,-${params.num_mismatches} (Bismark default = L,0,-0.2)"
+if(params.skip_trimming)	summary['Trimming Step'] = 'Skipped'
+if(params.pbat)				summary['Trim Profile'] = 'PBAT'
+if(params.single_cell)		summary['Trim Profile'] = 'Single Cell'
+if(params.epignome)			summary['Trim Profile'] = 'TruSeq (EpiGnome)'
+if(params.accel)			summary['Trim Profile'] = 'Accel-NGS (Swift)'
+if(params.zymo)				summary['Trim Profile'] = 'Zymo Pico-Methyl'
+if(params.cegx)				summary['Trim Profile'] = 'CEGX'
+summary['Trimming']			= "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
+summary['Deduplication']	= params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
+summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional || params.nondirectional_library ? 'No' : 'Yes'
+summary['All C Contexts']	= params.comprehensive ? 'Yes' : 'No'
+summary['Cytosine report']	= params.cytosine_report ? 'Yes' : 'No'
+if(params.min_depth)		summary['Minimum Depth'] = params.min_depth
+if(params.min_coverage)		summary['Minimum Coverage'] = params.min_coverage
+
+if(params.ignore_flags)		summary['MethylDackel'] = 'Ignoring SAM Flags'
+if(params.methyl_kit)		summary['MethylDackel'] = 'Producing methyl_kit output'
+save_intermeds = [];		
+if(params.save_reference)	save_intermeds.add('Reference genome build')
+if(params.save_trimmed)		save_intermeds.add('Trimmed FastQ files')
+if(params.unmapped)			save_intermeds.add('Unmapped reads')
 if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
-if(params.save_pileup_file)  save_intermeds.add('Pileup files') 
-if(params.save_snp_file)     save_intermeds.add('SNP bed-files') 
+if(params.save_pileup_file)	 save_intermeds.add('Pileup files') 
+if(params.save_snp_file)	 save_intermeds.add('SNP bed-files') 
 if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
 debug_mode = [];
 if(params.debug_epiread)	debug_mode.add('Debug epiread step')
 if(params.debug_epiread_merging) debug_mode.add('Debug epiread merging')
 if(debug_mode.size() > 0) summary['Debug mode'] = debug_mode.join(', ')
+if(params.minins)			summary['Bismark min insert size'] = bismark_minins
+if(params.maxins || params.em_seq) summary['Bismark max insert size'] = bismark_maxins
 if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
 if(params.bismark_align_mem_per_multicore) summary['Bismark align memory per --multicore'] = params.bismark_align_mem_per_multicore
-if(params.assets_dir)        summary['Assets Directory'] = params.assets_dir	
-if(params.whitelist)         summary['Whitelist'] = params.whitelist
-if(params.common_dbsnp)      summary['Common SNP'] = params.common_dbsnp
-if(params.epiread)           summary['Epiread'] = 'Yes'
-summary['Output dir']        = params.outdir
-summary['Launch dir']        = workflow.launchDir
-summary['Working dir']       = workflow.workDir
-summary['Pipeline dir']      = workflow.projectDir
-summary['User']              = workflow.userName
-summary['Config Profile']    = workflow.profile
+if(params.assets_dir)		 summary['Assets Directory'] = params.assets_dir	
+if(params.whitelist)		 summary['Whitelist'] = params.whitelist
+if(params.common_dbsnp)		 summary['Common SNP'] = params.common_dbsnp
+if(params.epiread)			 summary['Epiread'] = 'Yes'
+summary['Output dir']		 = params.outdir
+summary['Launch dir']		 = workflow.launchDir
+summary['Working dir']		 = workflow.workDir
+summary['Pipeline dir']		 = workflow.projectDir
+summary['User']				 = workflow.userName
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 if (workflow.profile.contains('awsbatch')) {
-	summary['AWS Region']    = params.awsregion
-	summary['AWS Queue']     = params.awsqueue
-	summary['AWS CLI']       = params.awscli
+	summary['AWS Region']	 = params.awsregion
+	summary['AWS Queue']	 = params.awsqueue
+	summary['AWS CLI']		 = params.awscli
 }
 if(params.project) summary['Cluster Project'] = params.project
 if (params.config_profile_description) summary['Config Description'] = params.config_profile_description
-if (params.config_profile_contact)     summary['Config Contact']     = params.config_profile_contact
-if (params.config_profile_url)         summary['Config URL']         = params.config_profile_url
-summary['Max Resources']     = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
-if(params.email)             summary['E-mail Address'] = params.email
-if(params.email_on_fail)     summary['E-mail on failure'] = params.email_on_fail
+if (params.config_profile_contact)	   summary['Config Contact']	 = params.config_profile_contact
+if (params.config_profile_url)		   summary['Config URL']		 = params.config_profile_url
+summary['Max Resources']	= "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
+summary['Config Files'] = workflow.configFiles.join(', ')
+if (params.email || params.email_on_fail) {
+	summary['E-mail Address']	 = params.email
+	summary['E-mail on failure'] = params.email_on_fail
+	summary['MultiQC maxsize']	 = params.max_multiqc_email_size
+}
 log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
 log.info "-\033[2m--------------------------------------------------\033[0m-"
 
@@ -363,20 +389,20 @@ log.info "-\033[2m--------------------------------------------------\033[0m-"
 checkHostname()
 
 Channel.from(summary.collect{ [it.key, it.value] })
-	.map { k,v -> "<dt>$k</dt><dd><samp>${v ?: '<span style=\"color:#999999;\">N/A</a>'}</samp></dd>" }
-	.reduce { a, b -> return [a, b].join("\n            ") }
-	.map { x -> """
-	id: 'nf-core-methylseq-summary'
-	description: " - this information is collected when the pipeline is started."
-	section_name: 'nf-core/methylseq Workflow Summary'
-	section_href: 'https://github.com/nf-core/methylseq'
-	plot_type: 'html'
-	data: |
-		<dl class=\"dl-horizontal\">
-			$x
-		</dl>
-	""".stripIndent() }
-	.set { ch_workflow_summary }
+    .map { k,v -> "<dt>$k</dt><dd><samp>${v ?: '<span style=\"color:#999999;\">N/A</a>'}</samp></dd>" }
+    .reduce { a, b -> return [a, b].join("\n            ") }
+    .map { x -> """
+    id: 'nf-core-methylseq-summary'
+    description: " - this information is collected when the pipeline is started."
+    section_name: 'nf-core/methylseq Workflow Summary'
+    section_href: 'https://github.com/nf-core/methylseq'
+    plot_type: 'html'
+    data: |
+        <dl class=\"dl-horizontal\">
+            $x
+        </dl>
+    """.stripIndent() }
+    .set { ch_workflow_summary }
 
 /*
  * Parse software version numbers
@@ -394,7 +420,7 @@ process get_software_versions {
 
 	script:
 	"""
-	echo "$workflow.manifest.version" &> v_ngi_methylseq.txt
+	echo "$workflow.manifest.version" &> v_pipeline.txt
 	echo "$workflow.nextflow.version" &> v_nextflow.txt
 	bismark_genome_preparation --version &> v_bismark_genome_preparation.txt
 	fastqc --version &> v_fastqc.txt
@@ -418,8 +444,12 @@ process get_software_versions {
 	preseq &> v_preseq.txt
 	multiqc --version &> v_multiqc.txt
 	samblaster --version &> v_samblaster.txt
-	biscuit &>v_biscuit.txt 2>&1 || true 
-	scrape_software_versions.py &> software_versions_mqc.yaml  
+	biscuit &>v_biscuit.txt 2>&1 || true
+	bcftools --version &> v_bcftools.txt	
+	bedtools --version &> v_bedtools.txt	
+	parallel --version &> v_parallel.txt	
+	gawk --version > v_gawk.txt
+	scrape_software_versions.py &> software_versions_mqc.yaml
 	"""
 }
 
@@ -429,8 +459,7 @@ process get_software_versions {
 if( !params.bismark_index && params.aligner =~ /bismark/ ){
 	process makeBismarkIndex {
 		publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
-				   saveAs: { params.save_reference ? it : null }, mode: 'copy'
-
+				   saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 		input:
 		file fasta from ch_fasta_for_makeBismarkIndex
 
@@ -454,7 +483,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
 if( !params.bwa_meth_index && params.aligner == 'bwameth'){
 	process makeBwaMemIndex {
 		tag "$fasta"
-		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
 		input:
 		file fasta from ch_fasta_for_makeBwaMemIndex
@@ -470,12 +499,12 @@ if( !params.bwa_meth_index && params.aligner == 'bwameth'){
 }
 
 /*
- * PREPROCESSING - Build bwa index, using biscuit
+ * PREPROCESSING - Build bwa-biscuit index, using biscuit
  */
 if(!params.bwa_biscuit_index && params.aligner == 'biscuit' ){
 	process makeBwaBISCUITIndex {
 		tag "$fasta"
-		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
 		input:
 		file fasta from ch_fasta_for_makeBwaMemIndex
@@ -499,7 +528,7 @@ if(!params.bwa_biscuit_index && params.aligner == 'biscuit' ){
 if( !params.fasta_index && params.aligner == 'bwameth' ||  !params.fasta_index && params.aligner == 'biscuit' ){
 	process makeFastaIndex {
 		tag "$fasta"
-		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+		publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
 		input:
 		file fasta from ch_fasta_for_makeFastaIndex
@@ -520,7 +549,7 @@ if( !params.fasta_index && params.aligner == 'bwameth' ||  !params.fasta_index &
 if( !params.assets_dir &&  params.aligner == 'biscuit' ) {
 	process buildBiscuitQCAssets {
 		tag "$fasta"
-		publishDir path: "${params.outdir}/reference_assets", saveAs: { params.save_reference ? it : null }, mode: 'copy'
+		publishDir path: "${params.outdir}/reference_assets", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
 		input:
 		file fasta from ch_fasta_for_buildBiscuitQCAssets
@@ -545,7 +574,7 @@ if( !params.assets_dir &&  params.aligner == 'biscuit' ) {
 process fastqc {
 	tag "$name"
 	label 'process_medium'
-	publishDir "${params.outdir}/fastqc", mode: 'copy',
+	publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode,
 		saveAs: { filename ->
 					  filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"
 				}
@@ -566,12 +595,12 @@ process fastqc {
  * STEP 2 - Trim Galore!
  */
 if( params.skip_trimming ){
-	ch_trimmed_reads_for_alignment = ch_read_files_for_trim_galore
+	ch_trimmed_reads_for_alignment = ch_read_files_trimming
 	ch_trim_galore_results_for_multiqc = Channel.from(false)
 } else {
 	process trim_galore {
 		tag "$name"
-		publishDir "${params.outdir}/trim_galore", mode: 'copy',
+		publishDir "${params.outdir}/trim_galore", mode: params.publish_dir_mode,
 			saveAs: {filename ->
 				if( filename.indexOf("_fastqc") > 0 ) "FastQC/$filename"
 				else if( filename.indexOf("trimming_report.txt" ) > 0) "logs/$filename"
@@ -581,7 +610,7 @@ if( params.skip_trimming ){
 			}
 
 		input:
-		set val(name), file(reads) from ch_read_files_for_trim_galore
+		set val(name), file(reads) from ch_read_files_trimming
 		file wherearemyfiles from ch_wherearemyfiles_for_trimgalore.collect()
 
 		output:
@@ -623,7 +652,7 @@ if( params.skip_trimming ){
 if( params.aligner =~ /bismark/ ){
 	process bismark_align {
 		tag "$name"
-		publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
+		publishDir "${params.outdir}/bismark_alignments", mode: params.publish_dir_mode,
 			saveAs: {filename ->
 				if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
 				else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
@@ -639,7 +668,7 @@ if( params.aligner =~ /bismark/ ){
 		file knownsplices from ch_splicesites_for_bismark_hisat_align
 
 		output:
-		set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_samtools_sort_index_flagstat
+		set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
 		set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
 		file "*.fq.gz" optional true
 		file "where_are_my_files.txt"
@@ -658,6 +687,8 @@ if( params.aligner =~ /bismark/ ){
 		unmapped = params.unmapped ? "--unmapped" : ''
 		mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
 		soft_clipping = params.local_alignment ? "--local" : ''
+		minins = bismark_minins ? "--minins $bismark_minins" : ''
+		maxins = bismark_maxins ? "--maxins $bismark_maxins" : ''
 
 		// Try to assign sensible bismark memory units according to what the task was given
 		multicore = ''
@@ -696,14 +727,14 @@ if( params.aligner =~ /bismark/ ){
 		"""
 		bismark $input \\
 			$aligner \\
-			--bam $pbat $non_directional $unmapped $mismatches $multicore \\
+			--bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
 			--genome $index \\
 			$reads \\
 			$soft_clipping \\
 			$splicesites
 		"""
 	}
-	
+
 	/*
 	 * STEP 4 - Bismark deduplicate
 	 */
@@ -715,14 +746,14 @@ if( params.aligner =~ /bismark/ ){
 	} else {
 		process bismark_deduplicate {
 			tag "$name"
-			publishDir "${params.outdir}/bismark_deduplicated", mode: 'copy',
+			publishDir "${params.outdir}/bismark_deduplicated", mode: params.publish_dir_mode,
 				saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
 			input:
 			set val(name), file(bam) from ch_bam_for_bismark_deduplicate
 
 			output:
-			set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract,ch_bam_dedup_for_qualimap
+			set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap
 			set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
 			script:
@@ -738,7 +769,7 @@ if( params.aligner =~ /bismark/ ){
 	 */
 	process bismark_methXtract {
 		tag "$name"
-		publishDir "${params.outdir}/bismark_methylation_calls", mode: 'copy',
+		publishDir "${params.outdir}/bismark_methylation_calls", mode: params.publish_dir_mode,
 			saveAs: {filename ->
 				if( filename.indexOf("splitting_report.txt" ) > 0 ) "logs/$filename"
 				else if( filename.indexOf("M-bias" ) > 0) "m-bias/$filename"
@@ -805,7 +836,6 @@ if( params.aligner =~ /bismark/ ){
 		}
 	}
 
-
 	ch_bismark_align_log_for_bismark_report
 	 .join(ch_bismark_dedup_log_for_bismark_report)
 	 .join(ch_bismark_splitting_report_for_bismark_report)
@@ -818,7 +848,7 @@ if( params.aligner =~ /bismark/ ){
 	 */
 	process bismark_report {
 		tag "$name"
-		publishDir "${params.outdir}/bismark_reports", mode: 'copy'
+		publishDir "${params.outdir}/bismark_reports", mode: params.publish_dir_mode
 
 		input:
 		set val(name), file(align_log), file(dedup_log), file(splitting_report), file(mbias) from ch_bismark_logs_for_bismark_report
@@ -840,7 +870,7 @@ if( params.aligner =~ /bismark/ ){
 	 * STEP 7 - Bismark Summary Report
 	 */
 	process bismark_summary {
-		publishDir "${params.outdir}/bismark_summary", mode: 'copy'
+		publishDir "${params.outdir}/bismark_summary", mode: params.publish_dir_mode
 
 		input:
 		file ('*') from ch_bam_for_bismark_summary.collect()
@@ -875,7 +905,7 @@ else {
 if( params.aligner == 'bwameth' ){
 	process bwamem_align {
 		tag "$name"
-		publishDir "${params.outdir}/bwa-mem_alignments", mode: 'copy',
+		publishDir "${params.outdir}/bwa-mem_alignments", mode: params.publish_dir_mode,
 			saveAs: {filename ->
 				if( !params.save_align_intermeds && filename == "where_are_my_files.txt" ) filename
 				else if( params.save_align_intermeds && filename != "where_are_my_files.txt" ) filename
@@ -893,7 +923,7 @@ if( params.aligner == 'bwameth' ){
 
 		script:
 		fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
-		prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?(\.bz2)?$/
+		prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
 		"""
 		bwameth.py \\
 			--threads ${task.cpus} \\
@@ -908,7 +938,7 @@ if( params.aligner == 'bwameth' ){
 	 */
 	process samtools_sort_index_flagstat {
 		tag "$name"
-		publishDir "${params.outdir}/samtools", mode: 'copy', 
+		publishDir "${params.outdir}/bwa-mem_alignments", mode: params.publish_dir_mode,
 			saveAs: {filename ->
 				if(filename.indexOf("report.txt") > 0) "logs/$filename"
 				else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
@@ -921,7 +951,7 @@ if( params.aligner == 'bwameth' ){
 		file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat.collect()
 
 		output:
-		set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates,ch_bam_sorted_for_picard
+		set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates
 		set val(name), file("${bam.baseName}.sorted.bam.bai") into ch_bam_index
 		file "${bam.baseName}_flagstat_report.txt" into ch_flagstat_results_for_multiqc
 		file "${bam.baseName}_stats_report.txt" into ch_samtools_stats_results_for_multiqc
@@ -950,7 +980,7 @@ if( params.aligner == 'bwameth' ){
 	} else {
 		process markDuplicates {
 			tag "$name"
-			publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: 'copy',
+			publishDir "${params.outdir}/bwa-mem_markDuplicates", mode: params.publish_dir_mode,
 				saveAs: {filename -> filename.indexOf(".bam") == -1 ? "logs/$filename" : "$filename"}
 
 			input:
@@ -983,12 +1013,12 @@ if( params.aligner == 'bwameth' ){
 	}
 
 	/*
-	 * STEP 6 - extract methylation with MethylDackel
+	 * STEP 6 - Extract methylation with MethylDackel
 	 */
 
 	process methyldackel {
 		tag "$name"
-		publishDir "${params.outdir}/MethylDackel", mode: 'copy'
+		publishDir "${params.outdir}/MethylDackel", mode: params.publish_dir_mode
 
 		input:
 		set val(name),
@@ -1052,12 +1082,13 @@ if( params.aligner == 'biscuit' ){
 		fasta = bwa_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa' - '.fai'  - '.par' - '.dau' -'.bis'
 		assembly = fasta.replaceAll(/\.\w+/,"")
 		prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?(\.bz2)?$/
-		non_directional = params.non_directional ? 0 : 1
-		// Paired-end or single end input files and pbat or not 
-		input = params.pbat ? params.single_end ? reads + " -b 3" : "${reads[1]} ${reads[0]}" :  reads
+
+		non_directional = params.single_cell || params.zymo || params.nondirectional_library ? 0 : 1
+		// Paired-end or single-end input files and pbat or not 
+		input = params.pbat ? params.single_end ? reads + " -b 3" : "${reads[1]} ${reads[0]} -b " + non_directional :	 "${reads[0]} ${reads[1]} -b " +  non_directional
 
 		"""
-		biscuit align -M -b $non_directional -t ${task.cpus} $fasta $input | samtools view -Sb > ${name}.${assembly}.bam
+		biscuit align -M -t ${task.cpus} $fasta $input | samtools view -Sb > ${name}.${assembly}.bam
 		"""
 	}
 
@@ -1098,16 +1129,16 @@ if( params.aligner == 'biscuit' ){
 		}
 
 	/*
-	 * STEP 5.- samtools flagstat on samples
+	 * STEP 5.- Samtools flagstat on samples
 	 */
 	process samtools_sort_index_flagstat_biscuit {
 		tag "$name"
 		publishDir "${params.outdir}", mode: 'copy',
 			saveAs: {filename ->
 				if(filename.indexOf("report.txt") > 0) "biscuit_alignments/logs/$filename"
-				else if( (params.save_align_intermeds || params.skip_deduplication  || params.rrbs).any() && filename.indexOf("sorted.bam") > 0) "biscuit_alignments/$filename"
+				else if( (params.save_align_intermeds || params.skip_deduplication	|| params.rrbs).any() && filename.indexOf("sorted.bam") > 0) "biscuit_alignments/$filename"
 				else if( (!params.save_align_intermeds && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
-				else if( (params.save_align_intermeds || params.skip_deduplication  || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+				else if( (params.save_align_intermeds || params.skip_deduplication	|| params.rrbs).any() && filename != "where_are_my_files.txt") filename
 				else null
 			}
 
@@ -1138,7 +1169,7 @@ if( params.aligner == 'biscuit' ){
 	}
 
 	
-  /*
+	/*
 	 * STEP 6 - Create vcf file with pileup, to extract methylation
 	 */
 	process createVCF {
@@ -1158,18 +1189,17 @@ if( params.aligner == 'biscuit' ){
 		output:
 		set val(name), file("${name}.vcf.gz*") into ch_vcf_biscuit_qc ,ch_vcf_for_bedgraph,ch_vcf_for_epiread
 				 
-	    script:
+		script:
 		filter_duplication = params.skip_deduplication || params.rrbs ? '-u' : ''
-		all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
 		"""
-		biscuit pileup  -q ${task.cpus} $filter_duplication $fasta ${bam} -o ${name}.vcf 
+		biscuit pileup	-q ${task.cpus} $filter_duplication $fasta ${bam} -o ${name}.vcf 
 		bgzip -@ ${task.cpus} -f ${name}.vcf
 		tabix -f -p vcf ${name}.vcf.gz
 		"""
 	}  
 
 	/*
-	 * STEP 7 - create bedgraph file from vcf
+	 * STEP 7 - Create bedgraph file from vcf
 	 */
 	process createBedgraph {
 		tag "$name"
@@ -1182,15 +1212,18 @@ if( params.aligner == 'biscuit' ){
 		set val(name), file("*bedgraph" ) into ch_bedgraph_for_intersect_soloWCGW
 
 		script:
-		min_depth = params.min_depth > 0 ? "${params.min_depth}" : '1'
+		min_depth = params.min_coverage > 1 ? "${params.min_coverage}" : '1'
 		all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
 		"""
-		biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${name}.bedgraph"   
+		biscuit vcf2bed -k $min_depth -t $all_contexts	"${vcf[0]}" > "${name}.bedgraph"   
 		"""
 	}
 	
 	if (params.epiread) {
 		if (params.common_dbsnp) {
+			/*
+			* STEP 7.1 - Reformat SNP table for SNP file generation
+			*/
 			process reformat_SNP {
 
 				input:
@@ -1208,9 +1241,11 @@ if( params.aligner == 'biscuit' ){
 		}
 		else {
 			ch_reformattedSNP_for_SNP = Channel.empty() 
-
 		}
 
+		/*
+		* STEP 7.2 - SNP file generation for the epiread convertion 
+		*/
 		process get_SNP_file { 
 			tag "$name"
 			publishDir "${params.outdir}/epireads/snp", mode: 'copy',
@@ -1230,16 +1265,19 @@ if( params.aligner == 'biscuit' ){
 		  
 			script:
 			whitelist = params.whitelist  ? "-R $whitelist_file" : ''
-			snp_file = (reformatted_SNP.size()>0) ? "-a ${reformatted_SNP[0]}"  : '' 
+			snp_file = (reformatted_SNP.size()>0) ? "-a ${reformatted_SNP[0]}"	: '' 
 			"""
 			bcftools annotate $whitelist -O z ${snp_file} -h $baseDir/assets/common_dbsnp.hdr -c CHROM,FROM,TO,TYPE,COMMON_SOME,COMMON_ALL,REF_MIN,ALT_MIN,REF_DBSNP,ALT_DBSNP,REF_ALL,ALT_ALL,RSID,MAX_MAF "${vcf[0]}" > "${name}-whitelist-dbSNP.vcf.gz"
 			tabix  -p vcf "${name}-whitelist-dbSNP.vcf.gz"
 			bcftools view -O z -i'ALT!="N" & ALT!="." & ( (COUNT(GT=="0/1")>=1 & COMMON_ALL==1 & MAX_MAF>=0.05) | (COUNT(GT=="0/1" & GQ>=60)>=1) )' "${name}-whitelist-dbSNP.vcf.gz" > "${name}-whitelist-dbSNP-HET60.vcf.gz"
 			tabix -p vcf "${name}-whitelist-dbSNP-HET60.vcf.gz"		
-			bcftools query -u -i'GT="0/1" & GQ>=10' --format '%CHROM\t%POS\t%POS\t%REF\t%ALT[\t%GT\t%GQ\t%SP\t%AC\t%AF1]\t%RSID\t%COMMON_ALL\t%MAX_MAF\t%REF_MIN\t%ALT_MIN\n' "${name}-whitelist-dbSNP-HET60.vcf.gz" | awk -v OFS="\t" '{\$2 = \$2 - 1; print}' > "${name}.snp.bed"	 	
+			bcftools query -u -i'GT="0/1" & GQ>=10' --format '%CHROM\t%POS\t%POS\t%REF\t%ALT[\t%GT\t%GQ\t%SP\t%AC\t%AF1]\t%RSID\t%COMMON_ALL\t%MAX_MAF\t%REF_MIN\t%ALT_MIN\n' "${name}-whitelist-dbSNP-HET60.vcf.gz" | awk -v OFS="\t" '{\$2 = \$2 - 1; print}' > "${name}.snp.bed"		
 			"""
 		}
 
+		/*
+		* STEP 7.3 - Convert bam to epiread file format
+		*/
 		process epiread_convertion {
 			tag "$name"
 			publishDir "${params.outdir}/epireads", mode: 'copy'
@@ -1251,7 +1289,7 @@ if( params.aligner == 'biscuit' ){
 			file(snp),
 			file(fasta),
 			file(fasta_index),
-			file(whitelist)   from ch_bam_sorted_for_epiread 
+			file(whitelist)	  from ch_bam_sorted_for_epiread 
 			.join(ch_bam_index_for_epiread)
 			.join(ch_snp_for_epiread)
 			.combine(ch_fasta_for_epiread)
@@ -1261,7 +1299,7 @@ if( params.aligner == 'biscuit' ){
 
 
 			output:
-			file "*${name}.e*.gz*"  
+			file "*${name}.e*.gz*"	
 			file "${name}.original.epiread.*" optional true
 			
 			script:
@@ -1273,7 +1311,7 @@ if( params.aligner == 'biscuit' ){
 			"""
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
-				biscuit epiread -q ${task.cpus} $snp_file $no_filter_reverse $fasta ${name}.bam  |sort --parallel=${task.cpus} -T . -k1,1Vf -k5,5n | bgzip > ${name}.epiread.gz
+				biscuit epiread -q ${task.cpus} $snp_file $no_filter_reverse $fasta ${name}.bam	 |sort --parallel=${task.cpus} -T . -k1,1Vf -k5,5n | bgzip > ${name}.epiread.gz
 				tabix -0 -s 1 -b 5 -e 5 ${name}.epiread.gz
 			"""
 			} else if (params.debug_epiread) {
@@ -1298,7 +1336,7 @@ if( params.aligner == 'biscuit' ){
 
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
-				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp  ${name}.epiread  $debug_merging_epiread > ${name}.err
+				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp	${name}.epiread	 $debug_merging_epiread > ${name}.err
 				sort -k1,1Vf  -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz 
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz  
 				tabix -0 -p bed ${name}.epiread.gz 
@@ -1307,7 +1345,10 @@ if( params.aligner == 'biscuit' ){
 			}
 		}
 	}
-
+	
+	/*
+	* STEP 8 - Running QC of samples
+	*/
 	process biscuit_QC {
 		tag "$name"
 		publishDir "${params.outdir}/biscuit_QC", mode: 'copy'
@@ -1330,7 +1371,7 @@ if( params.aligner == 'biscuit' ){
 		script:
 		assembly = fasta.toString().replaceAll(/\.\w+/,"")
 		"""
-		QC.sh -v ${vcf[0]} -o ${name}.${assembly}_biscuitQC $assets $fasta ${name}.${assembly} ${bam} 				
+		QC.sh -v ${vcf[0]} -o ${name}.${assembly}_biscuitQC $assets $fasta ${name}.${assembly} ${bam}				
 		"""
 	}
 
@@ -1343,13 +1384,12 @@ else {
 	ch_samblaster_for_multiqc = Channel.from(false)
 }
 
-
 /*
- * STEP 8 - Qualimap
+ * STEP 9 - Qualimap
  */
 process qualimap {
 	tag "$name"
-	publishDir "${params.outdir}/qualimap", mode: 'copy'
+	publishDir "${params.outdir}/qualimap", mode: params.publish_dir_mode
 	
 	input:
 	set val(name), file(bam) from ch_bam_dedup_for_qualimap
@@ -1361,12 +1401,12 @@ process qualimap {
 	gcref = params.genome.toString().startsWith('GRCh') ? '-gd HUMAN' : ''
 	gcref = params.genome.toString().startsWith('GRCm') ? '-gd MOUSE' : ''
 	 def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
-    def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
+	def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
 
 	"""
 	samtools sort $bam \\
-        -@ ${task.cpus} $sort_mem \\
-        -o ${bam.baseName}.sorted.bam
+		-@ ${task.cpus} $sort_mem \\
+		-o ${bam.baseName}.sorted.bam
 	qualimap bamqc $gcref \\
 		-bam ${bam.baseName}.bam \\
 		-outdir ${bam.baseName}_qualimap \\
@@ -1379,7 +1419,7 @@ process qualimap {
 
 
  /*
- * STEP 9 - Picard - Preparation step
+ * STEP 10 - Picard - Preparation step
  */
 process prepareGenomeToPicard {
 	publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
@@ -1399,7 +1439,7 @@ process prepareGenomeToPicard {
 		avail_mem = task.memory.toGiga()
 	}	 
 	"""
-	mv ${fasta}  ${fasta.baseName}.picard.fa
+	mv ${fasta}	 ${fasta.baseName}.picard.fa
 	picard -Xmx${avail_mem}g  CreateSequenceDictionary \\
 	R=${fasta.baseName}.picard.fa \\
 	O=${fasta.baseName}.picard.dict
@@ -1409,7 +1449,7 @@ process prepareGenomeToPicard {
 
  
  /*
- * STEP 10 - Picard InsertSizeMetrics and GcBiasMetrics
+ * STEP 11 - Picard InsertSizeMetrics and GcBiasMetrics
  */
 process picardMetrics {
 	tag "$name"
@@ -1468,11 +1508,11 @@ process picardMetrics {
 }
 
 /*
- * STEP 11 - preseq
+ * STEP 12 - preseq
  */
 process preseq {
 	tag "$name"
-	publishDir "${params.outdir}/preseq", mode: 'copy'
+	publishDir "${params.outdir}/preseq", mode: params.publish_dir_mode
 
 	input:
 	set val(name), file(bam) from ch_bam_for_preseq
@@ -1488,10 +1528,10 @@ process preseq {
 }
 
 /*
- * STEP 12 - MultiQC
+ * STEP 13 - MultiQC
  */
 process multiqc {
-	publishDir "${params.outdir}/MultiQC", mode: 'copy'
+	publishDir "${params.outdir}/MultiQC", mode: params.publish_dir_mode
 
 	input:
 	file (multiqc_config) from ch_multiqc_config
@@ -1515,7 +1555,6 @@ process multiqc {
 	file ('biscuit_QC/*') from ch_QC_results_for_multiqc.collect().ifEmpty([])
 	file ('biscuit_markDuplicates/*') from ch_samblaster_for_multiqc.collect().ifEmpty([])
 	file ('picardMetrics/*') from ch_picard_results_for_multiqc.collect().ifEmpty([])
-
 	file ('software_versions/*') from ch_software_versions_yaml_for_multiqc.collect()
 	file workflow_summary from ch_workflow_summary.collectFile(name: "workflow_summary_mqc.yaml")
 
@@ -1535,13 +1574,14 @@ process multiqc {
 }
 
 /*
- * STEP 13 - Output Description HTML
+ * STEP 14 - Output Description HTML
  */
 process output_documentation {
-	publishDir "${params.outdir}/pipeline_info", mode: 'copy'
+	publishDir "${params.outdir}/pipeline_info", mode: params.publish_dir_mode
 
 	input:
 	file output_docs from ch_output_docs
+	file images from ch_output_docs_images
 
 	output:
 	file "results_description.html"
@@ -1556,7 +1596,6 @@ process output_documentation {
  * Completion e-mail notification
  */
 workflow.onComplete {
-
 	// Set up the e-mail variables
 	def subject = "[nf-core/methylseq] Successful: $workflow.runName"
 	if (!workflow.success) {
@@ -1607,18 +1646,18 @@ workflow.onComplete {
 
 	// Render the TXT template
 	def engine = new groovy.text.GStringTemplateEngine()
-	def tf = new File("$baseDir/assets/email_template.txt")
+	def tf = new File("$projectDir/assets/email_template.txt")
 	def txt_template = engine.createTemplate(tf).make(email_fields)
 	def email_txt = txt_template.toString()
 
 	// Render the HTML template
-	def hf = new File("$baseDir/assets/email_template.html")
+	def hf = new File("$projectDir/assets/email_template.html")
 	def html_template = engine.createTemplate(hf).make(email_fields)
 	def email_html = html_template.toString()
 
 	// Render the sendmail template
-	def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$baseDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
-	def sf = new File("$baseDir/assets/sendmail_template.txt")
+	def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
+	def sf = new File("$projectDir/assets/sendmail_template.txt")
 	def sendmail_template = engine.createTemplate(sf).make(smail_fields)
 	def sendmail_html = sendmail_template.toString()
 
@@ -1631,7 +1670,11 @@ workflow.onComplete {
 			log.info "[nf-core/methylseq] Sent summary e-mail to $email_address (sendmail)"
 		} catch (all) {
 			// Catch failures and try with plaintext
-			[ 'mail', '-s', subject, email_address ].execute() << email_txt
+			def mail_cmd = [ 'mail', '-s', subject, '--content-type=text/html', email_address ]
+			if ( mqc_report.size() <= params.max_multiqc_email_size.toBytes() ) {
+			  mail_cmd += [ '-A', mqc_report ]
+			}
+			mail_cmd.execute() << email_html
 			log.info "[nf-core/methylseq] Sent summary e-mail to $email_address (mail)"
 		}
 	}
@@ -1677,13 +1720,13 @@ def nfcoreHeader() {
 	c_white = params.monochrome_logs ? '' : "\033[0;37m";
 	c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
 
-	return """    -${c_dim}--------------------------------------------------${c_reset}-
+	return """	  -${c_dim}--------------------------------------------------${c_reset}-
 											${c_green},--.${c_black}/${c_green},-.${c_reset}
-	${c_blue}        ___     __   __   __   ___     ${c_green}/,-._.--~\'${c_reset}
-	${c_blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${c_yellow}}  {${c_reset}
-	${c_blue}  | \\| |       \\__, \\__/ |  \\ |___     ${c_green}\\`-._,-`-,${c_reset}
+	${c_blue}		 ___	 __	  __   __	___		${c_green}/,-._.--~\'${c_reset}
+	${c_blue}  |\\ | |__  __ /	` /	 \\ |__) |__		 ${c_yellow}}  {${c_reset}
+	${c_blue}  | \\| |		 \\__, \\__/ |	\\ |___		${c_green}\\`-._,-`-,${c_reset}
 											${c_green}`._,._,\'${c_reset}
-	${c_purple}  nf-core/methylseq v${workflow.manifest.version}${c_reset}
+	${c_purple}	 nf-core/methylseq v${workflow.manifest.version}${c_reset}
 	-${c_dim}--------------------------------------------------${c_reset}-
 	""".stripIndent()
 }

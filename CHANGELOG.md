@@ -1,6 +1,7 @@
 
 # nf-core/methylseq
 
+<<<<<<< HEAD
 ## [v1.6dev] 
 
 ### New features
@@ -14,6 +15,15 @@
 * _new dependency_: samblaster`0.1.24`
 * _new dependency_: bedtools `2.29.1`
 *  _new_: biscuit tool `0.3.11`
+=======
+## v1.6dev - [date]
+
+### Pipeline Updates
+
+* Updated template to tools 1.11
+* Moved parameter documentation into new `nextflow_schema.json` file.
+* Added new `--maxins` and `--minins` parameters to pass on to Bismark
+>>>>>>> 9218f1199bca434af49b54963eea91cfed572597
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 
@@ -23,6 +33,8 @@
 * Improved the multicore support for Bismark methXtract for more parallelisation ([#121](https://github.com/nf-core/methylseq/issues/121))
 * Added `--cytosine_report` option to tell Bismark to give reports for all cytosines in the genome.
 * Added options `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` to customise how Bismark align `--multicore` is decided ([#124](https://github.com/nf-core/methylseq/issues/124))
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Software updates
 
