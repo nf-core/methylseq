@@ -1,4 +1,5 @@
 
+
 # nf-core/methylseq Output
 
 ## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/methylseq/output](https://nf-co.re/methylseq/output)
@@ -24,7 +25,7 @@ and processes data using the following steps:
 * [Deduplication](#deduplication) - Deduplicating reads
 * [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
 * [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
-* [Biscuit Reports](#biscuit reports) - Single-sample analysis reports for biscuit aligner
+* [BISCUIT Reports](#biscuit-reports) - Single-sample analysis reports for BISCUIT aligner
 * [Qualimap](#qualimap) - Tool for genome alignments QC
 * [Preseq](#preseq) - Tool for estimating sample complexity
 * [Picard](#picard) - Tool for generating metrics of statistics
@@ -73,7 +74,7 @@ Single-end data will have slightly different file names and only one FastQ file 
 
 ### Alignment
 
-Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments. _+__________
+Bismark, bwa-meth and BISCUIT convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments. _+__________
 
 **Bismark output directory: `results/bismark_alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
@@ -103,7 +104,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 * `logs/sample_stats.txt`
   * Summary file giving lots of metrics about the aligned BAM file.
 
-**biscuit output directory: `results/biscuit_alignnts/`**
+**BISCUIT output directory: `results/biscuit_alignnts/`**
 
 * `sample.assembly.bam`
   * Aligned reads in BAM format.
@@ -144,9 +145,9 @@ This step removes alignments with identical mapping position to avoid technical 
   * Log file giving summary statistics about deduplication.
 
 
-**biscuit output directory: `results/biscuit_markDuplicates/`**
+**BISCUIT output directory: `results/biscuit_markDuplicates/`**
 
-> **NB:** The biscuit (samblaster) step doesn't remove duplicate reads from the BAM file, it just labels them.
+> **NB:** The BISCUIT (samblaster) step doesn't remove duplicate reads from the BAM file, it just labels them.
 > 
 
 
@@ -157,7 +158,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
-Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional`  or `--skip_deduplication` or `--rrbs` when running the pipeline.
+Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` (or `nondirectional_library`) or `--skip_deduplication` or `--rrbs` when running the pipeline.
 
 Filename abbreviations stand for the following reference alignment strands:
 
@@ -186,20 +187,36 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.bedGraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-**biscuit workflow output directory: `results/methylation_extract/`**
+**BISCUIT workflow output directory: `results/methylation_extract/`**
 
 * `sample.bedgraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
  * `sample.vcf.gz` 
-	 * VCF file with the pileup information, used for creating the bedgraph file.
+	 * VCF file with the pileup information, used for creating the bedGraph file.
 	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
  * `sample.vcf.gz.tbi` 
 	 * Index file for `sample.vcf.gz`
 	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
-> **NB** if `--epriread` is specified in the pipeline, then:
-> **output directory:** `results/epireads` :
-	> * `sample.epiread` 
-			 Storing CpG retention pattern on the read in a compact way 
+	 
+**NB** if `--epriread` is specified in the pipeline, then:
+**output directory:** `results/epireads` :
+* `sample.epiread.gz`
+	 *	Storing CpG retention pattern on the read in a compact way. For paired end mode, two adjacent rows of the read mates in Epi-read format are merged.
+* `sample.epiread.gz.tbi`
+  * Index file for  `sample.epiread.gz`.
+ * `sample.err.gz` 
+	*	 In paired end mode, storing all CpG retention pattern of the reads that failed to be merged together.
+ *	`sample.err.gz.tbi`
+  Index file for  `sample.err.gz`.
+	 * `sample.original.epiread.gz` 
+	 In paired end mode, storing all CpG retention pattern of the reads before the merging.
+	 *  **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
+*	`sample.original.epiread.gz.tbi`
+	*  Index file for  `sample.original.epiread.gz`.
+	* **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
+* `snp/sample.snp.bed` 
+	*  bed file with SNP information about the sample 
+	*  **NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
 > 
 
 ### Bismark Reports
@@ -210,11 +227,11 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 
 **Output directory: `results/bismark_summary`**
 
-### Biscuit Reports
+### BISCUIT Reports
 
-Biscuit generates a directory with different statistical reports describing results for each sample. The statistical reports are converted to plots plotted in the MultiQC report.
+BISCUIT generates a directory with different statistical reports describing results for each sample. The statistical reports are converted to plots plotted in the MultiQC report.
 
-**Output directory: `results/biscuit_QC/sample_biscuitQC/`**
+**Output directory: `results/biscuit_QC/sample.assembly_biscuitQC/`**
 
 
 

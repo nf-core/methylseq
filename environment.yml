@@ -29,7 +29,7 @@ dependencies:
 # added
   - bioconda::samblaster=0.1.24
   - bioconda::bedtools=2.29.1
-  - bioconda::biscuit=0.3.16.20200420=h2b0c03c_3
+  - bioconda::biscuit=0.3.16
   - bioconda::bcftools=1.10
-  - conda-forge::parallel
+  - conda-forge::parallel=20201122
   - gawk=5.1.0

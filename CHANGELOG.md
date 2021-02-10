@@ -1,29 +1,29 @@
 
+
 # nf-core/methylseq
 
-<<<<<<< HEAD
-## [v1.6dev] 
+## [v1.6dev] - [2020-10-02]
 
 ### New features
-
-* Added Picard CollectInsertSizeMetrics and Picard CollectGcBiasMetrics
-* Improved qulimap and preseq by adding `samtools sort` and `samtools index` step in the Bismark aligner
-* Added biscuit aligner as an optional aligner, with all relative steps (alignment, mark duplicates, methylation extraction, QC for biscuit, and optional epiread file creation).
-
-### Software updates
-
-* _new dependency_: samblaster`0.1.24`
-* _new dependency_: bedtools `2.29.1`
-*  _new_: biscuit tool `0.3.11`
-=======
-## v1.6dev - [date]
-
-### Pipeline Updates
 
 * Updated template to tools 1.11
 * Moved parameter documentation into new `nextflow_schema.json` file.
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
->>>>>>> 9218f1199bca434af49b54963eea91cfed572597
+Added Picard CollectInsertSizeMetrics and Picard CollectGcBiasMetrics
+* Improved qulimap and preseq by adding `samtools sort` and `samtools index` step in the Bismark aligner
+* Added BISCUIT aligner as an optional aligner, with all relative steps (alignment, mark duplicates with [samblaster](https://github.com/GregoryFaust/samblaster), methylation extraction, QC for biscuit, and optional [Epi-read](https://huishenlab.github.io/biscuit/epiread_format/) file creation with SNP information ).
+
+### Software updates
+
+* _new_: samblaster `0.1.24`
+* _new_: bedtools `2.29.1`
+* _new_: biscuit `0.3.16`
+* _new_: bcftools`1.10`
+* _new_: parallel `20201122`
+* _new_: gawk `5.1.0`
+*  samtools `1.9` > `1.10`
+* methyldackel `0.5.0` > `0.5.1`
+
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 

@@ -403,7 +403,7 @@ Channel.from(summary.collect{ [it.key, it.value] })
         </dl>
     """.stripIndent() }
     .set { ch_workflow_summary }
-
+	
 /*
  * Parse software version numbers
  */
@@ -464,7 +464,7 @@ if( !params.bismark_index && params.aligner =~ /bismark/ ){
 		file fasta from ch_fasta_for_makeBismarkIndex
 
 		output:
-		file "BismarkIndex" into ch_bismark_index_for_bismark_align
+		file "BismarkIndex" into ch_bismark_index_for_bismark_align, ch_bismark_index_for_bismark_methXtract
 
 		script:
 		aligner = params.aligner == 'bismark_hisat' ? '--hisat2' : '--bowtie2'
@@ -650,9 +650,93 @@ if( params.skip_trimming ){
  * STEP 3.1 - align with Bismark
  */
 if( params.aligner =~ /bismark/ ){
+	// process bismark_align {
+		// tag "$name"
+		// publishDir "${params.outdir}/bismark_alignments", mode: params.publish_dir_mode,
+			// saveAs: {filename ->
+				// if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
+				// else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
+				// else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt" ) filename
+				// else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt" ) filename
+				// else null
+			// }
+
+		// input:
+		// set val(name), file(reads) from ch_trimmed_reads_for_alignment
+		// file index from ch_bismark_index_for_bismark_align.collect()
+		// file wherearemyfiles from ch_wherearemyfiles_for_bismark_align.collect()
+		// file knownsplices from ch_splicesites_for_bismark_hisat_align
+
+		// output:
+		// set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_samtools_sort_index_flagstat
+		// set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
+		// file "*.fq.gz" optional true
+		// file "where_are_my_files.txt"
+
+		// script:
+		// // Paired-end or single end input files
+		// input = params.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
+
+		// // Choice of read aligner
+		// aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
+
+		// // Optional extra bismark parameters
+		// splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
+		// pbat = params.pbat ? "--pbat" : ''
+		// non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
+		// unmapped = params.unmapped ? "--unmapped" : ''
+		// mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
+		// soft_clipping = params.local_alignment ? "--local" : ''
+		// minins = bismark_minins ? "--minins $bismark_minins" : ''
+		// maxins = bismark_maxins ? "--maxins $bismark_maxins" : ''
+
+		// // Try to assign sensible bismark memory units according to what the task was given
+		// multicore = ''
+		// if( task.cpus ){
+			// // Numbers based on recommendation by Felix for a typical mouse genome
+			// if( params.single_cell || params.zymo || params.non_directional ){
+				// cpu_per_multicore = 5
+				// mem_per_multicore = (18.GB).toBytes()
+			// } else {
+				// cpu_per_multicore = 3
+				// mem_per_multicore = (13.GB).toBytes()
+			// }
+			// // Check if the user has specified this and overwrite if so
+			// if(params.bismark_align_cpu_per_multicore) {
+				// cpu_per_multicore = (params.bismark_align_cpu_per_multicore as int)
+			// }
+			// if(params.bismark_align_mem_per_multicore) {
+				// mem_per_multicore = (params.bismark_align_mem_per_multicore as nextflow.util.MemoryUnit).toBytes()
+			// }
+			// // How many multicore splits can we afford with the cpus we have?
+			// ccore = ((task.cpus as int) / cpu_per_multicore) as int
+			// // Check that we have enough memory, assuming 13GB memory per instance (typical for mouse alignment)
+			// try {
+				// tmem = (task.memory as nextflow.util.MemoryUnit).toBytes()
+				// mcore = (tmem / mem_per_multicore) as int
+				// ccore = Math.min(ccore, mcore)
+			// } catch (all) {
+				// log.debug "Warning: Not able to define bismark align multicore based on available memory"
+			// }
+			// if( ccore > 1 ){
+			  // multicore = "--multicore $ccore"
+			// }
+		// }
+
+		// // Main command
+		// """
+		// bismark $input \\
+			// $aligner \\
+			// --bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
+			// --genome $index \\
+			// $reads \\
+			// $soft_clipping \\
+			// $splicesites
+		// """
+	// }
 	process bismark_align {
 		tag "$name"
-		publishDir "${params.outdir}/bismark_alignments", mode: params.publish_dir_mode,
+		publishDir "${params.outdir}/bismark_alignments", mode: 'copy',
 			saveAs: {filename ->
 				if( filename.indexOf(".fq.gz") > 0 ) "unmapped/$filename"
 				else if( filename.indexOf("report.txt") > 0 ) "logs/$filename"
@@ -668,7 +752,7 @@ if( params.aligner =~ /bismark/ ){
 		file knownsplices from ch_splicesites_for_bismark_hisat_align
 
 		output:
-		set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
+		set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_samtools_sort_index_flagstat
 		set val(name), file("*report.txt") into ch_bismark_align_log_for_bismark_report, ch_bismark_align_log_for_bismark_summary, ch_bismark_align_log_for_multiqc
 		file "*.fq.gz" optional true
 		file "where_are_my_files.txt"
@@ -687,8 +771,6 @@ if( params.aligner =~ /bismark/ ){
 		unmapped = params.unmapped ? "--unmapped" : ''
 		mismatches = params.relax_mismatches ? "--score_min L,0,-${params.num_mismatches}" : ''
 		soft_clipping = params.local_alignment ? "--local" : ''
-		minins = bismark_minins ? "--minins $bismark_minins" : ''
-		maxins = bismark_maxins ? "--maxins $bismark_maxins" : ''
 
 		// Try to assign sensible bismark memory units according to what the task was given
 		multicore = ''
@@ -727,19 +809,50 @@ if( params.aligner =~ /bismark/ ){
 		"""
 		bismark $input \\
 			$aligner \\
-			--bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
+			--bam $pbat $non_directional $unmapped $mismatches $multicore \\
 			--genome $index \\
 			$reads \\
 			$soft_clipping \\
 			$splicesites
 		"""
 	}
+	/*
+	 * STEP 4 - Samtools sort bismark
+	 */
+	process samtools_sort_index_flagstat_bismark {
+		tag "$name"
+		publishDir "${params.outdir}/samtools", mode: 'copy', 
+			saveAs: {filename ->
+				if(filename.indexOf("report.txt") > 0) "logs/$filename"
+				else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+				else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+				else null
+			}
+
+		input:
+		set val(name), file(bam) from ch_bam_for_samtools_sort_index_flagstat
+		file wherearemyfiles from ch_wherearemyfiles_for_bismark_samtools_sort.collect()
+
+		output:
+		set val(name), file("*.sorted.bam") into  ch_bam_for_preseq,ch_bam_sorted_for_picard
+		file "where_are_my_files.txt"
+
+		script:
+		def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
+		def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
+		"""
+		samtools sort $bam \\
+			-@ ${task.cpus} $sort_mem \\
+			-o ${bam.baseName}.sorted.bam
+		"""
+	}
+
 
 	/*
-	 * STEP 4 - Bismark deduplicate
+	 * STEP 5 - Bismark deduplicate
 	 */
 	if( params.skip_deduplication || params.rrbs ) {
-		ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap }
+		ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_dedup_bam_for_samtools_sort_index_flagstat  }
 		ch_bismark_dedup_log_for_bismark_report = Channel.from(false)
 		ch_bismark_dedup_log_for_bismark_summary = Channel.from(false)
 		ch_bismark_dedup_log_for_multiqc  = Channel.from(false)
@@ -753,7 +866,7 @@ if( params.aligner =~ /bismark/ ){
 			set val(name), file(bam) from ch_bam_for_bismark_deduplicate
 
 			output:
-			set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap
+			set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_dedup_bam_for_samtools_sort_index_flagstat 
 			set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
 			script:
@@ -764,6 +877,37 @@ if( params.aligner =~ /bismark/ ){
 		}
 	}
 
+	/*
+	 * STEP 6 - Samtools sort bismark after dedup
+	 */
+	process samtools_sort_index_flagstat_dedup_bismark {
+		tag "$name"
+		publishDir "${params.outdir}/samtools", mode: 'copy', 
+			saveAs: {filename ->
+				if(filename.indexOf("report.txt") > 0) "logs/$filename"
+				else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
+				else if( (params.save_align_intermeds || params.skip_deduplication || params.rrbs).any() && filename != "where_are_my_files.txt") filename
+				else null
+			}
+
+		input:
+		set val(name), file(bam) from ch_dedup_bam_for_samtools_sort_index_flagstat
+		file wherearemyfiles from ch_wherearemyfiles_for_bismark_dedup_samtools_sort.collect()
+
+		output:
+		set val(name), file("*.sorted.bam") into ch_bam_sorted_dedup_for_qualimap 
+		file "where_are_my_files.txt"
+
+		script:
+		def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
+		def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
+		"""
+		samtools sort $bam \\
+			-@ ${task.cpus} $sort_mem \\
+			-o ${bam.baseName}.sorted.bam
+		"""
+	}
+	
 	/*
 	 * STEP 5 - Bismark methylation extraction
 	 */
@@ -918,7 +1062,7 @@ if( params.aligner == 'bwameth' ){
 		file wherearemyfiles from ch_wherearemyfiles_for_bwamem_align.collect()
 
 		output:
-		set val(name), file('*.bam') into ch_bam_for_samtools_sort_index_flagstat, ch_bam_for_preseq
+		set val(name), file('*.bam') into ch_bam_for_samtools_sort_index_flagstat
 		file "where_are_my_files.txt"
 
 		script:
@@ -951,7 +1095,7 @@ if( params.aligner == 'bwameth' ){
 		file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat.collect()
 
 		output:
-		set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates
+		set val(name), file("${bam.baseName}.sorted.bam") into ch_bam_sorted_for_markDuplicates,ch_bam_for_preseq, ch_bam_sorted_for_picard
 		set val(name), file("${bam.baseName}.sorted.bam.bai") into ch_bam_index
 		file "${bam.baseName}_flagstat_report.txt" into ch_flagstat_results_for_multiqc
 		file "${bam.baseName}_stats_report.txt" into ch_samtools_stats_results_for_multiqc
@@ -974,7 +1118,7 @@ if( params.aligner == 'bwameth' ){
 	 * STEP 5 - Mark duplicates
 	 */
 	if( params.skip_deduplication || params.rrbs ) {
-		ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
+		ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_sorted_dedup_for_qualimap }
 		ch_bam_index.set { ch_bam_index_for_methyldackel }
 		ch_markDups_results_for_multiqc = Channel.from(false)
 	} else {
@@ -987,7 +1131,7 @@ if( params.aligner == 'bwameth' ){
 			set val(name), file(bam) from ch_bam_sorted_for_markDuplicates
 
 			output:
-			set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap
+			set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_sorted_dedup_for_qualimap
 			set val(name), file("${bam.baseName}.markDups.bam.bai") into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
 			file "${bam.baseName}.markDups_metrics.txt" into ch_markDups_results_for_multiqc
 
@@ -1096,8 +1240,8 @@ if( params.aligner == 'biscuit' ){
 	* STEP 4 - Mark duplicates
 	*/
 	if( params.skip_deduplication || params.rrbs ) {
-		ch_bam_for_markDuplicates.into { ch_bam_dedup_for_qualimap; ch_samblaster_for_samtools_sort_index_flagstat }
-		ch_markDups_results_for_multiqc = Channel.from(false)
+		ch_bam_for_markDuplicates.into { ch_samblaster_for_samtools_sort_index_flagstat }
+		ch_samblaster_for_multiqc = Channel.from(false)
 	} else {
 		process markDuplicates_samblaster {
 			tag "$name"
@@ -1147,7 +1291,7 @@ if( params.aligner == 'biscuit' ){
 		file wherearemyfiles from ch_wherearemyfiles_for_samtools_sort_index_flagstat.collect()
 
 		output:
-		set val(name), file("*.sorted.bam") into ch_bam_dedup_for_qualimap,ch_bam_for_preseq,ch_bam_sorted_for_pileup, ch_bam_sorted_for_epiread, ch_bam_noDups_for_QC,ch_bam_sorted_for_picard
+		set val(name), file("*.sorted.bam") into ch_bam_sorted_dedup_for_qualimap,ch_bam_for_preseq,ch_bam_sorted_for_pileup, ch_bam_sorted_for_epiread, ch_bam_noDups_for_QC,ch_bam_sorted_for_picard
 		set val(name), file ("*.sorted.bam.bai") into ch_bam_index_sorted_for_pileup,ch_bam_index_for_epiread,ch_bam_index_noDups_for_QC
 		file "${samblaster_bam.baseName}_flagstat_report.txt" into ch_flagstat_results_biscuit_for_multiqc
 		file "${samblaster_bam.baseName}_stats_report.txt" into ch_samtools_stats_results_biscuit_for_multiqc
@@ -1162,7 +1306,6 @@ if( params.aligner == 'biscuit' ){
 		-@ ${task.cpus} $sort_mem -l 9 \\
 		-o ${samblaster_bam.baseName}.sorted.bam
 		samtools index ${samblaster_bam.baseName}.sorted.bam
-
 		samtools flagstat ${samblaster_bam.baseName}.sorted.bam > ${samblaster_bam.baseName}_flagstat_report.txt
 		samtools stats ${samblaster_bam.baseName}.sorted.bam > ${samblaster_bam.baseName}_stats_report.txt
 		"""
@@ -1379,7 +1522,6 @@ if( params.aligner == 'biscuit' ){
 else {
 	ch_flagstat_results_biscuit_for_multiqc = Channel.from(false)
 	ch_samtools_stats_results_biscuit_for_multiqc = Channel.from(false)
-	ch_markDups_results_for_multiqc = Channel.from(false)
 	ch_QC_results_for_multiqc = Channel.from(false)
 	ch_samblaster_for_multiqc = Channel.from(false)
 }
@@ -1392,7 +1534,7 @@ process qualimap {
 	publishDir "${params.outdir}/qualimap", mode: params.publish_dir_mode
 	
 	input:
-	set val(name), file(bam) from ch_bam_dedup_for_qualimap
+	set val(name), file(bam) from ch_bam_sorted_dedup_for_qualimap
 
 	output:
 	file "${bam.baseName}_qualimap" into ch_qualimap_results_for_multiqc
@@ -1400,20 +1542,13 @@ process qualimap {
 	script:
 	gcref = params.genome.toString().startsWith('GRCh') ? '-gd HUMAN' : ''
 	gcref = params.genome.toString().startsWith('GRCm') ? '-gd MOUSE' : ''
-	 def avail_mem = task.memory ? ((task.memory.toGiga() - 6) / task.cpus).trunc() : false
-	def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
-
 	"""
-	samtools sort $bam \\
-		-@ ${task.cpus} $sort_mem \\
-		-o ${bam.baseName}.sorted.bam
 	qualimap bamqc $gcref \\
 		-bam ${bam.baseName}.bam \\
 		-outdir ${bam.baseName}_qualimap \\
 		--collect-overlap-pairs \\
 		--java-mem-size=${task.memory.toGiga()}G \\
 		-nt ${task.cpus}
-
 	"""
 }
 
