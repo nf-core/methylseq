@@ -118,7 +118,7 @@ Channel
     .fromPath("$projectDir/assets/where_are_my_files.txt", checkIfExists: true)
     .into { ch_wherearemyfiles_for_trimgalore; ch_wherearemyfiles_for_alignment }
 
-ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath(params.known_splices, checkIfExists: true).collect() : []
+ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath(params.known_splices, checkIfExists: true) : Channel.empty()
 
 if( params.aligner =~ /bismark/ ){
     assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
@@ -556,7 +556,7 @@ if( params.aligner =~ /bismark/ ){
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
         file index from ch_bismark_index_for_bismark_align.collect()
         file wherearemyfiles from ch_wherearemyfiles_for_bismark_align.collect()
-        file knownsplices from ch_splicesites_for_bismark_hisat_align
+        file knownsplices from ch_splicesites_for_bismark_hisat_align.collect().ifEmpty([])
 
         output:
         set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
@@ -572,7 +572,7 @@ if( params.aligner =~ /bismark/ ){
         aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
 
         // Optional extra bismark parameters
-        splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
+        splicesites = params.aligner == "bismark_hisat" && params.known_splices ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
         pbat = params.pbat ? "--pbat" : ''
         non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
         unmapped = params.unmapped ? "--unmapped" : ''
@@ -1124,7 +1124,7 @@ workflow.onComplete {
     def email_html = html_template.toString()
 
     // Render the sendmail template
-    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
+    def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, projectDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
     def sf = new File("$projectDir/assets/sendmail_template.txt")
     def sendmail_template = engine.createTemplate(sf).make(smail_fields)
     def sendmail_html = sendmail_template.toString()
