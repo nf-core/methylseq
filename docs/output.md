@@ -116,7 +116,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 * `sample.assembly.sorted.bam.bai`
   * Index of sorted BAM file
   * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-  *  **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam.bai`
+  * **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam.bai`
 * `logs/sample_flagstat.txt`
   * Summary file describing the number of reads which aligned in different ways.
 * `logs/sample_stats.txt`
@@ -144,12 +144,10 @@ This step removes alignments with identical mapping position to avoid technical 
 * `logs/sample.sorted.markDups_metrics.txt`
   * Log file giving summary statistics about deduplication.
 
-
 **BISCUIT output directory: `results/biscuit_markDuplicates/`**
 
 > **NB:** The BISCUIT (samblaster) step doesn't remove duplicate reads from the BAM file, it just labels them.
-> 
-
+ 
 
 * `sample.assembly.txt`
   * Log file giving summary statistics about deduplication.
@@ -260,10 +258,10 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 ## Picard
 
 [Picard]([https://broadinstitute.github.io/picard/picard-metric-definitions.html](https://broadinstitute.github.io/picard/picard-metric-definitions.html)) is a set of command line tools (in Java) for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF.
+
 The two metrics created here are:
 * [GcBiasMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics))
 * [InsertSizeMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics)) - Metrics about the insert size distribution of a paired-end library, created by the CollectInsertSizeMetrics program and usually written to a file with the extension ".insert_size_metrics".
-
 
 **Output directory: `results/picardMetrics`**
 
@@ -273,14 +271,11 @@ The two metrics created here are:
   * This file contains plot values for the bias in coverage across regions of the genome with varying GC content, plotted in the MultiQC report.
 * `sample.summary_metrics.txt`
   * This file contains a table summerizing the `sample.gc_bias_metrics.txt` data.
- * `pdf/sample.insert_size_histogram.pdf`
-	 * This file contains a plot of insert size histogram, created by Picard.
- * `pdf/sample.gc_bias_metrics.pdf` 
-	 *  This file contains a plot of GC bias of all reads, created by Picard.
-
-
-
-
+* `pdf/sample.insert_size_histogram.pdf`
+* This file contains a plot of insert size histogram, created by Picard.
+* `pdf/sample.gc_bias_metrics.pdf` 
+  *  This file contains a plot of GC bias of all reads, created by Picard.
+   
 ## MultiQC
 
 [MultiQC](http://multiqc.info) is a visualization tool that generates a single HTML report summarizing all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in the report data directory.

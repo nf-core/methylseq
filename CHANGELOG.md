@@ -1,7 +1,5 @@
 
-
 # nf-core/methylseq
-
 
 ## v1.6dev - [date]
 

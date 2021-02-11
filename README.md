@@ -18,9 +18,9 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 
 | Step                                         | Bismark workflow | bwa-meth workflow     | biscuit           |
 |----------------------------------------------|------------------|-----------------------|-------------------|
-| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              | biscuit			  |
+| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              | biscuit           |
 | Raw data QC                                  | FastQC           | FastQC                | FastQC            |
-| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          | Trim Galore! 	  |
+| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          | Trim Galore!      |
 | Align Reads                                  | Bismark          | bwa-meth              | biscuit           |
 | Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates | samblaster        |
 | Extract methylation calls                    | Bismark          | MethylDackel          | biscuit           |
@@ -30,8 +30,8 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Alignment QC                                 | Qualimap         | Qualimap              | Qualimap          |
 | Sample complexity                            | Preseq           | Preseq                | Preseq            |
 | Project Report                               | MultiQC          | MultiQC               | MultiQC           |
-                                                                                                              
-## Quick Start                                                                                                
+
+## Quick Start                                                                                              
 
 1. Install [`nextflow`](https://nf-co.re/usage/installation)
 
