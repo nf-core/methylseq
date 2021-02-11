@@ -84,7 +84,9 @@ for k in list(results):
         del results[k]
 
 # Dump to YAML
-print("""
+
+print(
+    """
 id: 'software_versions'
 section_name: 'nf-core/methylseq Software Versions'
 section_href: 'https://github.com/nf-core/methylseq'
@@ -95,7 +97,7 @@ data: |
 """
 )
 for k, v in results.items():
-	print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k,v))
+    print("        <dt>{}</dt><dd><samp>{}</samp></dd>".format(k, v))
 print("    </dl>")
 
 # Write out regexes as csv file:
