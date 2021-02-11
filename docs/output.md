@@ -147,7 +147,6 @@ This step removes alignments with identical mapping position to avoid technical 
 **BISCUIT output directory: `results/biscuit_markDuplicates/`**
 
 > **NB:** The BISCUIT (samblaster) step doesn't remove duplicate reads from the BAM file, it just labels them.
- 
 
 * `sample.assembly.txt`
   * Log file giving summary statistics about deduplication.
@@ -189,32 +188,32 @@ Filename abbreviations stand for the following reference alignment strands:
 
 * `sample.bedgraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
- * `sample.vcf.gz` 
-	 * VCF file with the pileup information, used for creating the bedGraph file.
-	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
- * `sample.vcf.gz.tbi` 
-	 * Index file for `sample.vcf.gz`
-	 *  **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
-	 
+* `sample.vcf.gz` 
+  * VCF file with the pileup information, used for creating the bedGraph file.
+  * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+* `sample.vcf.gz.tbi` 
+  * Index file for `sample.vcf.gz`
+  * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+
 **NB** if `--epriread` is specified in the pipeline, then:
 **output directory:** `results/epireads` :
 * `sample.epiread.gz`
-	 *	Storing CpG retention pattern on the read in a compact way. For paired end mode, two adjacent rows of the read mates in Epi-read format are merged.
+  * Storing CpG retention pattern on the read in a compact way. For paired end mode, two adjacent rows of the read mates in Epi-read format are merged.
 * `sample.epiread.gz.tbi`
   * Index file for  `sample.epiread.gz`.
- * `sample.err.gz` 
-	*	 In paired end mode, storing all CpG retention pattern of the reads that failed to be merged together.
- *	`sample.err.gz.tbi`
-  Index file for  `sample.err.gz`.
-	 * `sample.original.epiread.gz` 
-	 In paired end mode, storing all CpG retention pattern of the reads before the merging.
-	 *  **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
-*	`sample.original.epiread.gz.tbi`
-	*  Index file for  `sample.original.epiread.gz`.
-	* **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
+* `sample.err.gz` 
+  * In paired end mode, storing all CpG retention pattern of the reads that failed to be merged together.
+* `sample.err.gz.tbi`
+  * Index file for  `sample.err.gz`.
+* `sample.original.epiread.gz` 
+  * In paired end mode, storing all CpG retention pattern of the reads before the merging.
+  *  **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
+* `sample.original.epiread.gz.tbi`
+  * Index file for  `sample.original.epiread.gz`.
+  * **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
 * `snp/sample.snp.bed` 
-	*  bed file with SNP information about the sample 
-	*  **NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
+  *  bed file with SNP information about the sample 
+  * **NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
 > 
 
 ### Bismark Reports
@@ -230,8 +229,6 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 BISCUIT generates a directory with different statistical reports describing results for each sample. The statistical reports are converted to plots plotted in the MultiQC report.
 
 **Output directory: `results/biscuit_QC/sample.assembly_biscuitQC/`**
-
-
 
 ## Qualimap
 
@@ -260,6 +257,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 [Picard]([https://broadinstitute.github.io/picard/picard-metric-definitions.html](https://broadinstitute.github.io/picard/picard-metric-definitions.html)) is a set of command line tools (in Java) for manipulating high-throughput sequencing (HTS) data and formats such as SAM/BAM/CRAM and VCF.
 
 The two metrics created here are:
+
 * [GcBiasMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#GcBiasMetrics))
 * [InsertSizeMetrics]([https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics](https://broadinstitute.github.io/picard/picard-metric-definitions.html#InsertSizeMetrics)) - Metrics about the insert size distribution of a paired-end library, created by the CollectInsertSizeMetrics program and usually written to a file with the extension ".insert_size_metrics".
 
@@ -273,9 +271,9 @@ The two metrics created here are:
   * This file contains a table summerizing the `sample.gc_bias_metrics.txt` data.
 * `pdf/sample.insert_size_histogram.pdf`
 * This file contains a plot of insert size histogram, created by Picard.
-* `pdf/sample.gc_bias_metrics.pdf` 
-  *  This file contains a plot of GC bias of all reads, created by Picard.
-   
+* `pdf/sample.gc_bias_metrics.pdf`
+  * This file contains a plot of GC bias of all reads, created by Picard.
+
 ## MultiQC
 
 [MultiQC](http://multiqc.info) is a visualization tool that generates a single HTML report summarizing all samples in your project. Most of the pipeline QC results are visualised in the report and further statistics are available in the report data directory.
