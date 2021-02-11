@@ -1,7 +1,7 @@
 
 # nf-core/methylseq
 
-## v1.6dev - [date]
+## v1.6dev - [2020-02-11]
 
 ### Pipeline Updates
 

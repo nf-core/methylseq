@@ -380,39 +380,39 @@
                     "type": "boolean",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
                     "help_text": "[Epiread](https://huishenlab.github.io/biscuit/epiread_format/) is a compact way of storing CpG retention pattern on the same read. This option will tell the biscuit workflow to generate Epi-read file for the sample, as well as all needed steps.",
-                    "fa_icon": "fas fa-angle-double-down"
+                    "fa_icon": "fas fa-clipboard-list"
                 },
                 "common_dbsnp": {
                     "type": "string",
                     "description": "Common dbSNP table of the relevant genome, for SNP filteration",
                     "help_text": "Common-dbSNP table that contains at least the following fields: chrom, chromStart, chromEnd, name, ref, altCount, alts, shiftBases, freqSourceCount, minorAlleleFreq, majorAllele, minorAllele, maxFuncImpact, class, ucscNotes [can be downloaded from UCSC]. This table is used for SNP filteration in the Epi-read file. Relevant only if `--epiread` is set.",
-                    "fa_icon": "fas fa-angle-double-down"
+                    "fa_icon": "fas fa-chess-board"
                 },
                 "whitelist": {
                     "type": "string",
                     "description": "Path to the file that is the complement of blacklist.",
                     "help_text": "The whitelist is needed for SNP file generation.\nThe whitelist can be created with the following steps:\n<ol>\n<li>Download the blacklist for your wanted genome from [here]( https://github.com/Boyle-Lab/Blacklist/tree/master/lists)</li>\n<li>Run: `bedtools complement -i your_black_list -g your_genome_chrome_sizes | grep -v _ | bgzip > whitelist.bed.gz`\nFor more instruction, run `bedtools complement`</li>\n</ol>\nRelevant only if `--epiread` is set.",
-                    "fa_icon": "fas fa-angle-double-down"
+                    "fa_icon": "fab fa-buromobelexperte"
                 },
                 "debug_epiread": {
                     "type": "boolean",
                     "description": "Debug epiread merging for paired end reads.",
-                    "fa_icon": "fas fa-eye-slash",
+                    "fa_icon": "fas fa-check-square",
                     "help_text": "By default, merging two adjacent rows of the read mates in Epi-read format when running with paired-end mode will not output the debug data (about the reference allele, the alternative allele and the SP data), and the original Epi-read file will not be saved to the results directory. Specify this flag (or set to true in your config file) to run the merging with debug data and copy the original Epi-read file to the results directory when complete. \n If you don't want to keep the original files, check `debug_epiread_merging`.\nRelevant only if `--epiread` is set.",
                     "hidden": true
                 },
                 "debug_epiread_merging": {
                     "type": "boolean",
                     "description": "Debug epiread merging. Output merged epiread in debug mode.",
+                    "fa_icon": "far fa-check-square",					
                     "help_text": "By default, merging two adjacent rows of the read mates in Epi-read format when running with paired-end mode will not output the debug data  (about the reference allele, the alternative allele and the SP data). Specify this flag (or set to true in your config file) to run the merging with the debug data.\nIf you want to keep the original Epi-read files, check `debug_epiread`\nRelevant only if `--epiread` is set.",
-                    "fa_icon": "fas fa-ellipsis-h",
                     "hidden": true
                 },
                 "assets_dir": {
                     "type": "string",
                     "description": "Path to assets directory for biscuit_QC",
                     "help_text": "Path to a directory containing needed file for biscuit-QC step\n> **NB** If none provided, will be generated automatically.",
-                    "fa_icon": "fas fa-ellipsis-h"
+                    "fa_icon": "fab fa-buffer"
                 },
                 "save_pileup_file": {
                     "type": "boolean",

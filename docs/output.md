@@ -1,5 +1,4 @@
 
-
 # nf-core/methylseq Output
 
 ## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/methylseq/output](https://nf-co.re/methylseq/output)
@@ -197,6 +196,7 @@ Filename abbreviations stand for the following reference alignment strands:
 
 **NB** if `--epriread` is specified in the pipeline, then:
 **output directory:** `results/epireads` :
+
 * `sample.epiread.gz`
   * Storing CpG retention pattern on the read in a compact way. For paired end mode, two adjacent rows of the read mates in Epi-read format are merged.
 * `sample.epiread.gz.tbi`
