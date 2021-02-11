@@ -112,11 +112,11 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 * `sample.assembly.sorted.bam`
   * Aligned reads in a sorted BAM file.
   * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-  * **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam`
+  * **NB:** If `--skip_deduplication` is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam`
 * `sample.assembly.sorted.bam.bai`
   * Index of sorted BAM file
   * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-  * **NB:** If `--skip_deduplication`  is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam.bai`
+  * **NB:** If `--skip_deduplication` is not specified when running the pipeline, file name would be `sample.assembly.samblaster.sorted.bam.bai`
 * `logs/sample_flagstat.txt`
   * Summary file describing the number of reads which aligned in different ways.
 * `logs/sample_stats.txt`
@@ -124,7 +124,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 
 ### Deduplication
 
-This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if  `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 
 **Bismark output directory: `results/bismark_deduplicated/`**
 
@@ -150,7 +150,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 * `sample.assembly.txt`
   * Log file giving summary statistics about deduplication.
-  
+
 ### Methylation Extraction
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
@@ -188,10 +188,10 @@ Filename abbreviations stand for the following reference alignment strands:
 
 * `sample.bedgraph`
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
-* `sample.vcf.gz` 
+* `sample.vcf.gz`
   * VCF file with the pileup information, used for creating the bedGraph file.
   * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
-* `sample.vcf.gz.tbi` 
+* `sample.vcf.gz.tbi`
   * Index file for `sample.vcf.gz`
   * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
 
@@ -200,21 +200,20 @@ Filename abbreviations stand for the following reference alignment strands:
 * `sample.epiread.gz`
   * Storing CpG retention pattern on the read in a compact way. For paired end mode, two adjacent rows of the read mates in Epi-read format are merged.
 * `sample.epiread.gz.tbi`
-  * Index file for  `sample.epiread.gz`.
-* `sample.err.gz` 
+  * Index file for `sample.epiread.gz`.
+* `sample.err.gz`
   * In paired end mode, storing all CpG retention pattern of the reads that failed to be merged together.
 * `sample.err.gz.tbi`
   * Index file for  `sample.err.gz`.
-* `sample.original.epiread.gz` 
+* `sample.original.epiread.gz`
   * In paired end mode, storing all CpG retention pattern of the reads before the merging.
-  *  **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
-* `sample.original.epiread.gz.tbi`
-  * Index file for  `sample.original.epiread.gz`.
   * **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
-* `snp/sample.snp.bed` 
-  *  bed file with SNP information about the sample 
+* `sample.original.epiread.gz.tbi`
+  * Index file for `sample.original.epiread.gz`.
+  * **NB:** Only created if `--debug_epiread` is specified when running the pipeline.
+* `snp/sample.snp.bed`
+  * bed file with SNP information about the sample.
   * **NB:** Only saved if `--save_snp_file` is specified when running the pipeline.
-> 
 
 ### Bismark Reports
 
