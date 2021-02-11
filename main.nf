@@ -554,9 +554,9 @@ if( params.aligner =~ /bismark/ ){
 
         input:
         set val(name), file(reads) from ch_trimmed_reads_for_alignment
-        file (index) from ch_bismark_index_for_bismark_align.collect()
-        file (wherearemyfiles) from ch_wherearemyfiles_for_bismark_align.collect()
-        file (knownsplices) from ch_splicesites_for_bismark_hisat_align.collect().ifEmpty([])
+        file index from ch_bismark_index_for_bismark_align.collect()
+        file wherearemyfiles from ch_wherearemyfiles_for_bismark_align.collect()
+        file knownsplices from ch_splicesites_for_bismark_hisat_align.collect().ifEmpty([])
 
         output:
         set val(name), file("*.bam") into ch_bam_for_bismark_deduplicate, ch_bam_for_bismark_summary, ch_bam_for_preseq
