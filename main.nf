@@ -681,7 +681,8 @@ if( params.aligner =~ /bismark/ ){
 		aligner = params.aligner == "bismark_hisat" ? "--hisat2" : "--bowtie2"
 
 		// Optional extra bismark parameters
-		splicesites = params.aligner == "bismark_hisat" && knownsplices.name != 'null' ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
+		splicesites = params.aligner == "bismark_hisat" && params.known_splices ? "--known-splicesite-infile <(hisat2_extract_splice_sites.py ${knownsplices})" : ''
+
 		pbat = params.pbat ? "--pbat" : ''
 		non_directional = params.single_cell || params.zymo || params.non_directional ? "--non_directional" : ''
 		unmapped = params.unmapped ? "--unmapped" : ''
@@ -1295,7 +1296,7 @@ if( params.aligner == 'biscuit' ){
 					 
 				script:
 				"""
-				less $commonSNP_file | $baseDir/bin/processUcscDbsnp.pl | grep snv | bgzip > reformattedSNP.snv.txt.gz
+				less $commonSNP_file | $projectDir/bin/processUcscDbsnp.pl | grep snv | bgzip > reformattedSNP.snv.txt.gz
 				tabix -s 1 -b 2 -e 3 reformattedSNP.snv.txt.gz
 				"""
 			}
@@ -1328,7 +1329,7 @@ if( params.aligner == 'biscuit' ){
 			whitelist = params.whitelist  ? "-R $whitelist_file" : ''
 			snp_file = (reformatted_SNP.size()>0) ? "-a ${reformatted_SNP[0]}"	: '' 
 			"""
-			bcftools annotate $whitelist -O z ${snp_file} -h $baseDir/assets/common_dbsnp.hdr -c CHROM,FROM,TO,TYPE,COMMON_SOME,COMMON_ALL,REF_MIN,ALT_MIN,REF_DBSNP,ALT_DBSNP,REF_ALL,ALT_ALL,RSID,MAX_MAF "${vcf[0]}" > "${name}-whitelist-dbSNP.vcf.gz"
+			bcftools annotate $whitelist -O z ${snp_file} -h $projectDir/assets/common_dbsnp.hdr -c CHROM,FROM,TO,TYPE,COMMON_SOME,COMMON_ALL,REF_MIN,ALT_MIN,REF_DBSNP,ALT_DBSNP,REF_ALL,ALT_ALL,RSID,MAX_MAF "${vcf[0]}" > "${name}-whitelist-dbSNP.vcf.gz"
 			tabix  -p vcf "${name}-whitelist-dbSNP.vcf.gz"
 			bcftools view -O z -i'ALT!="N" & ALT!="." & ( (COUNT(GT=="0/1")>=1 & COMMON_ALL==1 & MAX_MAF>=0.05) | (COUNT(GT=="0/1" & GQ>=60)>=1) )' "${name}-whitelist-dbSNP.vcf.gz" > "${name}-whitelist-dbSNP-HET60.vcf.gz"
 			tabix -p vcf "${name}-whitelist-dbSNP-HET60.vcf.gz"		
@@ -1382,7 +1383,7 @@ if( params.aligner == 'biscuit' ){
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
 				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n > ${name}.original.epiread
-				less ${name}.original.epiread | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
+				less ${name}.original.epiread | $projectDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
 				sort -k1,1Vf -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz				
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz 
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.original.epiread | bgzip > ${name}.original.epiread.gz
@@ -1396,7 +1397,7 @@ if( params.aligner == 'biscuit' ){
 				zcat $cpg_file > cpg.bed
 				bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam 
 				samtools index ${name}.bam
-				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $baseDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp	${name}.epiread	 $debug_merging_epiread > ${name}.err
+				biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $projectDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp	${name}.epiread	 $debug_merging_epiread > ${name}.err
 				sort -k1,1Vf  -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz 
 				sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz  
 				tabix -0 -p bed ${name}.epiread.gz 
@@ -1706,7 +1707,7 @@ workflow.onComplete {
 	def email_html = html_template.toString()
 
 	// Render the sendmail template
-	def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, baseDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
+	def smail_fields = [ email: email_address, subject: subject, email_txt: email_txt, email_html: email_html, projectDir: "$projectDir", mqcFile: mqc_report, mqcMaxSize: params.max_multiqc_email_size.toBytes() ]
 	def sf = new File("$projectDir/assets/sendmail_template.txt")
 	def sendmail_template = engine.createTemplate(sf).make(smail_fields)
 	def sendmail_html = sendmail_template.toString()
