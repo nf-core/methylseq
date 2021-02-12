@@ -2,11 +2,30 @@
 
 ## v1.6dev - [date]
 
+**:warning: Breaking change!**
+
+In line with a standardisation change across all of nf-core, we have changed the main parameter name for supplying files to the pipeline.
+In this release, please use `--input` instead of `--reads`.
+The parameter still works in the same way as before.
+
 ### Pipeline Updates
 
-* Updated template to tools 1.11
-* Moved parameter documentation into new `nextflow_schema.json` file.
+* Updated template to tools 1.12.1
+* Renamed `--reads` to `--input`
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
+* New `--em_seq` preset
+  * Sets `bismark_maxins = 1000`, `clip_r1 = 8`, `clip_r2 = 8`, `three_prime_clip_r1 = 8`, `three_prime_clip_r2 = 8`
+* New `--publish_dir_mode` parameter to customise results folder behaviour
+* Fix bug on AWS for `bismark_hisat` known splice file ([#177](https://github.com/nf-core/methylseq/issues/177))
+* Moved parameter documentation into new `nextflow_schema.json` file
+  * This improves web documentation and enables `nf-core launch` functionality. See <https://nf-co.re/launch?pipeline=methylseq>
+* Added a `-profile test_full` config for running the pipeline with a full-size test dataset
+  * See [the config file](https://github.com/nf-core/methylseq/blob/dev/conf/test_full.config) for details
+  * This will be used for automated release tests on AWS, results browsable on the website
+
+### Software updates
+
+* MultiQC `1.8` > `1.9`
 
 ### Software updates
 
