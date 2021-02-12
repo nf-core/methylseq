@@ -10,13 +10,13 @@
 
 ### Software updates
 
-* Python base `3.7.3` > `3.9.1`
+* Python base `3.7.3` > `3.8`
 * markdown `3.1.1` > `3.3.3`
 * pymdown-extensions `6.0` > `8.1.1`
 * pygments `2.6.1` > `2.7.4`
 * pigz `2.3.4` > `2.5`
 * TrimGalore! `0.6.5` > `0.6.6`
-* Samtools `1.9` > `1.11`
+* Samtools `1.9` > `1.10`
 * Bowtie2 `2.3.5` > `2.4.2`
 * Hisat2 `2.2.0` > `2.2.1`
 * Bismark `0.22.3` > `0.23.0`
