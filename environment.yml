@@ -7,7 +7,7 @@ channels:
   - defaults
 dependencies:
   # nf-core dependencies
-  - conda-forge::python=3.8
+  - conda-forge::python=3.8.5
   - conda-forge::markdown=3.3.3
   - conda-forge::pymdown-extensions=8.1.1
   - conda-forge::pygments=2.7.4
