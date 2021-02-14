@@ -391,8 +391,14 @@
                 "whitelist": {
                     "type": "string",
                     "description": "Path to the file that is the complement of blacklist.",
-                    "help_text": "The whitelist is needed for SNP file generation.\nThe whitelist can be created with the following steps:\n<ol>\n<li>Download the blacklist for your wanted genome from [here]( https://github.com/Boyle-Lab/Blacklist/tree/master/lists)</li>\n<li>Run: `bedtools complement -i your_black_list -g your_genome_chrome_sizes | grep -v _ | bgzip > whitelist.bed.gz`\nFor more instruction, run `bedtools complement`</li>\n</ol>\nRelevant only if `--epiread` is set.",
-                    "fa_icon": "fab fa-buromobelexperte"
+                    "help_text": "The whitelist is needed for SNP file generation.\nThe whitelist will be created automatically if a blacklist is probided with `--blacklist`\nRelevant only if `--epiread` is set.",
+                    "fa_icon": "far fa-list-alt"
+                },
+				"blacklist": {
+                    "type": "string",
+                    "description": "Path to the file with problematic regions of the genome, known as blacklist.",
+                    "help_text": "The whitelist is needed for white list creation, which is needed for SNP file generation.\nRelevant only if `--epiread` is set.",
+                    "fa_icon": "fas fa-list-alt"
                 },
                 "debug_epiread": {
                     "type": "boolean",
