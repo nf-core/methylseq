@@ -291,7 +291,7 @@ if (params.input_paths) {
 }
 
 if (params.epiread) {
-    assert params.blacklist || params.whitelist : "Cannot find any blacklist/whitelist file matching: ${params.whitelist}\nEither  whitelist or blacklist are needed if '\--epiread\' is specified"
+    assert params.blacklist || params.whitelist : "Cannot find any blacklist/whitelist file matching: ${params.whitelist}\nEither  whitelist or blacklist are needed if \'--epiread\' is specified"
 
     if (params.whitelist) {
         Channel
