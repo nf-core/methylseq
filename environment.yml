@@ -6,6 +6,8 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  # Fix for methyldackel segfault
+  - bioconda::htslib=1.9
   # nf-core dependencies
   - conda-forge::python=3.8.5
   - conda-forge::markdown=3.3.3
