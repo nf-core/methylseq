@@ -290,7 +290,7 @@ if (params.input_paths) {
         .into { ch_read_files_fastqc; ch_read_files_trimming }
 }
 
-if (params.epiread) {
+if (params.aligner == 'biscuit' && params.epiread) {
     assert params.blacklist || params.whitelist : "Cannot find any blacklist/whitelist file matching: ${params.whitelist}\nEither  whitelist or blacklist are needed if \'--epiread\' is specified"
 
     if (params.whitelist) {
