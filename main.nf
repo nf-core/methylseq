@@ -290,32 +290,34 @@ if (params.input_paths) {
         .into { ch_read_files_fastqc; ch_read_files_trimming }
 }
 
-if (params.aligner == 'biscuit' && params.epiread) {
-    assert params.blacklist || params.whitelist : "Cannot find any blacklist/whitelist file matching: ${params.whitelist}\nEither  whitelist or blacklist are needed if \'--epiread\' is specified"
+if (params.aligner == 'biscuit') {
+	if (params.epiread) { 
+		assert params.blacklist || params.whitelist : "Cannot find any blacklist/whitelist file matching: ${params.whitelist}\nEither  whitelist or blacklist are needed if \'--epiread\' is specified"
 
-    if (params.whitelist) {
-        Channel
-        .fromPath(params.whitelist, checkIfExists: true)
-        .ifEmpty { exit 1, "Cannot find any whitelist file matching: ${params.whitelist}" }
-        .into { ch_whitelist_for_SNP; ch_whitelist_for_epiread}
-    }
-    else {
-        Channel
-        .fromPath(params.blacklist, checkIfExists: true)
-        .ifEmpty { exit 1, "Cannot find any blacklist file matching: ${params.blacklist}" }
-        .set { ch_blacklist_for_create_whitelist;}
-    }
-        
-    if (params.common_dbsnp) {
-        Channel
-        .fromPath(params.common_dbsnp,  checkIfExists: true)
-        .ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
-        .set { ch_commonSNP_for_SNP; }
-    }
-}
-else 
-{
-    ch_fasta_for_create_whitelist.close()
+		if (params.whitelist) {
+			Channel
+			.fromPath(params.whitelist, checkIfExists: true)
+			.ifEmpty { exit 1, "Cannot find any whitelist file matching: ${params.whitelist}" }
+			.into { ch_whitelist_for_SNP; ch_whitelist_for_epiread}
+		}
+		else {
+			Channel
+			.fromPath(params.blacklist, checkIfExists: true)
+			.ifEmpty { exit 1, "Cannot find any blacklist file matching: ${params.blacklist}" }
+			.set { ch_blacklist_for_create_whitelist;}
+		}
+			
+		if (params.common_dbsnp) {
+			Channel
+			.fromPath(params.common_dbsnp,  checkIfExists: true)
+			.ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
+			.set { ch_commonSNP_for_SNP; }
+		}
+	} 
+	else 
+	{
+		ch_fasta_for_create_whitelist.close()
+	}
 }
 // Header log info
 log.info nfcoreHeader()
