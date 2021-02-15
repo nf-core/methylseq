@@ -1,7 +1,7 @@
 
 # nf-core/methylseq
 
-## v1.6dev - [2020-02-11]
+## v1.6dev - [2020-02-15]
 
 ### Pipeline Updates
 
@@ -16,11 +16,21 @@
 
 * _new_: samblaster `0.1.24`
 * _new_: bedtools `2.29.1`
-* _new_: biscuit `0.3.16`
+* _new_: biscuit `0.3.16.20200420`
 * _new_: bcftools`1.10`
 * _new_: parallel `20201122`
 * _new_: gawk `5.1.0`
+* python `3.7.3` > `3.8.5`
+* markdown `3.1.1` > `3.3.3`
+* pymdown-extensions `6.0` > `8.1.1`
+* pygments `2.6.1` > `2.7.4`
+* pigz=2.3.4 > `2.5`
+* trim-galore=0.6.5 > `0.6.6`
 * samtools `1.9` > `1.10`
+* bowtie2=2.3.5 > `2.4.2`
+* hisat2=2.2.0 > `2.2.1`
+* bismark=0.22.3 > `0.23.0`
+* preseq=2.0.3 > `3.1.2`
 * methyldackel `0.5.0` > `0.5.1`
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
