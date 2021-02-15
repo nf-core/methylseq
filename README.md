@@ -34,7 +34,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Sample complexity                            | Preseq           | Preseq                | Preseq            |
 | Project Report                               | MultiQC          | MultiQC               | MultiQC           |
 
-## Quick Start                                                                                              
+## Quick Start
 
 1. Install [`nextflow`](https://nf-co.re/usage/installation)
 
