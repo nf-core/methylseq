@@ -6,8 +6,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  # Fix for methyldackel segfault
-  - bioconda::htslib=1.9
   # nf-core dependencies
   - conda-forge::python=3.8.5
   - conda-forge::markdown=3.3.3
@@ -27,4 +25,4 @@ dependencies:
   # bwa-meth pipeline
   - bioconda::picard=2.25.0
   - bioconda::bwameth=0.2.2
-  - bioconda::methyldackel=0.5.1
+  - bioconda::methyldackel=0.4.0
