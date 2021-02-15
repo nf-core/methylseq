@@ -1,6 +1,6 @@
 # You can use this file to create a conda environment for this pipeline:
 #   conda env create -f environment.yml
-name: nf-core-methylseq-1.5
+name: nf-core-methylseq-1.6dev
 channels:
   - conda-forge
   - bioconda
@@ -23,12 +23,12 @@ dependencies:
   - bioconda::preseq=3.1.2
   - bioconda::multiqc=1.9
   # bwa-meth pipeline
-  - bioconda::picard=2.22.2
+  - bioconda::picard=2.25.0
   - bioconda::bwameth=0.2.2
   - bioconda::methyldackel=0.5.1
 # added
-  - bioconda::samblaster=0.1.24
-  - bioconda::bedtools=2.29.1
+  - bioconda::samblaster=0.1.26
+  - bioconda::bedtools=2.30.0
   - bioconda::biscuit=0.3.16.20200420
   - bioconda::bcftools=1.10
   - conda-forge::parallel=20201122

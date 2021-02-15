@@ -14,8 +14,8 @@
 
 ### Software updates
 
-* _new_: samblaster `0.1.24`
-* _new_: bedtools `2.29.1`
+* _new_: samblaster `0.1.26`
+* _new_: bedtools `2.30.0`
 * _new_: biscuit `0.3.16.20200420`
 * _new_: bcftools`1.10`
 * _new_: parallel `20201122`
@@ -31,6 +31,7 @@
 * hisat2 `2.2.0` > `2.2.1`
 * bismark `0.22.3` > `0.23.0`
 * preseq `2.0.3` > `3.1.2`
+* picard `2.22.2` > `2.25.0`
 * methyldackel `0.5.0` > `0.5.1`
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
