@@ -15,12 +15,16 @@ dependencies:
   - bioconda::fastqc=0.11.9
   # Default Bismark pipeline
   - bioconda::trim-galore=0.6.6
-  - bioconda::samtools=1.10
+  ## Needed for MethylDackel 0.5.1 to avoid htslib segfault
+  # See https://github.com/dpryan79/MethylDackel/issues/99
+  - bioconda::samtools=1.9
   - bioconda::bowtie2=2.4.2
   - bioconda::hisat2=2.2.1
   - bioconda::bismark=0.23.0
   - bioconda::qualimap=2.2.2d
-  - bioconda::preseq=3.1.2
+  ## Needed for MethylDackel 0.5.1 to avoid htslib segfault
+  # See https://github.com/dpryan79/MethylDackel/issues/99
+  - bioconda::preseq=2.0.3
   - bioconda::multiqc=1.9
   # bwa-meth pipeline
   - bioconda::picard=2.25.0
