@@ -58,8 +58,6 @@ vector <string> line2tokens(string &line) {
     return result;
 }
 
-
-//void convert_epiread(string genome_cpg) {
 void convert_epiread(ofstream& merged_epiread) {
     /** parse stdin for epiread paired-end file, sorted by name and order of mate
      * Translate them to single-end like epiread format, and output to a file */
@@ -104,11 +102,13 @@ void convert_epiread(ofstream& merged_epiread) {
 		}
 		
         // process couple of lines. write to stdout
-        //merge_paired_and_print(row1, row2,genome_cpg);
-	  merge_paired_and_print(row1, row2,merged_epiread);
-
-    }
-    //print_stats_msg();
+		try {
+			  merge_paired_and_print(row1, row2,merged_epiread);
+		} catch (std::exception &e) {
+			cerr << "Failed! exception:" << endl;
+			cerr << e.what() << endl;
+		}    
+	}
 }
 
 
@@ -138,18 +138,6 @@ int CpGFirstIndex(string &locus) {
     return start_site;
     
 }
-
-// int CpGLastLoci(int &index) {
-	// //get the locus of the last CpG according to it's index
-    // string position = "";
-	// for (auto it = dictCpG.begin(); it != dictCpG.end(); ++it)
-		// if (it->second == index)
-			// return stoi((it->first).substr((it->first).find("\t")+1));
-   
-    // // This is an internal error - should never happen.
-    // throw logic_error("Internal Error. Unknown CpG index: " + index);
-
-// }
 
 int CpGLastLoci(string &chr,string &pos,int length_cpg) {
 	//get the locus of the last CpG according to window and length of string
@@ -186,19 +174,6 @@ SNP_record FindSNPRecord(string &locus) {
     return variant;
 }
 
-// void initializeDictCpG(string cpg)
-// {
-
-	// int cpg_index=1; 
-    // vector <string> record;
-	// ifstream cpg_file(cpg, ios_base::in);
-	// string line; 
-	// while (getline(cpg_file, line)) {	
-		// record=line2tokens(line);		
-		// //dictCpG.insert(make_pair(record[0]+TAB+record[1]+TAB+record[2],cpg_index++));
-		// dictCpG.insert(make_pair(record[0]+TAB+record[1],cpg_index++));
-    // }
-// }
 
 void initializeDictCpG(string cpg)
 {
@@ -271,25 +246,7 @@ SNP_record checkLocus(string &chr, string &pos, string &strand,char &variant)
 	string debug_data = "";
 	string locus = chr + TAB + pos;
 	SNP_record snp = FindSNPRecord(locus);	
-	// //if snp equals to one of the allels/equals 'N' or '.' -then it's OK
-	// if (snp.ref == variant ||  snp.alt == variant || variant =='N' || variant == '.')
-		// return snp;
-	
-	// //if snp is not in the one of the alleles:
-    // const regex e("Y\\d+|R\\d+");
-	// // if  ( strand == "+" && (variant == 'C' || variant == 'T' ) && regex_search(snp.sp, e) ) {
-		// // variant = 'Y';
-		// // return snp;
-	// // }
-	// // if ( strand == "-" && (variant == 'A' || variant == 'G' ) && regex_search(snp.sp, e) ) {
-		// // variant = 'R';
-		// // return snp;
-	// // }
-	
-	// //if all of conditions were not met- there is a problem, return null
-	
-	//if SNP met the rule - then change to Y or R respectively 
-	
+		
 	if ( strand == "+" && (snp.ref  == 'C' || snp.alt == 'C' ) && (variant == 'C' || variant == 'T' ) ) {
 			variant = 'Y';
 			return snp;
