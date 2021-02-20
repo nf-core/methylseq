@@ -25,10 +25,6 @@ The parameter still works in the same way as before.
 
 ### Software updates
 
-* MultiQC `1.8` > `1.9`
-
-### Software updates
-
 * Python base `3.7.3` > `3.8`
 * markdown `3.1.1` > `3.3.3`
 * pymdown-extensions `6.0` > `8.1.1`
