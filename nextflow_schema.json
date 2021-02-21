@@ -205,25 +205,25 @@
                 "clip_r1": {
                     "type": "integer",
                     "description": "Trim the specified number of bases from the 5' end of read 1 (or single-end reads).",
-                    "default": "0",
+                    "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "clip_r2": {
                     "type": "integer",
                     "description": "Trim the specified number of bases from the 5' end of read 2 (paired-end only).",
-                    "default": "0",
+                    "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "three_prime_clip_r1": {
                     "type": "integer",
                     "description": "Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming.",
-                    "default": "0",
+                    "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "three_prime_clip_r2": {
                     "type": "integer",
                     "description": "Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming",
-                    "default": "0",
+                    "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "save_trimmed": {
@@ -278,7 +278,7 @@
                 "meth_cutoff": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage to report a methylation call",
-                    "default": "0",
+                    "default": 0,
                     "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
                     "fa_icon": "fas fa-angle-double-down"
                 },
@@ -333,7 +333,7 @@
                 "min_depth": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
-                    "default": "0",
+                    "default": 0,
                     "fa_icon": "fas fa-angle-double-down"
                 },
                 "ignore_flags": {

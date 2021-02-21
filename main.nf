@@ -69,7 +69,7 @@ def helpMessage() {
      --pbat [bool]
      --single_cell [bool]
      --epignome [bool]
-     --accell [bool]
+     --accel [bool]
      --zymo [bool]
      --cegx [bool]
      --em_seq [bool]
