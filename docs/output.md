@@ -189,10 +189,10 @@ Filename abbreviations stand for the following reference alignment strands:
   * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 * `sample.vcf.gz`
   * VCF file with the pileup information, used for creating the bedGraph file.
-  * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+  * **NB:** Only saved if `--save_align_intermeds` is specified when running the pipeline.
 * `sample.vcf.gz.tbi`
   * Index file for `sample.vcf.gz`
-  * **NB:** Only saved if `--save_pileup_file` is specified when running the pipeline.
+  * **NB:** Only saved if `--save_align_intermeds` is specified when running the pipeline.
 
 **NB** if `--epriread` is specified in the pipeline, then:
 **output directory:** `results/epireads` :

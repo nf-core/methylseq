@@ -41,7 +41,6 @@ def helpMessage() {
      --nondirectional_library [bool]    Run alignment against all four possible strands for Biscuit aligner
      --save_align_intermeds [bool]      Save aligned intermediates to results directory
      --save_trimmed [bool]              Save trimmed reads to results directory
-     --save_pileup_file [bool]          Save VCF-pileup and VCF-index files from biscuit aligner to results directory
      --save_snp_file [bool]             Save SNP bed-file from biscuit to results directory. Relevant only if '--epiread' is specified
      --unmapped [bool]                  Save unmapped reads to fastq files
      --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
@@ -360,7 +359,6 @@ if(params.save_reference)   save_intermeds.add('Reference genome build')
 if(params.save_trimmed)     save_intermeds.add('Trimmed FastQ files')
 if(params.unmapped)         save_intermeds.add('Unmapped reads')
 if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
-if(params.save_pileup_file)  save_intermeds.add('Pileup files')
 if(params.save_snp_file)     save_intermeds.add('SNP bed-files')
 if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
 debug_mode = [];
@@ -1264,8 +1262,8 @@ if( params.aligner == 'biscuit' ){
         tag "$name"
         publishDir "${params.outdir}/methylation_extract", mode: params.publish_dir_mode,
         saveAs: {filename ->
-            if( !params.save_pileup_file && filename == "where_are_my_files.txt") filename
-            else if( filename.indexOf("vcf.gz") > 0 && params.save_pileup_file && filename != "where_are_my_files.txt") filename
+            if( !params.save_align_intermeds && filename == "where_are_my_files.txt") filename
+            else if( filename.indexOf("vcf.gz") > 0 && params.save_align_intermeds && filename != "where_are_my_files.txt") filename
             else null
         }
 
