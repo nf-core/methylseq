@@ -9,12 +9,11 @@
 [![Docker](https://img.shields.io/docker/automated/nfcore/methylseq.svg)](https://hub.docker.com/r/nfcore/methylseq)
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23methylseq-4A154B?logo=slack)](https://nfcore.slack.com/channels/methylseq)
 
-nf-core/methylseq is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
-
-<!-- TODO nf-core: Write a 1-2 sentence summary of what data the pipeline is for and what it does -->
-**nf-core/methylseq** is a bioinformatics best-practise analysis pipeline for
+**nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It comes with docker containers making installation trivial and results highly reproducible.
+
+## Pipeline Summary
 
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth` or `--aligner biscuit`.
@@ -56,15 +55,6 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 
 See [usage docs](https://nf-co.re/methylseq/usage) for all of the available options when running the pipeline.
 
-## Pipeline Summary
-
-By default, the pipeline currently performs the following:
-
-<!-- TODO nf-core: Fill in short bullet-pointed list of default steps of pipeline -->
-
-* Sequencing quality control (`FastQC`)
-* Overall pipeline run summaries (`MultiQC`)
-
 ## Documentation
 
 The nf-core/methylseq pipeline comes with documentation about the pipeline: [usage](https://nf-co.re/methylseq/usage) and [output](https://nf-co.re/methylseq/output).
@@ -79,11 +69,6 @@ These scripts were originally written for use at the [National Genomics Infrastr
   * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
   * Patrick Hüther ([@phue](https://github.com/phue/))
-
-We thank the following people for their extensive assistance in the development
-of this pipeline:
-
-<!-- TODO nf-core: If applicable, make list of people who have also contributed -->
 
 ## Contributions and Support
 
@@ -106,4 +91,11 @@ You can cite the `nf-core` publication as follows:
 
 In addition, references of tools and data used in this pipeline are as follows:
 
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+* FastQC - <https://www.bioinformatics.babraham.ac.uk/projects/fastqc/>
+* Trim Galore! - <https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/>
+* Bismark - [10.1093/bioinformatics/btr167](https://doi.org/10.1093/bioinformatics/btr167)
+* bwa-meth - [arXiv:1401.1129](https://arxiv.org/abs/1401.1129)
+* Picard - <http://broadinstitute.github.io/picard/>
+* Qualimap - [10.1093/bioinformatics/btv566](https://doi.org/10.1093/bioinformatics/btv566)
+* Preseq - [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
+* MultiQC - [10.1093/bioinformatics/btw354](https://doi.org/10.1093/bioinformatics/btw354)

@@ -43,4 +43,4 @@ jobs:
           --job-name nf-core-methylseq \
           --job-queue $AWS_JOB_QUEUE \
           --job-definition $AWS_JOB_DEFINITION \
-          --container-overrides '{"command": ["nf-core/methylseq", "-r '"${GITHUB_SHA}"' -profile test --aligner ${{matrix.aligner} --outdir s3://'"${AWS_S3_BUCKET}"'/methylseq/results-'"${GITHUB_SHA}"' -w s3://'"${AWS_S3_BUCKET}"'/methylseq/work-'"${GITHUB_SHA}"' -with-tower"], "environment": [{"name": "TOWER_ACCESS_TOKEN", "value": "'"$TOWER_ACCESS_TOKEN"'"}]}'
+          --container-overrides '{"command": ["nf-core/methylseq", "-r '"${GITHUB_SHA}"' -profile test --aligner '"${{matrix.aligner}}"' --outdir s3://'"${AWS_S3_BUCKET}"'/methylseq/results-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}"/' -w s3://'"${AWS_S3_BUCKET}"'/methylseq/work-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}" -with-tower"], "environment": [{"name": "TOWER_ACCESS_TOKEN", "value": "'"$TOWER_ACCESS_TOKEN"'"}]}'
