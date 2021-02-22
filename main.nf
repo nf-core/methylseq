@@ -759,7 +759,7 @@ if( params.aligner =~ /bismark/ ){
      */
     process samtools_sort_index_flagstat_bismark {
         tag "$name"
-        publishDir "${params.outdir}/samtools", mode: 'copy',
+        publishDir "${params.outdir}/samtools", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "logs/$filename"
                 else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
@@ -820,7 +820,7 @@ if( params.aligner =~ /bismark/ ){
      */
     process samtools_sort_index_flagstat_dedup_bismark {
         tag "$name"
-        publishDir "${params.outdir}/samtools", mode: 'copy',
+        publishDir "${params.outdir}/samtools", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "logs/$filename"
                 else if( (!params.save_align_intermeds && !params.skip_deduplication && !params.rrbs).every() && filename == "where_are_my_files.txt") filename
@@ -1143,7 +1143,7 @@ else {
 if( params.aligner == 'biscuit' ){
     process biscuit_align {
         tag "$name"
-        publishDir "${params.outdir}/biscuit_alignments", mode: 'copy',
+        publishDir "${params.outdir}/biscuit_alignments", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( !params.save_align_intermeds && filename == "where_are_my_files.txt" ) filename
                 else if( params.save_align_intermeds && filename != "where_are_my_files.txt" ) filename
@@ -1183,7 +1183,7 @@ if( params.aligner == 'biscuit' ){
         process markDuplicates_samblaster {
             tag "$name"
 
-            publishDir "${params.outdir}", mode: 'copy',
+            publishDir "${params.outdir}", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( filename.indexOf("log") > 0 ) "biscuit_markDuplicates/$filename"
                 else null
@@ -1205,7 +1205,7 @@ if( params.aligner == 'biscuit' ){
             """
             samtools sort -n $bam \\
 				-@ ${task.cpus} $sort_mem | \\
-					samtools view -h | \\ 
+					samtools view -h | \\
 						samblaster -M $unmapped \\
 						-d "${bam.baseName}_discordant.sam" \\
 						-s "${bam.baseName}_split.sam" \\
@@ -1222,7 +1222,7 @@ if( params.aligner == 'biscuit' ){
      */
     process samtools_sort_index_flagstat_biscuit {
         tag "$name"
-        publishDir "${params.outdir}", mode: 'copy',
+        publishDir "${params.outdir}", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if(filename.indexOf("report.txt") > 0) "biscuit_alignments/logs/$filename"
                 else if( (params.save_align_intermeds || params.skip_deduplication  || params.rrbs).any() && filename.indexOf("sorted.bam") > 0) "biscuit_alignments/$filename"
@@ -1262,7 +1262,7 @@ if( params.aligner == 'biscuit' ){
      */
     process create_VCF {
         tag "$name"
-        publishDir "${params.outdir}/methylation_extract", mode: 'copy',
+        publishDir "${params.outdir}/methylation_extract", mode: params.publish_dir_mode,
         saveAs: {filename ->
             if( !params.save_pileup_file && filename == "where_are_my_files.txt") filename
             else if( filename.indexOf("vcf.gz") > 0 && params.save_pileup_file && filename != "where_are_my_files.txt") filename
@@ -1291,7 +1291,7 @@ if( params.aligner == 'biscuit' ){
      */
     process create_Bedgraph {
         tag "$name"
-        publishDir "${params.outdir}/methylation_extract", mode: 'copy'
+        publishDir "${params.outdir}/methylation_extract", mode: params.publish_dir_mode
 
         input:
         set val(name), file(vcf) from ch_vcf_for_bedgraph
@@ -1361,11 +1361,11 @@ if( params.aligner == 'biscuit' ){
             ch_fasta_for_create_whitelist.close()
         }
         /*
-        * STEP 7.3 - SNP file generation for the epiread convertion
+        * STEP 7.3 - SNP file generation for the epiread conversion
         */
         process get_SNP_file {
             tag "$name"
-            publishDir "${params.outdir}/epireads/snp", mode: 'copy',
+            publishDir "${params.outdir}/epireads/snp", mode: params.publish_dir_mode,
             saveAs: {filename ->
                 if( filename.indexOf("bed") > 0 && params.save_snp_file && filename != "where_are_my_files.txt") filename
                 else null
@@ -1397,7 +1397,12 @@ if( params.aligner == 'biscuit' ){
         */
         process epiread_conversion {
             tag "$name"
-            publishDir "${params.outdir}/epireads", mode: 'copy'
+            publishDir "${params.outdir}/epireads", mode: params.publish_dir_mode,
+			saveAs: {filename ->
+                if( params.debug_epiread && filename != "where_are_my_files.txt") filename
+				else if( filename.indexOf("original") < 0 ) filename
+                else null
+            }
 
             input:
             set val(name),
@@ -1414,10 +1419,9 @@ if( params.aligner == 'biscuit' ){
             .combine(ch_whitelist_for_epiread)
             file (assets) from ch_assets_dir_with_cpg_for_epiread.collect()
 
-
             output:
             file "*${name}.e*.gz*"
-            file "${name}.original.epiread.*" optional true
+            file "${name}.original.epiread.*"
 
             script:
             snp_file = (snp.size()>0) ? "-B " + snp.toString() : ''
@@ -1431,30 +1435,18 @@ if( params.aligner == 'biscuit' ){
                 biscuit epiread -q ${task.cpus} $snp_file $no_filter_reverse $fasta ${name}.bam  |sort --parallel=${task.cpus} -T . -k1,1Vf -k5,5n | bgzip > ${name}.epiread.gz
                 tabix -0 -s 1 -b 5 -e 5 ${name}.epiread.gz
             """
-            } else if (params.debug_epiread) {
+            } else {
             """
                 zcat $cpg_file > cpg.bed
 
                 bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam
                 samtools index ${name}.bam
                 biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n > ${name}.original.epiread
-                less ${name}.original.epiread | $projectDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
+                less ${name}.original.epiread | $projectDir/bin/epiread_pairedEnd_conversion "cpg.bed" $snp ${name}.epiread $debug_merging_epiread >  ${name}.err
                 sort -k1,1Vf -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz
                 sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz
                 sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.original.epiread | bgzip > ${name}.original.epiread.gz
                 tabix -0 -s 1 -b 5 -e 5 ${name}.original.epiread.gz
-                tabix -0 -p bed ${name}.epiread.gz
-                tabix -0 -s 1 -b 5 -e 5 ${name}.err.gz
-            """
-            }
-            else {
-            """
-                zcat $cpg_file > cpg.bed
-                bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam
-                samtools index ${name}.bam
-                biscuit epiread -q ${task.cpus} $snp_file $fasta  ${name}.bam | sort --parallel=${task.cpus} -T .  -k2,2 -k1,1 -k4,4 -k3,3n | $projectDir/bin/epiread_pairedEnd_convertion "cpg.bed" $snp   ${name}.epiread  $debug_merging_epiread > ${name}.err
-                sort -k1,1Vf  -k 2,2n -k 3,3n --parallel=${task.cpus} -T . ${name}.epiread | bgzip > ${name}.epiread.gz
-                sort -k1,1Vf -k5,5n --parallel=${task.cpus} -T . ${name}.err | bgzip > ${name}.err.gz
                 tabix -0 -p bed ${name}.epiread.gz
                 tabix -0 -s 1 -b 5 -e 5 ${name}.err.gz
             """
@@ -1467,7 +1459,7 @@ if( params.aligner == 'biscuit' ){
     */
     process biscuit_QC {
         tag "$name"
-        publishDir "${params.outdir}/biscuit_QC", mode: 'copy'
+        publishDir "${params.outdir}/biscuit_QC", mode: params.publish_dir_mode
 
         input:
         set val(name),
@@ -1531,7 +1523,7 @@ process qualimap {
  */
 process prepare_genome_to_picard {
     publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
-        saveAs: { (params.save_reference && it.indexOf("dict") >0) ? it : null }, mode: 'copy'
+        saveAs: { (params.save_reference && it.indexOf("dict") >0) ? it : null }, mode: params.publish_dir_mode
 
     input:
     file fasta from ch_fasta_for_picard
@@ -1561,7 +1553,7 @@ process prepare_genome_to_picard {
  */
 process picard_metrics {
     tag "$name"
-    publishDir "${params.outdir}/picardMetrics", mode: 'copy',
+    publishDir "${params.outdir}/picardMetrics", mode: params.publish_dir_mode,
          saveAs: { filename ->
                   if (filename.indexOf(".txt") > 0) filename
                   else if (filename.indexOf(".pdf") > 0) "pdf/$filename"
