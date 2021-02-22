@@ -1387,7 +1387,7 @@ if( params.aligner == 'biscuit' ){
         /*
         * STEP 7.4 - Convert bam to epiread file format
         */
-        process epiread_convertion {
+        process epiread_conversion {
             tag "$name"
             publishDir "${params.outdir}/epireads", mode: 'copy'
 
