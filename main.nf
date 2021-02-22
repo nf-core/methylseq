@@ -179,7 +179,7 @@ else if( params.aligner == 'bwameth' || params.aligner == 'biscuit'){
         Channel
             .fromPath(params.fasta_index, checkIfExists: true)
             .ifEmpty { exit 1, "fasta index file not found: ${params.fasta_index}" }
-            .into { ch_fasta_index_for_methyldackel; ch_fasta_index_for_biscuitQC; ch_fasta_index_for_createVCF; ch_fasta_for_create_whitelist; ch_fasta_index_for_epiread }
+            .into { ch_fasta_index_for_methyldackel; ch_fasta_index_for_biscuitQC; ch_fasta_index_for_create_VCF; ch_fasta_for_create_whitelist; ch_fasta_index_for_epiread }
         ch_fasta_for_makeFastaIndex.close()
     }
   }
@@ -552,7 +552,7 @@ if( !params.fasta_index && params.aligner == 'bwameth' ||  !params.fasta_index &
         file fasta from ch_fasta_for_makeFastaIndex
 
         output:
-        file "${fasta}.fai" into ch_fasta_index_for_methyldackel,ch_fasta_index_for_biscuitQC,ch_fasta_index_for_createVCF,ch_fasta_for_create_whitelist,ch_fasta_index_for_epiread
+        file "${fasta}.fai" into ch_fasta_index_for_methyldackel,ch_fasta_index_for_biscuitQC,ch_fasta_index_for_create_VCF,ch_fasta_for_create_whitelist,ch_fasta_index_for_epiread
 
         script:
         """
@@ -1252,7 +1252,7 @@ if( params.aligner == 'biscuit' ){
     /*
      * STEP 6 - Create vcf file with pileup, to extract methylation
      */
-    process createVCF {
+    process create_VCF {
         tag "$name"
         publishDir "${params.outdir}/methylation_extract", mode: 'copy',
         saveAs: {filename ->
@@ -1264,7 +1264,7 @@ if( params.aligner == 'biscuit' ){
         input:
         set val(name), file(bam), file (bam_index) from ch_bam_sorted_for_pileup.join(ch_bam_index_sorted_for_pileup)
         file fasta from ch_fasta_for_pileup.collect()
-        file fasta_index from ch_fasta_index_for_createVCF.collect()
+        file fasta_index from ch_fasta_index_for_create_VCF.collect()
 
         output:
         set val(name), file("${name}.vcf.gz*") into ch_vcf_biscuit_qc ,ch_vcf_for_bedgraph,ch_vcf_for_epiread
@@ -1281,7 +1281,7 @@ if( params.aligner == 'biscuit' ){
     /*
      * STEP 7 - Create bedgraph file from vcf
      */
-    process createBedgraph {
+    process create_Bedgraph {
         tag "$name"
         publishDir "${params.outdir}/methylation_extract", mode: 'copy'
 
