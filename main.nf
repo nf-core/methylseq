@@ -157,7 +157,7 @@ else if( params.aligner == 'bwameth' || params.aligner == 'biscuit'){
     Channel
         .fromPath(params.fasta, checkIfExists: true)
         .ifEmpty { exit 1, "fasta file not found : ${params.fasta}" }
-        .into { ch_fasta_for_makeBwaMemIndex; ch_fasta_for_makeFastaIndex; ch_fasta_for_buildBiscuitQCAssets; ch_fasta_for_methyldackel; ch_fasta_for_pileup; ch_fasta_for_epiread; ch_fasta_for_biscuitQC; ch_fasta_for_picard}
+        .into { ch_fasta_for_makeBwaMemIndex; ch_fasta_for_makeFastaIndex; ch_fasta_for_build_biscuit_QC_assets; ch_fasta_for_methyldackel; ch_fasta_for_pileup; ch_fasta_for_epiread; ch_fasta_for_biscuitQC; ch_fasta_for_picard}
 
     if( params.bwa_meth_index ){
         Channel
@@ -189,7 +189,7 @@ if( params.aligner == 'biscuit' && params.assets_dir ) {
         .fromPath("${params.assets_dir}", checkIfExists: true)
         .ifEmpty { exit 1, "Assets directory for biscuit QC not found: ${params.assets_dir}" }
         .into { ch_assets_dir_for_biscuit_qc; ch_assets_dir_with_cpg_for_epiread }
-    ch_fasta_for_buildBiscuitQCAssets.close()
+    ch_fasta_for_build_biscuit_QC_assets.close()
 }
 
 if( workflow.profile == 'uppmax' ){
@@ -565,12 +565,12 @@ if( !params.fasta_index && params.aligner == 'bwameth' ||  !params.fasta_index &
  * PREPROCESSING - Build Biscuit QC assets
  */
 if( !params.assets_dir &&  params.aligner == 'biscuit' ) {
-    process buildBiscuitQCAssets {
+    process build_biscuit_QC_assets {
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_assets", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
         input:
-        file fasta from ch_fasta_for_buildBiscuitQCAssets
+        file fasta from ch_fasta_for_build_biscuit_QC_assets
 
         output:
         file "*assets" into ch_assets_dir_for_biscuit_qc, ch_assets_dir_with_cpg_for_epiread
@@ -1521,7 +1521,7 @@ process qualimap {
  /*
  * STEP 10 - Picard - Preparation step
  */
-process prepareGenomeToPicard {
+process prepare_genome_to_picard {
     publishDir path: { params.save_reference ? "${params.outdir}/reference_genome" : params.outdir },
         saveAs: { (params.save_reference && it.indexOf("dict") >0) ? it : null }, mode: 'copy'
 
@@ -1551,7 +1551,7 @@ process prepareGenomeToPicard {
  /*
  * STEP 11 - Picard InsertSizeMetrics and GcBiasMetrics
  */
-process picardMetrics {
+process picard_metrics {
     tag "$name"
     publishDir "${params.outdir}/picardMetrics", mode: 'copy',
          saveAs: { filename ->
