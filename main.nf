@@ -1203,7 +1203,15 @@ if( params.aligner == 'biscuit' ){
             unmapped = params.single_end ? '--ignoreUnmated' : ''
 
             """
-            samtools sort -n $bam -@ ${task.cpus} $sort_mem| samtools view -h  | samblaster -M $unmapped -d "${bam.baseName}_discordant.sam" -s "${bam.baseName}_split.sam" -u "${bam.baseName}_.fastq" --excludeDups --addMateTags | samtools view -Sb > ${bam.baseName}.samblaster.bam
+            samtools sort -n $bam \\
+				-@ ${task.cpus} $sort_mem | \\
+					samtools view -h | \\ 
+						samblaster -M $unmapped \\
+						-d "${bam.baseName}_discordant.sam" \\
+						-s "${bam.baseName}_split.sam" \\
+						-u "${bam.baseName}_.fastq" \\
+						--excludeDups --addMateTags | \\
+							samtools view -Sb > ${bam.baseName}.samblaster.bam
             cp .command.log ${bam.baseName}.log
             """
           }
