@@ -33,7 +33,6 @@ The parameter still works in the same way as before.
 * MultiQC `1.8` > `1.9`
 * Picard `2.22.2` > `2.25.0`
 * pigz `2.3.4` > `2.5`
-* Preseq `2.0.3` > `3.1.2`
 * pygments `2.6.1` > `2.7.4`
 * pymdown-extensions `6.0` > `8.1.1`
 * Python base `3.7.3` > `3.8.5`
