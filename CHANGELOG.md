@@ -25,18 +25,20 @@ The parameter still works in the same way as before.
 
 ### Software updates
 
-* Python base `3.7.3` > `3.8.5`
-* markdown `3.1.1` > `3.3.3`
-* pymdown-extensions `6.0` > `8.1.1`
-* pygments `2.6.1` > `2.7.4`
-* pigz `2.3.4` > `2.5`
-* TrimGalore! `0.6.5` > `0.6.6`
+* Bismark `0.22.3` > `0.23.0`
 * Bowtie2 `2.3.5` > `2.4.2`
 * Hisat2 `2.2.0` > `2.2.1`
-* Bismark `0.22.3` > `0.23.0`
-* Picard `2.22.2` > `2.25.0`
-* MethylDackel `0.5.0` > `0.5.1`
+* markdown `3.1.1` > `3.3.3`
+* MethylDackel `0.5.0` > `0.5.2`
 * MultiQC `1.8` > `1.9`
+* Picard `2.22.2` > `2.25.0`
+* pigz `2.3.4` > `2.5`
+* Preseq `2.0.3` > `3.1.2`
+* pygments `2.6.1` > `2.7.4`
+* pymdown-extensions `6.0` > `8.1.1`
+* Python base `3.7.3` > `3.8.5`
+* Samtools `1.9` > `1.11`
+* TrimGalore! `0.6.5` > `0.6.6`
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 
