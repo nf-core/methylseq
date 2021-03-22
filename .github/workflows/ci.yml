@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['20.04.0', '']
+        nxf_ver: ['20.07.0', '']
         aligner: ['bismark', 'bismark_hisat', 'bwameth']
         include:
           - aligner: 'bismark'
@@ -32,23 +32,6 @@ jobs:
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
-
-      - name: Check if Dockerfile or Conda environment changed
-        uses: technote-space/get-diff-action@v4
-        with:
-          FILES: |
-            Dockerfile
-            environment.yml
-
-      - name: Build new docker image
-        if: env.MATCHED_FILES
-        run: docker build --no-cache . -t nfcore/methylseq:dev
-
-      - name: Pull docker image
-        if: ${{ !env.MATCHED_FILES }}
-        run: |
-          docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:dev
 
       - name: Install Nextflow
         env:
