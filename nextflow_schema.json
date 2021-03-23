@@ -252,7 +252,7 @@
         "additional_parameters": {
             "title": "Additional parameters",
             "type": "object",
-            "description": "Related to the methylseq tools (Bismark, BWA-Meth and MethylDackel)",
+            "description": "Related to the tools used in nf-core/methylseq (Bismark, BWA-Meth and MethylDackel)",
             "default": "",
             "properties": {
                 "min_depth": {
