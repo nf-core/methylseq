@@ -25,8 +25,6 @@ if (params.help) {
 /* --         VALIDATE PARAMETERS              -- */
 ////////////////////////////////////////////////////+
 
-assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.aligner == 'bismark_hisat' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth', 'bismark_hisat'"
-
 if (params.validate_params) {
     NfcoreSchema.validateParameters(params, json_schema, log)
 }
