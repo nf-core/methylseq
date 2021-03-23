@@ -474,7 +474,7 @@
         }
     ],
     "properties": {
-        "clusterOptions": {
+        "cluster_options": {
             "type": "string",
             "description": "Arguments passed to Nextflow clusterOptions.",
             "hidden": true,
