@@ -99,13 +99,6 @@ if( workflow.profile == 'uppmax' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
 
-// Has the run name been specified by the user?
-// this has the bonus effect of catching both -name and --name
-custom_runName = params.name
-if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
-    custom_runName = workflow.runName
-}
-
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -200,7 +193,7 @@ log.info NfcoreSchema.params_summary_log(workflow, params, json_schema)
 // Header log info
 def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
-summary['Run Name']  = custom_runName ?: workflow.runName
+summary['Run Name']  = workflow.runName
 summary['Input']     = params.input
 summary['Aligner']   = params.aligner
 summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
