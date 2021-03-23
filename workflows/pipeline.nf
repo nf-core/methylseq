@@ -86,11 +86,11 @@ include { GET_SOFTWARE_VERSIONS } from '../modules/local/process/get_software_ve
 include { INPUT_CHECK } from '../modules/local/subworkflow/input_check' addParams( options: [:] )
 
 // nf-core/modules: Modules
-include { FASTQC          } from '../modules/deprecated/software/fastqc/main'          addParams( options: modules['fastqc']          )
-include { TRIMGALORE      } from '../modules/deprecated/software/trimgalore/main'      addParams( options: trimgalore_options         )
-include { QUALIMAP_BAMQC  } from '../modules/deprecated/software/qualimap/bamqc/main'  addParams( options: modules['qualimap_bamqc']  )
-include { PRESEQ_LCEXTRAP } from '../modules/deprecated/software/preseq/lcextrap/main' addParams( options: modules['preseq_lcextrap'] )
-include { MULTIQC         } from '../modules/deprecated/software/multiqc/main'         addParams( options: multiqc_options            )
+include { FASTQC          } from '../modules/nf-core/software/fastqc/main'          addParams( options: modules['fastqc']          )
+include { TRIMGALORE      } from '../modules/nf-core/software/trimgalore/main'      addParams( options: trimgalore_options         )
+include { QUALIMAP_BAMQC  } from '../modules/nf-core/software/qualimap/bamqc/main'  addParams( options: modules['qualimap_bamqc']  )
+include { PRESEQ_LCEXTRAP } from '../modules/nf-core/software/preseq/lcextrap/main' addParams( options: modules['preseq_lcextrap'] )
+include { MULTIQC         } from '../modules/nf-core/software/multiqc/main'         addParams( options: multiqc_options            )
 
 // nf-core/modules: Sub-workflows
 if( params.aligner =~ /bismark/ ){
@@ -155,7 +155,8 @@ workflow METHYLSEQ {
      */
     QUALIMAP_BAMQC (
         ALIGNER.out.dedup,
-        ch_dummy_file
+        ch_dummy_file,
+        false
     )
     ch_software_versions = ch_software_versions.mix(QUALIMAP_BAMQC.out.version.first().ifEmpty(null))
 

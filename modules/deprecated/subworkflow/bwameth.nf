@@ -33,15 +33,15 @@ def methyldackel_mbias_options   = modules['methyldackel_mbias']
 methyldackel_mbias_options.args += params.comprehensive ? ' --CHG --CHH' : ''
 methyldackel_mbias_options.args += params.ignore_flags ? " --ignoreFlags" : ''
 
-include { SAMTOOLS_STATS                                } from '../software/samtools/stats/main'        addParams( options: modules['samtools_stats']           )
-include { SAMTOOLS_FLAGSTAT                             } from '../software/samtools/flagstat/main'     addParams( options: modules['samtools_flagstat']        )
-include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../software/samtools/index/main'        addParams( options: samtools_index_alignments_options   )
-include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../software/samtools/index/main'        addParams( options: samtools_index_deduplicated_options )
-include { PICARD_MARKDUPLICATES                         } from '../software/picard/markduplicates/main' addParams( options: modules['picard_markduplicates']    )
-include { SAMTOOLS_SORT                                 } from '../software/samtools/sort/main'         addParams( options: samtools_sort_options               )
-include { BWAMETH_INDEX                                 } from '../software/bwameth/index/main'         addParams( options: bwameth_index_options               )
-include { BWAMETH_ALIGN                                 } from '../software/bwameth/align/main'         addParams( options: bwameth_align_options               )
-include { SAMTOOLS_FAIDX                                } from '../software/samtools/faidx/main'        addParams( options: samtools_faidx_options              )
+include { SAMTOOLS_STATS                                } from '../../nf-core/software/samtools/stats/main'        addParams( options: modules['samtools_stats']           )
+include { SAMTOOLS_FLAGSTAT                             } from '../../nf-core/software/samtools/flagstat/main'     addParams( options: modules['samtools_flagstat']        )
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../nf-core/software/samtools/index/main'        addParams( options: samtools_index_alignments_options   )
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../nf-core/software/samtools/index/main'        addParams( options: samtools_index_deduplicated_options )
+include { PICARD_MARKDUPLICATES                         } from '../../nf-core/software/picard/markduplicates/main' addParams( options: modules['picard_markduplicates']    )
+include { SAMTOOLS_SORT                                 } from '../../nf-core/software/samtools/sort/main'         addParams( options: samtools_sort_options               )
+include { BWAMETH_INDEX                                 } from '../software/bwameth/index/main'                    addParams( options: bwameth_index_options               )
+include { BWAMETH_ALIGN                                 } from '../software/bwameth/align/main'                    addParams( options: bwameth_align_options               )
+include { SAMTOOLS_FAIDX                                } from '../software/samtools/faidx/main'                   addParams( options: samtools_faidx_options              )
 
 include { METHYLDACKEL } from './methyldackel' addParams( mbias_options: methyldackel_mbias_options, extract_options: methyldackel_extract_options )
 

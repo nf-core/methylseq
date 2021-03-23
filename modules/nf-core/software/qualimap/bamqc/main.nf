@@ -2,7 +2,7 @@
 include { initOptions; saveFiles; getSoftwareName } from './functions'
 
 params.options = [:]
-def options    = initOptions(params.options)
+options        = initOptions(params.options)
 
 process QUALIMAP_BAMQC {
     tag "$meta.id"
@@ -20,7 +20,8 @@ process QUALIMAP_BAMQC {
 
     input:
     tuple val(meta), path(bam)
-    path regions
+    path gff
+    val use_gff
 
     output:
     tuple val(meta), path("${prefix}"), emit: results
@@ -29,20 +30,10 @@ process QUALIMAP_BAMQC {
     script:
     def software   = getSoftwareName(task.process)
     prefix         = options.suffix ? "${meta.id}${options.suffix}" : "${meta.id}"
-    def memory     = task.memory.toGiga() + "G"
-    def threads    = task.cpus
+
     def collect_pairs = meta.single_end ? '' : '--collect-overlap-pairs'
-
-    // currently there is no convenient way to have optional input in dsl2
-    // there needs to be a placeholder file in the workflow definition with the magic name 'dummy_file.txt' 
-    def regions_file = regions.name != 'dummy_file.txt' ? '--gff ${regions}' : ''
-
-    def gcref = ''
-    if (meta.genome.toString().startsWith('GRCh')) {
-        gcref = '-gd HUMAN'
-    } else if (meta.genome.toString().startsWith('GRCm')) {
-        gcref = '-gd MOUSE'
-    }
+    def memory     = task.memory.toGiga() + "G"
+    def regions = use_gff ? "--gff $gff" : ''
 
     def strandedness = 'non-strand-specific'
     if (meta.strandedness == 'forward') {
@@ -59,11 +50,11 @@ process QUALIMAP_BAMQC {
         bamqc \\
         $options.args \\
         -bam $bam \\
-        $regions_file \\
+        $regions \\
         -p $strandedness \\
         $collect_pairs \\
         -outdir $prefix \\
-        -nt $threads
+        -nt $task.cpus
 
     echo \$(qualimap 2>&1) | sed 's/^.*QualiMap v.//; s/Built.*\$//' > ${software}.version.txt
     """

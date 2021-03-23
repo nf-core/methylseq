@@ -31,13 +31,13 @@ bismark_extract_options.args += params.comprehensive ? ' --comprehensive --merge
 bismark_extract_options.args += params.cytosine_report ? ' --cytosine_report --genome_folder BismarkIndex' : ''
 bismark_extract_options.args += params.meth_cutoff ? " --cutoff ${params.meth_cutoff}" : ''
 
+include { SAMTOOLS_SORT              } from '../../nf-core/software/samtools/sort/main'      addParams( options: samtools_sort_options              )
 include { BISMARK_GENOME_PREPARATION } from '../software/bismark/genome_preparation/main' addParams( options: bismark_genome_preparation_options )
-include { BISMARK_ALIGN              } from '../software/bismark/align/main'              addParams( options: bismark_align_options )
+include { BISMARK_ALIGN              } from '../software/bismark/align/main'              addParams( options: bismark_align_options              )
 include { BISMARK_EXTRACT            } from '../software/bismark/extract/main'            addParams( options: bismark_extract_options            )
-include { SAMTOOLS_SORT              } from '../software/samtools/sort/main'              addParams( options: samtools_sort_options )
-include { BISMARK_DEDUPLICATE        } from '../software/bismark/deduplicate/main'        addParams( options: modules['bismark_deduplicate'] )
-include { BISMARK_REPORT             } from '../software/bismark/report/main'             addParams( options: modules['bismark_report'] )
-include { BISMARK_SUMMARY            } from '../software/bismark/summary/main'            addParams( options: modules['bismark_summary'] )
+include { BISMARK_DEDUPLICATE        } from '../software/bismark/deduplicate/main'        addParams( options: modules['bismark_deduplicate']     )
+include { BISMARK_REPORT             } from '../software/bismark/report/main'             addParams( options: modules['bismark_report']          )
+include { BISMARK_SUMMARY            } from '../software/bismark/summary/main'            addParams( options: modules['bismark_summary']         )
 
 workflow BISMARK {
     take:
