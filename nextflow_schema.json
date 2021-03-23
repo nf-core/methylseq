@@ -51,7 +51,7 @@
         "adapter_trimming": {
             "title": "Adapter trimming",
             "type": "object",
-            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment. You can specify these custom trimming parameters as follows:",
+            "description": "Depending on how they are prepared, bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment. You can specify custom trimming parameters or use a preset as follows:",
             "default": "",
             "properties": {
                 "clip_r1": {
