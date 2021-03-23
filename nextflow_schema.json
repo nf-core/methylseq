@@ -45,7 +45,7 @@
                 }
             },
             "required": [
-                "reads"
+                "input"
             ]
         },
         "adapter_trimming": {
