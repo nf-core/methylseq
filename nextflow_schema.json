@@ -478,7 +478,7 @@
             "type": "string",
             "description": "Arguments passed to Nextflow clusterOptions.",
             "hidden": true,
-            "help_text": "UPPMAX profile only: Submit arbitrary SLURM options.",
+            "help_text": "Add arbitrary options for job submission.",
             "fa_icon": "fas fa-network-wired"
         }
     }
