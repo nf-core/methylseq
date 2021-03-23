@@ -21,6 +21,14 @@ jobs:
       matrix:
         # Nextflow versions: check pipeline minimum and current latest
         nxf_ver: ['20.04.0', '']
+        aligner: ['bismark', 'bismark_hisat', 'bwameth']
+        include:
+          - aligner: 'bismark'
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: 'bismark_hisat'
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: 'bwameth'
+            ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
@@ -50,8 +58,7 @@ jobs:
           sudo mv nextflow /usr/local/bin/
 
       - name: Run pipeline with test data
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
+          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs
