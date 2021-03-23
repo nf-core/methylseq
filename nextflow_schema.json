@@ -199,7 +199,7 @@
                 },
                 "skip_deduplication": {
                     "type": "boolean",
-                    "description": "Skip deduplication step after alignment. This is turned on automatically if `` --rrbs` is specified.",
+                    "description": "Skip deduplication step after alignment. This is turned on automatically if ` --rrbs` is specified.",
                     "help_text": "By default, the pipeline includes a deduplication step after alignment. Use `--skip_deduplication` on the command line to skip this step. This is automatically set if using `--rrbs` for the workflow.\n",
                     "fa_icon": "fas fa-fast-forward"
                 },
