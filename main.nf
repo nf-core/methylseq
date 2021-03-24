@@ -9,99 +9,29 @@
 ----------------------------------------------------------------------------------------
 */
 
-def helpMessage() {
-    log.info nfcoreHeader()
-    log.info"""
+log.info Headers.nf_core(workflow, params.monochrome_logs)
 
-    Usage:
-
-    The typical command for running the pipeline is as follows:
-
-    nextflow run nf-core/methylseq --input '*_R{1,2}.fastq.gz' -profile docker
-
-    Mandatory arguments:
-      --aligner [str]                 Alignment tool to use (default: bismark)
-                                      Available: bismark, bismark_hisat, bwameth
-      --input [file]                  Path to input data (must be surrounded with quotes)
-      -profile [str]                  Configuration profile to use. Can use multiple (comma separated)
-                                      Available: conda, docker, singularity, test, awsbatch, <institute> and more
-
-    Options:
-     --genome [str]                     Name of iGenomes reference
-     --single_end [bool]                Specifies that the input is single end reads
-     --comprehensive [bool]             Output information for all cytosine contexts
-     --cytosine_report [bool]           Output stranded cytosine report during Bismark's bismark_methylation_extractor step.
-     --ignore_flags [bool]              Run MethylDackel with the flag to ignore SAM flags.
-     --meth_cutoff [int]                Specify a minimum read coverage to report a methylation call during Bismark's bismark_methylation_extractor step.
-     --min_depth [int]                  Specify a minimum read coverage for MethylDackel to report a methylation call.
-     --methyl_kit [bool]                Run MethylDackel with the --methyl_kit flag to produce files suitable for use with the methylKit R package.
-     --skip_deduplication [bool]        Skip deduplication step after alignment. This is turned on automatically if --rrbs is specified
-     --non_directional [bool]           Run alignment against all four possible strands
-     --save_align_intermeds [bool]      Save aligned intermediates to results directory
-     --save_trimmed [bool]              Save trimmed reads to results directory
-     --unmapped [bool]                  Save unmapped reads to fastq files
-     --relax_mismatches [bool]          Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches)
-     --num_mismatches [float]           0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)
-     --known_splices [file]             Supply a .gtf file containing known splice sites (bismark_hisat only)
-     --slamseq [bool]                   Run bismark in SLAM-seq mode
-     --local_alignment [bool]           Allow soft-clipping of reads (potentially useful for single-cell experiments)
-     --minins [int]                     Bismark: The minimum insert size for valid paired-end alignments.
-     --maxins [int]                     Bismark: The maximum insert size for valid paired-end alignments.
-     --bismark_align_cpu_per_multicore [int] Specify how many CPUs are required per --multicore for bismark align (default = 3)
-     --bismark_align_mem_per_multicore [str] Specify how much memory is required per --multicore for bismark align (default = 13.GB)
-
-    References                          If not specified in the configuration file or you wish to overwrite any of the references.
-      --fasta [file]                    Path to fasta reference
-      --fasta_index [path]              Path to Fasta Index
-      --bismark_index [path]            Path to Bismark index
-      --bwa_meth_index [path]           Path to bwameth index
-      --save_reference [bool]           Save reference(s) to results directory
-
-    Trimming options:
-     --skip_trimming [bool]             Skip read trimming
-     --clip_r1 [int]                    Trim the specified number of bases from the 5' end of read 1 (or single-end reads).
-     --clip_r2 [int]                    Trim the specified number of bases from the 5' end of read 2 (paired-end only).
-     --three_prime_clip_r1 [int]        Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming
-     --three_prime_clip_r2 [int]        Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming
-     --rrbs [bool]                      Turn on if dealing with MspI digested material.
-
-    Trimming presets:
-     --pbat [bool]
-     --single_cell [bool]
-     --epignome [bool]
-     --accel [bool]
-     --zymo [bool]
-     --cegx [bool]
-     --em_seq [bool]
-
-    Other options:
-      --outdir [file]                 The output directory where the results will be saved
-      --publish_dir_mode [str]        Mode for publishing results in the output directory. Available: symlink, rellink, link, copy, copyNoFollow, move (Default: copy)
-      --email [email]                 Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits
-      --email_on_fail [email]         Same as --email, except only send mail if the workflow is not successful
-      --max_multiqc_email_size [str]  Threshold size for MultiQC report to be attached in notification email. If file generated by pipeline exceeds the threshold, it will not be attached (Default: 25MB)
-      -name [str]                     Name for the pipeline run. If not specified, Nextflow will automatically generate a random mnemonic
-
-    AWSBatch options:
-      --awsqueue [str]                  The AWSBatch JobQueue that needs to be set when running on AWSBatch
-      --awsregion [str]                 The AWS Region for your AWS Batch job to run on
-      --awscli [str]                    Path to the AWS CLI tool
-
-    """.stripIndent()
-}
-
-// Show help message
+////////////////////////////////////////////////////
+/* --               PRINT HELP                 -- */
+////////////////////////////////////////////////////+
+def json_schema = "$projectDir/nextflow_schema.json"
 if (params.help) {
-    helpMessage()
+    def command = "nextflow run nf-core/methylseq --input '*_R{1,2}.fastq.gz' -profile docker"
+    log.info NfcoreSchema.params_help(workflow, params, json_schema, command)
     exit 0
 }
 
-// Validate inputs
-assert params.aligner == 'bwameth' || params.aligner == 'bismark' || params.aligner == 'bismark_hisat' : "Invalid aligner option: ${params.aligner}. Valid options: 'bismark', 'bwameth', 'bismark_hisat'"
+////////////////////////////////////////////////////
+/* --         VALIDATE PARAMETERS              -- */
+////////////////////////////////////////////////////+
 
-/*
- * SET UP CONFIGURATION VARIABLES
- */
+if (params.validate_params) {
+    NfcoreSchema.validateParameters(params, json_schema, log)
+}
+
+////////////////////////////////////////////////////
+/* --     Collect configuration parameters     -- */
+////////////////////////////////////////////////////
 
 // These params need to be set late, after the iGenomes config is loaded
 params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
@@ -111,7 +41,7 @@ params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
-    exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
+    exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(', ')}"
 }
 
 Channel
@@ -167,13 +97,6 @@ if( workflow.profile == 'uppmax' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
 }
 
-// Has the run name been specified by the user?
-// this has the bonus effect of catching both -name and --name
-custom_runName = params.name
-if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
-    custom_runName = workflow.runName
-}
-
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -222,12 +145,12 @@ else if( params.em_seq ){
 // Check AWS batch settings
 if (workflow.profile.contains('awsbatch')) {
     // AWSBatch sanity checking
-    if (!params.awsqueue || !params.awsregion) exit 1, "Specify correct --awsqueue and --awsregion parameters on AWSBatch!"
+    if (!params.awsqueue || !params.awsregion) exit 1, 'Specify correct --awsqueue and --awsregion parameters on AWSBatch!'
     // Check outdir paths to be S3 buckets if running on AWSBatch
     // related: https://github.com/nextflow-io/nextflow/issues/813
-    if (!params.outdir.startsWith('s3:')) exit 1, "Outdir not on S3 - specify S3 Bucket to run on AWSBatch!"
+    if (!params.outdir.startsWith('s3:')) exit 1, 'Outdir not on S3 - specify S3 Bucket to run on AWSBatch!'
     // Prevent trace files to be stored on S3 since S3 does not support rolling files.
-    if (params.tracedir.startsWith('s3:')) exit 1, "Specify a local tracedir or run without trace! S3 cannot be used for tracefiles."
+    if (params.tracedir.startsWith('s3:')) exit 1, 'Specify a local tracedir or run without trace! S3 cannot be used for tracefiles.'
 }
 
 // Stage config files
@@ -244,13 +167,13 @@ if (params.input_paths) {
         Channel
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true) ] ] }
-            .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
+            .ifEmpty { exit 1, 'params.input_paths was empty - no input files supplied' }
             .into { ch_read_files_fastqc; ch_read_files_trimming }
     } else {
         Channel
             .from(params.input_paths)
             .map { row -> [ row[0], [ file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] ] }
-            .ifEmpty { exit 1, "params.input_paths was empty - no input files supplied" }
+            .ifEmpty { exit 1, 'params.input_paths was empty - no input files supplied' }
             .into { ch_read_files_fastqc; ch_read_files_trimming }
     }
 } else {
@@ -260,11 +183,15 @@ if (params.input_paths) {
         .into { ch_read_files_fastqc; ch_read_files_trimming }
 }
 
+////////////////////////////////////////////////////
+/* --         PRINT PARAMETER SUMMARY          -- */
+////////////////////////////////////////////////////
+log.info NfcoreSchema.params_summary_log(workflow, params, json_schema)
+
 // Header log info
-log.info nfcoreHeader()
 def summary = [:]
 if (workflow.revision) summary['Pipeline Release'] = workflow.revision
-summary['Run Name']  = custom_runName ?: workflow.runName
+summary['Run Name']  = workflow.runName
 summary['Input']     = params.input
 summary['Aligner']   = params.aligner
 summary['Data Type'] = params.single_end ? 'Single-End' : 'Paired-End'
@@ -328,8 +255,6 @@ if (params.email || params.email_on_fail) {
     summary['E-mail on failure'] = params.email_on_fail
     summary['MultiQC maxsize']   = params.max_multiqc_email_size
 }
-log.info summary.collect { k,v -> "${k.padRight(18)}: $v" }.join("\n")
-log.info "-\033[2m--------------------------------------------------\033[0m-"
 
 // Check the hostnames against configured profiles
 checkHostname()
@@ -356,9 +281,9 @@ Channel.from(summary.collect{ [it.key, it.value] })
 process get_software_versions {
     publishDir "${params.outdir}/pipeline_info", mode: params.publish_dir_mode,
         saveAs: { filename ->
-                      if (filename.indexOf(".csv") > 0) filename
+                      if (filename.indexOf('.csv') > 0) filename
                       else null
-                }
+        }
 
     output:
     file 'software_versions_mqc.yaml' into ch_software_versions_yaml_for_multiqc
@@ -467,8 +392,8 @@ process fastqc {
     label 'process_medium'
     publishDir "${params.outdir}/fastqc", mode: params.publish_dir_mode,
         saveAs: { filename ->
-                      filename.indexOf(".zip") > 0 ? "zips/$filename" : "$filename"
-                }
+                      filename.indexOf('.zip') > 0 ? "zips/$filename" : "$filename"
+        }
 
     input:
     set val(name), file(reads) from ch_read_files_fastqc
@@ -1031,8 +956,12 @@ process multiqc {
     file "multiqc_plots"
 
     script:
-    rtitle = custom_runName ? "--title \"$custom_runName\"" : ''
-    rfilename = custom_runName ? "--filename " + custom_runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
+    rtitle = ''
+    rfilename = ''
+    if (!(workflow.runName ==~ /[a-z]+_[a-z]+/)) {
+        rtitle = "--title \"${workflow.runName}\""
+        rfilename = "--filename " + workflow.runName.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report"
+    }
     custom_config_file = params.multiqc_config ? "--config $mqc_custom_config" : ''
     """
     multiqc -f $rtitle $rfilename $custom_config_file . \\
@@ -1051,7 +980,7 @@ process output_documentation {
     file images from ch_output_docs_images
 
     output:
-    file "results_description.html"
+    file 'results_description.html'
 
     script:
     """
@@ -1071,7 +1000,7 @@ workflow.onComplete {
     }
     def email_fields = [:]
     email_fields['version'] = workflow.manifest.version
-    email_fields['runName'] = custom_runName ?: workflow.runName
+    email_fields['runName'] = workflow.runName
     email_fields['success'] = workflow.success
     email_fields['dateComplete'] = workflow.complete
     email_fields['duration'] = workflow.duration
@@ -1177,27 +1106,9 @@ workflow.onComplete {
 
 }
 
-def nfcoreHeader() {
-    // Log colors ANSI codes
-    c_black = params.monochrome_logs ? '' : "\033[0;30m";
-    c_blue = params.monochrome_logs ? '' : "\033[0;34m";
-    c_cyan = params.monochrome_logs ? '' : "\033[0;36m";
-    c_dim = params.monochrome_logs ? '' : "\033[2m";
-    c_green = params.monochrome_logs ? '' : "\033[0;32m";
-    c_purple = params.monochrome_logs ? '' : "\033[0;35m";
-    c_reset = params.monochrome_logs ? '' : "\033[0m";
-    c_white = params.monochrome_logs ? '' : "\033[0;37m";
-    c_yellow = params.monochrome_logs ? '' : "\033[0;33m";
-
-    return """    -${c_dim}--------------------------------------------------${c_reset}-
-                                            ${c_green},--.${c_black}/${c_green},-.${c_reset}
-    ${c_blue}        ___     __   __   __   ___     ${c_green}/,-._.--~\'${c_reset}
-    ${c_blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${c_yellow}}  {${c_reset}
-    ${c_blue}  | \\| |       \\__, \\__/ |  \\ |___     ${c_green}\\`-._,-`-,${c_reset}
-                                            ${c_green}`._,._,\'${c_reset}
-    ${c_purple}  nf-core/methylseq v${workflow.manifest.version}${c_reset}
-    -${c_dim}--------------------------------------------------${c_reset}-
-    """.stripIndent()
+workflow.onError {
+    // Print unexpected parameters - easiest is to just rerun validation
+    NfcoreSchema.validateParameters(params, json_schema, log)
 }
 
 def checkHostname() {
@@ -1206,15 +1117,15 @@ def checkHostname() {
     def c_red = params.monochrome_logs ? '' : "\033[1;91m"
     def c_yellow_bold = params.monochrome_logs ? '' : "\033[1;93m"
     if (params.hostnames) {
-        def hostname = "hostname".execute().text.trim()
+        def hostname = 'hostname'.execute().text.trim()
         params.hostnames.each { prof, hnames ->
             hnames.each { hname ->
                 if (hostname.contains(hname) && !workflow.profile.contains(prof)) {
-                    log.error "====================================================\n" +
+                    log.error '====================================================\n' +
                             "  ${c_red}WARNING!${c_reset} You are running with `-profile $workflow.profile`\n" +
                             "  but your machine hostname is ${c_white}'$hostname'${c_reset}\n" +
                             "  ${c_yellow_bold}It's highly recommended that you use `-profile $prof${c_reset}`\n" +
-                            "============================================================"
+                            '============================================================'
                 }
             }
         }
