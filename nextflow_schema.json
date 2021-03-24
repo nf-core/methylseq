@@ -289,7 +289,7 @@
                 },
                 "bismark_align_cpu_per_multicore": {
                     "type": "integer",
-                    "default": "3",
+                    "default": 3,
                     "description": "Specify how many CPUs are required per `--multicore` for `bismark align`.",
                     "help_text": "The pipeline makes use of the `--multicore` option for Bismark align. When using this option,\nBismark uses a large number of CPUs for every `--multicore` specified. The pipeline\ncalculates the number of `--multicore` based on the resources available to the task.\nIt divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional`\nare specified. This is based on usage for a typical mouse genome.\n\nYou may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the\nusage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline\nwill divide the available CPUs by this value instead.\n\nSee the [bismark documentation](https://github.com/FelixKrueger/Bismark/tree/master/Docs#alignment)\nfor more information.",
                     "fa_icon": "fas fa-server"
