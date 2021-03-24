@@ -80,10 +80,10 @@ if (params.save_trimmed)  { trimgalore_options.publish_files.put('fq.gz','') }
 
 
 // Local: Modules
-include { GET_SOFTWARE_VERSIONS } from '../modules/local/process/get_software_versions' addParams( options: [publish_files : ['csv':'']] )
+include { GET_SOFTWARE_VERSIONS } from '../modules/local/get_software_versions' addParams( options: [publish_files : ['csv':'']] )
 
 // Local: Sub-workflows
-include { INPUT_CHECK } from '../modules/local/subworkflow/input_check' addParams( options: [:] )
+include { INPUT_CHECK } from '../subworkflows/local/input_check' addParams( options: [:] )
 
 // nf-core/modules: Modules
 include { FASTQC          } from '../modules/nf-core/software/fastqc/main'          addParams( options: modules['fastqc']          )
