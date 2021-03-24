@@ -4,7 +4,7 @@ LABEL authors="Phil Ewels" \
 
 # Install libtbb system dependency for bowtie2 and the conda environment
 COPY environment.yml /
-RUN RUN apt-get update \
+RUN apt-get update \
       && apt-get install -y libtbb-dev \
       && apt-get clean -y \
       && rm -rf /var/lib/apt/lists/* \
