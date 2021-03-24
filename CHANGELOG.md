@@ -10,7 +10,7 @@ The parameter still works in the same way as before.
 
 ### Pipeline Updates
 
-* Updated template to tools 1.13.1
+* Updated template to tools 1.13.2
 * Renamed `--reads` to `--input`
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
 * New `--em_seq` preset
