@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## v1.6dev - [date]
+## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-24
 
 **:warning: Breaking change!**
 
@@ -10,6 +10,8 @@ The parameter still works in the same way as before.
 
 ### Pipeline Updates
 
+* Changed `--clusterOptions` parameter name to `--cluster_options` to follow the `snake_case` naming scheme
+* Increased resources for `fastqc` process ([#143](https://github.com/nf-core/methylseq/issues/143))
 * Raised Nextflow version requirement to `20.07.1`
 * Updated template to tools 1.13.2
 * Renamed `--reads` to `--input`
