@@ -361,6 +361,11 @@
                     "description": "Skip deduplication step after alignment.",
                     "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_multiqc": {
+                    "type": "boolean",
+                    "description": "Skip MultiQC.",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -566,7 +571,7 @@
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
                 },
-                "clusterOptions": {
+                "cluster_options": {
                     "type": "string",
                     "fa_icon": "fas fa-users-cog",
                     "hidden": true
