@@ -16,7 +16,7 @@ dependencies:
   # Default Bismark pipeline
   - bioconda::trim-galore=0.6.6
   - bioconda::samtools=1.11
-  - bioconda::bowtie2=2.4.1
+  - bioconda::bowtie2=2.4.2
   - bioconda::hisat2=2.2.1
   - bioconda::bismark=0.23.0
   - bioconda::qualimap=2.2.2d
