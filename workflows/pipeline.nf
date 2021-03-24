@@ -94,9 +94,9 @@ include { MULTIQC         } from '../modules/nf-core/software/multiqc/main'     
 
 // nf-core/modules: Sub-workflows
 if( params.aligner =~ /bismark/ ){
-    include { BISMARK as ALIGNER } from '../modules/deprecated/subworkflow/bismark'
+    include { BISMARK as ALIGNER } from '../subworkflows/local/bismark'
 } else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH as ALIGNER } from '../modules/deprecated/subworkflow/bwameth'
+    include { BWAMETH as ALIGNER } from '../subworkflows/local/bwameth'
 }
 
 ////////////////////////////////////////////////////
