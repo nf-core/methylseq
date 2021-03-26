@@ -12,7 +12,7 @@ The parameter still works in the same way as before.
 
 * Increased resources for `fastqc` process ([#143](https://github.com/nf-core/methylseq/issues/143))
 * Raised Nextflow version requirement to `20.07.1`
-* Updated template to tools 1.13.2
+* Updated template to nf-core/tools 1.13.3
 * Renamed `--reads` to `--input`
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
 * New `--em_seq` preset
