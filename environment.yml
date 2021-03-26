@@ -23,6 +23,6 @@ dependencies:
   - bioconda::preseq=2.0.3
   - bioconda::multiqc=1.10
   # bwa-meth pipeline
-  - bioconda::picard=2.25.0
+  - bioconda::picard=2.25.1
   - bioconda::bwameth=0.2.2
   - bioconda::methyldackel=0.5.2
