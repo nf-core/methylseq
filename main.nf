@@ -93,11 +93,6 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
-if( workflow.profile == 'uppmax' ){
-    if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
-    summary['Cluster Project'] = params.project
-}
-
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -254,6 +249,12 @@ if (params.email || params.email_on_fail) {
     summary['E-mail Address']    = params.email
     summary['E-mail on failure'] = params.email_on_fail
     summary['MultiQC maxsize']   = params.max_multiqc_email_size
+}
+
+// Check that --project is set for the UPPMAX cluster
+if( workflow.profile.contains('uppmax') ){
+    if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+    summary['Cluster Project'] = params.project
 }
 
 // Check the hostnames against configured profiles
