@@ -1,5 +1,9 @@
 # nf-core/methylseq
 
+## v1.7dev
+
+_..nothing yet.._
+
 ## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
 **:warning: Breaking change!**
