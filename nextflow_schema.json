@@ -544,18 +544,6 @@
                     "description": "Institutional config URL link.",
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
-                },
-                "project": {
-                    "type": "string",
-                    "description": "Cluster Project",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "cluster_options": {
-                    "type": "string",
-                    "description": "Arguments passed to Nextflow [clusterOptions directive](https://www.nextflow.io/docs/latest/process.html?highlight=clusteroptions#clusteroptions)",
-                    "fa_icon": "fas fa-users-cog",
-                    "hidden": true
                 }
             }
         }

@@ -95,6 +95,7 @@ else if( params.aligner == 'bwameth' ){
 
 if( workflow.profile == 'uppmax' ){
     if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+    summary['Cluster Project'] = params.project
 }
 
 // Trimming / kit presets
@@ -243,7 +244,6 @@ if (workflow.profile.contains('awsbatch')) {
     summary['AWS Queue']    = params.awsqueue
     summary['AWS CLI']      = params.awscli
 }
-if(params.project) summary['Cluster Project'] = params.project
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 summary['Config Profile'] = workflow.profile
 if (params.config_profile_description) summary['Config Profile Description'] = params.config_profile_description
