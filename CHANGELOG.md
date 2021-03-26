@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-24
+## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
 **:warning: Breaking change!**
 
@@ -38,7 +38,7 @@ The parameter still works in the same way as before.
 * Bowtie2 `2.3.5` > `2.4.2`
 * Hisat2 `2.2.0` > `2.2.1`
 * Bismark `0.22.3` > `0.23.0`
-* Picard `2.22.2` > `2.25.0`
+* Picard `2.22.2` > `2.25.1`
 * MethylDackel `0.5.0` > `0.5.2`
 * MultiQC `1.8` > `1.10`
 
