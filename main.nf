@@ -93,10 +93,6 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
-if( workflow.profile == 'uppmax' ){
-    if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
-}
-
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -243,7 +239,6 @@ if (workflow.profile.contains('awsbatch')) {
     summary['AWS Queue']    = params.awsqueue
     summary['AWS CLI']      = params.awscli
 }
-if(params.project) summary['Cluster Project'] = params.project
 summary['Max Resources']    = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 summary['Config Profile'] = workflow.profile
 if (params.config_profile_description) summary['Config Profile Description'] = params.config_profile_description
@@ -254,6 +249,12 @@ if (params.email || params.email_on_fail) {
     summary['E-mail Address']    = params.email
     summary['E-mail on failure'] = params.email_on_fail
     summary['MultiQC maxsize']   = params.max_multiqc_email_size
+}
+
+// Check that --project is set for the UPPMAX cluster
+if( workflow.profile.contains('uppmax') ){
+    if( !params.project ) exit 1, "No UPPMAX project ID found! Use --project"
+    summary['Cluster Project'] = params.project
 }
 
 // Check the hostnames against configured profiles
