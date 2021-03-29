@@ -59,10 +59,11 @@ def get_genome_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
         if (genomeMap && genomeMap.containsKey(sample.genome)) {
             // get fasta and indices from iGenomes
             genome.fasta = file(genomeMap[sample.genome].fasta, checkIfExists: true)
-            if (params.aligner =~ /bismark/){
+            if (params.aligner == 'bismark') {
                 genome.bismark_index = file(genomeMap[sample.genome].bismark, checkIfExists: true)
             }
-            else if (params.aligner = 'bwameth'){
+            else if (params.aligner == 'bwameth') {
+                genome.bwa_meth = file(genomeMap[sample.genome].bwa_meth, checkIfExists: true)
                 genome.fasta_index = file(genomeMap[sample.genome].fasta_index, checkIfExists: true)
             }
         } else {
