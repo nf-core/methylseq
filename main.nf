@@ -35,7 +35,6 @@ if (params.validate_params) {
 
 // These params need to be set late, after the iGenomes config is loaded
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 assembly_name = (params.fasta.toString().lastIndexOf('/') == -1) ?: params.fasta.toString().substring( params.fasta.toString().lastIndexOf('/')+1)
 
 // Check if genome exists in the config file
@@ -204,26 +203,25 @@ if (params.aligner == 'biscuit') {
 
 		if (params.whitelist) {
 			Channel
-			.fromPath(params.whitelist, checkIfExists: true)
-			.ifEmpty { exit 1, "Cannot find any whitelist file matching: ${params.whitelist}" }
-			.into { ch_whitelist_for_SNP; ch_whitelist_for_epiread}
+                .fromPath(params.whitelist, checkIfExists: true)
+                .ifEmpty { exit 1, "Cannot find any whitelist file matching: ${params.whitelist}" }
+                .into { ch_whitelist_for_SNP; ch_whitelist_for_epiread }
 		}
 		else {
 			Channel
-			.fromPath(params.blacklist, checkIfExists: true)
-			.ifEmpty { exit 1, "Cannot find any blacklist file matching: ${params.blacklist}" }
-			.set { ch_blacklist_for_create_whitelist;}
+                .fromPath(params.blacklist, checkIfExists: true)
+                .ifEmpty { exit 1, "Cannot find any blacklist file matching: ${params.blacklist}" }
+                .set { ch_blacklist_for_create_whitelist }
 		}
 
 		if (params.common_dbsnp) {
 			Channel
-			.fromPath(params.common_dbsnp,  checkIfExists: true)
-			.ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
-			.set { ch_commonSNP_for_SNP; }
+                .fromPath(params.common_dbsnp, checkIfExists: true)
+                .ifEmpty { exit 1, "Cannot find any dbSNP file matching: ${params.common_dbsnp}\n" }
+                .set { ch_commonSNP_for_SNP }
 		}
-	}
-	else
-	{
+
+	} else {
 		ch_fasta_for_create_whitelist.close()
 	}
 }
@@ -272,12 +270,12 @@ if(params.save_reference)   save_intermeds.add('Reference genome build')
 if(params.save_trimmed)     save_intermeds.add('Trimmed FastQ files')
 if(params.unmapped)         save_intermeds.add('Unmapped reads')
 if(params.save_align_intermeds) save_intermeds.add('Intermediate BAM files')
-if(params.save_snp_file)     save_intermeds.add('SNP bed-files')
+if(params.save_snp_file)    save_intermeds.add('SNP bed-files')
 if(save_intermeds.size() > 0) summary['Save Intermediates'] = save_intermeds.join(', ')
 debug_mode = [];
 if(params.debug_epiread)    debug_mode.add('Debug epiread step')
 if(params.debug_epiread_merging) debug_mode.add('Debug epiread merging')
-if(debug_mode.size() > 0) summary['Debug mode'] = debug_mode.join(', ')
+if(debug_mode.size() > 0)   summary['Debug mode'] = debug_mode.join(', ')
 if(params.minins)           summary['Bismark min insert size'] = bismark_minins
 if(params.maxins || params.em_seq) summary['Bismark max insert size'] = bismark_maxins
 if(params.bismark_align_cpu_per_multicore) summary['Bismark align CPUs per --multicore'] = params.bismark_align_cpu_per_multicore
@@ -1159,8 +1157,8 @@ if( params.aligner == 'biscuit' ){
         def sort_mem = avail_mem && avail_mem > 2 ? "-m ${avail_mem}G" : ''
         """
         samtools sort $samblaster_bam \\
-        -@ ${task.cpus} $sort_mem -l 9 \\
-        -o ${samblaster_bam.baseName}.sorted.bam
+            -@ ${task.cpus} $sort_mem -l 9 \\
+            -o ${samblaster_bam.baseName}.sorted.bam
         samtools index ${samblaster_bam.baseName}.sorted.bam
         samtools flagstat ${samblaster_bam.baseName}.sorted.bam > ${samblaster_bam.baseName}_flagstat_report.txt
         samtools stats ${samblaster_bam.baseName}.sorted.bam > ${samblaster_bam.baseName}_stats_report.txt
@@ -1322,12 +1320,12 @@ if( params.aligner == 'biscuit' ){
             file(snp),
             file(fasta),
             file(fasta_index),
-            file(whitelist)   from ch_bam_sorted_for_epiread
-            .join(ch_bam_index_for_epiread)
-            .join(ch_snp_for_epiread)
-            .combine(ch_fasta_for_epiread)
-            .combine(ch_fasta_index_for_epiread)
-            .combine(ch_whitelist_for_epiread)
+            file(whitelist) from ch_bam_sorted_for_epiread
+                .join(ch_bam_index_for_epiread)
+                .join(ch_snp_for_epiread)
+                .combine(ch_fasta_for_epiread)
+                .combine(ch_fasta_index_for_epiread)
+                .combine(ch_whitelist_for_epiread)
             file (assets) from ch_assets_dir_with_cpg_for_epiread.collect()
 
             output:
@@ -1340,14 +1338,14 @@ if( params.aligner == 'biscuit' ){
             debug_merging_epiread = (params.debug_epiread_merging || params.debug_epiread) ? "debug" : ''
             no_filter_reverse = params.rrbs ? "-p" : ''
             if (params.single_end) {
-            """
+                """
                 bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam
                 samtools index ${name}.bam
                 biscuit epiread -q ${task.cpus} $snp_file $no_filter_reverse $fasta ${name}.bam  |sort --parallel=${task.cpus} -T . -k1,1Vf -k5,5n | bgzip > ${name}.epiread.gz
                 tabix -0 -s 1 -b 5 -e 5 ${name}.epiread.gz
-            """
+                """
             } else {
-            """
+                """
                 zcat $cpg_file > cpg.bed
 
                 bedtools intersect -abam $bam -b $whitelist -ubam -f 1.0 | samtools view  -Sb - > ${name}.bam
@@ -1360,7 +1358,7 @@ if( params.aligner == 'biscuit' ){
                 tabix -0 -s 1 -b 5 -e 5 ${name}.original.epiread.gz
                 tabix -0 -p bed ${name}.epiread.gz
                 tabix -0 -s 1 -b 5 -e 5 ${name}.err.gz
-            """
+                """
             }
         }
     }
@@ -1450,10 +1448,10 @@ process prepare_genome_to_picard {
         avail_mem = task.memory.toGiga()
     }
     """
-    mv ${fasta}  ${fasta.baseName}.picard.fa
-    picard -Xmx${avail_mem}g  CreateSequenceDictionary \\
-    R=${fasta.baseName}.picard.fa \\
-    O=${fasta.baseName}.picard.dict
+    mv ${fasta} ${fasta.baseName}.picard.fa
+    picard -Xmx${avail_mem}g CreateSequenceDictionary \\
+        R=${fasta.baseName}.picard.fa \\
+        O=${fasta.baseName}.picard.dict
     """
 }
 
@@ -1488,30 +1486,35 @@ process picard_metrics {
     }
     """
     picard -Xmx${avail_mem}g CollectInsertSizeMetrics \\
-    INPUT=$bam \\
-    OUTPUT=${name}.insert_size_metrics.txt \\
-    HISTOGRAM_FILE=${name}.insert_size_histogram.pdf \\
-    ASSUME_SORTED=true \\
-    VALIDATION_STRINGENCY=LENIENT
+        INPUT=$bam \\
+        OUTPUT=${name}.insert_size_metrics.txt \\
+        HISTOGRAM_FILE=${name}.insert_size_histogram.pdf \\
+        ASSUME_SORTED=true \\
+        VALIDATION_STRINGENCY=LENIENT
     set +e
     picard -Xmx${avail_mem}g CollectGcBiasMetrics \\
-    INPUT=$bam \\
-    OUTPUT=${name}.gc_bias_metrics.txt \\
-    CHART=${name}.gc_bias_metrics.pdf \\
-    SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
-    ASSUME_SORTED=true \\
-    IS_BISULFITE_SEQUENCED=true \\
-    REFERENCE_SEQUENCE=$fasta \\
-    VALIDATION_STRINGENCY=LENIENT
-    [ ! "\$?" -eq "0" ] && picard -Xmx${avail_mem}g ReorderSam I=$bam O=${bam.baseName}.picard.bam SEQUENCE_DICTIONARY=$fasta VALIDATION_STRINGENCY=LENIENT TMP_DIR=. && picard -Xmx${avail_mem}g CollectGcBiasMetrics \\
-    INPUT=${bam.baseName}.picard.bam  \\
-    OUTPUT=${name}.gc_bias_metrics.txt \\
-    CHART=${name}.gc_bias_metrics.pdf \\
-    SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
-    ASSUME_SORTED=true \\
-    IS_BISULFITE_SEQUENCED=true \\
-    REFERENCE_SEQUENCE=$fasta \\
-    VALIDATION_STRINGENCY=LENIENT
+        INPUT=$bam \\
+        OUTPUT=${name}.gc_bias_metrics.txt \\
+        CHART=${name}.gc_bias_metrics.pdf \\
+        SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
+        ASSUME_SORTED=true \\
+        IS_BISULFITE_SEQUENCED=true \\
+        REFERENCE_SEQUENCE=$fasta \\
+        VALIDATION_STRINGENCY=LENIENT
+    [ ! "\$?" -eq "0" ] && picard -Xmx${avail_mem}g ReorderSam \\
+        I=$bam O=${bam.baseName}.picard.bam \\
+        SEQUENCE_DICTIONARY=$fasta \\
+        VALIDATION_STRINGENCY=LENIENT \\
+        TMP_DIR=. && \\
+            picard -Xmx${avail_mem}g CollectGcBiasMetrics \\
+                INPUT=${bam.baseName}.picard.bam  \\
+                OUTPUT=${name}.gc_bias_metrics.txt \\
+                CHART=${name}.gc_bias_metrics.pdf \\
+                SUMMARY_OUTPUT=${name}.summary_metrics.txt \\
+                ASSUME_SORTED=true \\
+                IS_BISULFITE_SEQUENCED=true \\
+                REFERENCE_SEQUENCE=$fasta \\
+                VALIDATION_STRINGENCY=LENIENT
     echo "fine"
     """
 }
