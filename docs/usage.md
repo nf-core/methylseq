@@ -21,7 +21,7 @@ Since bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/so
 
 The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.
 
-The third workflow uses [BISCUIT](https://github.com/huishenlab/biscuit) and [samblaster](https://github.com/GregoryFaust/samblaster) for mark duplicates instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner biscuit`."
+The third workflow uses [BISCUIT](https://github.com/huishenlab/biscuit) and [samblaster](https://github.com/GregoryFaust/samblaster) for mark duplicates instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner biscuit`.
 
 ## Running the pipeline
 
@@ -66,7 +66,7 @@ This version number will be logged in reports when you run the pipeline, so that
 
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Conda) - see below.
+Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Conda) - see below.
 
 > We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 
@@ -86,8 +86,14 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
 * `podman`
   * A generic configuration profile to be used with [Podman](https://podman.io/)
   * Pulls software from Docker Hub: [`nfcore/methylseq`](https://hub.docker.com/r/nfcore/methylseq/)
+* `shifter`
+  * A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
+  * Pulls software from Docker Hub: [`nfcore/methylseq`](https://hub.docker.com/r/nfcore/methylseq/)
+* `charliecloud`
+  * A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+  * Pulls software from Docker Hub: [`nfcore/methylseq`](https://hub.docker.com/r/nfcore/methylseq/)
 * `conda`
-  * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity or Podman.
+  * Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.
   * A generic configuration profile to be used with [Conda](https://conda.io/docs/)
   * Pulls most software from [Bioconda](https://bioconda.github.io/)
 * `test`
@@ -117,6 +123,8 @@ process {
   }
 }
 ```
+
+To find the exact name of a process you wish to modify the compute resources, check the live-status of a nextflow run displayed on your terminal or check the nextflow error for a line like so: `Error executing process > 'bwa'`. In this case the name to specify in the custom config file is `bwa`.
 
 See the main [Nextflow documentation](https://www.nextflow.io/docs/latest/config.html) for more information.
 

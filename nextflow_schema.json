@@ -103,7 +103,7 @@
                     "help_text": "Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) \n\n> NB: Only works with when using the `bismark_hisat` aligner (`--aligner bismark_hisat`)"
                 },
                 "em_seq": {
-                    "type": "string",
+                    "type": "boolean",
                     "fa_icon": "fas fa-cubes",
                     "description": "Preset for EM-seq libraries.",
                     "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
@@ -123,7 +123,7 @@
                 "cegx": {
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the CEGX bisfulite kit.",
+                    "description": "Trimming preset for the CEGX bisulfite kit.",
                     "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
                 },
                 "epignome": {
@@ -211,25 +211,25 @@
             "properties": {
                 "clip_r1": {
                     "type": "integer",
-                    "description": "Trim the specified number of bases from the 5' end of read 1 (or single-end reads).",
+                    "description": "Trim bases from the 5' end of read 1 (or single-end reads).",
                     "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "clip_r2": {
                     "type": "integer",
-                    "description": "Trim the specified number of bases from the 5' end of read 2 (paired-end only).",
+                    "description": "Trim bases from the 5' end of read 2 (paired-end only).",
                     "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "three_prime_clip_r1": {
                     "type": "integer",
-                    "description": "Trim the specified number of bases from the 3' end of read 1 AFTER adapter/quality trimming.",
+                    "description": "Trim bases from the 3' end of read 1 AFTER adapter/quality trimming.",
                     "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
                 "three_prime_clip_r2": {
                     "type": "integer",
-                    "description": "Trim the specified number of bases from the 3' end of read 2 AFTER adapter/quality trimming",
+                    "description": "Trim bases from the 3' end of read 2 AFTER adapter/quality trimming",
                     "default": 0,
                     "fa_icon": "fas fa-cut"
                 },
@@ -285,7 +285,6 @@
                 "meth_cutoff": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage to report a methylation call",
-                    "default": 0,
                     "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
                     "fa_icon": "fas fa-angle-double-down"
                 },
@@ -315,7 +314,6 @@
                 },
                 "bismark_align_cpu_per_multicore": {
                     "type": "integer",
-                    "default": 3,
                     "description": "Specify how many CPUs are required per --multicore for bismark align",
                     "hidden": true,
                     "help_text": "The pipeline makes use of the `--multicore` option for Bismark align. When using this option, Bismark uses a large number of CPUs for every `--multicore` specified. The pipeline calculates the number of `--multicore` based on the resources available to the task. It divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional` are specified. This is based on usage for a typical mouse genome.\n\nYou may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the usage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline will divide the available CPUs by this value instead.\n\nSee the [bismark documentation](https://github.com/FelixKrueger/Bismark/tree/master/Docs#alignment) for more information.",
@@ -323,7 +321,6 @@
                 },
                 "bismark_align_mem_per_multicore": {
                     "type": "string",
-                    "default": "13.GB",
                     "description": "Specify how much memory is required per --multicore for bismark align",
                     "hidden": true,
                     "help_text": "Exactly the same as with `--bismark_align_cpu_per_multicore`, but for memory. By default, the pipeline divides the available memory by `13.GB`, or `18.GB` if any of `--single_cell`, `--zymo` or `--non_directional` are specified.\n\nNote that the final `--multicore` value is based on the lowest limiting factor of both CPUs and memory.",
@@ -478,12 +475,12 @@
                         "move"
                     ]
                 },
-                "name": {
-                    "type": "string",
-                    "description": "Workflow name.",
-                    "fa_icon": "fas fa-fingerprint",
-                    "hidden": true,
-                    "help_text": "A custom name for the pipeline run. Unlike the core nextflow `-name` option with one hyphen this parameter can be reused multiple times, for example if using `-resume`. Passed through to steps such as MultiQC and used for things like report filenames and titles."
+                "validate_params": {
+                    "type": "boolean",
+                    "description": "Boolean whether to validate parameters against the schema at runtime",
+                    "default": true,
+                    "fa_icon": "fas fa-check-square",
+                    "hidden": true
                 },
                 "email_on_fail": {
                     "type": "string",
@@ -527,6 +524,13 @@
                     "default": "${params.outdir}/pipeline_info",
                     "fa_icon": "fas fa-cogs",
                     "hidden": true
+                },
+                "show_hidden_params": {
+                    "type": "boolean",
+                    "fa_icon": "far fa-eye-slash",
+                    "description": "Show all params when using `--help`",
+                    "hidden": true,
+                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
                 }
             }
         },
@@ -539,7 +543,7 @@
             "properties": {
                 "max_cpus": {
                     "type": "integer",
-                    "description": "Maximum number of CPUs that can be requested    for any single job.",
+                    "description": "Maximum number of CPUs that can be requested for any single job.",
                     "default": 16,
                     "fa_icon": "fas fa-microchip",
                     "hidden": true,
@@ -550,6 +554,7 @@
                     "description": "Maximum amount of memory that can be requested for any single job.",
                     "default": "128.GB",
                     "fa_icon": "fas fa-memory",
+                    "pattern": "^[\\d\\.]+\\s*.(K|M|G|T)?B$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`"
                 },
@@ -558,6 +563,7 @@
                     "description": "Maximum amount of time that can be requested for any single job.",
                     "default": "240.h",
                     "fa_icon": "far fa-clock",
+                    "pattern": "^[\\d\\.]+\\.*(s|m|h|d)$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
                 }
@@ -592,6 +598,12 @@
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
                 },
+                "config_profile_name": {
+                    "type": "string",
+                    "description": "Institutional config name.",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
                 "config_profile_description": {
                     "type": "string",
                     "description": "Institutional config description.",
@@ -609,17 +621,6 @@
                     "description": "Institutional config URL link.",
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog"
-                },
-                "project": {
-                    "type": "string",
-                    "description": "Cluster Project",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "clusterOptions": {
-                    "type": "string",
-                    "fa_icon": "fas fa-users-cog",
-                    "hidden": true
                 }
             }
         }
