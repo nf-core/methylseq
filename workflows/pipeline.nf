@@ -130,16 +130,12 @@ workflow METHYLSEQ {
         * MODULE: Run TrimGalore!
         */
         TRIMGALORE(INPUT_CHECK.out.reads)
-        
+
         reads = TRIMGALORE.out.reads
-        trimgalore_mqc = TRIMGALORE.out.html.join(TRIMGALORE.out.zip).join(TRIMGALORE.out.log)
-        trimgalore_version = TRIMGALORE.out.version
+        ch_software_versions = ch_software_versions.mix(TRIMGALORE.out.version.first().ifEmpty(null))
     } else {
         reads = INPUT_CHECK.out.reads
-        trimgalore_mqc = Channel.empty()
-        trimgalore_version = Channel.empty()
     }
-    ch_software_versions = ch_software_versions.mix(trimgalore_version.first().ifEmpty(null))
 
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark 
@@ -182,18 +178,20 @@ workflow METHYLSEQ {
         workflow_summary    = Workflow.paramsSummaryMultiqc(workflow, params.summary_params)
         ch_workflow_summary = Channel.value(workflow_summary)
 
-        ch_multiqc_files = Channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(GET_SOFTWARE_VERSIONS.out.yaml.collect())
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(trimgalore_mqc.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.ccurve.collect{it[1]}.ifEmpty([]))
+        Channel.from(ch_multiqc_config)
+            .mix(ch_multiqc_custom_config.collect())
+            .mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+            .mix(GET_SOFTWARE_VERSIONS.out.yaml.collect())
+            .mix(FASTQC.out.zip.collect{ it[1] })
+            .mix(QUALIMAP_BAMQC.out.results.collect{ it[1] })
+            .mix(PRESEQ_LCEXTRAP.out.ccurve.collect{ it[1] })
+            .mix(ALIGNER.out.mqc)
+            .set { ch_multiqc_files }
 
-        ch_multiqc_files = ch_multiqc_files.mix(ALIGNER.out.mqc.ifEmpty([]))
-        
+        if (!params.skip_trimming) {
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+
         MULTIQC (
             ch_multiqc_files.collect()
         )

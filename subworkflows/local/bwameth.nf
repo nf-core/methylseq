@@ -95,7 +95,12 @@ workflow BWAMETH {
      */
     BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai) | (SAMTOOLS_FLAGSTAT & SAMTOOLS_STATS)
 
-    if (!params.skip_deduplication || params.rrbs) {
+    if (params.skip_deduplication || params.rrbs) {
+        alignments = SAMTOOLS_SORT.out.bam
+        bam_index = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
+        picard_metrics = Channel.empty()
+        picard_version = Channel.empty()
+    } else {
         /*
         * Run Picard MarkDuplicates
         */
@@ -109,11 +114,6 @@ workflow BWAMETH {
         bam_index = SAMTOOLS_INDEX_DEDUPLICATED.out.bai
         picard_metrics = PICARD_MARKDUPLICATES.out.metrics
         picard_version = PICARD_MARKDUPLICATES.out.version
-    } else {
-        alignments = SAMTOOLS_SORT.out.bam
-        bam_index = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
-        picard_metrics = Channel.empty()
-        picard_version = Channel.empty()
     }
 
     /*
@@ -142,17 +142,19 @@ workflow BWAMETH {
         fasta_index
     )
 
-    /*
-     * Collect MultiQC inputs
-     */
-
-    SAMTOOLS_FLAGSTAT.out.flagstat
-        .join(SAMTOOLS_STATS.out.stats)
-        .join(METHYLDACKEL.out.mbias)
-        .join(METHYLDACKEL.out.consensus)
-        .join(picard_metrics)
-        .collect{ it[1] }
-        .set {mqc}
+    if (!params.skip_multiqc) {
+        /*
+        * Collect MultiQC inputs
+        */
+        picard_metrics.collect{ it[1] }
+            .mix(SAMTOOLS_FLAGSTAT.out.flagstat.collect{ it[1] })
+            .mix(SAMTOOLS_STATS.out.stats.collect{ it[1] })
+            .mix(METHYLDACKEL.out.mbias.collect{ it[1] })
+            .mix(METHYLDACKEL.out.consensus.collect{ it[1] })
+            .set{ ch_multiqc_files }
+    } else {
+        ch_multiqc_files = Channel.empty()
+    }
 
     /*
      * Collect Software Versions
@@ -161,12 +163,12 @@ workflow BWAMETH {
         .mix(METHYLDACKEL.out.version)
         .mix(SAMTOOLS_SORT.out.version)
         .mix(BWAMETH_INDEX.out.version)
-        .set{versions}
+        .set{ versions }
 
     emit:
     bam                  = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
     dedup                = alignments                     // channel: [ val(meta), [ bam ] ]
 
-    mqc                                                   // path: *{html,txt}
+    mqc                  = ch_multiqc_files               // path: *{html,txt}
     versions                                              // path: *.version.txt
 }

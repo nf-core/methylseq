@@ -74,17 +74,17 @@ workflow BISMARK {
         reads.join(bismark_index)
     )
 
-    if (!params.skip_deduplication || params.rrbs) {
+    if (params.skip_deduplication || params.rrbs) {
+        alignments = BISMARK_ALIGN.out.bam
+        alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
+    } else {
         /*
         * Run deduplicate_bismark
         */
-        BISMARK_DEDUPLICATE(BISMARK_ALIGN.out.bam)
+        BISMARK_DEDUPLICATE( BISMARK_ALIGN.out.bam )
 
-        alignments   = BISMARK_DEDUPLICATE.out.bam
-        dedup_report = BISMARK_DEDUPLICATE.out.report
-    } else {
-        alignments   = BISMARK_ALIGN.out.bam
-        dedup_report = Channel.empty()
+        alignments = BISMARK_DEDUPLICATE.out.bam
+        alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
     }
 
     /*
@@ -98,18 +98,20 @@ workflow BISMARK {
      * Generate bismark sample reports
      */
     BISMARK_REPORT (
-        BISMARK_ALIGN.out.report.join(dedup_report).join(BISMARK_METHYLATIONEXTRACTOR.out.report).join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
+    alignment_reports
+        .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
+        .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
     )
 
     /*
      * Generate bismark summary report
      */
     BISMARK_SUMMARY (
-        BISMARK_ALIGN.out.bam.collect{ it[1] },
-        BISMARK_ALIGN.out.report.collect{ it[1] },
-        dedup_report.collect{ it[1] },
-        BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] },
-        BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] }
+        BISMARK_ALIGN.out.bam.collect{ it[1] }.ifEmpty([]),
+        alignment_reports.collect{ it[1] }.ifEmpty([]),
+        alignment_reports.collect{ it[2] }.ifEmpty([]),
+        BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] }.ifEmpty([]),
+        BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] }.ifEmpty([])
     )
 
     /*
@@ -119,31 +121,34 @@ workflow BISMARK {
         alignments
     )
 
-    /*
-     * Collect MultiQC inputs
-     */
-    BISMARK_ALIGN.out.report
-        .join(dedup_report)
-        .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
-        .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
-        .join(BISMARK_REPORT.out.report)
-        .collect{ it[1] }
-        .mix(BISMARK_SUMMARY.out.summary)
-        .set{mqc}
+    if (!params.skip_multiqc) {
+        /*
+        * Collect MultiQC inputs
+        */
+        BISMARK_SUMMARY.out.summary.ifEmpty([])
+            .mix(alignment_reports.collect{ it[1] })
+            .mix(alignment_reports.collect{ it[2] })
+            .mix(BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] })
+            .mix(BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] })
+            .mix(BISMARK_REPORT.out.report.collect{ it[1] })
+            .set{ ch_multiqc_files }
+    } else {
+        ch_multiqc_files = Channel.empty()
+    }
 
     /*
      * Collect Software Versions
      */
     SAMTOOLS_SORT.out.version
         .mix(BISMARK_ALIGN.out.version)
-        .set{versions}
+        .set{ versions }
     
 
     emit:
     bam              = BISMARK_ALIGN.out.bam          // channel: [ val(meta), [ bam ] ]
     dedup            = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
 
-    mqc                                               //path: *{html,txt}
+    mqc              = ch_multiqc_files               // path: *{html,txt}
     versions                                          // path: *.version.txt
 
 }
