@@ -33,6 +33,6 @@ process METHYLDACKEL_EXTRACT {
         $fasta \\
         $bam
 
-    echo \$(methyldackel --version 2>&1) | cut -f1 -d" " > ${software}.version.txt
+    echo \$(MethylDackel --version 2>&1) | cut -f1 -d" " > ${software}.version.txt
     """
 }
