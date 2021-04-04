@@ -258,11 +258,10 @@ if(params.cegx)             summary['Trim Profile'] = 'CEGX'
 if(params.em_seq)           summary['Trim Profile'] = 'EM Seq'
 summary['Trimming']         = "5'R1: $clip_r1 / 5'R2: $clip_r2 / 3'R1: $three_prime_clip_r1 / 3'R2: $three_prime_clip_r2"
 summary['Deduplication']    = params.skip_deduplication || params.rrbs ? 'No' : 'Yes'
-summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional || params.nondirectional_library ? 'No' : 'Yes'
+summary['Directional Mode'] = params.single_cell || params.zymo || params.non_directional ? 'No' : 'Yes'
 summary['All C Contexts']   = params.comprehensive ? 'Yes' : 'No'
 summary['Cytosine report']  = params.cytosine_report ? 'Yes' : 'No'
 if(params.min_depth)        summary['Minimum Depth'] = params.min_depth
-if(params.min_coverage)     summary['Minimum Coverage'] = params.min_coverage
 if(params.ignore_flags)     summary['MethylDackel'] = 'Ignoring SAM Flags'
 if(params.methyl_kit)       summary['MethylDackel'] = 'Producing methyl_kit output'
 save_intermeds = [];
@@ -1073,7 +1072,7 @@ if( params.aligner == 'biscuit' ){
         assembly = fasta.replaceAll(/\.\w+/,"")
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?(\.bz2)?$/
 
-        non_directional = params.single_cell || params.zymo || params.nondirectional_library ? 0 : 1
+        non_directional = params.single_cell || params.zymo || params.non_directional ? 0 : 1
         // Paired-end or single-end input files and pbat or not
         input = params.pbat ? params.single_end ? reads + " -b 3" : "${reads[1]} ${reads[0]} -b " + non_directional : reads.toString() +"  -b " +  non_directional
 
@@ -1209,7 +1208,7 @@ if( params.aligner == 'biscuit' ){
         set val(name), file("*bedgraph" ) into ch_bedgraph_for_intersect_soloWCGW
 
         script:
-        min_depth = params.min_coverage > 1 ? "${params.min_coverage}" : '1'
+        min_depth = params.min_depth > 1 ? "${params.min_depth}" : '1'
         all_contexts = params.comprehensive ? 'c, cg, ch, hcg, gch' : 'cg'
         """
         biscuit vcf2bed -k $min_depth -t $all_contexts  "${vcf[0]}" > "${name}.bedgraph"

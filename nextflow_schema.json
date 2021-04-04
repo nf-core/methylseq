@@ -112,7 +112,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
                     "description": "Trimming preset for single-cell bisulfite libraries.",
-                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 6` `--three_prime_clip_r2 6`.\n\nAlso sets the `--non_directional` flag for Bismark and the `--nondirectional_library` flag for BISCUIT."
+                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 6` `--three_prime_clip_r2 6`.\n\nAlso sets the `--non_directional` flag for Bismark or BISCUIT."
                 },
                 "accel": {
                     "type": "boolean",
@@ -136,7 +136,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
                     "description": "Trimming preset for the Zymo kit.",
-                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark and the `--nondirectional_library` flag for BISCUIT.."
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark or for BISCUIT.."
                 }
             },
             "fa_icon": "fas fa-prescription-bottle"
@@ -251,12 +251,6 @@
             "default": "",
             "fa_icon": "fas fa-circle",
             "properties": {
-                "non_directional": {
-                    "type": "boolean",
-                    "description": "Run alignment against all four possible strands.",
-                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
-                    "fa_icon": "fas fa-exchange-alt"
-                },
                 "cytosine_report": {
                     "type": "boolean",
                     "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step.",
@@ -334,12 +328,6 @@
             "description": "Parameters specific to the bwa-meth workflow",
             "default": "",
             "properties": {
-                "min_depth": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
-                    "default": 0,
-                    "fa_icon": "fas fa-angle-double-down"
-                },
                 "ignore_flags": {
                     "type": "boolean",
                     "description": "MethylDackel - ignore SAM flags",
@@ -361,18 +349,6 @@
             "description": "Parameters specific to the BISCUIT workflow",
             "default": "",
             "properties": {
-				"min_coverage": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage for information extraction from the VCF file to bed file.",
-                    "default": "1",
-                    "fa_icon": "fas fa-angle-double-down"
-                },
-				"nondirectional_library": {
-                    "type": "boolean",
-                    "description": "Run alignment against all four possible strands.",
-                    "help_text": "By default, the BISCUIT pipeline assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--nondirectional_library` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--nondirectional_library` workflow flag automatically.",
-                    "fa_icon": "fas fa-exchange-alt"
-                },
                 "epiread": {
                     "type": "boolean",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
@@ -423,6 +399,27 @@
                     "help_text": "By default, the bed file with SNP information about the sample will not be save to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete. Relevant only if `--epiread` is set.",
                     "fa_icon": "fas fa-save"
                 }
+            },
+            "fa_icon": "far fa-circle"
+        },
+		"common_options": {
+            "title": "common options",
+            "type": "object",
+            "description": "Parameters that are common between pipelines",
+            "default": "",
+            "properties": {
+				"min_depth": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage for MethylDackel to report a methylation call in bwa-meth workflow, or a minimum read coverage for information extraction from the VCF file to bed file in BISCUIT workflow.",
+                    "default": 0,
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+				"non_directional": {
+                    "type": "boolean",
+                    "description": "Run alignment against all four possible strands.",
+                    "help_text": "By default, Bismark and BISCUIT assume that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
+                    "fa_icon": "fas fa-exchange-alt"
+                }         
             },
             "fa_icon": "far fa-circle"
         },
@@ -649,6 +646,9 @@
         },
 		{
             "$ref": "#/definitions/biscuit_options"
+        },
+		{
+            "$ref": "#/definitions/common_options"
         },
         {
             "$ref": "#/definitions/skip_pipeline_steps"
