@@ -35,7 +35,6 @@ if (params.validate_params) {
 
 // These params need to be set late, after the iGenomes config is loaded
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-assembly_name = (params.fasta.toString().lastIndexOf('/') == -1) ?: params.fasta.toString().substring( params.fasta.toString().lastIndexOf('/')+1)
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
@@ -1256,7 +1255,7 @@ if( params.aligner == 'biscuit' ){
                 file("whitelist.${name}.bed.gz" ) into ch_whitelist_for_SNP, ch_whitelist_for_epiread
                 file "sizes.${name}"
                 script:
-                name = assembly_name - '.fa'
+                name = fasta_index.getSimpleName() // - '.fa' - '.fai'
 
                 """
                 cut -f1,2 $fasta_index > sizes.${name}
