@@ -1,6 +1,10 @@
 # nf-core/methylseq
 
-## v1.6dev - [date]
+## v1.7dev
+
+_..nothing yet.._
+
+## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
 **:warning: Breaking change!**
 
@@ -10,7 +14,9 @@ The parameter still works in the same way as before.
 
 ### Pipeline Updates
 
-* Updated template to tools 1.12.1
+* Increased resources for `fastqc` process ([#143](https://github.com/nf-core/methylseq/issues/143))
+* Raised Nextflow version requirement to `20.07.1`
+* Updated template to nf-core/tools 1.13.3
 * Renamed `--reads` to `--input`
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
 * New `--em_seq` preset
@@ -25,18 +31,19 @@ The parameter still works in the same way as before.
 
 ### Software updates
 
-* Python base `3.7.3` > `3.8.5`
-* markdown `3.1.1` > `3.3.3`
+* Python base `3.7.3` > `3.8.8`
+* markdown `3.1.1` > `3.3.4`
 * pymdown-extensions `6.0` > `8.1.1`
-* pygments `2.6.1` > `2.7.4`
-* pigz `2.3.4` > `2.5`
+* pygments `2.6.1` > `2.8.1`
+* pigz `2.3.4` > `2.6`
+* samtools `1.9` > `1.11`
 * TrimGalore! `0.6.5` > `0.6.6`
 * Bowtie2 `2.3.5` > `2.4.2`
 * Hisat2 `2.2.0` > `2.2.1`
 * Bismark `0.22.3` > `0.23.0`
-* Picard `2.22.2` > `2.25.0`
-* MethylDackel `0.5.0` > `0.5.1`
-* MultiQC `1.8` > `1.9`
+* Picard `2.22.2` > `2.25.1`
+* MethylDackel `0.5.0` > `0.5.2`
+* MultiQC `1.8` > `1.10`
 
 ## [v1.5](https://github.com/nf-core/methylseq/releases/tag/1.5) - 2020-04-09
 
