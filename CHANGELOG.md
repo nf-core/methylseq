@@ -10,6 +10,11 @@
 
 * Fixed silent bug in Bismark alignment command that had no effect on the output ([#210](https://github.com/nf-core/methylseq/issues/210))
 
+### Software updates
+
+* Picard `2.25.1` > `2.25.4`
+* MultiQC `1.10` > `1.10.1`
+
 ## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
 **:warning: Breaking change!**
