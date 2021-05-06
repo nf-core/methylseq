@@ -546,7 +546,6 @@ if( params.aligner =~ /bismark/ ){
             $aligner \\
             --bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
             --genome $index \\
-            $reads \\
             $soft_clipping \\
             $splicesites
         """
