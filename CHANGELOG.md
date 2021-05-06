@@ -2,7 +2,13 @@
 
 ## v1.7dev
 
-_..nothing yet.._
+### Pipeline Updates
+
+* Added new config profile to run minimal test paired-end dataset, with `-profile test_paired`. Added to the CI tests.
+
+### Bug fixes
+
+* Fixed silent bug in Bismark alignment command that had no effect on the output ([#210](https://github.com/nf-core/methylseq/issues/210))
 
 ## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
