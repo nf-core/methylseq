@@ -42,13 +42,13 @@ jobs:
 
       - name: Build new docker image
         if: env.MATCHED_FILES
-        run: docker build --no-cache . -t nfcore/methylseq:dev
+        run: docker build --no-cache . -t nfcore/methylseq:1.6.1
 
       - name: Pull docker image
         if: ${{ !env.MATCHED_FILES }}
         run: |
           docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:dev
+          docker tag nfcore/methylseq:dev nfcore/methylseq:1.6.1
 
       - name: Install Nextflow
         env:
