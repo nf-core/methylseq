@@ -34,10 +34,7 @@ if (params.validate_params) {
 ////////////////////////////////////////////////////
 
 // These params need to be set late, after the iGenomes config is loaded
-params.bismark_index = params.genome ? params.genomes[ params.genome ].bismark ?: false : false
-params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
 params.fasta = params.genome ? params.genomes[ params.genome ].fasta ?: false : false
-params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
 
 // Check if genome exists in the config file
 if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
@@ -51,6 +48,7 @@ Channel
 ch_splicesites_for_bismark_hisat_align = params.known_splices ? Channel.fromPath(params.known_splices, checkIfExists: true) : Channel.empty()
 
 if( params.aligner =~ /bismark/ ){
+    params.bismark_index = params.genome && params.aligner == 'bismark' ? params.genomes[ params.genome ].bismark ?: false : false
     assert params.bismark_index || params.fasta : "No reference genome index or fasta file specified"
     ch_wherearemyfiles_for_alignment.set { ch_wherearemyfiles_for_bismark_align }
 
@@ -76,6 +74,7 @@ else if( params.aligner == 'bwameth' ){
         .ifEmpty { exit 1, "fasta file not found : ${params.fasta}" }
         .into { ch_fasta_for_makeBwaMemIndex; ch_fasta_for_makeFastaIndex; ch_fasta_for_methyldackel }
 
+    params.bwa_meth_index = params.genome ? params.genomes[ params.genome ].bwa_meth ?: false : false
     if( params.bwa_meth_index ){
         Channel
             .fromPath("${params.bwa_meth_index}*", checkIfExists: true)
@@ -84,6 +83,7 @@ else if( params.aligner == 'bwameth' ){
         ch_fasta_for_makeBwaMemIndex.close()
     }
 
+    params.fasta_index = params.genome ? params.genomes[ params.genome ].fasta_index ?: false : false
     if( params.fasta_index ){
         Channel
             .fromPath(params.fasta_index, checkIfExists: true)
@@ -546,7 +546,6 @@ if( params.aligner =~ /bismark/ ){
             $aligner \\
             --bam $pbat $non_directional $unmapped $mismatches $multicore $minins $maxins \\
             --genome $index \\
-            $reads \\
             $soft_clipping \\
             $splicesites
         """
