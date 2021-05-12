@@ -4,9 +4,22 @@
 
 > _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
 
+## Table of contents
+
+* [Table of contents](#table-of-contents)
+* [Introduction](#introduction)
+  * [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+* [Running the pipeline](#running-the-pipeline)
+  * [Updating the pipeline](#updating-the-pipeline)
+  * [Reproducibility](#reproducibility)
+
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.
+
+Since bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.
+
+The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.
 
 ## Running the pipeline
 
@@ -103,7 +116,7 @@ Whilst these default requirements will hopefully work for most people with most 
 
 ```nextflow
 process {
-  withName: star {
+  withName: bismark_align {
     memory = 32.GB
   }
 }

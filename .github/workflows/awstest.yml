@@ -21,6 +21,16 @@ jobs:
     name: Run AWS tests
     if: github.repository == 'nf-core/methylseq'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
+        include:
+          - aligner: "bismark"
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: "bismark_hisat"
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: "bwameth"
+            ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Setup Miniconda
         uses: conda-incubator/setup-miniconda@v2
@@ -30,13 +40,10 @@ jobs:
       - name: Install awscli
         run: conda install -c conda-forge awscli
       - name: Start AWS batch job
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
         run: |
           aws batch submit-job \
           --region eu-west-1 \
           --job-name nf-core-methylseq \
           --job-queue $AWS_JOB_QUEUE \
           --job-definition $AWS_JOB_DEFINITION \
-          --container-overrides '{"command": ["nf-core/methylseq", "-r '"${GITHUB_SHA}"' -profile test --outdir s3://'"${AWS_S3_BUCKET}"'/methylseq/results-'"${GITHUB_SHA}"' -w s3://'"${AWS_S3_BUCKET}"'/methylseq/work-'"${GITHUB_SHA}"' -with-tower"], "environment": [{"name": "TOWER_ACCESS_TOKEN", "value": "'"$TOWER_ACCESS_TOKEN"'"}]}'
+          --container-overrides '{"command": ["nf-core/methylseq", "-r '"${GITHUB_SHA}"' -profile test --aligner '"${{matrix.aligner}}"' --outdir s3://'"${AWS_S3_BUCKET}"'/methylseq/results-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}"/' -w s3://'"${AWS_S3_BUCKET}"'/methylseq/work-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}" -with-tower"], "environment": [{"name": "TOWER_ACCESS_TOKEN", "value": "'"$TOWER_ACCESS_TOKEN"'"}]}'
