@@ -431,11 +431,16 @@ if(!params.bwa_biscuit_index && params.aligner == 'biscuit' ){
         tag "$fasta"
         publishDir path: "${params.outdir}/reference_genome", saveAs: { params.save_reference ? it : null }, mode: params.publish_dir_mode
 
-        input:
-        file fasta from ch_fasta_for_makeBwaMemIndex
+        // input:
+        // file fasta from ch_fasta_for_makeBwaMemIndex
+
+        // output:
+        // file "${fasta}*" into ch_bwa_index_for_biscuit
+		input:
+        path fasta, stageAs 'fasta*' from ch_fasta_for_makeBwaMemIndex
 
         output:
-        file "${fasta}*" into ch_bwa_index_for_biscuit
+        file fasta into ch_bwa_index_for_biscuit
 
         script:
         """
@@ -1328,7 +1333,7 @@ if( params.aligner == 'biscuit' ){
 
             output:
             file "*${name}.e*.gz*"
-            file "${name}.original.epiread.*"
+            file "${name}.original.epiread.*" optional true
 
             script:
             snp_file = (snp.size()>0) ? "-B " + snp.toString() : ''
