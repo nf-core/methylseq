@@ -1,5 +1,9 @@
 # nf-core/methylseq
 
+## 1.7dev
+
+_..nothing yet.._
+
 ## [v1.6.1](https://github.com/nf-core/methylseq/releases/tag/1.6.1) - 2021-05-08
 
 ### Pipeline Updates
