@@ -740,6 +740,8 @@ if( params.aligner == 'bwameth' ){
         fasta = bwa_meth_indices[0].toString() - '.bwameth' - '.c2t' - '.amb' - '.ann' - '.bwt' - '.pac' - '.sa'
         prefix = reads[0].toString() - ~/(_R1)?(_trimmed)?(_val_1)?(\.fq)?(\.fastq)?(\.gz)?$/
         """
+        # Modify the timestamps so that bwameth doesn't complain about building the index
+        touch -c -- *
         bwameth.py \\
             --threads ${task.cpus} \\
             --reference $fasta \\
