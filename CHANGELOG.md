@@ -2,7 +2,9 @@
 
 ## 1.7dev
 
-_..nothing yet.._
+### Bug fixes
+
+* Run `touch` before bwa alignments to modify file modified timestamps. Avoids error from bwa about needing to build the index ([#217](https://github.com/nf-core/methylseq/issues/217))
 
 ## [v1.6.1](https://github.com/nf-core/methylseq/releases/tag/1.6.1) - 2021-05-08
 
