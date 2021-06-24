@@ -1,8 +1,25 @@
 # nf-core/methylseq
 
-## v1.7dev
+## 1.7dev
 
-_..nothing yet.._
+### Bug fixes
+
+* Run `touch` before bwa alignments to modify file modified timestamps. Avoids error from bwa about needing to build the index ([#217](https://github.com/nf-core/methylseq/issues/217))
+
+## [v1.6.1](https://github.com/nf-core/methylseq/releases/tag/1.6.1) - 2021-05-08
+
+### Pipeline Updates
+
+* Added new config profile to run minimal test paired-end dataset, with `-profile test_paired`. Added to the CI tests.
+
+### Bug fixes
+
+* Fixed silent bug in Bismark alignment command that had no effect on the output ([#210](https://github.com/nf-core/methylseq/issues/210))
+
+### Software updates
+
+* Picard `2.25.1` > `2.25.4`
+* MultiQC `1.10` > `1.10.1`
 
 ## [v1.6](https://github.com/nf-core/methylseq/releases/tag/1.6) - 2021-03-26
 
