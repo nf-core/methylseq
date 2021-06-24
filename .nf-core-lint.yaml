@@ -1,9 +1,6 @@
 files_unchanged:
-  # FIXME remove after nf-core linting uses nextflow >= 21.03.0-edge
-  - .github/workflows/linting.yml
 # FIXME remove after tools:dsl2_template has been merged
   - lib/NfcoreSchema.groovy
-actions_awsfulltest: False
 # FIXME CI currently runs for dev and dsl2 branches, remove the latter before merging to dev
 actions_ci: False
 files_exist:
