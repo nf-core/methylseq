@@ -87,8 +87,6 @@ jobs:
 
   nf-core:
     runs-on: ubuntu-latest
-    env:
-      NXF_VER: 21.03.0-edge
     steps:
 
       - name: Check out pipeline code
@@ -131,4 +129,3 @@ jobs:
             lint_log.txt
             lint_results.md
             PR_number.txt
-
