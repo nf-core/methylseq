@@ -33,15 +33,15 @@ def methyldackel_mbias_options   = modules['methyldackel_mbias']
 methyldackel_mbias_options.args += params.comprehensive ? ' --CHG --CHH' : ''
 methyldackel_mbias_options.args += params.ignore_flags ? " --ignoreFlags" : ''
 
-include { SAMTOOLS_STATS                                } from '../../modules/nf-core/software/samtools/stats/main'        addParams( options: modules['samtools_stats']           )
-include { SAMTOOLS_FLAGSTAT                             } from '../../modules/nf-core/software/samtools/flagstat/main'     addParams( options: modules['samtools_flagstat']        )
-include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf-core/software/samtools/index/main'        addParams( options: samtools_index_alignments_options   )
-include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../modules/nf-core/software/samtools/index/main'        addParams( options: samtools_index_deduplicated_options )
-include { PICARD_MARKDUPLICATES                         } from '../../modules/nf-core/software/picard/markduplicates/main' addParams( options: modules['picard_markduplicates']    )
-include { SAMTOOLS_SORT                                 } from '../../modules/nf-core/software/samtools/sort/main'         addParams( options: samtools_sort_options               )
-include { SAMTOOLS_FAIDX                                } from '../../modules/local/software/samtools/faidx/main'          addParams( options: samtools_faidx_options              )
-include { BWAMETH_INDEX                                 } from '../../modules/local/software/bwameth/index/main'           addParams( options: bwameth_index_options               )
-include { BWAMETH_ALIGN                                 } from '../../modules/local/software/bwameth/align/main'           addParams( options: bwameth_align_options               )
+include { SAMTOOLS_STATS                                } from '../../modules/nf-core/modules/samtools/stats/main'        addParams( options: modules['samtools_stats']           )
+include { SAMTOOLS_FLAGSTAT                             } from '../../modules/nf-core/modules/samtools/flagstat/main'     addParams( options: modules['samtools_flagstat']        )
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf-core/modules/samtools/index/main'        addParams( options: samtools_index_alignments_options   )
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../modules/nf-core/modules/samtools/index/main'        addParams( options: samtools_index_deduplicated_options )
+include { PICARD_MARKDUPLICATES                         } from '../../modules/nf-core/modules/picard/markduplicates/main' addParams( options: modules['picard_markduplicates']    )
+include { SAMTOOLS_SORT                                 } from '../../modules/nf-core/modules/samtools/sort/main'         addParams( options: samtools_sort_options               )
+include { SAMTOOLS_FAIDX                                } from '../../modules/nf-core/modules/samtools/faidx/main'          addParams( options: samtools_faidx_options              )
+include { BWAMETH_INDEX                                 } from '../../modules/nf-core/modules/bwameth/index/main'           addParams( options: bwameth_index_options               )
+include { BWAMETH_ALIGN                                 } from '../../modules/nf-core/modules/bwameth/align/main'           addParams( options: bwameth_align_options               )
 
 include { METHYLDACKEL } from './methyldackel' addParams( mbias_options: methyldackel_mbias_options, extract_options: methyldackel_extract_options )
 
@@ -62,7 +62,7 @@ workflow BWAMETH {
             have_bwameth_index: genome.containsKey('bwameth_index')
                 return [meta, genome.bwameth_index]
             need_bwameth_index: !genome.containsKey('bwameth_index')
-                return [meta, genome.fasta] 
+                return [meta, genome.fasta]
         }
         .set{ch_genome}
 
@@ -104,7 +104,7 @@ workflow BWAMETH {
         /*
         * Run Picard MarkDuplicates
         */
-        PICARD_MARKDUPLICATES (SAMTOOLS_SORT.out.bam)   
+        PICARD_MARKDUPLICATES (SAMTOOLS_SORT.out.bam)
         /*
          * Run samtools index on deduplicated alignment
         */
@@ -124,7 +124,7 @@ workflow BWAMETH {
             have_fasta_index: genome.containsKey('fasta_index')
                 return [meta, genome.fasta_index]
             need_fasta_index: !genome.containsKey('fasta_index')
-                return [meta, genome.fasta] 
+                return [meta, genome.fasta]
         }
         .set{ch_genome}
 

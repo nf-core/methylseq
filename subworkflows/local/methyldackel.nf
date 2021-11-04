@@ -5,8 +5,8 @@
 params.methyldackel_mbias_options = [:]
 params.methyldackel_extract_options = [:]
 
-include { METHYLDACKEL_MBIAS   } from '../../modules/local/software/methyldackel/mbias/main'   addParams( options: params.methyldackel_mbias_options   )
-include { METHYLDACKEL_EXTRACT } from '../../modules/local/software/methyldackel/extract/main' addParams( options: params.methyldackel_extract_options )
+include { METHYLDACKEL_MBIAS   } from '../../modules/nf-core/modules/methyldackel/mbias/main'   addParams( options: params.methyldackel_mbias_options   )
+include { METHYLDACKEL_EXTRACT } from '../../modules/nf-core/modules/methyldackel/extract/main' addParams( options: params.methyldackel_extract_options )
 
 workflow METHYLDACKEL {
     take:
