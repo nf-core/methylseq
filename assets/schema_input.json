@@ -29,6 +29,10 @@
                         "maxLength": 0
                     }
                 ]
+            },
+            "genome": {
+                "type": "string",
+                "errorMessage": "Optional genome identifier. If not supplied please use `--fasta`"
             }
         },
         "required": [
