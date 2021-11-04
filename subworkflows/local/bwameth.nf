@@ -39,9 +39,9 @@ include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf
 include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../modules/nf-core/modules/samtools/index/main'        addParams( options: samtools_index_deduplicated_options )
 include { PICARD_MARKDUPLICATES                         } from '../../modules/nf-core/modules/picard/markduplicates/main' addParams( options: modules['picard_markduplicates']    )
 include { SAMTOOLS_SORT                                 } from '../../modules/nf-core/modules/samtools/sort/main'         addParams( options: samtools_sort_options               )
-include { SAMTOOLS_FAIDX                                } from '../../modules/nf-core/modules/samtools/faidx/main'          addParams( options: samtools_faidx_options              )
-include { BWAMETH_INDEX                                 } from '../../modules/nf-core/modules/bwameth/index/main'           addParams( options: bwameth_index_options               )
-include { BWAMETH_ALIGN                                 } from '../../modules/nf-core/modules/bwameth/align/main'           addParams( options: bwameth_align_options               )
+include { SAMTOOLS_FAIDX                                } from '../../modules/nf-core/modules/samtools/faidx/main'        addParams( options: samtools_faidx_options              )
+include { BWAMETH_INDEX                                 } from '../../modules/nf-core/modules/bwameth/index/main'         addParams( options: bwameth_index_options               )
+include { BWAMETH_ALIGN                                 } from '../../modules/nf-core/modules/bwameth/align/main'         addParams( options: bwameth_align_options               )
 
 include { METHYLDACKEL } from './methyldackel' addParams( mbias_options: methyldackel_mbias_options, extract_options: methyldackel_extract_options )
 

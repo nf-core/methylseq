@@ -34,10 +34,10 @@ bismark_methylationextractor_options.args += params.meth_cutoff     ? " --cutoff
 include { BISMARK_GENOMEPREPARATION    } from '../../modules/nf-core/modules/bismark/genomepreparation/main'    addParams( options: bismark_genomepreparation_options    )
 include { BISMARK_ALIGN                } from '../../modules/nf-core/modules/bismark/align/main'                addParams( options: bismark_align_options                )
 include { BISMARK_METHYLATIONEXTRACTOR } from '../../modules/nf-core/modules/bismark/methylationextractor/main' addParams( options: bismark_methylationextractor_options )
-include { SAMTOOLS_SORT                } from '../../modules/nf-core/modules/samtools/sort/main'              addParams( options: samtools_sort_options                )
-include { BISMARK_DEDUPLICATE          } from '../../modules/nf-core/modules/bismark/deduplicate/main'        addParams( options: modules['bismark_deduplicate']       )
-include { BISMARK_REPORT               } from '../../modules/nf-core/modules/bismark/report/main'             addParams( options: modules['bismark_report']            )
-include { BISMARK_SUMMARY              } from '../../modules/nf-core/modules/bismark/summary/main'            addParams( options: modules['bismark_summary']           )
+include { SAMTOOLS_SORT                } from '../../modules/nf-core/modules/samtools/sort/main'                addParams( options: samtools_sort_options                )
+include { BISMARK_DEDUPLICATE          } from '../../modules/nf-core/modules/bismark/deduplicate/main'          addParams( options: modules['bismark_deduplicate']       )
+include { BISMARK_REPORT               } from '../../modules/nf-core/modules/bismark/report/main'               addParams( options: modules['bismark_report']            )
+include { BISMARK_SUMMARY              } from '../../modules/nf-core/modules/bismark/summary/main'              addParams( options: modules['bismark_summary']           )
 
 workflow BISMARK {
     take:
