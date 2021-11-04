@@ -1,6 +1,6 @@
-/*
- * Check input samplesheet and get read channels
- */
+//
+// Check input samplesheet and get read channels
+//
 
 params.options = [:]
 
@@ -9,12 +9,12 @@ include { SAMPLESHEET_CHECK } from '../../modules/local/samplesheet_check' addPa
 workflow INPUT_CHECK {
     take:
     samplesheet // file: /path/to/samplesheet.csv
-    
+
     main:
     SAMPLESHEET_CHECK ( samplesheet )
         .splitCsv ( header:true, sep:',' )
         .set { sample }
-        
+
     reads = sample.map { get_samplesheet_paths(it) }
     genome = sample.map { get_genome_paths(it, params.genomes) }
 

@@ -56,10 +56,14 @@ def check_samplesheet(file_in, file_out):
 
         ## Check header
         MIN_COLS = 2
-        HEADER = ['sample', 'fastq_1', 'fastq_2', 'genome']
+        HEADER = ["sample", "fastq_1", "fastq_2", "genome"]
         header = [x.strip('"') for x in fin.readline().strip().split(",")]
-        if header[:len(HEADER)] != HEADER:
-            print("ERROR: Please check samplesheet header -> {} != {}".format(",".join(header), ",".join(HEADER)))
+        if header[: len(HEADER)] != HEADER:
+            print(
+                "ERROR: Please check samplesheet header -> {} != {}".format(
+                    ",".join(header), ",".join(HEADER)
+                )
+            )
             sys.exit(1)
 
         ## Check sample entries
@@ -76,17 +80,17 @@ def check_samplesheet(file_in, file_out):
             num_cols = len([x for x in lspl if x])
             if num_cols < MIN_COLS:
                 print_error(
-                    "Invalid number of populated columns (minimum = {})!".format(MIN_COLS),
+                    "Invalid number of populated columns (minimum = {})!".format(
+                        MIN_COLS
+                    ),
                     "Line",
                     line,
                 )
 
             ## Check sample name entries
             sample, fastq_1, fastq_2, genome = lspl[: len(HEADER)]
-            if sample:
-                if sample.find(" ") != -1:
-                    print_error("Sample entry contains spaces!", "Line", line)
-            else:
+            sample = sample.replace(" ", "_")
+            if not sample:
                 print_error("Sample entry has not been specified!", "Line", line)
 
             ## Check FastQ file extension
@@ -103,24 +107,33 @@ def check_samplesheet(file_in, file_out):
 
             ## Check genome entries
             if genome:
-                if genome.find(' ') != -1:
-                    print_error("Genome entry contains spaces!",'Line', line)
-                if len(genome.split('.')) > 1:
-                    if genome[-6:] != '.fasta' and genome[-3:] != '.fa' and genome[-9:] != '.fasta.gz' and genome[-6:] != '.fa.gz':
-                        print_error("Genome entry does not have extension '.fasta', '.fa', '.fasta.gz' or '.fa.gz'!",'Line', line)
+                if genome.find(" ") != -1:
+                    print_error("Genome entry contains spaces!", "Line", line)
+                if len(genome.split(".")) > 1:
+                    if (
+                        genome[-6:] != ".fasta"
+                        and genome[-3:] != ".fa"
+                        and genome[-9:] != ".fasta.gz"
+                        and genome[-6:] != ".fa.gz"
+                    ):
+                        print_error(
+                            "Genome entry does not have extension '.fasta', '.fa', '.fasta.gz' or '.fa.gz'!",
+                            "Line",
+                            line,
+                        )
 
             ## Auto-detect paired-end/single-end
             sample_info = []  ## [single_end, fastq_1, fastq_2, genome]
             if sample and fastq_1 and fastq_2:  ## Paired-end short reads
-                sample_info = ["0", fastq_1, fastq_2, genome]
+                sample_info = ["0", fastq_1, fastq_2]
             elif sample and fastq_1 and not fastq_2:  ## Single-end short reads
-                sample_info = ["1", fastq_1, fastq_2, genome]
+                sample_info = ["1", fastq_1, fastq_2]
             else:
-                print_error("Invalid combination of columns provided!", 'Line', line)
+                print_error("Invalid combination of columns provided!", "Line", line)
 
-            ## Create sample mapping dictionary = {sample: [ single_end, fastq_1, fastq_2, genome ]}
+            ## Create sample mapping dictionary = { sample: [ single_end, fastq_1, fastq_2 ] }
             if sample not in sample_mapping_dict:
-                sample_mapping_dict[sample] = sample_info
+                sample_mapping_dict[sample] = [sample_info]
             else:
                 if sample_info in sample_mapping_dict[sample]:
                     print_error("Samplesheet contains duplicate rows!", "Line", line)
@@ -132,10 +145,26 @@ def check_samplesheet(file_in, file_out):
         out_dir = os.path.dirname(file_out)
         make_dir(out_dir)
         with open(file_out, "w") as fout:
-            fout.write(",".join(['sample', 'single_end', 'fastq_1', 'fastq_2', 'genome']) + "\n")
-            for sample_id, sample_info in sorted(sample_mapping_dict.items()):
-                ## Write to file
-                fout.write(','.join([sample_id] + sample_info) + '\n')
+            fout.write(
+                ",".join(["sample", "single_end", "fastq_1", "fastq_2", "genome"])
+                + "\n"
+            )
+            for sample in sorted(sample_mapping_dict.keys()):
+
+                ## Check that multiple runs of the same sample are of the same datatype
+                if not all(
+                    x[0] == sample_mapping_dict[sample][0][0]
+                    for x in sample_mapping_dict[sample]
+                ):
+                    print_error(
+                        "Multiple runs of a sample must be of the same datatype!",
+                        "Sample: {}".format(sample),
+                    )
+
+                for idx, val in enumerate(sample_mapping_dict[sample]):
+                    fout.write(
+                        ",".join(["{}_T{}".format(sample, idx + 1)] + val) + "\n"
+                    )
     else:
         print_error("No entries to process!", "Samplesheet: {}".format(file_in))
 
