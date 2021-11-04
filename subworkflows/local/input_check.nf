@@ -71,8 +71,8 @@ def get_genome_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
             genome.fasta = file(sample.genome, checkIfExists: true)
         }
     } else if ( params.fasta ) {
-      // samplesheet does not contain genome column, fall back to params.fasta
-      genome.fasta = file(params.fasta, checkIfExists: true)
+        // samplesheet does not contain genome column, fall back to params.fasta
+        genome.fasta = file(params.fasta, checkIfExists: true)
     } else {
         exit 1, "ERROR: Please either supply a fasta file with --fasta or specify genome column in the samplesheet"
     }
