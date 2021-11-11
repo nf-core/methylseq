@@ -860,6 +860,34 @@ if( params.aligner == 'bwameth' ){
         """
     }
 
+    /*
+     * STEP 7 - Add readgroups to BAM files
+     */
+     
+     process readgroups {
+        tag "$name"
+        publishDir "${params.outdir}/PicardReadGroups", mode: params.publish_dir_mode
+
+        input:
+        set val(name),
+            file(bam) from ch_methyldackel_results_for_multiqc
+            
+        output:
+        file file "${bam.baseName}.markDups.rg.bam" into ch_readgroups_for_bissnp
+        
+        script:
+        """
+        picard AddOrReplaceReadGroups \\
+            INPUT=$bam\\
+            OUTPUT=${bam.baseName}.markDups.rg.bam\\
+            RGID=$bam\\
+            RGLB="libraryX"\\
+            RGPL="Illumina"\\
+            RGSM=$bam\\
+            CREATE_INDEX=TRUE\\
+            VALIDATION_STRINGENCY=SILENT
+        """
+
 } // end of bwa-meth if block
 else {
     ch_flagstat_results_for_multiqc = Channel.from(false)
