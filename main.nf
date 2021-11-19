@@ -786,7 +786,7 @@ if( params.aligner == 'bwameth' ){
     }
 
     /*
-     * STEP 5 - Mark duplicates
+     * STEP 5 - Mark duplicates (output modified to add ch_bam_dedup_for_bssnper)
      */
     if( params.skip_deduplication || params.rrbs ) {
         ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
@@ -802,7 +802,7 @@ if( params.aligner == 'bwameth' ){
             set val(name), file(bam) from ch_bam_sorted_for_markDuplicates
 
             output:
-            set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap
+            set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap, ch_bam_dedup_for_bssnper
             set val(name), file("${bam.baseName}.markDups.bam.bai") into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
             file "${bam.baseName}.markDups_metrics.txt" into ch_markDups_results_for_multiqc
 
@@ -826,6 +826,24 @@ if( params.aligner == 'bwameth' ){
             """
         }
     }
+    /*
+     * EXTRA STEP - Calling SNPs with BS-SNPer
+     */
+    process BSSNPer {
+        tag "$name"
+        publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
+
+        input:
+        tuple val(name), file(bam) from ch_bam_dedup_for_bssnper
+
+        output:
+        tuple val(name), file("bssnper_output") into end_ch
+
+        script:
+        """
+        
+        """
+        }
 
     /*
      * STEP 6 - extract methylation with MethylDackel
@@ -860,34 +878,7 @@ if( params.aligner == 'bwameth' ){
         """
     }
 
-    /*
-     * STEP 7 - Add readgroups to BAM files
-     */
-     
-     process readgroups {
-        tag "$name"
-        publishDir "${params.outdir}/PicardReadGroups", mode: params.publish_dir_mode
-
-        input:
-        set val(name),
-            file(bam) from ch_methyldackel_results_for_multiqc
-            
-        output:
-        file file "${bam.baseName}.markDups.rg.bam" into ch_readgroups_for_bissnp
-        
-        script:
-        """
-        picard AddOrReplaceReadGroups \\
-            INPUT=$bam\\
-            OUTPUT=${bam.baseName}.markDups.rg.bam\\
-            RGID=$bam\\
-            RGLB="libraryX"\\
-            RGPL="Illumina"\\
-            RGSM=$bam\\
-            CREATE_INDEX=TRUE\\
-            VALIDATION_STRINGENCY=SILENT
-        """
-
+    
 } // end of bwa-meth if block
 else {
     ch_flagstat_results_for_multiqc = Channel.from(false)
