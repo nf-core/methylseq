@@ -837,11 +837,24 @@ if( params.aligner == 'bwameth' ){
         tuple val(name), file(bam) from ch_bam_dedup_for_bssnper
 
         output:
-        tuple val(name), file("bssnper_output") into end_ch
+        tuple val(name), file("${bam}.bssnper_output") into end_ch
 
         script:
         """
-        
+        perl BS-Snper.pl $bam \\
+        --fa <reference_file> \\
+        --output ${bam}.bssnper_output \\
+        --methcg <meth_cg_result_file> \\
+        --methchg <meth_chg_result_file> \\
+        --methchh <meth_chh_result_file> \\
+        --minhetfreq 0.1 \\
+        --minhomfreq 0.85 \\
+        --minquali 15 \\
+        --mincover 10 \\
+        --maxcover 1000 \\
+        --minread2 2 \\
+        --errorate 0.02 \\
+        --mapvalue 20 >SNP.out 2>ERR.log
         """
         }
 
