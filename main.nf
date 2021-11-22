@@ -828,6 +828,7 @@ if( params.aligner == 'bwameth' ){
     }
     /*
      * EXTRA STEP - Calling SNPs with BS-SNPer
+     * ToDo: --fa from script has a hard-coded location of a hg19 fasta file - make it generic!
      */
     process BSSNPer {
         tag "$name"
@@ -842,11 +843,11 @@ if( params.aligner == 'bwameth' ){
         script:
         """
         perl BS-Snper.pl $bam \\
-        --fa <reference_file> \\
+        --fa /home/arodriguez/METHYLATION/hg19_ref.fa \\
         --output ${bam}.bssnper_output \\
-        --methcg <meth_cg_result_file> \\
-        --methchg <meth_chg_result_file> \\
-        --methchh <meth_chh_result_file> \\
+        --methcg meth_cg_result_file \\
+        --methchg meth_chg_result_file \\
+        --methchh meth_chh_result_file \\
         --minhetfreq 0.1 \\
         --minhomfreq 0.85 \\
         --minquali 15 \\
