@@ -93,6 +93,13 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
+if (params.bssnper){
+    Channel
+        .fromPath(params.fasta, checkIfExists: true)
+        .ifEmpty{exit 1, "fasta file not found: ${params.fasta}"}
+        .into { ch_fasta_for_bssnper}
+}
+
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -555,7 +562,7 @@ if( params.aligner =~ /bismark/ ){
      * STEP 4 - Bismark deduplicate
      */
     if( params.skip_deduplication || params.rrbs ) {
-        ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap }
+        ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap; ch_bam_dedup_for_bssnper }
         ch_bismark_dedup_log_for_bismark_report = Channel.from(false)
         ch_bismark_dedup_log_for_bismark_summary = Channel.from(false)
         ch_bismark_dedup_log_for_multiqc  = Channel.from(false)
@@ -569,7 +576,7 @@ if( params.aligner =~ /bismark/ ){
             set val(name), file(bam) from ch_bam_for_bismark_deduplicate
 
             output:
-            set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap
+            set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap, ch_bam_dedup_for_bssnper
             set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
@@ -791,7 +798,7 @@ if( params.aligner == 'bwameth' ){
      * STEP 5 - Mark duplicates
      */
     if( params.skip_deduplication || params.rrbs ) {
-        ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
+        ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap; ch_bam_dedup_for_bssnper }
         ch_bam_index.set { ch_bam_index_for_methyldackel }
         ch_markDups_results_for_multiqc = Channel.from(false)
     } else {
@@ -804,7 +811,7 @@ if( params.aligner == 'bwameth' ){
             set val(name), file(bam) from ch_bam_sorted_for_markDuplicates
 
             output:
-            set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap
+            set val(name), file("${bam.baseName}.markDups.bam") into ch_bam_dedup_for_methyldackel, ch_bam_dedup_for_qualimap, ch_bam_dedup_for_bssnper
             set val(name), file("${bam.baseName}.markDups.bam.bai") into ch_bam_index_for_methyldackel //ToDo check if this correctly overrides the original channel
             file "${bam.baseName}.markDups_metrics.txt" into ch_markDups_results_for_multiqc
 
@@ -828,6 +835,42 @@ if( params.aligner == 'bwameth' ){
             """
         }
     }
+
+    /*
+     * Call SNPs with BS-SNP
+     */
+    if(params.bssnper){
+        process BSSNPer {
+            tag "$name"
+            publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode
+
+            input:
+            set val(name), file(bam) from ch_bam_dedup_for_bssnper
+            file(fasta) from ch_fasta_for_bssnper
+
+            output:
+            file("${bam}.bssnper_output")
+
+            script:
+            """
+            perl BS-Snper.pl $bam \\
+                --fa $fasta \\
+                --output ${bam}.bssnper_output \\
+                --methcg meth_cg_result_file \\
+                --methchg meth_chg_result_file \\
+                --methchh meth_chh_result_file \\
+                --minhetfreq 0.1 \\
+                --minhomfreq 0.85 \\
+                --minquali 15 \\
+                --mincover 10 \\
+                --maxcover 1000 \\
+                --minread2 2 \\
+                --errorate 0.02 \\
+                --mapvalue 20 >SNP.out 2>ERR.log
+            """
+        }
+    }
+
 
     /*
      * STEP 6 - extract methylation with MethylDackel
@@ -861,6 +904,7 @@ if( params.aligner == 'bwameth' ){
         MethylDackel mbias $all_contexts $ignore_flags $fasta $bam ${bam.baseName} --txt > ${bam.baseName}_methyldackel.txt
         """
     }
+
 
 } // end of bwa-meth if block
 else {
