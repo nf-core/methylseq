@@ -840,7 +840,7 @@ if( params.aligner == 'bwameth' ){
     if(params.bssnper){
         process BSSNPer {
             tag "$name"
-            publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
+            publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode
 
             input:
             set val(name), file(bam) from ch_bam_dedup_for_bssnper
