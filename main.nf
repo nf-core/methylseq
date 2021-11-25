@@ -562,7 +562,7 @@ if( params.aligner =~ /bismark/ ){
      * STEP 4 - Bismark deduplicate
      */
     if( params.skip_deduplication || params.rrbs ) {
-        ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap }
+        ch_bam_for_bismark_deduplicate.into { ch_bam_dedup_for_bismark_methXtract; ch_bam_dedup_for_qualimap; ch_bam_dedup_for_bssnper }
         ch_bismark_dedup_log_for_bismark_report = Channel.from(false)
         ch_bismark_dedup_log_for_bismark_summary = Channel.from(false)
         ch_bismark_dedup_log_for_multiqc  = Channel.from(false)
@@ -576,7 +576,7 @@ if( params.aligner =~ /bismark/ ){
             set val(name), file(bam) from ch_bam_for_bismark_deduplicate
 
             output:
-            set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap
+            set val(name), file("*.deduplicated.bam") into ch_bam_dedup_for_bismark_methXtract, ch_bam_dedup_for_qualimap, ch_bam_dedup_for_bssnper
             set val(name), file("*.deduplication_report.txt") into ch_bismark_dedup_log_for_bismark_report, ch_bismark_dedup_log_for_bismark_summary, ch_bismark_dedup_log_for_multiqc
 
             script:
@@ -793,10 +793,10 @@ if( params.aligner == 'bwameth' ){
     }
 
     /*
-     * STEP 5 - Mark duplicates (output modified to add ch_bam_dedup_for_bssnper)
+     * STEP 5 - Mark duplicates
      */
     if( params.skip_deduplication || params.rrbs ) {
-        ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap }
+        ch_bam_sorted_for_markDuplicates.into { ch_bam_dedup_for_methyldackel; ch_bam_dedup_for_qualimap; ch_bam_dedup_for_bssnper }
         ch_bam_index.set { ch_bam_index_for_methyldackel }
         ch_markDups_results_for_multiqc = Channel.from(false)
     } else {
