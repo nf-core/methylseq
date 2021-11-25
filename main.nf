@@ -93,6 +93,13 @@ else if( params.aligner == 'bwameth' ){
     }
 }
 
+if (params.bssnper){
+	Channel
+	    .fromPath(params.fasta, checkIfExists: true)
+	    .ifEmpty{exit 1, "fasta file not found: ${params.fasta}"}
+	    .into { ch_fasta_for_bssnper}
+}
+
 // Trimming / kit presets
 clip_r1 = params.clip_r1
 clip_r2 = params.clip_r2
@@ -827,23 +834,26 @@ if( params.aligner == 'bwameth' ){
         }
     }
     /*
-     * EXTRA STEP - Calling SNPs with BS-SNPer
-     * ToDo: --fa from script has a hard-coded location of a hg19 fasta file - make it generic!
+     * EXTRA STEP - Calling SNPs with BS-SNP
      */
+    if( params.bssnper){
+    
     process BSSNPer {
         tag "$name"
         publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
 
         input:
-        tuple val(name), file(bam) from ch_bam_dedup_for_bssnper
+        set val(name), 
+            file(bam) from ch_bam_dedup_for_bssnper, 
+            file(fasta) from ch_fasta_for_bssnper
 
         output:
-        tuple val(name), file("${bam}.bssnper_output") into end_ch
+        file("${bam}.bssnper_output")
 
         script:
         """
         perl BS-Snper.pl $bam \\
-        --fa /home/arodriguez/METHYLATION/hg19_ref.fa \\
+        --fa $fasta \\
         --output ${bam}.bssnper_output \\
         --methcg meth_cg_result_file \\
         --methchg meth_chg_result_file \\
@@ -858,7 +868,7 @@ if( params.aligner == 'bwameth' ){
         --mapvalue 20 >SNP.out 2>ERR.log
         """
         }
-
+    }
     /*
      * STEP 6 - extract methylation with MethylDackel
      */
