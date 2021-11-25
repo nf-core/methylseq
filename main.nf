@@ -844,7 +844,7 @@ if( params.aligner == 'bwameth' ){
 
         input:
         set val(name), 
-            file(bam) from ch_bam_dedup_for_bssnper, 
+            file(bam) from ch_bam_dedup_for_bssnper 
             file(fasta) from ch_fasta_for_bssnper
 
         output:
