@@ -833,41 +833,43 @@ if( params.aligner == 'bwameth' ){
             """
         }
     }
+
     /*
-     * EXTRA STEP - Calling SNPs with BS-SNP
+     * Call SNPs with BS-SNP
      */
-    if( params.bssnper){
-    
-    process BSSNPer {
-        tag "$name"
-        publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
+    if(params.bssnper){
+        process BSSNPer {
+            tag "$name"
+            publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
 
-        input:
-        set val(name), file(bam) from ch_bam_dedup_for_bssnper 
-        file(fasta) from ch_fasta_for_bssnper
+            input:
+            set val(name), file(bam) from ch_bam_dedup_for_bssnper
+            file(fasta) from ch_fasta_for_bssnper
 
-        output:
-        file("${bam}.bssnper_output")
+            output:
+            file("${bam}.bssnper_output")
 
-        script:
-        """
-        perl BS-Snper.pl $bam \\
-        --fa $fasta \\
-        --output ${bam}.bssnper_output \\
-        --methcg meth_cg_result_file \\
-        --methchg meth_chg_result_file \\
-        --methchh meth_chh_result_file \\
-        --minhetfreq 0.1 \\
-        --minhomfreq 0.85 \\
-        --minquali 15 \\
-        --mincover 10 \\
-        --maxcover 1000 \\
-        --minread2 2 \\
-        --errorate 0.02 \\
-        --mapvalue 20 >SNP.out 2>ERR.log
-        """
+            script:
+            """
+            perl BS-Snper.pl $bam \\
+                --fa $fasta \\
+                --output ${bam}.bssnper_output \\
+                --methcg meth_cg_result_file \\
+                --methchg meth_chg_result_file \\
+                --methchh meth_chh_result_file \\
+                --minhetfreq 0.1 \\
+                --minhomfreq 0.85 \\
+                --minquali 15 \\
+                --mincover 10 \\
+                --maxcover 1000 \\
+                --minread2 2 \\
+                --errorate 0.02 \\
+                --mapvalue 20 >SNP.out 2>ERR.log
+            """
         }
     }
+
+
     /*
      * STEP 6 - extract methylation with MethylDackel
      */
@@ -901,7 +903,7 @@ if( params.aligner == 'bwameth' ){
         """
     }
 
-    
+
 } // end of bwa-meth if block
 else {
     ch_flagstat_results_for_multiqc = Channel.from(false)
