@@ -94,10 +94,10 @@ else if( params.aligner == 'bwameth' ){
 }
 
 if (params.bssnper){
-	Channel
-	    .fromPath(params.fasta, checkIfExists: true)
-	    .ifEmpty{exit 1, "fasta file not found: ${params.fasta}"}
-	    .into { ch_fasta_for_bssnper}
+    Channel
+        .fromPath(params.fasta, checkIfExists: true)
+        .ifEmpty{exit 1, "fasta file not found: ${params.fasta}"}
+        .into { ch_fasta_for_bssnper}
 }
 
 // Trimming / kit presets
