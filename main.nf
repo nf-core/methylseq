@@ -843,9 +843,8 @@ if( params.aligner == 'bwameth' ){
         publishDir "${params.outdir}/bs-snper", mode: params.publish_dir_mode,
 
         input:
-        set val(name), 
-            file(bam) from ch_bam_dedup_for_bssnper 
-            file(fasta) from ch_fasta_for_bssnper
+        set val(name), file(bam) from ch_bam_dedup_for_bssnper 
+        file(fasta) from ch_fasta_for_bssnper
 
         output:
         file("${bam}.bssnper_output")
