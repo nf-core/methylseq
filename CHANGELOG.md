@@ -37,14 +37,14 @@ The parameter still works in the same way as before.
 * Renamed `--reads` to `--input`
 * Added new `--maxins` and `--minins` parameters to pass on to Bismark
 * New `--em_seq` preset
-  * Sets `bismark_maxins = 1000`, `clip_r1 = 8`, `clip_r2 = 8`, `three_prime_clip_r1 = 8`, `three_prime_clip_r2 = 8`
+    * Sets `bismark_maxins = 1000`, `clip_r1 = 8`, `clip_r2 = 8`, `three_prime_clip_r1 = 8`, `three_prime_clip_r2 = 8`
 * New `--publish_dir_mode` parameter to customise results folder behaviour
 * Fix bug on AWS for `bismark_hisat` known splice file ([#177](https://github.com/nf-core/methylseq/issues/177))
 * Moved parameter documentation into new `nextflow_schema.json` file
-  * This improves web documentation and enables `nf-core launch` functionality. See <https://nf-co.re/launch?pipeline=methylseq>
+    * This improves web documentation and enables `nf-core launch` functionality. See <https://nf-co.re/launch?pipeline=methylseq>
 * Added a `-profile test_full` config for running the pipeline with a full-size test dataset
-  * See [the config file](https://github.com/nf-core/methylseq/blob/dev/conf/test_full.config) for details
-  * This will be used for automated release tests on AWS, results browsable on the website
+    * See [the config file](https://github.com/nf-core/methylseq/blob/dev/conf/test_full.config) for details
+    * This will be used for automated release tests on AWS, results browsable on the website
 
 ### Software updates
 
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed bug where the iGenomes config was loaded after the references were set ([#121](https://github.com/nf-core/methylseq/issues/121))
 * Removed awsbatch config profile because it is now served by [nf-core/configs](https://github.com/nf-core/configs)
 * Tidied up the summary log messages when starting the pipeline
-  * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
+    * Fewer messages saying what you're _not_ doing, sanitised the order of some logs and removed a few things
 * Slightly refactored the code for trimming parameters
 * Updated template to tools 1.9
 
@@ -109,7 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added support for running bismark with HISAT2 as an aligner option [#85](https://github.com/nf-core/methylseq/issues/85)
 * Added support for centralized configuration profiles [nf-core/configs](https://github.com/nf-core/configs)
 * Add `--meth_cutoff` parameter to change default for `bismark_methylation_extractor`
-  * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
+    * eg. use `--meth_cutoff 5` on the command line or `params.meth_cutoff = 5` to require 5 overlapping reads to call a methylation site.
 * Added `--methyl_kit` option to run MethylDackel with the `--methylKit` flag, producing output suitable for the methylKit R package.
 
 ### Software updates
@@ -139,12 +139,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### New features
 
 * Added [preseq](http://smithlabresearch.org/software/preseq/) analysis to calculate sample complexity.
-  * This new step can help decide sufficient sequencing depth has been reached.
+    * This new step can help decide sufficient sequencing depth has been reached.
 
 ### Bug fixes
 
 * Fixed new bug that meant pipeline only worked with one sample at a time [#66](https://github.com/nf-core/methylseq/issues/66)
-  * Introduced in previous release. TrimGalore onwards would only process one sample.
+    * Introduced in previous release. TrimGalore onwards would only process one sample.
 
 ## [v1.2](https://github.com/nf-core/methylseq/releases/tag/1.2) - 2019-01-02
 
@@ -165,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug fixes
 
 * Fixed error when running the pipeline with `--unmapped`
-  * Previously, could result in error `Error ~ No such variable: bismark_unmapped`
+    * Previously, could result in error `Error ~ No such variable: bismark_unmapped`
 * Fixed error where single-sample reports could mix up log files [#48](https://github.com/nf-core/methylseq/issues/48)
 * Fixed bug in MultiQC process that skipped results from some tools
 * Supply available memory as argument to Picard MarkDuplicates
@@ -173,19 +173,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v1.1](https://github.com/nf-core/methylseq/releases/tag/1.1) - 2018-08-09
 
 * Tests simplified - now work by simply using the `test` config profile
-  * eg: `nextflow run nf-core/methylseq -profile test,docker`
-  * Removed previous `run_test.sh` script and data
+    * eg: `nextflow run nf-core/methylseq -profile test,docker`
+    * Removed previous `run_test.sh` script and data
 * New `Singularity` build script for direct compatibility with [singularity-hub](https://singularity-hub.org/)
 * Minor improvements to the docs
 * A number of boilerplate nf-core code updates
 * Updated `process$name` nextflow syntax to avoid warnings in new versions of nextflow
 * Updated software tools
-  * `trim-galore` `v0.4.5` update to `0.5.0`
-  * `samtools` `v1.8` update to `1.9`
-  * `bowtie2` `v2.3.4.1` update to `2.3.4.2`
-  * `multiqc` `v1.5` update to `1.6`
-  * `picard` `v2.18.2` update to `2.18.11`
-  * `bwameth` `v0.2.0` update to `0.2.2`
+    * `trim-galore` `v0.4.5` update to `0.5.0`
+    * `samtools` `v1.8` update to `1.9`
+    * `bowtie2` `v2.3.4.1` update to `2.3.4.2`
+    * `multiqc` `v1.5` update to `1.6`
+    * `picard` `v2.18.2` update to `2.18.11`
+    * `bwameth` `v0.2.0` update to `0.2.2`
 
 ## [v1.0](https://github.com/nf-core/methylseq/releases/tag/1.0) - 2018-04-17
 

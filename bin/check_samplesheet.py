@@ -133,9 +133,17 @@ def check_samplesheet(file_in, file_out):
         make_dir(out_dir)
         with open(file_out, "w") as fout:
             fout.write(",".join(['sample', 'single_end', 'fastq_1', 'fastq_2', 'genome']) + "\n")
-            for sample_id, sample_info in sorted(sample_mapping_dict.items()):
-                ## Write to file
-                fout.write(','.join([sample_id] + sample_info) + '\n')
+            # for sample_id, sample_info in sorted(sample_mapping_dict.items()):
+            #     ## Write to file
+            #     fout.write(','.join([sample_id] + sample_info) + '\n')
+            for sample in sorted(sample_mapping_dict.keys()):
+
+                ## Check that multiple runs of the same sample are of the same datatype
+                if not all(x[0] == sample_mapping_dict[sample][0][0] for x in sample_mapping_dict[sample]):
+                    print_error("Multiple runs of a sample must be of the same datatype!", "Sample: {}".format(sample))
+
+                for idx, val in enumerate(sample_mapping_dict[sample]):
+                    fout.write(",".join(["{}_T{}".format(sample, idx + 1)] + val) + "\n")
     else:
         print_error("No entries to process!", "Samplesheet: {}".format(file_in))
 

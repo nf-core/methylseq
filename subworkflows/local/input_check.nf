@@ -1,26 +1,26 @@
-/*
- * Check input samplesheet and get read channels
- */
+//
+// Check input samplesheet and get read channels
+//
 
-params.options = [:]
-
-include { SAMPLESHEET_CHECK } from '../../modules/local/samplesheet_check' addParams( options: params.options )
+include { SAMPLESHEET_CHECK } from '../../modules/local/samplesheet_check'
 
 workflow INPUT_CHECK {
     take:
     samplesheet // file: /path/to/samplesheet.csv
-    
+
     main:
     SAMPLESHEET_CHECK ( samplesheet )
+        .csv
         .splitCsv ( header:true, sep:',' )
         .set { sample }
-        
+
     reads = sample.map { get_samplesheet_paths(it) }
     genome = sample.map { get_genome_paths(it, params.genomes) }
 
     emit:
-    reads // channel: [ val(meta), [ reads ] ]
-    genome // channel: [ val(meta), [ fasta ] ]
+    reads                                     // channel: [ val(meta), [ reads ] ]
+    genome                                    // channel: [ val(meta), [ fasta ] ]
+    versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
 // Function to get a HashMap with id and single_end fields
@@ -71,8 +71,8 @@ def get_genome_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
             genome.fasta = file(sample.genome, checkIfExists: true)
         }
     } else if ( params.fasta ) {
-      // samplesheet does not contain genome column, fall back to params.fasta
-      genome.fasta = file(params.fasta, checkIfExists: true)
+        // samplesheet does not contain genome column, fall back to params.fasta
+        genome.fasta = file(params.fasta, checkIfExists: true)
     } else {
         exit 1, "ERROR: Please either supply a fasta file with --fasta or specify genome column in the samplesheet"
     }

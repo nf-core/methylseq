@@ -9,29 +9,32 @@ on:
   release:
     types: [published]
 
-# Uncomment if we need an edge release of Nextflow again
-# env: NXF_EDGE: 1
+env:
+  NXF_ANSI_LOG: false
+  CAPSULE_LOG: none
 
 jobs:
   test:
-    name: workflow
+    name: Run pipeline with test data
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}
     runs-on: ubuntu-latest
-    env:
-      NXF_VER: ${{ matrix.nxf_ver }}
-      NXF_ANSI_LOG: false
     strategy:
       matrix:
-        # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['20.07.1', '']
-        aligner: ['bismark', 'bismark_hisat', 'bwameth']
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
+        # Nextflow versions
         include:
-          - aligner: 'bismark'
+          # Test pipeline minimum Nextflow version
+          - NXF_VER: "21.10.3"
+            NXF_EDGE: ""
+          # Test latest edge release of Nextflow
+          - NXF_VER: ""
+            NXF_EDGE: "1"
+          - aligner: "bismark"
             ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bismark_hisat'
+          - aligner: "bismark_hisat"
             ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bwameth'
+          - aligner: "bwameth"
             ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Check out pipeline code
@@ -39,7 +42,10 @@ jobs:
 
       - name: Install Nextflow
         env:
-          CAPSULE_LOG: none
+          NXF_VER: ${{ matrix.NXF_VER }}
+          # Uncomment only if the edge release is more recent than the latest stable release
+          # See https://github.com/nextflow-io/nextflow/issues/2467
+          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
