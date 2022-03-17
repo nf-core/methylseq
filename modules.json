@@ -51,6 +51,9 @@
             "qualimap/bamqc": {
                 "git_sha": "e31f1ff3b1375b30db08637d8937e25cc046f3cc"
             },
+            "qualimap/bamqccram": {
+                "git_sha": "950700bcdc0e9a2b6883d40d2c51c6fc435cd714"
+            },
             "samtools/faidx": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
             },

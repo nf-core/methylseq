@@ -725,6 +725,9 @@
             "$ref": "#/definitions/generic_options"
         },
         {
+            "$ref": "#/definitions/institutional_config_options"
+        },
+        {
             "$ref": "#/definitions/max_job_request_options"
         },
         {
