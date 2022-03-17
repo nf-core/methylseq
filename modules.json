@@ -3,14 +3,71 @@
     "homePage": "https://github.com/nf-core/methylseq",
     "repos": {
         "nf-core/modules": {
+            "bismark/align": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bismark/deduplicate": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bismark/genomepreparation": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bismark/methylationextractor": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bismark/report": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bismark/summary": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bwameth/align": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "bwameth/index": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
             "custom/dumpsoftwareversions": {
-                "git_sha": "20d8250d9f39ddb05dfb437603aaf99b5c0b2b41"
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
             "fastqc": {
-                "git_sha": "9d0cad583b9a71a6509b754fdf589cbfbed08961"
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "methyldackel/extract": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "methyldackel/mbias": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
             "multiqc": {
-                "git_sha": "20d8250d9f39ddb05dfb437603aaf99b5c0b2b41"
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "picard/markduplicates": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "preseq/lcextrap": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "qualimap/bamqc": {
+                "git_sha": "e31f1ff3b1375b30db08637d8937e25cc046f3cc"
+            },
+            "samtools/faidx": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/flagstat": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/index": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/sort": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/stats": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "trimgalore": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             }
         }
     }
