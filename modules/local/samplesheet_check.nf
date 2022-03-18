@@ -14,8 +14,10 @@ process SAMPLESHEET_CHECK {
     path "versions.yml", emit: versions
 
     script: // This script is bundled with the pipeline, in nf-core/methylseq/bin/
+    def reference = params.fasta ? "--genome ${params.fasta}" : ""
     """
     check_samplesheet.py \\
+        $reference \\
         $samplesheet \\
         samplesheet.valid.csv
 
