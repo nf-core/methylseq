@@ -7,7 +7,7 @@ class Workflow {
     // Citation string
     private static String citation(workflow) {
         return "If you use ${workflow.manifest.name} for your analysis please cite:\n\n" +
-               "* The pipeline\n" + 
+               "* The pipeline\n" +
                "  https://doi.org/10.5281/zenodo.1343417\n\n" +
                "* The nf-core framework\n" +
                "  https://doi.org/10.1038/s41587-020-0439-x\n\n" +
@@ -35,10 +35,10 @@ class Workflow {
     static void validateWorkflowParams(params, log) {
         genomeExists(params, log)
 
-        if (!params.fasta) { 
-            log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
-            System.exit(1)
-        }
+        // if (!params.fasta) {
+        //     log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
+        //     System.exit(1)
+        // }
     }
 
     // Exit pipeline if incorrect --genome key provided
@@ -62,7 +62,7 @@ class Workflow {
             }
         }
         return val
-    }   
+    }
 
     /*
      * Get workflow summary for MultiQC
@@ -89,5 +89,5 @@ class Workflow {
         yaml_file_text        += "data: |\n"
         yaml_file_text        += "${summary_section}"
         return yaml_file_text
-    } 
+    }
 }
