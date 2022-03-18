@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-
-# TODO nf-core: Update the script to check the samplesheet
-# This script is based on the example at: https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
-
 import os
 import sys
 import errno
@@ -11,9 +7,10 @@ import argparse
 
 def parse_args(args=None):
     Description = "Reformat nf-core/methylseq samplesheet file and check its contents."
-    Epilog = "Example usage: python check_samplesheet.py <FILE_IN> <FILE_OUT>"
+    Epilog = "Example usage: python check_samplesheet.py -g genome.fa <FILE_IN> <FILE_OUT>"
 
     parser = argparse.ArgumentParser(description=Description, epilog=Epilog)
+    parser.add_argument("-g", "--genome", help="Override genome for all input files")
     parser.add_argument("FILE_IN", help="Input samplesheet file.")
     parser.add_argument("FILE_OUT", help="Output file.")
     return parser.parse_args(args)
@@ -38,7 +35,7 @@ def print_error(error, context="Line", context_str=""):
     sys.exit(1)
 
 
-def check_samplesheet(file_in, file_out):
+def check_samplesheet(override_genome, file_in, file_out):
     """
     This function checks that the samplesheet follows the following structure:
 
@@ -56,10 +53,14 @@ def check_samplesheet(file_in, file_out):
 
         ## Check header
         MIN_COLS = 2
-        HEADER = ['sample', 'fastq_1', 'fastq_2', 'genome']
+        HEADER = ['sample', 'fastq_1', 'fastq_2'] if override_genome else ['sample', 'fastq_1', 'fastq_2', 'genome']
         header = [x.strip('"') for x in fin.readline().strip().split(",")]
         if header[:len(HEADER)] != HEADER:
-            print("ERROR: Please check samplesheet header -> {} != {}".format(",".join(header), ",".join(HEADER)))
+            try:
+                header.index('genome')
+                print("ERROR: Please check samplesheet header -> {} != {}".format(",".join(header), ",".join(HEADER)))
+            except ValueError:
+                print('Reference not provided via --genome argument, nor specified per sample. Please specify one genome for all samples (using --genome option) or specify a reference for each sample in the samplesheet.')
             sys.exit(1)
 
         ## Check sample entries
@@ -82,7 +83,10 @@ def check_samplesheet(file_in, file_out):
                 )
 
             ## Check sample name entries
-            sample, fastq_1, fastq_2, genome = lspl[: len(HEADER)]
+            if override_genome:
+                sample, fastq_1, fastq_2, genome = lspl[: len(HEADER)] + [override_genome]
+            else:
+                sample, fastq_1, fastq_2, genome = lspl[: len(HEADER)]
             if sample:
                 if sample.find(" ") != -1:
                     print_error("Sample entry contains spaces!", "Line", line)
@@ -120,7 +124,7 @@ def check_samplesheet(file_in, file_out):
 
             ## Create sample mapping dictionary = {sample: [ single_end, fastq_1, fastq_2, genome ]}
             if sample not in sample_mapping_dict:
-                sample_mapping_dict[sample] = sample_info
+                sample_mapping_dict[sample] = [sample_info]
             else:
                 if sample_info in sample_mapping_dict[sample]:
                     print_error("Samplesheet contains duplicate rows!", "Line", line)
@@ -133,14 +137,15 @@ def check_samplesheet(file_in, file_out):
         make_dir(out_dir)
         with open(file_out, "w") as fout:
             fout.write(",".join(['sample', 'single_end', 'fastq_1', 'fastq_2', 'genome']) + "\n")
-            # for sample_id, sample_info in sorted(sample_mapping_dict.items()):
-            #     ## Write to file
-            #     fout.write(','.join([sample_id] + sample_info) + '\n')
             for sample in sorted(sample_mapping_dict.keys()):
 
                 ## Check that multiple runs of the same sample are of the same datatype
                 if not all(x[0] == sample_mapping_dict[sample][0][0] for x in sample_mapping_dict[sample]):
                     print_error("Multiple runs of a sample must be of the same datatype!", "Sample: {}".format(sample))
+
+                ## Check that multiple runs of the same sample have the same reference
+                if not all(x[3] == sample_mapping_dict[sample][0][3] for x in sample_mapping_dict[sample]):
+                    print_error("Multiple runs of a sample must have the same reference!", "Sample: {}".format(sample))
 
                 for idx, val in enumerate(sample_mapping_dict[sample]):
                     fout.write(",".join(["{}_T{}".format(sample, idx + 1)] + val) + "\n")
@@ -150,7 +155,7 @@ def check_samplesheet(file_in, file_out):
 
 def main(args=None):
     args = parse_args(args)
-    check_samplesheet(args.FILE_IN, args.FILE_OUT)
+    check_samplesheet(args.genome, args.FILE_IN, args.FILE_OUT)
 
 
 if __name__ == "__main__":
