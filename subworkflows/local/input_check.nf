@@ -14,12 +14,10 @@ workflow INPUT_CHECK {
         .splitCsv ( header:true, sep:',' )
         .set { sample }
 
-    reads = sample.map { get_samplesheet_paths(it) }
-    genome = sample.map { get_genome_paths(it, params.genomes) }
+    reads = sample.map { get_samplesheet_paths(it, params.genomes) }
 
     emit:
-    reads                                     // channel: [ val(meta), [ reads ] ]
-    genome                                    // channel: [ val(meta), [ fasta ] ]
+    reads                                     // channel: [ val(meta), [ reads ], [ genome.fa ] ]
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
@@ -32,28 +30,14 @@ def get_metamap(LinkedHashMap sample) {
     return meta
 }
 
-// Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
-def get_samplesheet_paths(LinkedHashMap sample) {
-    def meta = get_metamap(sample)
-
+// Function to get list of [meta, [ fastq_1, fastq_2 ], genome ]
+def get_samplesheet_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
     if (!file(sample.fastq_1).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${sample.fastq_1}"
     }
-    if (meta.single_end) {
-        return [ meta, [ file(sample.fastq_1) ] ]
-    } else {
-        if (!file(sample.fastq_2).exists()) {
-            exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${sample.fastq_2}"
-        }
-        return [ meta, [ file(sample.fastq_1), file(sample.fastq_2) ] ]
-    }
-}
-
-// Function to get list of [ meta, genome ]
-def get_genome_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
-    def meta = get_metamap(sample)
 
     def genome = [:]
+    def meta = get_metamap(sample)
 
     if (sample.genome) {
         if (genomeMap && genomeMap.containsKey(sample.genome)) {
@@ -76,6 +60,12 @@ def get_genome_paths(LinkedHashMap sample, LinkedHashMap genomeMap) {
     } else {
         exit 1, "ERROR: Please either supply a fasta file with --fasta or specify genome column in the samplesheet"
     }
-
-    return [ meta, genome ]
+    if (meta.single_end) {
+        return [ meta, [ file(sample.fastq_1) ], genome ]
+    } else {
+        if (!file(sample.fastq_2).exists()) {
+            exit 1, "ERROR: Please check input samplesheet -> Read 2 FastQ file does not exist!\n${sample.fastq_2}"
+        }
+        return [ meta, [ file(sample.fastq_1), file(sample.fastq_2) ], genome ]
+    }
 }
