@@ -118,8 +118,7 @@ workflow METHYLSEQ {
     )
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
-    // INPUT_CHECK.out.reads has this structure:
-    // channel: [ val(meta), [ reads ], [ genome.fa ] ]
+
 
     //
     // MODULE: Run FastQC
@@ -129,28 +128,27 @@ workflow METHYLSEQ {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
-    // if (!params.skip_trimming) {
-    //     /*
-    //     * MODULE: Run TrimGalore!
-    //     */
-    //     TRIMGALORE(INPUT_CHECK.out.reads)
+    if (!params.skip_trimming) {
+        /*
+        * MODULE: Run TrimGalore!
+        */
+        TRIMGALORE(INPUT_CHECK.out.reads)
 
-    //     reads = TRIMGALORE.out.reads
-    //     ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
-    // } else {
-    //     reads = INPUT_CHECK.out.reads
-    // }
+        reads = TRIMGALORE.out.reads
+        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
+    } else {
+        reads = INPUT_CHECK.out.reads
+    }
 
 
 
-    // /*
-    //  * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
-    //  */
-    // ALIGNER (
-    //     INPUT_CHECK.out.genome,
-    //     reads
-    // )
-    // ch_versions = ch_versions.mix(ALIGNER.out.versions.unique{ it.baseName })
+    /*
+     * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
+     */
+    ALIGNER (
+        reads
+    )
+    ch_versions = ch_versions.mix(ALIGNER.out.versions.unique{ it.baseName })
 
     // /*
     //  * MODULE: Qualimap BamQC

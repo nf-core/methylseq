@@ -12,7 +12,6 @@ include { BISMARK_SUMMARY              } from '../../modules/nf-core/modules/bis
 
 workflow BISMARK {
     take:
-    genome // channel: [ val(meta), [ genome ] ]
     reads  // channel: [ val(meta), [ reads ] ]
 
     main:
@@ -20,23 +19,11 @@ workflow BISMARK {
      * Generate bismark index if not supplied
      */
 
-    // there might be indices from user input
-    // branch them into different channels
-    genome
-        .branch{ meta, genome ->
-            have_index: genome.containsKey('bismark_index')
-                return [meta, genome.bismark_index]
-            need_index: !genome.containsKey('bismark_index')
-                return [meta, genome.fasta]
-        }
-        .set{ch_genome}
+    if (!params.genome || !params.genome.containsKey('bismarkIndex')) {
+        BISMARK_GENOMEPREPARATION(params.fasta)
+    }
 
-    // group by unique fastas, so that we only index each genome once
-    ch_genome.need_index.groupTuple(by:1) | view | BISMARK_GENOMEPREPARATION
-
-    // reverse groupTuple to restore the cardinality of the input channel
-    // then join back with pre-existing indices
-    bismark_index = BISMARK_GENOMEPREPARATION.out.index | transpose | mix(ch_genome.have_index)
+    bismark_index = (!params.genome || !params.genome.containsKey('bismarkIndex')) ? BISMARK_GENOMEPREPARATION.out.index : params.genome.bismarkIndex
 
     /*
      * Align with bismark
