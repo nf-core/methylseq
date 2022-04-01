@@ -31,7 +31,7 @@
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
             "fastqc": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "methyldackel/extract": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
@@ -40,34 +40,34 @@
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
             "multiqc": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "picard/markduplicates": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "preseq/lcextrap": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                "git_sha": "7111e571cc5b6069de4673cd6165af680f17b4d7"
             },
             "qualimap/bamqc": {
-                "git_sha": "e31f1ff3b1375b30db08637d8937e25cc046f3cc"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "qualimap/bamqccram": {
                 "git_sha": "950700bcdc0e9a2b6883d40d2c51c6fc435cd714"
             },
             "samtools/faidx": {
-                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "samtools/flagstat": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
             },
             "samtools/index": {
-                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "samtools/sort": {
-                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "samtools/stats": {
-                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "trimgalore": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
