@@ -1,4 +1,4 @@
-# ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_light.png#gh-light-mode-only) ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_dark.png#gh-dark-mode-only)
+# ![nf-core/methylseq](docs/images/nf-core/methylseq_logo_light.png#gh-light-mode-only) ![nf-core/methylseq](docs/images/nf-core/methylseq_logo_dark.png#gh-dark-mode-only)
 
 [![GitHub Actions CI Status](https://github.com/nf-core/methylseq/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+CI%22)
 [![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+linting%22)
@@ -45,13 +45,13 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 
 1. Install [`Nextflow`](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=21.10.3`)
 
-2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(please only use [`Conda`](https://conda.io/miniconda.html) as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_
+2. Install any of [`Docker`](https://docs.docker.com/engine/installation/), [`Singularity`](https://www.sylabs.io/guides/3.0/user-guide/) (you can follow [this tutorial](https://singularity-tutorial.github.io/01-installation/)), [`Podman`](https://podman.io/), [`Shifter`](https://nersc.gitlab.io/development/shifter/how-to-use/) or [`Charliecloud`](https://hpc.github.io/charliecloud/) for full pipeline reproducibility _(you can use [`Conda`](https://conda.io/miniconda.html) both to install Nextflow itself and also to manage software within pipelines. Please only use it within pipelines as a last resort; see [docs](https://nf-co.re/usage/configuration#basic-configuration-profiles))_.
 
 3. Download the pipeline and test it on a minimal dataset with a single command:
 
-    ```console
-    nextflow run nf-core/methylseq -profile test,YOURPROFILE --outdir <OUTDIR>
-    ```
+   ```console
+   nextflow run nf-core/methylseq -profile test,YOURPROFILE --outdir <OUTDIR>
+   ```
 
     * Please check [nf-core/configs](https://github.com/nf-core/configs#documentation) to see if a custom config file to run nf-core pipelines already exists for your Institute. If so, you can simply use `-profile <institute>` in your command. This will enable either `docker` or `singularity` and set the appropriate execution settings for your local compute environment.
     * If you are using `singularity` then the pipeline will auto-detect this and attempt to download the Singularity images directly as opposed to performing a conversion from Docker images. If you are persistently observing issues downloading Singularity images directly due to timeout or network issues then please use the `--singularity_pull_docker_container` parameter to pull and convert the Docker image instead. It is also highly recommended to use the [`NXF_SINGULARITY_CACHEDIR` or `singularity.cacheDir`](https://www.nextflow.io/docs/latest/singularity.html?#singularity-docker-hub) settings to store the images in a central location for future pipeline runs.
@@ -93,6 +93,7 @@ If you use  nf-core/methylseq for your analysis, please cite it using the follow
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
 <!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
+
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
 You can cite the `nf-core` publication as follows:
