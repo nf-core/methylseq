@@ -150,54 +150,53 @@ workflow METHYLSEQ {
     )
     ch_versions = ch_versions.mix(ALIGNER.out.versions.unique{ it.baseName })
 
-    // /*
-    //  * MODULE: Qualimap BamQC
-    //  */
-    // QUALIMAP_BAMQC (
-    //     ALIGNER.out.dedup,
-    //     []
-    // )
-    // ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    /*
+     * MODULE: Qualimap BamQC
+     */
+    QUALIMAP_BAMQC (
+        ALIGNER.out.dedup,
+        []
+    )
+    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
-    // /*
-    //  * MODULE: Run Preseq
-    //  */
-    // PRESEQ_LCEXTRAP (
-    //     ALIGNER.out.bam
-    // )
-    // ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
+    /*
+     * MODULE: Run Preseq
+     */
+    PRESEQ_LCEXTRAP (
+        ALIGNER.out.bam
+    )
+    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
 
-    // CUSTOM_DUMPSOFTWAREVERSIONS (
-    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    // )
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 
-    // //
-    // // MODULE: MultiQC
-    // //
-    // if (!params.skip_multiqc) {
-    //     workflow_summary    = WorkflowMethylseq.paramsSummaryMultiqc(workflow, summary_params)
-    //     ch_workflow_summary = Channel.value(workflow_summary)
+    //
+    // MODULE: MultiQC
+    //
+    if (!params.skip_multiqc) {
+        workflow_summary    = WorkflowMethylseq.paramsSummaryMultiqc(workflow, summary_params)
+        ch_workflow_summary = Channel.value(workflow_summary)
 
-    //     ch_multiqc_files = Channel.empty()
-    //     ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
-    //     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
-    //     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    //     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    //     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
-    //     ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-    //     ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.ccurve.collect{ it[1] }.ifEmpty([]))
-    //     ch_multiqc_files = ch_multiqc_files.mix(ALIGNER.out.mqc.ifEmpty([]))
+        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = ch_multiqc_files.mix(Channel.from(ch_multiqc_config))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+        ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
+        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ALIGNER.out.mqc.ifEmpty([]))
+        if (!params.skip_trimming) {
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 
-    //     if (!params.skip_trimming) {
-    //         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
-    //     }
-
-    //     MULTIQC (
-    //         ch_multiqc_files.collect()
-    //     )
-    //     multiqc_report = MULTIQC.out.report.toList()
-    //     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
-    // }
+        MULTIQC (
+            ch_multiqc_files.collect()
+        )
+        multiqc_report = MULTIQC.out.report.toList()
+        ch_versions    = ch_versions.mix(MULTIQC.out.versions)
+    }
 }
 
 /*
