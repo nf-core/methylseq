@@ -12,16 +12,16 @@ The output directories listed below will be created in the results directory aft
 
 The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes data using the following steps:
 
-* [FastQC](#fastqc) - Raw read QC
-* [TrimGalore](#trimgalore) - Adapter trimming
-* [Alignment](#alignment) - Aligning reads to reference genome
-* [Deduplication](#deduplication) - Deduplicating reads
-* [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
-* [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
-* [Qualimap](#qualimap) - Tool for genome alignments QC
-* [Preseq](#preseq) - Tool for estimating sample complexity
-* [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
-* [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
+- [FastQC](#fastqc) - Raw read QC
+- [TrimGalore](#trimgalore) - Adapter trimming
+- [Alignment](#alignment) - Aligning reads to reference genome
+- [Deduplication](#deduplication) - Deduplicating reads
+- [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
+- [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
+- [Qualimap](#qualimap) - Tool for genome alignments QC
+- [Preseq](#preseq) - Tool for estimating sample complexity
+- [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
+- [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
 ### FastQC
 
@@ -58,13 +58,13 @@ MultiQC reports the percentage of bases removed by Cutadapt in the _General Stat
 
 Contains FastQ files with quality and adapter trimmed reads for each sample, along with a log file describing the trimming.
 
-* `sample_val_1.fq.gz`, `sample_val_2.fq.gz`
-    * Trimmed FastQ data, reads 1 and 2.
-    * **NB:** Only saved if `--save_trimmed` has been specified.
-* `logs/sample_val_1.fq.gz_trimming_report.txt`
-    * Trimming report (describes which parameters that were used)
-* `FastQC/sample_val_1_fastqc.zip`
-    * FastQC report for trimmed reads
+- `sample_val_1.fq.gz`, `sample_val_2.fq.gz`
+  - Trimmed FastQ data, reads 1 and 2.
+  - **NB:** Only saved if `--save_trimmed` has been specified.
+- `logs/sample_val_1.fq.gz_trimming_report.txt`
+  - Trimming report (describes which parameters that were used)
+- `FastQC/sample_val_1_fastqc.zip`
+  - FastQC report for trimmed reads
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
 
@@ -75,30 +75,30 @@ Bismark and bwa-meth convert all Cytosines contained within the sequenced reads 
 **Bismark output directory: `results/bismark_alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
 
-* `sample.bam`
-    * Aligned reads in BAM format.
-    * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-* `logs/sample_PE_report.txt`
-    * Log file giving summary statistics about alignment.
-* `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
-    * Unmapped reads in FastQ format.
-    * Only saved if `--unmapped` specified when running the pipeline.
+- `sample.bam`
+  - Aligned reads in BAM format.
+  - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+- `logs/sample_PE_report.txt`
+  - Log file giving summary statistics about alignment.
+- `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
+  - Unmapped reads in FastQ format.
+  - Only saved if `--unmapped` specified when running the pipeline.
 
 **bwa-meth output directory: `results/bwa-mem_alignments/`**
 
-* `sample.bam`
-    * Aligned reads in BAM format.
-    * **NB:** Only saved if `--save_align_intermeds` is used
-* `sample.sorted.bam`
-    * Aligned reads in a sorted BAM file.
-    * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-* `sample.sorted.bam.bai`
-    * Index of sorted BAM file
-    * **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-* `logs/sample_flagstat.txt`
-    * Summary file describing the number of reads which aligned in different ways.
-* `logs/sample_stats.txt`
-    * Summary file giving lots of metrics about the aligned BAM file.
+- `sample.bam`
+  - Aligned reads in BAM format.
+  - **NB:** Only saved if `--save_align_intermeds` is used
+- `sample.sorted.bam`
+  - Aligned reads in a sorted BAM file.
+  - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+- `sample.sorted.bam.bai`
+  - Index of sorted BAM file
+  - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+- `logs/sample_flagstat.txt`
+  - Summary file describing the number of reads which aligned in different ways.
+- `logs/sample_stats.txt`
+  - Summary file giving lots of metrics about the aligned BAM file.
 
 ### Deduplication
 
@@ -106,21 +106,21 @@ This step removes alignments with identical mapping position to avoid technical 
 
 **Bismark output directory: `results/bismark_deduplicated/`**
 
-* `deduplicated.bam`
-    * BAM file with only unique alignments.
-* `logs/deduplication_report.txt`
-    * Log file giving summary statistics about deduplication.
+- `deduplicated.bam`
+  - BAM file with only unique alignments.
+- `logs/deduplication_report.txt`
+  - Log file giving summary statistics about deduplication.
 
 **bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
 
 > **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
 
-* `sample.sorted.markDups.bam`
-    * BAM file with only unique alignments.
-* `sample.sorted.markDups.bam.bai`
-    * Index for markDups BAM file.
-* `logs/sample.sorted.markDups_metrics.txt`
-    * Log file giving summary statistics about deduplication.
+- `sample.sorted.markDups.bam`
+  - BAM file with only unique alignments.
+- `sample.sorted.markDups.bam.bai`
+  - Index for markDups BAM file.
+- `logs/sample.sorted.markDups_metrics.txt`
+  - Log file giving summary statistics about deduplication.
 
 ### Methylation Extraction
 
@@ -130,30 +130,30 @@ Note that the output may vary a little depending on whether you specify `--compr
 
 Filename abbreviations stand for the following reference alignment strands:
 
-* `OT` - original top strand
-* `OB` - original bottom strand
-* `CTOT` - complementary to original top strand
-* `CTOB` - complementary to original bottom strand
+- `OT` - original top strand
+- `OB` - original bottom strand
+- `CTOT` - complementary to original top strand
+- `CTOB` - complementary to original bottom strand
 
 **Bismark output directory: `results/bismark_methylation_calls/`**
 
 > **NB:** `CTOT` and `CTOB` are not aligned unless `--non_directional` specified.
 
-* `methylation_calls/XXX_context_sample.txt.gz`
-    * Individual methylation calls, sorted into files according to cytosine context.
-* `methylation_coverage/sample.bismark.cov.gz`
-    * Coverage text file summarising cytosine methylation values.
-* `bedGraph/sample.bedGraph.gz`
-    * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates.
-* `m-bias/sample.M-bias.txt`
-    * QC data showing methylation bias across read lengths. See the [bismark documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#m-bias-plot) for more information.
-* `logs/sample_splitting_report.txt`
-    * Log file giving summary statistics about methylation extraction.
+- `methylation_calls/XXX_context_sample.txt.gz`
+  - Individual methylation calls, sorted into files according to cytosine context.
+- `methylation_coverage/sample.bismark.cov.gz`
+  - Coverage text file summarising cytosine methylation values.
+- `bedGraph/sample.bedGraph.gz`
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates.
+- `m-bias/sample.M-bias.txt`
+  - QC data showing methylation bias across read lengths. See the [bismark documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#m-bias-plot) for more information.
+- `logs/sample_splitting_report.txt`
+  - Log file giving summary statistics about methylation extraction.
 
 **bwa-meth workflow output directory: `results/MethylDackel/`**
 
-* `sample.bedGraph`
-    * Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
+- `sample.bedGraph`
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
 ### Bismark Reports
 
@@ -169,10 +169,10 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 
 **Output directory: `results/qualimap`**
 
-* `sample/qualimapReport.html`
-    * Qualimap HTML report
-* `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
-    * Text-based statistics that can be loaded into downstream programs
+- `sample/qualimapReport.html`
+  - Qualimap HTML report
+- `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
+  - Text-based statistics that can be loaded into downstream programs
 
 ## Preseq
 
@@ -182,8 +182,8 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 
 **Output directory: `results/preseq`**
 
-* `sample_ccurve.txt`
-    * This file contains plot values for the complexity curve, plotted in the MultiQC report.
+- `sample_ccurve.txt`
+  - This file contains plot values for the complexity curve, plotted in the MultiQC report.
 
 ### MultiQC
 

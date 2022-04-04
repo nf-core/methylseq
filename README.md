@@ -28,7 +28,7 @@ The pipeline allows you to choose between running either [Bismark](https://githu
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
 | Step                                         | Bismark workflow | bwa-meth workflow     |
-|----------------------------------------------|------------------|-----------------------|
+| -------------------------------------------- | ---------------- | --------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
 | Raw data QC                                  | FastQC           | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
@@ -53,15 +53,15 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
    nextflow run nf-core/methylseq -profile test,YOURPROFILE --outdir <OUTDIR>
    ```
 
-    * Please check [nf-core/configs](https://github.com/nf-core/configs#documentation) to see if a custom config file to run nf-core pipelines already exists for your Institute. If so, you can simply use `-profile <institute>` in your command. This will enable either `docker` or `singularity` and set the appropriate execution settings for your local compute environment.
-    * If you are using `singularity` then the pipeline will auto-detect this and attempt to download the Singularity images directly as opposed to performing a conversion from Docker images. If you are persistently observing issues downloading Singularity images directly due to timeout or network issues then please use the `--singularity_pull_docker_container` parameter to pull and convert the Docker image instead. It is also highly recommended to use the [`NXF_SINGULARITY_CACHEDIR` or `singularity.cacheDir`](https://www.nextflow.io/docs/latest/singularity.html?#singularity-docker-hub) settings to store the images in a central location for future pipeline runs.
-    * If you are using `conda`, it is highly recommended to use the [`NXF_CONDA_CACHEDIR` or `conda.cacheDir`](https://www.nextflow.io/docs/latest/conda.html) settings to store the environments in a central location for future pipeline runs.
+   - Please check [nf-core/configs](https://github.com/nf-core/configs#documentation) to see if a custom config file to run nf-core pipelines already exists for your Institute. If so, you can simply use `-profile <institute>` in your command. This will enable either `docker` or `singularity` and set the appropriate execution settings for your local compute environment.
+   - If you are using `singularity` then the pipeline will auto-detect this and attempt to download the Singularity images directly as opposed to performing a conversion from Docker images. If you are persistently observing issues downloading Singularity images directly due to timeout or network issues then please use the `--singularity_pull_docker_container` parameter to pull and convert the Docker image instead. It is also highly recommended to use the [`NXF_SINGULARITY_CACHEDIR` or `singularity.cacheDir`](https://www.nextflow.io/docs/latest/singularity.html?#singularity-docker-hub) settings to store the images in a central location for future pipeline runs.
+   - If you are using `conda`, it is highly recommended to use the [`NXF_CONDA_CACHEDIR` or `conda.cacheDir`](https://www.nextflow.io/docs/latest/conda.html) settings to store the environments in a central location for future pipeline runs.
 
 4. Start running your own analysis!
 
-    ```bash
-    nextflow run nf-core/methylseq -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --genome GRCh37
-    ```
+   ```bash
+   nextflow run nf-core/methylseq -profile <docker/singularity/podman/shifter/charliecloud/conda/institute> --input samplesheet.csv --genome GRCh37
+   ```
 
 See [usage docs](https://nf-co.re/methylseq/usage) for all of the available options when running the pipeline.
 
@@ -73,12 +73,12 @@ The nf-core/methylseq pipeline comes with documentation about the pipeline: [usa
 
 These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
 
-* Main author:
-    * Phil Ewels ([@ewels](https://github.com/ewels/))
-* Contributors:
-    * Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
-    * Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
-    * Patrick Hüther ([@phue](https://github.com/phue/))
+- Main author:
+  - Phil Ewels ([@ewels](https://github.com/ewels/))
+- Contributors:
+  - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
+  - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
+  - Patrick Hüther ([@phue](https://github.com/phue/))
 
 ## Contributions and Support
 
@@ -88,7 +88,7 @@ For further information or help, don't hesitate to get in touch on the [Slack `#
 
 ## Citations
 
-If you use  nf-core/methylseq for your analysis, please cite it using the following doi: [10.5281/zenodo.1343417](https://doi.org/10.5281/zenodo.1343417)
+If you use nf-core/methylseq for your analysis, please cite it using the following doi: [10.5281/zenodo.1343417](https://doi.org/10.5281/zenodo.1343417)
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 

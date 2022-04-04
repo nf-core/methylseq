@@ -6,12 +6,12 @@
 
 ## Table of contents
 
-* [Table of contents](#table-of-contents)
-* [Introduction](#introduction)
-    * [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
-* [Running the pipeline](#running-the-pipeline)
-    * [Updating the pipeline](#updating-the-pipeline)
-    * [Reproducibility](#reproducibility)
+- [Table of contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+- [Running the pipeline](#running-the-pipeline)
+  - [Updating the pipeline](#updating-the-pipeline)
+  - [Reproducibility](#reproducibility)
 
 ## Introduction
 
@@ -57,11 +57,11 @@ TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
 TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
 ```
 
-| Column         | Description                                                                                                                 |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `sample`       | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample.               |
-| `fastq_1`      | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".  |
-| `fastq_2`      | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".  |
+| Column    | Description                                                                                                                |
+| --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample.              |
+| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz". |
+| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz". |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -318,20 +318,20 @@ Stable releases will be becoming more infrequent as Nextflow shifts its developm
 
 There are a number of ways you can install Nextflow `edge` releases, the main difference with stable releases being that you have to `export` the version you would like to install before issuing the appropriate installation/execution commands as highlighted below.
 
-* If you have Nextflow installed already, you can issue the version you would like to use on the same line as the pipeline command and it will be fetched if required before the pipeline execution.
+- If you have Nextflow installed already, you can issue the version you would like to use on the same line as the pipeline command and it will be fetched if required before the pipeline execution.
 
 ```bash
 NXF_VER="20.11.0-edge" nextflow run nf-core/rnaseq -profile test,docker -r 3.0
 ```
 
-* If you have Nextflow installed already, another alternative to the option above is to `export` it as an environment variable before you run the pipeline command:
+- If you have Nextflow installed already, another alternative to the option above is to `export` it as an environment variable before you run the pipeline command:
 
 ```bash
 export NXF_VER="20.11.0-edge"
 nextflow run nf-core/rnaseq -profile test,docker -r 3.0
 ```
 
-* If you would like to download and install a Nextflow `edge` release from scratch with minimal fuss:
+- If you would like to download and install a Nextflow `edge` release from scratch with minimal fuss:
 
 ```bash
 export NXF_VER="20.11.0-edge"
@@ -342,4 +342,4 @@ nextflow run nf-core/rnaseq -profile test,docker -r 3.0
 
 > Note if you don't have `sudo` privileges required for the last command above then you can move the `nextflow` binary to somewhere else and export that directory to `$PATH` instead. One way of doing that on Linux would be to add `export PATH=$PATH:/path/to/nextflow/binary/` to your `~/.bashrc` file so that it is available every time you login to your system.
 
-* Manually download and install Nextflow from the available [assets](https://github.com/nextflow-io/nextflow/releases) on Github. See [Nextflow installation docs](https://www.nextflow.io/docs/latest/getstarted.html#installation).
+- Manually download and install Nextflow from the available [assets](https://github.com/nextflow-io/nextflow/releases) on Github. See [Nextflow installation docs](https://www.nextflow.io/docs/latest/getstarted.html#installation).
