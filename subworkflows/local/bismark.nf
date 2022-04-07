@@ -19,11 +19,13 @@ workflow BISMARK {
      * Generate bismark index if not supplied
      */
 
-    if (!params.genome || !params.genome.containsKey('bismarkIndex')) {
+    def index_exists = (params.genome && params.genomes[ params.genome ].containsKey('bismark'))
+
+    if (!index_exists) {
         BISMARK_GENOMEPREPARATION(params.fasta)
     }
 
-    bismark_index = (!params.genome || !params.genome.containsKey('bismarkIndex')) ? BISMARK_GENOMEPREPARATION.out.index : params.genome.bismarkIndex
+    bismark_index = index_exists ? params.genomes[ params.genome ].bismark : BISMARK_GENOMEPREPARATION.out.index
 
     /*
      * Align with bismark
