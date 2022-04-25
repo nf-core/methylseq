@@ -27,15 +27,16 @@ jobs:
           # Test pipeline minimum Nextflow version
           - NXF_VER: "21.10.3"
             NXF_EDGE: ""
+
           # Test latest edge release of Nextflow
           - NXF_VER: ""
             NXF_EDGE: "1"
-          - aligner: "bismark"
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: "bismark_hisat"
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: "bwameth"
-            ref_index: --bwa_meth_index results/reference_genome/genome.fa
+          # - aligner: "bismark"
+          #   ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          # - aligner: "bismark_hisat"
+          #   ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          # - aligner: "bwameth"
+          #   ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
