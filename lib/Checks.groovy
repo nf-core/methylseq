@@ -27,11 +27,11 @@ class Checks {
 
         if (conda_check_failed) {
             log.warn "=============================================================================\n" +
-                     "  There is a problem with your Conda configuration!\n\n" + 
-                     "  You will need to set-up the conda-forge and bioconda channels correctly.\n" +
-                     "  Please refer to https://bioconda.github.io/user/install.html#set-up-channels\n" +
-                     "  NB: The order of the channels matters!\n" +
-                     "==================================================================================="
+                        "  There is a problem with your Conda configuration!\n\n" +
+                        "  You will need to set-up the conda-forge and bioconda channels correctly.\n" +
+                        "  Please refer to https://bioconda.github.io/user/install.html#set-up-channels\n" +
+                        "  NB: The order of the channels matters!\n" +
+                    "==================================================================================="
         }
     }
 
@@ -54,11 +54,11 @@ class Checks {
                 hnames.each { hname ->
                     if (hostname.contains(hname) && !workflow.profile.contains(prof)) {
                         log.info "=${colors.yellow}====================================================${colors.reset}=\n" +
-                                  "${colors.yellow}WARN: You are running with `-profile $workflow.profile`\n" +
-                                  "      but your machine hostname is ${colors.white}'$hostname'${colors.reset}.\n" +
-                                  "      ${colors.yellow_bold}Please use `-profile $prof${colors.reset}`\n" +
-                                  "=${colors.yellow}====================================================${colors.reset}="
-                    }
+                                "${colors.yellow}WARN: You are running with `-profile $workflow.profile`\n" +
+                                "      but your machine hostname is ${colors.white}'$hostname'${colors.reset}.\n" +
+                                "      ${colors.yellow_bold}Please use `-profile $prof${colors.reset}`\n" +
+                                "=${colors.yellow}====================================================${colors.reset}="
+                }
                 }
             }
         }

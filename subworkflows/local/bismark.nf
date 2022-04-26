@@ -2,46 +2,16 @@
  * bismark subworkflow
  */
 
-def modules = params.modules.clone()
-
-def bismark_genomepreparation_options   = modules['bismark_genomepreparation']
-bismark_genomepreparation_options.args += params.aligner == 'bismark_hisat' ? ' --hisat2' : ' --bowtie2'
-bismark_genomepreparation_options.args += params.slamseq ? ' --slam' : ''
-if (!params.save_reference) { bismark_genomepreparation_options['publish_files'] = false }
-
-def bismark_align_options   = modules['bismark_align']
-known_splices = params.known_splices ? file("${params.known_splices}", checkIfExists: true) : file("$projectDir/assets/dummy_file.txt", checkIfExists: true)
-
-bismark_align_options.args += params.aligner == 'bismark_hisat' ? ' --hisat2' : ' --bowtie2'
-bismark_align_options.args += params.aligner == "bismark_hisat" && known_splices.name != 'dummy_file.txt' ? " --known-splicesite-infile <(hisat2_extract_splice_sites.py ${known_splices})" : ''
-bismark_align_options.args += params.pbat ? ' --pbat' : ''
-bismark_align_options.args += ( params.single_cell || params.non_directional || params.zymo ) ? ' --non_directional' : ''
-bismark_align_options.args += params.unmapped ? ' --unmapped' : ''
-bismark_align_options.args += params.relax_mismatches ? " --score_min L,0,-${params.num_mismatches}" : ''
-bismark_align_options.args += params.local_alignment ? " --local" : ''
-bismark_align_options.args += params.minins ? " --minins ${params.minins}" : ''
-bismark_align_options.args += params.maxins ? " --minins ${params.maxins}" : ''
-if (params.save_align_intermeds)  { bismark_align_options.publish_files.put('bam','') }
-
-def samtools_sort_options = modules['samtools_sort'].clone()
-samtools_sort_options['suffix']   = ".deduplicated.sorted"
-
-def bismark_methylationextractor_options   = modules['bismark_methylationextractor']
-bismark_methylationextractor_options.args += params.comprehensive   ? ' --comprehensive --merge_non_CpG' : ''
-bismark_methylationextractor_options.args += params.cytosine_report ? ' --cytosine_report --genome_folder BismarkIndex' : ''
-bismark_methylationextractor_options.args += params.meth_cutoff     ? " --cutoff ${params.meth_cutoff}" : ''
-
-include { BISMARK_GENOMEPREPARATION    } from '../../modules/local/software/bismark/genomepreparation/main'    addParams( options: bismark_genomepreparation_options    )
-include { BISMARK_ALIGN                } from '../../modules/local/software/bismark/align/main'                addParams( options: bismark_align_options                )
-include { BISMARK_METHYLATIONEXTRACTOR } from '../../modules/local/software/bismark/methylationextractor/main' addParams( options: bismark_methylationextractor_options )
-include { SAMTOOLS_SORT                } from '../../modules/nf-core/software/samtools/sort/main'              addParams( options: samtools_sort_options                )
-include { BISMARK_DEDUPLICATE          } from '../../modules/nf-core/software/bismark/deduplicate/main'        addParams( options: modules['bismark_deduplicate']       )
-include { BISMARK_REPORT               } from '../../modules/nf-core/software/bismark/report/main'             addParams( options: modules['bismark_report']            )
-include { BISMARK_SUMMARY              } from '../../modules/nf-core/software/bismark/summary/main'            addParams( options: modules['bismark_summary']           )
+include { BISMARK_GENOMEPREPARATION    } from '../../modules/nf-core/modules/bismark/genomepreparation/main'
+include { BISMARK_ALIGN                } from '../../modules/nf-core/modules/bismark/align/main'
+include { BISMARK_METHYLATIONEXTRACTOR } from '../../modules/nf-core/modules/bismark/methylationextractor/main'
+include { SAMTOOLS_SORT                } from '../../modules/nf-core/modules/samtools/sort/main'
+include { BISMARK_DEDUPLICATE          } from '../../modules/nf-core/modules/bismark/deduplicate/main'
+include { BISMARK_REPORT               } from '../../modules/nf-core/modules/bismark/report/main'
+include { BISMARK_SUMMARY              } from '../../modules/nf-core/modules/bismark/summary/main'
 
 workflow BISMARK {
     take:
-    genome // channel: [ val(meta), [ genome ] ]
     reads  // channel: [ val(meta), [ reads ] ]
 
     main:
@@ -49,29 +19,20 @@ workflow BISMARK {
      * Generate bismark index if not supplied
      */
 
-    // there might be indices from user input
-    // branch them into different channels
-    genome
-        .branch{ meta, genome ->
-            have_index: genome.containsKey('bismark_index')
-                return [meta, genome.bismark_index]
-            need_index: !genome.containsKey('bismark_index')
-                return [meta, genome.fasta] 
-        }
-        .set{ch_genome}
+    def bismark_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('bismark'))
 
-    // group by unique fastas, so that we only index each genome once
-    ch_genome.need_index.groupTuple(by:1) | BISMARK_GENOMEPREPARATION
+    if (!bismark_index_exists) {
+        BISMARK_GENOMEPREPARATION(params.fasta)
+    }
 
-    // reverse groupTuple to restore the cardinality of the input channel
-    // then join back with pre-existing indices
-    bismark_index = BISMARK_GENOMEPREPARATION.out.index | transpose | mix(ch_genome.have_index)
+    bismark_index = bismark_index_exists ? params.genomes[ params.genome ].bismark : BISMARK_GENOMEPREPARATION.out.index
 
     /*
      * Align with bismark
      */
     BISMARK_ALIGN (
-        reads.join(bismark_index)
+        reads,
+        bismark_index
     )
 
     if (params.skip_deduplication || params.rrbs) {
@@ -91,7 +52,8 @@ workflow BISMARK {
      * Run bismark_methylation_extractor
      */
     BISMARK_METHYLATIONEXTRACTOR (
-        alignments.join(bismark_index)
+        alignments,
+        bismark_index
     )
 
     /*
@@ -137,12 +99,12 @@ workflow BISMARK {
     }
 
     /*
-     * Collect Software Versions
+     * Collect modules Versions
      */
-    SAMTOOLS_SORT.out.version
-        .mix(BISMARK_ALIGN.out.version)
+    SAMTOOLS_SORT.out.versions
+        .mix(BISMARK_ALIGN.out.versions)
         .set{ versions }
-    
+
 
     emit:
     bam              = BISMARK_ALIGN.out.bam          // channel: [ val(meta), [ bam ] ]
