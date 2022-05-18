@@ -43,7 +43,7 @@
                 "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
             },
             "picard/markduplicates": {
-                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
+                "git_sha": "20ebb89ff97a2665106be9cace5ccb9aa4eed1be"
             },
             "preseq/lcextrap": {
                 "git_sha": "7111e571cc5b6069de4673cd6165af680f17b4d7"
@@ -70,7 +70,7 @@
                 "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
             },
             "trimgalore": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                "git_sha": "85ec13ff1fc2196c5a507ea497de468101baabed"
             }
         }
     }
