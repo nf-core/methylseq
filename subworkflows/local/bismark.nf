@@ -105,8 +105,8 @@ workflow BISMARK {
 
 
     emit:
-    bam              = BISMARK_ALIGN.out.bam          // channel: [ val(meta), [ bam ] ]
-    dedup            = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ] ## NOT NECESSARILY DEDUPLICATED
+    bam              = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
+    dedup            = alignments                     // channel: [ val(meta), [ bam ] ] ## NOT NECESSARILY DEDUPLICATED
 
     mqc              = ch_multiqc_files               // path: *{html,txt}
     versions                                          // path: *.version.txt
