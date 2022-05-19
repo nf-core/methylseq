@@ -35,14 +35,19 @@ workflow BISMARK {
         bismark_index
     )
 
+    /*
+     * MODULE: Run samtools sort
+     */
+    SAMTOOLS_SORT ( BISMARK_ALIGN.out.bam )
+
     if (params.skip_deduplication || params.rrbs) {
-        alignments = BISMARK_ALIGN.out.bam
+        alignments = SAMTOOLS_SORT.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
     } else {
         /*
         * Run deduplicate_bismark
         */
-        BISMARK_DEDUPLICATE( BISMARK_ALIGN.out.bam )
+        BISMARK_DEDUPLICATE( SAMTOOLS_SORT.out.bam )
 
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
@@ -76,13 +81,6 @@ workflow BISMARK {
         BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] }.ifEmpty([])
     )
 
-    /*
-     * MODULE: Run samtools sort
-     */
-    SAMTOOLS_SORT (
-        alignments
-    )
-
     if (!params.skip_multiqc) {
         /*
         * Collect MultiQC inputs
@@ -108,7 +106,7 @@ workflow BISMARK {
 
     emit:
     bam              = BISMARK_ALIGN.out.bam          // channel: [ val(meta), [ bam ] ]
-    dedup            = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
+    dedup            = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ] ## NOT NECESSARILY DEDUPLICATED
 
     mqc              = ch_multiqc_files               // path: *{html,txt}
     versions                                          // path: *.version.txt
