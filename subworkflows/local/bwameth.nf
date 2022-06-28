@@ -39,7 +39,7 @@ workflow BWAMETH {
     )
 
     /*
-     * Run samtools sort
+     * Sort raw output BAM
      */
     SAMTOOLS_SORT (BWAMETH_ALIGN.out.bam)
 
@@ -127,8 +127,8 @@ workflow BWAMETH {
         .set{ versions }
 
     emit:
-    bam                  = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
-    dedup                = alignments                     // channel: [ val(meta), [ bam ] ]
+    bam                  = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
+    dedup                = alignments                     // channel: [ val(meta), [ bam ] ]  ## sorted, possibly deduplicated BAM
 
     mqc                  = ch_multiqc_files               // path: *{html,txt}
     versions                                              // path: *.version.txt

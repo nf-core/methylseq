@@ -1,14 +1,14 @@
 /*
  * bismark subworkflow
  */
-
-include { BISMARK_GENOMEPREPARATION    } from '../../modules/nf-core/modules/bismark/genomepreparation/main'
-include { BISMARK_ALIGN                } from '../../modules/nf-core/modules/bismark/align/main'
-include { BISMARK_METHYLATIONEXTRACTOR } from '../../modules/nf-core/modules/bismark/methylationextractor/main'
-include { SAMTOOLS_SORT                } from '../../modules/nf-core/modules/samtools/sort/main'
-include { BISMARK_DEDUPLICATE          } from '../../modules/nf-core/modules/bismark/deduplicate/main'
-include { BISMARK_REPORT               } from '../../modules/nf-core/modules/bismark/report/main'
-include { BISMARK_SUMMARY              } from '../../modules/nf-core/modules/bismark/summary/main'
+include { BISMARK_GENOMEPREPARATION                   } from '../../modules/nf-core/modules/bismark/genomepreparation/main'
+include { BISMARK_ALIGN                               } from '../../modules/nf-core/modules/bismark/align/main'
+include { BISMARK_METHYLATIONEXTRACTOR                } from '../../modules/nf-core/modules/bismark/methylationextractor/main'
+include { SAMTOOLS_SORT                               } from '../../modules/nf-core/modules/samtools/sort/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED } from '../../modules/nf-core/modules/samtools/sort/main'
+include { BISMARK_DEDUPLICATE                         } from '../../modules/nf-core/modules/bismark/deduplicate/main'
+include { BISMARK_REPORT                              } from '../../modules/nf-core/modules/bismark/report/main'
+include { BISMARK_SUMMARY                             } from '../../modules/nf-core/modules/bismark/summary/main'
 
 workflow BISMARK {
     take:
@@ -33,6 +33,13 @@ workflow BISMARK {
     BISMARK_ALIGN (
         reads,
         bismark_index
+    )
+
+    /*
+     * Sort raw output BAM
+     */
+    SAMTOOLS_SORT(
+        BISMARK_ALIGN.out.bam,
     )
 
     if (params.skip_deduplication || params.rrbs) {
@@ -79,7 +86,7 @@ workflow BISMARK {
     /*
      * MODULE: Run samtools sort
      */
-    SAMTOOLS_SORT (
+    SAMTOOLS_SORT_DEDUPLICATED (
         alignments
     )
 
@@ -107,10 +114,10 @@ workflow BISMARK {
 
 
     emit:
-    bam              = BISMARK_ALIGN.out.bam          // channel: [ val(meta), [ bam ] ]
-    dedup            = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ]
+    bam        = SAMTOOLS_SORT.out.bam                 // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
+    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam    // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
 
-    mqc              = ch_multiqc_files               // path: *{html,txt}
-    versions                                          // path: *.version.txt
+    mqc        = ch_multiqc_files                      // path: *{html,txt}
+    versions                                           // path: *.version.txt
 
 }
