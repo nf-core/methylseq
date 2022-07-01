@@ -222,6 +222,11 @@
                     "description": "Trim bases from the 3' end of read 2 AFTER adapter/quality trimming",
                     "default": 0,
                     "fa_icon": "fas fa-cut"
+                },
+                "nextseq_trim": {
+                    "type": "string",
+                    "default": "false",
+                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
                 }
             },
             "fa_icon": "fas fa-cut",
