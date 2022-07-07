@@ -224,8 +224,8 @@
                     "fa_icon": "fas fa-cut"
                 },
                 "nextseq_trim": {
-                    "type": "string",
-                    "default": "false",
+                    "type": "integer",
+                    "default": 0,
                     "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
                 }
             },
