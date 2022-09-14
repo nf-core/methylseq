@@ -16,14 +16,7 @@ jobs:
       matrix:
         aligner: ["bismark", "bismark_hisat", "bwameth"]
     steps:
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          python-version: 3.7
-      - name: Install awscli
-        run: conda install -c conda-forge awscli
-      - name: Start AWS batch job
+      - name: Launch workflow via tower
         uses: nf-core/tower-action@v3
         with:
           workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
@@ -32,17 +25,11 @@ jobs:
           workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/methylseq/work-${{ github.sha }}
           parameters: |
             {
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/methylseq/results-${{ github.sha }}"
+              "aligner": "${{ matrix.aligner }}",
+              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/methylseq/results-${{ github.sha }}/${{matrix.aligner}}"
             }
           profiles: test_full,aws_tower
-          nextflow_config: |
-            process.errorStrategy = 'retry'
-            process.maxRetries = 3
-        # Do a full-scale run with each of the three aligners
-        run: |
-          aws batch submit-job \
-            --region eu-west-1 \
-            --job-name nf-core-methylseq \
-            --job-queue $AWS_JOB_QUEUE \
-            --job-definition $AWS_JOB_DEFINITION \
-            --container-overrides '{"command": ["nf-core/methylseq", "-r '"${GITHUB_SHA}"' -profile test_full --aligner '"${{matrix.aligner}}"' --outdir s3://'"${AWS_S3_BUCKET}"'/methylseq/results-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}"/' -w s3://'"${AWS_S3_BUCKET}"'/methylseq/work-'"${GITHUB_SHA}"'/'"${{matrix.aligner}}" -with-tower"], "environment": [{"name": "TOWER_ACCESS_TOKEN", "value": "'"$TOWER_ACCESS_TOKEN"'"}]}'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Tower debug log file
+          path: tower_action_*.log
