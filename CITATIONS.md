@@ -1,5 +1,9 @@
 # nf-core/methylseq: Citations
 
+## [nf-core/methylseq](https://doi.org/10.5281/zenodo.1343417)
+
+> Phil Ewels, Patrick Hüther, Rickard Hammarén, mashehu, Alexander Peltzer, nf-core bot, Sven F., Johannes Alneberg, Paolo Di Tommaso, Maxime U. Garcia, Colin Davenport, Alessia, Felix Krueger, Guillaume Devailly, Harshil Patel, Robert Syme, VIJAY, & Noirot Céline. (2021). nf-core/methylseq: nf-core/methylseq version 1.6.1 [Nauseous Serpent] (1.6.1). Zenodo. doi: [10.5281/zenodo.4744708](https://doi.org/10.5281/zenodo.4744708)
+
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 
 > Ewels PA, Peltzer A, Fillinger S, Patel H, Alneberg J, Wilm A, Garcia MU, Di Tommaso P, Nahnsen S. The nf-core framework for community-curated bioinformatics pipelines. Nat Biotechnol. 2020 Mar;38(3):276-278. doi: 10.1038/s41587-020-0439-x. PubMed PMID: 32055031.
