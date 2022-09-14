@@ -39,7 +39,7 @@
                 },
                 "custom/dumpsoftwareversions": {
                     "branch": "master",
-                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                    "git_sha": "5e7b1ef9a5a2d9258635bcbf70fcf37dacd1b247"
                 },
                 "fastqc": {
                     "branch": "master",
@@ -55,11 +55,11 @@
                 },
                 "multiqc": {
                     "branch": "master",
-                    "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
+                    "git_sha": "5587389874dac9c9953a2ab6f01d49af81969492"
                 },
                 "picard/markduplicates": {
                     "branch": "master",
-                    "git_sha": "20ebb89ff97a2665106be9cace5ccb9aa4eed1be"
+                    "git_sha": "682f789f93070bd047868300dd018faf3d434e7c"
                 },
                 "preseq/lcextrap": {
                     "branch": "master",
@@ -75,11 +75,11 @@
                 },
                 "samtools/faidx": {
                     "branch": "master",
-                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                    "git_sha": "3eb99152cedbb7280258858e5df08478a4670696"
                 },
                 "samtools/flagstat": {
                     "branch": "master",
-                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                    "git_sha": "bbb99cb8d679555cc01c98766de7869f83283545"
                 },
                 "samtools/index": {
                     "branch": "master",
@@ -91,7 +91,7 @@
                 },
                 "samtools/stats": {
                     "branch": "master",
-                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                    "git_sha": "f4eab7945952dc4934224309701a49913ea05ae6"
                 },
                 "trimgalore": {
                     "branch": "master",
