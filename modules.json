@@ -39,7 +39,7 @@
                 },
                 "custom/dumpsoftwareversions": {
                     "branch": "master",
-                    "git_sha": "5e7b1ef9a5a2d9258635bcbf70fcf37dacd1b247"
+                    "git_sha": "82501fe6d0d12614db67751d30af98d16e63dc59"
                 },
                 "fastqc": {
                     "branch": "master",
@@ -55,7 +55,7 @@
                 },
                 "multiqc": {
                     "branch": "master",
-                    "git_sha": "4b1d4bf401d4cf65ebc4f604bc8c8e7551109db3"
+                    "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
                 },
                 "picard/markduplicates": {
                     "branch": "master",
@@ -63,7 +63,7 @@
                 },
                 "preseq/lcextrap": {
                     "branch": "master",
-                    "git_sha": "7111e571cc5b6069de4673cd6165af680f17b4d7"
+                    "git_sha": "90aef30f432332bdf0ce9f4b9004aa5d5c4960bb"
                 },
                 "qualimap/bamqc": {
                     "branch": "master",
@@ -87,7 +87,7 @@
                 },
                 "samtools/sort": {
                     "branch": "master",
-                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                    "git_sha": "d5d785b3d8b422cda9c6d84a23f629a8e9ff8cd8"
                 },
                 "samtools/stats": {
                     "branch": "master",
