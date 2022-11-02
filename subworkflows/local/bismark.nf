@@ -19,7 +19,7 @@ workflow BISMARK {
      * Generate bismark index if not supplied
      */
     if (params.bismark_index) {
-        bismark_index = params.bismark_index
+        bismark_index = file(params.bismark_index)
     } else {
         BISMARK_GENOMEPREPARATION(params.fasta)
         bismark_index = BISMARK_GENOMEPREPARATION.out.index

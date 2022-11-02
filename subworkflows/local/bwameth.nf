@@ -22,7 +22,7 @@ workflow BWAMETH {
      * Generate bwameth index if not supplied
      */
     if (params.bwa_meth_index) {
-        bwameth_index = params.bwa_meth_index
+        bwameth_index = file(params.bwa_meth_index)
     } else {
         BWAMETH_INDEX(params.fasta)
         bwameth_index = BWAMETH_INDEX.out.index
@@ -32,7 +32,7 @@ workflow BWAMETH {
      * Generate fasta index if not supplied
      */
     if (params.fasta_index) {
-        fasta_index = params.fasta_index
+        fasta_index = file(params.fasta_index)
     } else {
         SAMTOOLS_FAIDX([[:], params.fasta])
         bwameth_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
