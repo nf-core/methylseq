@@ -33,7 +33,7 @@ jobs:
           - aligner: bismark_hisat
             ref_index: --bismark_index results/reference_genome/BismarkIndex/
           - aligner: bwameth
-            ref_index: --bwa_meth_index results/reference_genome/genome.fa
+            ref_index: --bwa_meth_index results/reference_genome/
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
