@@ -15,6 +15,8 @@ workflow BISMARK {
     reads  // channel: [ val(meta), [ reads ] ]
 
     main:
+    ch_versions = Channel.empty()
+
     /*
      * Generate bismark index if not supplied
      */
@@ -23,6 +25,7 @@ workflow BISMARK {
     } else {
         BISMARK_GENOMEPREPARATION(params.fasta)
         bismark_index = BISMARK_GENOMEPREPARATION.out.index
+        ch_versions = ch_versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
     }
 
     /*
@@ -32,6 +35,7 @@ workflow BISMARK {
         reads,
         bismark_index
     )
+    ch_versions = ch_versions.mix(BISMARK_ALIGN.out.versions)
 
     /*
      * Sort raw output BAM
@@ -39,6 +43,7 @@ workflow BISMARK {
     SAMTOOLS_SORT_ALIGNED(
         BISMARK_ALIGN.out.bam,
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     if (params.skip_deduplication || params.rrbs) {
         alignments = BISMARK_ALIGN.out.bam
@@ -51,6 +56,7 @@ workflow BISMARK {
 
         alignments = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
+        ch_versions = ch_versions.mix(BISMARK_DEDUPLICATE.out.versions)
     }
 
     /*
@@ -60,6 +66,7 @@ workflow BISMARK {
         alignments,
         bismark_index
     )
+    ch_versions = ch_versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
 
     /*
      * Generate bismark sample reports
@@ -69,6 +76,7 @@ workflow BISMARK {
             .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
             .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
     )
+    ch_versions = ch_versions.mix(BISMARK_REPORT.out.versions)
 
     /*
      * Generate bismark summary report
@@ -80,6 +88,7 @@ workflow BISMARK {
         BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] }.ifEmpty([]),
         BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] }.ifEmpty([])
     )
+    ch_versions = ch_versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
      * MODULE: Run samtools sort
@@ -87,6 +96,7 @@ workflow BISMARK {
     SAMTOOLS_SORT_DEDUPLICATED (
         alignments
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
 
     if (!params.skip_multiqc) {
         /*
@@ -103,17 +113,9 @@ workflow BISMARK {
         multiqc_files = Channel.empty()
     }
 
-    /*
-     * Collect modules Versions
-     */
-    SAMTOOLS_SORT_ALIGNED.out.versions
-        .mix(BISMARK_ALIGN.out.versions)
-        .set{ versions }
-
-
     emit:
     bam        = SAMTOOLS_SORT_ALIGNED.out.bam        // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam   // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
     mqc        = multiqc_files                        // path: *{html,txt}
-    versions                                          // path: *.version.txt
+    ch_versions                                       // path: *.version.txt
 }
