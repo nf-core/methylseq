@@ -24,9 +24,16 @@ jobs:
           - "21.10.3"
           - "latest-everything"
         aligner:
-          - "bismark"
-          - "bismark_hisat"
-          - "bwameth"
+          - bismark
+          - bismark_hisat
+          - bwameth
+        include:
+          - aligner: bismark
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: bismark_hisat
+            ref_index: --bismark_index results/reference_genome/BismarkIndex/
+          - aligner: bwameth
+            ref_index: --bwa_meth_index results/reference_genome/genome.fa
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
