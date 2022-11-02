@@ -30,6 +30,19 @@ workflow BWAMETH {
 
     bwameth_index = bwameth_index_exists ? params.genomes[ params.genome ].bwameth : BWAMETH_INDEX.out.index
 
+
+    /*
+     * Generate fasta index if not supplied
+     */
+
+    def fasta_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('fasta_index'))
+
+    if (!fasta_index_exists) {
+        SAMTOOLS_FAIDX( [[:], params.fasta] )
+    }
+
+    fasta_index = fasta_index_exists ? params.genomes[ params.genome ].fasta_index : SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
+
     /*
      * Align with bwameth
      */
@@ -63,7 +76,11 @@ workflow BWAMETH {
         /*
         * Run Picard MarkDuplicates
         */
-        PICARD_MARKDUPLICATES (SAMTOOLS_SORT.out.bam)
+        PICARD_MARKDUPLICATES (
+            SAMTOOLS_SORT.out.bam,
+            params.fasta,
+            fasta_index
+        )
         /*
          * Run samtools index on deduplicated alignment
         */
@@ -75,17 +92,6 @@ workflow BWAMETH {
         picard_version = PICARD_MARKDUPLICATES.out.versions
     }
 
-    /*
-     * Generate fasta index if not supplied
-     */
-
-    def fasta_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('fasta_index'))
-
-    if (!fasta_index_exists) {
-        SAMTOOLS_FAIDX( [[:], params.fasta] )
-    }
-
-    fasta_index = fasta_index_exists ? params.genomes[ params.genome ].fasta_index : SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
 
     /*
      * Extract per-base methylation and plot methylation bias
