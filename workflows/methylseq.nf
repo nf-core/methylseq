@@ -77,9 +77,12 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
 
+// Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
     include { BISMARK as ALIGNER } from '../subworkflows/local/bismark'
-} else if ( params.aligner == 'bwameth' ){
+}
+// Aligner: bwameth
+else if ( params.aligner == 'bwameth' ){
     include { BWAMETH as ALIGNER } from '../subworkflows/local/bwameth'
 }
 
