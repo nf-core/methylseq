@@ -91,12 +91,12 @@ if( params.aligner =~ /bismark/ ){
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { FASTQC                      } from '../modules/nf-core/modules/fastqc/main'
-include { MULTIQC                     } from '../modules/nf-core/modules/multiqc/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
-include { TRIMGALORE      } from '../modules/nf-core/modules/trimgalore/main'
-include { QUALIMAP_BAMQC  } from '../modules/nf-core/modules/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP } from '../modules/nf-core/modules/preseq/lcextrap/main'
+include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { TRIMGALORE      } from '../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC  } from '../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP } from '../modules/nf-core/preseq/lcextrap/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
