@@ -19,9 +19,10 @@ workflow BISMARK {
      * Generate bismark index if not supplied
      */
     if (params.bismark_index) {
-        ch_bismark_index = params.bismark_index
+        bismark_index = params.bismark_index
     } else {
-        ch_bismark_index = BISMARK_GENOMEPREPARATION(params.fasta).out.index
+        BISMARK_GENOMEPREPARATION(params.fasta)
+        bismark_index = BISMARK_GENOMEPREPARATION.out.index
     }
 
     /*
@@ -29,7 +30,7 @@ workflow BISMARK {
      */
     BISMARK_ALIGN (
         reads,
-        ch_bismark_index
+        bismark_index
     )
 
     /*
@@ -97,9 +98,9 @@ workflow BISMARK {
             .mix(BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] })
             .mix(BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] })
             .mix(BISMARK_REPORT.out.report.collect{ it[1] })
-            .set{ ch_multiqc_files }
+            .set{ multiqc_files }
     } else {
-        ch_multiqc_files = Channel.empty()
+        multiqc_files = Channel.empty()
     }
 
     /*
@@ -113,6 +114,6 @@ workflow BISMARK {
     emit:
     bam        = SAMTOOLS_SORT.out.bam                 // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam    // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
-    mqc        = ch_multiqc_files                      // path: *{html,txt}
+    mqc        = multiqc_files                      // path: *{html,txt}
     versions                                           // path: *.version.txt
 }

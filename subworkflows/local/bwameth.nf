@@ -22,18 +22,20 @@ workflow BWAMETH {
      * Generate bwameth index if not supplied
      */
     if (params.bwa_meth_index) {
-        ch_bwameth_index = params.bwa_meth_index
+        bwameth_index = params.bwa_meth_index
     } else {
-        ch_bwameth_index = BWAMETH_INDEX(params.fasta).out.index
+        BWAMETH_INDEX(params.fasta)
+        bwameth_index = BWAMETH_INDEX.out.index
     }
 
     /*
      * Generate fasta index if not supplied
      */
     if (params.fasta_index) {
-        ch_fasta_index = params.fasta_index
+        fasta_index = params.fasta_index
     } else {
-        ch_bwameth_index = SAMTOOLS_FAIDX([[:], params.fasta]).out.fai.map{ return(it[1])}
+        SAMTOOLS_FAIDX([[:], params.fasta])
+        bwameth_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
     }
 
     /*
@@ -41,7 +43,7 @@ workflow BWAMETH {
      */
     BWAMETH_ALIGN (
         reads,
-        ch_bwameth_index
+        bwameth_index
     )
 
     /*
@@ -72,7 +74,7 @@ workflow BWAMETH {
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
             params.fasta,
-            ch_fasta_index
+            fasta_index
         )
         /*
          * Run samtools index on deduplicated alignment
@@ -93,12 +95,12 @@ workflow BWAMETH {
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
         params.fasta,
-        ch_fasta_index
+        fasta_index
     )
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
         params.fasta,
-        ch_fasta_index
+        fasta_index
     )
 
     if (!params.skip_multiqc) {
@@ -110,9 +112,9 @@ workflow BWAMETH {
             .mix(SAMTOOLS_STATS.out.stats.collect{ it[1] })
             .mix(METHYLDACKEL_EXTRACT.out.bedgraph.collect{ it[1] })
             .mix(METHYLDACKEL_MBIAS.out.txt.collect{ it[1] })
-            .set{ ch_multiqc_files }
+            .set{ multiqc_files }
     } else {
-        ch_multiqc_files = Channel.empty()
+        multiqc_files = Channel.empty()
     }
 
     /*
@@ -128,6 +130,6 @@ workflow BWAMETH {
     emit:
     bam                  = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup                = alignments                     // channel: [ val(meta), [ bam ] ]  ## sorted, possibly deduplicated BAM
-    mqc                  = ch_multiqc_files               // path: *{html,txt}
+    mqc                  = multiqc_files               // path: *{html,txt}
     versions                                              // path: *.version.txt
 }
