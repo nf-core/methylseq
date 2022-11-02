@@ -4,7 +4,7 @@
 include { BISMARK_GENOMEPREPARATION                   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BISMARK_ALIGN                               } from '../../modules/nf-core/bismark/align/main'
 include { BISMARK_METHYLATIONEXTRACTOR                } from '../../modules/nf-core/bismark/methylationextractor/main'
-include { SAMTOOLS_SORT                               } from '../../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED      } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED } from '../../modules/nf-core/samtools/sort/main'
 include { BISMARK_DEDUPLICATE                         } from '../../modules/nf-core/bismark/deduplicate/main'
 include { BISMARK_REPORT                              } from '../../modules/nf-core/bismark/report/main'
@@ -36,7 +36,7 @@ workflow BISMARK {
     /*
      * Sort raw output BAM
      */
-    SAMTOOLS_SORT(
+    SAMTOOLS_SORT_ALIGNED(
         BISMARK_ALIGN.out.bam,
     )
 
@@ -65,9 +65,9 @@ workflow BISMARK {
      * Generate bismark sample reports
      */
     BISMARK_REPORT (
-    alignment_reports
-        .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
-        .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
+        alignment_reports
+            .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
+            .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
     )
 
     /*
@@ -106,14 +106,14 @@ workflow BISMARK {
     /*
      * Collect modules Versions
      */
-    SAMTOOLS_SORT.out.versions
+    SAMTOOLS_SORT_ALIGNED.out.versions
         .mix(BISMARK_ALIGN.out.versions)
         .set{ versions }
 
 
     emit:
-    bam        = SAMTOOLS_SORT.out.bam                 // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
-    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam    // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
-    mqc        = multiqc_files                      // path: *{html,txt}
-    versions                                           // path: *.version.txt
+    bam        = SAMTOOLS_SORT_ALIGNED.out.bam        // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
+    dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam   // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
+    mqc        = multiqc_files                        // path: *{html,txt}
+    versions                                          // path: *.version.txt
 }
