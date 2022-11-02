@@ -19,7 +19,7 @@ workflow BWAMETH {
 
     main:
 
-    ch_versions = Channel.empty()
+    versions = Channel.empty()
 
     /*
      * Generate bwameth index if not supplied
@@ -29,7 +29,7 @@ workflow BWAMETH {
     } else {
         BWAMETH_INDEX(params.fasta)
         bwameth_index = BWAMETH_INDEX.out.index
-        ch_versions = ch_versions.mix(BWAMETH_INDEX.out.versions)
+        versions = versions.mix(BWAMETH_INDEX.out.versions)
     }
 
     /*
@@ -40,7 +40,7 @@ workflow BWAMETH {
     } else {
         SAMTOOLS_FAIDX([[:], params.fasta])
         fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
-        ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
+        versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
     }
 
     /*
@@ -50,27 +50,27 @@ workflow BWAMETH {
         reads,
         bwameth_index
     )
-    ch_versions = ch_versions.mix(BWAMETH_ALIGN.out.versions)
+    versions = versions.mix(BWAMETH_ALIGN.out.versions)
 
     /*
      * Sort raw output BAM
      */
     SAMTOOLS_SORT (BWAMETH_ALIGN.out.bam)
-    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
+    versions = versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
      * Run samtools index on alignment
      */
     SAMTOOLS_INDEX_ALIGNMENTS (SAMTOOLS_SORT.out.bam)
-    ch_versions = ch_versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.versions)
+    versions = versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.versions)
 
     /*
      * Run samtools flagstat and samtools stats
      */
     SAMTOOLS_FLAGSTAT( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai) )
     SAMTOOLS_STATS( BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai), [] )
-    ch_versions = ch_versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
-    ch_versions = ch_versions.mix(SAMTOOLS_STATS.out.versions)
+    versions = versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
+    versions = versions.mix(SAMTOOLS_STATS.out.versions)
 
     if (params.skip_deduplication || params.rrbs) {
         alignments = SAMTOOLS_SORT.out.bam
@@ -95,7 +95,7 @@ workflow BWAMETH {
         bam_index = SAMTOOLS_INDEX_DEDUPLICATED.out.bai
         picard_metrics = PICARD_MARKDUPLICATES.out.metrics
         picard_version = PICARD_MARKDUPLICATES.out.versions
-        ch_versions = ch_versions.mix(PICARD_MARKDUPLICATES.out.versions)
+        versions = versions.mix(PICARD_MARKDUPLICATES.out.versions)
     }
 
 
@@ -113,8 +113,8 @@ workflow BWAMETH {
         params.fasta,
         fasta_index
     )
-    ch_versions = ch_versions.mix(METHYLDACKEL_EXTRACT.out.versions)
-    ch_versions = ch_versions.mix(METHYLDACKEL_MBIAS.out.versions)
+    versions = versions.mix(METHYLDACKEL_EXTRACT.out.versions)
+    versions = versions.mix(METHYLDACKEL_MBIAS.out.versions)
 
     /*
      * Collect MultiQC inputs

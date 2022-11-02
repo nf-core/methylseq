@@ -113,7 +113,7 @@ def multiqc_report = []
 
 workflow METHYLSEQ {
 
-    ch_versions = Channel.empty()
+    versions = Channel.empty()
 
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
@@ -121,7 +121,7 @@ workflow METHYLSEQ {
     INPUT_CHECK (
         ch_input
     )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+    versions = versions.mix(INPUT_CHECK.out.versions)
 
 
 
@@ -131,7 +131,7 @@ workflow METHYLSEQ {
     FASTQC (
         INPUT_CHECK.out.reads.map{ tuple(it[0], it[1]) }
     )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    versions = versions.mix(FASTQC.out.versions.first())
 
     /*
      * MODULE: Run TrimGalore!
@@ -139,7 +139,7 @@ workflow METHYLSEQ {
     if (!params.skip_trimming) {
         TRIMGALORE(INPUT_CHECK.out.reads)
         reads = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
+        versions = versions.mix(TRIMGALORE.out.versions.first())
     } else {
         reads = INPUT_CHECK.out.reads
     }
@@ -150,7 +150,7 @@ workflow METHYLSEQ {
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
     ALIGNER (reads)
-    ch_versions = ch_versions.mix(ALIGNER.out.versions.unique{ it.baseName })
+    versions = versions.mix(ALIGNER.out.versions.unique{ it.baseName })
 
     /*
      * MODULE: Qualimap BamQC
@@ -159,7 +159,7 @@ workflow METHYLSEQ {
         ALIGNER.out.dedup,
         []
     )
-    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     /*
      * MODULE: Run Preseq
@@ -167,10 +167,10 @@ workflow METHYLSEQ {
     PRESEQ_LCEXTRAP (
         ALIGNER.out.bam
     )
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
+    versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+        versions.unique().collectFile(name: 'collated_versions.yml')
     )
 
     //
@@ -202,7 +202,7 @@ workflow METHYLSEQ {
             ch_multiqc_logo.collect().ifEmpty([])
         )
         multiqc_report = MULTIQC.out.report.toList()
-        ch_versions    = ch_versions.mix(MULTIQC.out.versions)
+        versions    = versions.mix(MULTIQC.out.versions)
     }
 }
 
