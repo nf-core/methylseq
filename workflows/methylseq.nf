@@ -130,12 +130,11 @@ workflow METHYLSEQ {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
+    /*
+     * MODULE: Run TrimGalore!
+     */
     if (!params.skip_trimming) {
-        /*
-        * MODULE: Run TrimGalore!
-        */
         TRIMGALORE(INPUT_CHECK.out.reads)
-
         reads = TRIMGALORE.out.reads
         ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
     } else {
@@ -147,9 +146,7 @@ workflow METHYLSEQ {
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
-    ALIGNER (
-        reads
-    )
+    ALIGNER (reads)
     ch_versions = ch_versions.mix(ALIGNER.out.versions.unique{ it.baseName })
 
     /*

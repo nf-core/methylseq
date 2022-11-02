@@ -18,21 +18,18 @@ workflow BISMARK {
     /*
      * Generate bismark index if not supplied
      */
-
-    def bismark_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('bismark'))
-
-    if (!bismark_index_exists) {
-        BISMARK_GENOMEPREPARATION(params.fasta)
+    if (params.bismark_index) {
+        ch_bismark_index = params.bismark_index
+    } else {
+        ch_bismark_index = BISMARK_GENOMEPREPARATION(params.fasta).out.index
     }
-
-    bismark_index = bismark_index_exists ? params.genomes[ params.genome ].bismark : BISMARK_GENOMEPREPARATION.out.index
 
     /*
      * Align with bismark
      */
     BISMARK_ALIGN (
         reads,
-        bismark_index
+        ch_bismark_index
     )
 
     /*
@@ -116,8 +113,6 @@ workflow BISMARK {
     emit:
     bam        = SAMTOOLS_SORT.out.bam                 // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup      = SAMTOOLS_SORT_DEDUPLICATED.out.bam    // channel: [ val(meta), [ bam ] ] ## sorted, possibly deduplicated BAM
-
     mqc        = ch_multiqc_files                      // path: *{html,txt}
     versions                                           // path: *.version.txt
-
 }

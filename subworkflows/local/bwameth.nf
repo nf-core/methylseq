@@ -21,34 +21,27 @@ workflow BWAMETH {
     /*
      * Generate bwameth index if not supplied
      */
-
-    def bwameth_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('bwameth'))
-
-    if (!bwameth_index_exists) {
-        BWAMETH_INDEX(params.fasta)
+    if (params.bwa_meth_index) {
+        ch_bwameth_index = params.bwa_meth_index
+    } else {
+        ch_bwameth_index = BWAMETH_INDEX(params.fasta).out.index
     }
-
-    bwameth_index = bwameth_index_exists ? params.genomes[ params.genome ].bwameth : BWAMETH_INDEX.out.index
-
 
     /*
      * Generate fasta index if not supplied
      */
-
-    def fasta_index_exists = (params.genome && params.genomes[ params.genome ].containsKey('fasta_index'))
-
-    if (!fasta_index_exists) {
-        SAMTOOLS_FAIDX( [[:], params.fasta] )
+    if (params.fasta_index) {
+        ch_fasta_index = params.fasta_index
+    } else {
+        ch_bwameth_index = SAMTOOLS_FAIDX([[:], params.fasta]).out.fai.map{ return(it[1])}
     }
-
-    fasta_index = fasta_index_exists ? params.genomes[ params.genome ].fasta_index : SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
 
     /*
      * Align with bwameth
      */
     BWAMETH_ALIGN (
         reads,
-        bwameth_index
+        ch_bwameth_index
     )
 
     /*
@@ -79,7 +72,7 @@ workflow BWAMETH {
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
             params.fasta,
-            fasta_index
+            ch_fasta_index
         )
         /*
          * Run samtools index on deduplicated alignment
@@ -100,12 +93,12 @@ workflow BWAMETH {
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
         params.fasta,
-        fasta_index
+        ch_fasta_index
     )
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
         params.fasta,
-        fasta_index
+        ch_fasta_index
     )
 
     if (!params.skip_multiqc) {
@@ -135,7 +128,6 @@ workflow BWAMETH {
     emit:
     bam                  = SAMTOOLS_SORT.out.bam          // channel: [ val(meta), [ bam ] ] ## sorted, non-deduplicated (raw) BAM from aligner
     dedup                = alignments                     // channel: [ val(meta), [ bam ] ]  ## sorted, possibly deduplicated BAM
-
     mqc                  = ch_multiqc_files               // path: *{html,txt}
     versions                                              // path: *.version.txt
 }

@@ -90,6 +90,23 @@
                     "description": "Path to FASTA genome file",
                     "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future."
                 },
+                "fasta_index": {
+                    "type": "string",
+                    "description": "Path to Fasta index file.",
+                    "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
+                    "fa_icon": "fas fa-bookmark"
+                },
+                "bismark_index": {
+                    "type": "string",
+                    "description": "Path to a directory containing a Bismark reference index.",
+                    "fa_icon": "fas fa-dot-circle"
+                },
+                "bwa_meth_index": {
+                    "type": "string",
+                    "description": "bwameth index filename base",
+                    "help_text": "The base filename for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but rather a common filename _base_. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/genome.fa`.",
+                    "fa_icon": "far fa-dot-circle"
+                },
                 "igenomes_base": {
                     "type": "string",
                     "description": "Directory / URL base for iGenomes references.",
