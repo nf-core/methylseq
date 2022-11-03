@@ -4,70 +4,53 @@ on:
   push:
     branches:
       - dev
+      - dsl2
   pull_request:
   release:
     types: [published]
 
-# Uncomment if we need an edge release of Nextflow again
-# env: NXF_EDGE: 1
+env:
+  NXF_ANSI_LOG: false
 
 jobs:
   test:
-    name: workflow
+    name: Run pipeline with test data
     # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
-    env:
-      NXF_VER: ${{ matrix.nxf_ver }}
-      NXF_ANSI_LOG: false
     strategy:
       matrix:
-        # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['20.07.1', '']
-        aligner: ['bismark', 'bismark_hisat', 'bwameth']
+        NXF_VER:
+          - "21.10.3"
+          - "latest-everything"
+        aligner:
+          - bismark
+          - bismark_hisat
+          - bwameth
         include:
-          - aligner: 'bismark'
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bismark_hisat'
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bwameth'
-            ref_index: --bwa_meth_index results/reference_genome/genome.fa
+          - aligner: bismark
+            ref_index: --bismark_index results/bismark/reference_genome/BismarkIndex/ --cytosine_report
+          - aligner: bismark_hisat
+            ref_index: --bismark_index results/bismark_hisat/reference_genome/BismarkIndex/ --local_alignment
+          - aligner: bwameth
+            ref_index: --bwa_meth_index results/bwameth/reference_genome/bwameth/ --methyl_kit
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Check if Dockerfile or Conda environment changed
-        uses: technote-space/get-diff-action@v4
-        with:
-          FILES: |
-            Dockerfile
-            environment.yml
-
-      - name: Build new docker image
-        if: env.MATCHED_FILES
-        run: docker build --no-cache . -t nfcore/methylseq:dev
-
-      - name: Pull docker image
-        if: ${{ !env.MATCHED_FILES }}
-        run: |
-          docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:dev
-
       - name: Install Nextflow
-        env:
-          CAPSULE_LOG: none
-        run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.NXF_VER }}"
 
       - name: Test - Single End
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference
+        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference --outdir ./results
 
       - name: Test - Single End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
 
       - name: Test - Single End RRBS
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs --outdir ./results
 
       - name: Test - Paired End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
