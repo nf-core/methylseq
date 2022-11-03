@@ -47,10 +47,10 @@ jobs:
         run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference --outdir ./results
 
       - name: Test - Single End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
 
       - name: Test - Single End RRBS
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs --outdir ./results
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs --outdir ./results
 
       - name: Test - Paired End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
+        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
