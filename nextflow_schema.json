@@ -87,8 +87,31 @@
                 },
                 "fasta": {
                     "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.fn?a(sta)?$",
                     "description": "Path to FASTA genome file",
                     "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future."
+                },
+                "fasta_index": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to Fasta index file.",
+                    "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
+                    "fa_icon": "fas fa-bookmark"
+                },
+                "bismark_index": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to a directory containing a Bismark reference index.",
+                    "fa_icon": "fas fa-dot-circle"
+                },
+                "bwa_meth_index": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "bwameth index filename base",
+                    "help_text": "Directory for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/`.",
+                    "fa_icon": "far fa-dot-circle"
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -438,11 +461,29 @@
                     "hidden": true,
                     "help_text": "Set to disable colourful command line output and live life in monochrome."
                 },
+                "hook_url": {
+                    "type": "string",
+                    "description": "Incoming hook URL for messaging service",
+                    "fa_icon": "fas fa-people-group",
+                    "help_text": "Incoming hook URL for messaging service. Currently, only MS Teams is supported.",
+                    "hidden": true
+                },
                 "multiqc_config": {
                     "type": "string",
                     "description": "Custom config file to supply to MultiQC.",
                     "fa_icon": "fas fa-cog",
                     "hidden": true
+                },
+                "multiqc_logo": {
+                    "type": "string",
+                    "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
+                    "fa_icon": "fas fa-image",
+                    "hidden": true
+                },
+                "multiqc_methods_description": {
+                    "type": "string",
+                    "description": "Custom MultiQC yaml file containing HTML including a methods description.",
+                    "fa_icon": "fas fa-cog"
                 },
                 "tracedir": {
                     "type": "string",

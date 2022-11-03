@@ -4,7 +4,8 @@
     nf-core/methylseq
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Github : https://github.com/nf-core/methylseq
-Website: https://nf-co.re/methylseq
+
+    Website: https://nf-co.re/methylseq
     Slack  : https://nfcore.slack.com/channels/methylseq
 ----------------------------------------------------------------------------------------
 */
@@ -18,6 +19,9 @@ nextflow.enable.dsl = 2
 */
 
 params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
+params.fasta_index = WorkflowMain.getGenomeAttribute(params, 'fasta_index')
+params.bismark_index = WorkflowMain.getGenomeAttribute(params, 'fasta_index')
+params.bwa_meth_index = WorkflowMain.getGenomeAttribute(params, 'fasta_index')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
