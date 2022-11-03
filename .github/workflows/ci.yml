@@ -29,11 +29,11 @@ jobs:
           - bwameth
         include:
           - aligner: bismark
-            ref_index: --bismark_index results/bismark/reference_genome/BismarkIndex/
+            ref_index: --bismark_index results/bismark/reference_genome/BismarkIndex/ --cytosine_report
           - aligner: bismark_hisat
-            ref_index: --bismark_index results/bismark_hisat/reference_genome/BismarkIndex/
+            ref_index: --bismark_index results/bismark_hisat/reference_genome/BismarkIndex/ --local_alignment
           - aligner: bwameth
-            ref_index: --bwa_meth_index results/bwameth/reference_genome/bwameth/
+            ref_index: --bwa_meth_index results/bwameth/reference_genome/bwameth/ --methyl_kit
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
