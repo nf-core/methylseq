@@ -1,0 +1,126 @@
+{
+    "Single End RRBS with index": {
+        "content": [
+            {
+                "stderr": [
+
+                ],
+                "errorReport": "",
+                "exitStatus": 0,
+                "out": {
+                    
+                },
+                "failed": false,
+                "stdout": [
+                    "",
+                    "WARN: Found unexpected parameters:",
+                    "* --outputDir: /home/emiller/src/nf-core/methylseq/.nf-test/tests/a66fb05f140c2a514788a6c37ecc9fe6/output",
+                    "* --baseDir: /home/emiller/src/nf-core/methylseq",
+                    ""
+                ],
+                "errorMessage": "",
+                "trace": {
+                    "tasksFailed": 3,
+                    "tasksCount": 28,
+                    "tasksSucceeded": 25
+                },
+                "name": "workflow",
+                "success": true
+            }
+        ],
+        "timestamp": "2022-11-04T03:25:15+0000"
+    },
+    "Single End with index": {
+        "content": [
+            {
+                "stderr": [
+
+                ],
+                "errorReport": "",
+                "exitStatus": 0,
+                "out": {
+                    
+                },
+                "failed": false,
+                "stdout": [
+                    "",
+                    "WARN: Found unexpected parameters:",
+                    "* --outputDir: /home/emiller/src/nf-core/methylseq/.nf-test/tests/2f58fc414e3af41c7dbb50ffdb77f813/output",
+                    "* --baseDir: /home/emiller/src/nf-core/methylseq",
+                    ""
+                ],
+                "errorMessage": "",
+                "trace": {
+                    "tasksFailed": 3,
+                    "tasksCount": 34,
+                    "tasksSucceeded": 31
+                },
+                "name": "workflow",
+                "success": true
+            }
+        ],
+        "timestamp": "2022-11-04T03:25:15+0000"
+    },
+    "Single End": {
+        "content": [
+            {
+                "stderr": [
+
+                ],
+                "errorReport": "",
+                "exitStatus": 0,
+                "out": {
+                    
+                },
+                "failed": false,
+                "stdout": [
+                    "",
+                    "WARN: Found unexpected parameters:",
+                    "* --outputDir: /home/emiller/src/nf-core/methylseq/.nf-test/tests/f06ee2f2f3cd9b2459646a3f5665c50d/output",
+                    "* --baseDir: /home/emiller/src/nf-core/methylseq",
+                    ""
+                ],
+                "errorMessage": "",
+                "trace": {
+                    "tasksFailed": 3,
+                    "tasksCount": 35,
+                    "tasksSucceeded": 32
+                },
+                "name": "workflow",
+                "success": true
+            }
+        ],
+        "timestamp": "2022-11-04T03:25:15+0000"
+    },
+    "Single End RRBS": {
+        "content": [
+            {
+                "stderr": [
+
+                ],
+                "errorReport": "",
+                "exitStatus": 0,
+                "out": {
+                    
+                },
+                "failed": false,
+                "stdout": [
+                    "",
+                    "WARN: Found unexpected parameters:",
+                    "* --outputDir: /home/emiller/src/nf-core/methylseq/.nf-test/tests/129e549c12043de530474cb9e08f8b7/output",
+                    "* --baseDir: /home/emiller/src/nf-core/methylseq",
+                    ""
+                ],
+                "errorMessage": "",
+                "trace": {
+                    "tasksFailed": 3,
+                    "tasksCount": 29,
+                    "tasksSucceeded": 26
+                },
+                "name": "workflow",
+                "success": true
+            }
+        ],
+        "timestamp": "2022-11-04T03:25:15+0000"
+    }
+}
