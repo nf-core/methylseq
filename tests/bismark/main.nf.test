@@ -8,7 +8,7 @@ nextflow_pipeline {
             params {
                 aligner = "bismark"
                 save_reference = true
-                outdir = "./results"
+                outdir = "$outputDir"
             }
         }
 
@@ -16,6 +16,11 @@ nextflow_pipeline {
             assert workflow.success
             assert workflow.trace.tasks().size() == 35
             // FIXME assert snapshot(workflow).match()
+            assert new File("$outputDir/multiqc/bismark/multiqc_report.html").exists()
+
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
         }
     }
 
