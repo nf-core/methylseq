@@ -129,7 +129,7 @@ workflow METHYLSEQ {
     // MODULE: Run FastQC
     //
     FASTQC (
-        INPUT_CHECK.out.reads.map{ tuple(it[0], it[1]) }
+        INPUT_CHECK.out.reads
     )
     versions = versions.mix(FASTQC.out.versions.first())
 
