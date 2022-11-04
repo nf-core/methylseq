@@ -1,10 +1,25 @@
 # nf-core/methylseq
 
-## 1.7dev
+## v2.0
 
-### Bug fixes
+Major pipeline rewrite to use DSL2 with shared [nf-core/modules](https://github.com/nf-core/modules).
 
-- Run `touch` before bwa alignments to modify file modified timestamps. Avoids error from bwa about needing to build the index ([#217](https://github.com/nf-core/methylseq/issues/217))
+> **Warning:** Breaking change!
+>
+> The pipeline now requires a sample sheet to be passed to the pipeline with `--input`:
+>
+> | sample | fastq_1 | fastq_2 | genome |
+> | ------ | ------- | ------- | ------ |
+>
+> See an example [here](https://github.com/nf-core/test-datasets/blob/methylseq/samplesheet.csv)
+>
+> The `genome` column is not yet used but will give the ability to map to multiple genomes in a single run in a future release. See [#181](https://github.com/nf-core/methylseq/issues/181).
+>
+> Supplying the reference geneome with `--genome` as before works as usual.
+
+Major updates in commands and software versions for nearly every tool.
+
+Please treat this new version with a little more care than usual and let us know if you find any problems!
 
 ## [v1.6.1](https://github.com/nf-core/methylseq/releases/tag/1.6.1) - 2021-05-08
 
