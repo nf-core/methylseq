@@ -1,5 +1,0 @@
-- name: bismark - Single End
-  command: nextflow run main.nf -profile test,docker --aligner bismark --save_reference --outdir ./results
-  tags:
-    - bismark
-    - single-end

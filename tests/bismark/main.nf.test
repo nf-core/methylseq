@@ -1,0 +1,79 @@
+nextflow_pipeline {
+
+    name "bismark"
+    script "main.nf"
+
+    test("Single End") {
+        when {
+            params {
+                aligner = "bismark"
+                save_reference = true
+                outdir = "./results"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 35
+            assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End with index") {
+        when {
+            params {
+                aligner = "bismark"
+                save_reference = true
+                bismark_index = "results/bismark/reference_genome/BismarkIndex/"
+                cytosine_report = true
+                outdir = "./results"
+            }
+        }
+
+        then {
+            // HACK This works because they run order
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 34
+            assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS") {
+        when {
+            params {
+                aligner = "bismark"
+                skip_trimming = true
+                rrbs = true
+                outdir = "./results"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 29
+            assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS with index") {
+        when {
+            params {
+                aligner = "bismark"
+                skip_trimming = true
+                rrbs = true
+                save_reference = true
+                bismark_index = "results/bismark/reference_genome/BismarkIndex/"
+                cytosine_report = true
+                outdir = "./results"
+            }
+        }
+
+        then {
+            // HACK This works because they run order
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 28
+            assert snapshot(workflow).match()
+        }
+    }
+
+}
