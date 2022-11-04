@@ -21,6 +21,7 @@ nextflow_pipeline {
             assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
             assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
             assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").md5 == "f53f4450ccb90bfa9587c0dc030cfd4f"
         }
     }
 
