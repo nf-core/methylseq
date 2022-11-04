@@ -1,0 +1,31 @@
+- name: bwameth - Single End
+  command: nextflow run main.nf -profile test,docker --aligner bwameth --save_reference -resume --outdir ./results
+  tags:
+    - bwameth
+    - single-end
+
+- name: bwameth - Single End with index
+  command: nextflow run main.nf -profile test,docker --aligner bwameth --save_reference --bwa_meth_index results/bwameth/reference_genome/bwameth/ --methyl_kit --outdir ./results
+  tags:
+    - bwameth
+    - single-end
+    - index
+  # This ain't gonna work because they run in parallel
+  exit_code: 1
+
+- name: bwameth - Single End RRBS
+  command: nextflow run main.nf -profile test,docker --aligner bwameth --skip_trimming --rrbs --outdir ./results
+  tags:
+    - bwameth
+    - single-end
+    - rrbs
+
+- name: bwameth - Single End RRBS with index
+  command: nextflow run main.nf -profile test,docker --aligner bwameth --skip_trimming --rrbs --bwa_meth_index results/bwameth/reference_genome/bwameth/ --methyl_kit --outdir ./results
+  tags:
+    - bwameth
+    - single-end
+    - rrbs
+    - index
+  # This ain't gonna work because they run in parallel
+  exit_code: 1
