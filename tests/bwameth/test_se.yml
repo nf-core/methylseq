@@ -1,0 +1,5 @@
+- name: bwameth - Single End
+  command: nextflow run main.nf -profile test,docker --aligner bwameth --save_reference -resume --outdir ./results
+  tags:
+    - bwameth
+    - single-end

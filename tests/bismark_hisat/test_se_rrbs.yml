@@ -1,0 +1,6 @@
+- name: bismark_hisat - Single End RRBS
+  command: nextflow run main.nf -profile test,docker --aligner bismark_hisat --skip_trimming --rrbs --outdir ./results
+  tags:
+    - bismark_hisat
+    - single-end
+    - rrbs

@@ -1,9 +1,3 @@
-- name: bismark - Single End
-  command: nextflow run main.nf -profile test,docker --aligner bismark --save_reference --outdir ./results
-  tags:
-    - bismark
-    - single-end
-
 - name: bismark - Single End with index
   command: nextflow run main.nf -profile test,docker --aligner bismark --save_reference --bismark_index results/bismark/reference_genome/BismarkIndex/ --cytosine_report --outdir ./results
   tags:
@@ -13,13 +7,6 @@
   # FIXME This ain't gonna work because they run in parallel
   # Going to need to host the index somewhere
   exit_code: 1
-
-- name: bismark - Single End RRBS
-  command: nextflow run main.nf -profile test,docker --aligner bismark --skip_trimming --rrbs --outdir ./results
-  tags:
-    - bismark
-    - single-end
-    - rrbs
 
 - name: bismark - Single End RRBS with index
   command: nextflow run main.nf -profile test,docker --aligner bismark --skip_trimming --rrbs --bismark_index results/bismark/reference_genome/BismarkIndex/ --cytosine_report --outdir ./results

@@ -1,0 +1,6 @@
+- name: bismark - Single End RRBS
+  command: nextflow run main.nf -profile test,docker --aligner bismark --skip_trimming --rrbs --outdir ./results
+  tags:
+    - bismark
+    - single-end
+    - rrbs

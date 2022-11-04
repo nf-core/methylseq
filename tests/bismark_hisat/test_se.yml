@@ -1,0 +1,5 @@
+- name: bismark_hisat - Single End
+  command: nextflow run main.nf -profile test,docker --aligner bismark_hisat --save_reference -resume --outdir ./results
+  tags:
+    - bismark_hisat
+    - single-end
