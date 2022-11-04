@@ -27,7 +27,7 @@ jobs:
           - bismark
           - bismark_hisat
           - bwameth
-        profile: ["docker", "singularity", "conda"]
+        profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
