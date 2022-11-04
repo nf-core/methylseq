@@ -26,7 +26,7 @@ nextflow_pipeline {
                 save_reference = true
                 bismark_index = "results/bismark/reference_genome/BismarkIndex/"
                 cytosine_report = true
-                outdir = "./results"
+                outdir = "$outputDir"
             }
         }
 
@@ -44,7 +44,7 @@ nextflow_pipeline {
                 aligner = "bismark"
                 skip_trimming = true
                 rrbs = true
-                outdir = "./results"
+                outdir = "$outputDir"
             }
         }
 
@@ -64,7 +64,7 @@ nextflow_pipeline {
                 save_reference = true
                 bismark_index = "results/bismark/reference_genome/BismarkIndex/"
                 cytosine_report = true
-                outdir = "./results"
+                outdir = "$outputDir"
             }
         }
 
