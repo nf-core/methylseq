@@ -14,7 +14,7 @@ env:
 
 jobs:
   test:
-    name: Run pipeline with test data
+    name: Run ${{ matrix.aligner }}-${{ matrix.profile }} pipeline test
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
@@ -27,30 +27,45 @@ jobs:
           - bismark
           - bismark_hisat
           - bwameth
-        include:
-          - aligner: bismark
-            ref_index: --bismark_index results/bismark/reference_genome/BismarkIndex/ --cytosine_report
-          - aligner: bismark_hisat
-            ref_index: --bismark_index results/bismark_hisat/reference_genome/BismarkIndex/ --local_alignment
-          - aligner: bwameth
-            ref_index: --bwa_meth_index results/bwameth/reference_genome/bwameth/ --methyl_kit
+        profile: ["docker", "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: /usr/local/bin/nextflow
+          key: ${{ runner.os }}
+          restore-keys: |
+            ${{ runner.os }}-nextflow-
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Test - Single End
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference --outdir ./results
+      - name: Install nf-test
+        run: |
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
 
-      - name: Test - Single End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
+        uses: eWaterCycle/setup-singularity@v5
+        with:
+          singularity-version: 3.7.1
 
-      - name: Test - Single End RRBS
-        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs --outdir ./results
+      - name: Set up miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          channels: conda-forge,bioconda,defaults
+          python-version: ${{ matrix.python-version }}
 
-      - name: Test - Paired End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -resume -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}} --outdir ./results
+      - name: Conda clean
+        if: matrix.profile == 'conda'
+        run: conda clean -a
+
+      - name: Run nf-test
+        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test
