@@ -2,10 +2,14 @@
     "Single End RRBS with index": {
         "content": [
             {
-                "stderr": [],
+                "stderr": [
+
+                ],
                 "errorReport": "",
                 "exitStatus": 0,
-                "out": {},
+                "out": {
+                    
+                },
                 "failed": false,
                 "stdout": [
                     "",
@@ -24,42 +28,19 @@
                 "success": true
             }
         ],
-        "timestamp": "2022-11-04T02:56:30+0000"
-    },
-    "workflow": {
-        "content": [
-            {
-                "stderr": [],
-                "errorReport": "",
-                "exitStatus": 0,
-                "out": {},
-                "failed": false,
-                "stdout": [
-                    "",
-                    "WARN: Found unexpected parameters:",
-                    "* --outputDir: /home/emiller/src/nf-core/methylseq/.nf-test/tests/33c12554ef379751447e40fd898e097c/output",
-                    "* --baseDir: /home/emiller/src/nf-core/methylseq",
-                    ""
-                ],
-                "errorMessage": "",
-                "trace": {
-                    "tasksFailed": 3,
-                    "tasksCount": 35,
-                    "tasksSucceeded": 32
-                },
-                "name": "workflow",
-                "success": true
-            }
-        ],
-        "timestamp": "2022-11-04T02:56:30+0000"
+        "timestamp": "2022-11-04T03:25:18+0000"
     },
     "Single End with index": {
         "content": [
             {
-                "stderr": [],
+                "stderr": [
+
+                ],
                 "errorReport": "",
                 "exitStatus": 0,
-                "out": {},
+                "out": {
+                    
+                },
                 "failed": false,
                 "stdout": [
                     "",
@@ -78,15 +59,19 @@
                 "success": true
             }
         ],
-        "timestamp": "2022-11-04T02:56:30+0000"
+        "timestamp": "2022-11-04T03:25:18+0000"
     },
     "Single End": {
         "content": [
             {
-                "stderr": [],
+                "stderr": [
+
+                ],
                 "errorReport": "",
                 "exitStatus": 0,
-                "out": {},
+                "out": {
+                    
+                },
                 "failed": false,
                 "stdout": [
                     "",
@@ -105,15 +90,19 @@
                 "success": true
             }
         ],
-        "timestamp": "2022-11-04T02:56:30+0000"
+        "timestamp": "2022-11-04T03:25:18+0000"
     },
     "Single End RRBS": {
         "content": [
             {
-                "stderr": [],
+                "stderr": [
+
+                ],
                 "errorReport": "",
                 "exitStatus": 0,
-                "out": {},
+                "out": {
+                    
+                },
                 "failed": false,
                 "stdout": [
                     "",
@@ -132,6 +121,6 @@
                 "success": true
             }
         ],
-        "timestamp": "2022-11-04T02:56:30+0000"
+        "timestamp": "2022-11-04T03:25:18+0000"
     }
 }
