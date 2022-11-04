@@ -68,4 +68,9 @@ jobs:
         run: conda clean -a
 
       - name: Run nf-test
-        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test
+        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test --tap=test.tap
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap
