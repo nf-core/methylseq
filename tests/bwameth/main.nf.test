@@ -8,7 +8,7 @@ nextflow_pipeline {
             params {
                 aligner = "bwameth"
                 save_reference = true
-                outdir = "./results"
+                outdir = "$outputDir"
             }
         }
 
@@ -24,6 +24,7 @@ nextflow_pipeline {
             params {
                 aligner = "bwameth"
                 save_reference = true
+                // FIXME Doesn't exist
                 bismark_index = "results/bwameth/reference_genome/bwameth/"
                 methyl_kit = true
                 outdir = "$outputDir"
@@ -31,7 +32,6 @@ nextflow_pipeline {
         }
 
         then {
-            // HACK This works because they run order
             assert workflow.success
             assert workflow.trace.tasks().size() == 43
             // FIXME assert snapshot(workflow).match()
@@ -62,6 +62,7 @@ nextflow_pipeline {
                 skip_trimming = true
                 rrbs = true
                 save_reference = true
+                // FIXME Doesn't exist
                 bismark_index = "results/bwameth/reference_genome/BismarkIndex/"
                 methyl_kit = true
                 outdir = "$outputDir"
@@ -69,7 +70,6 @@ nextflow_pipeline {
         }
 
         then {
-            // HACK This works because they run order
             assert workflow.success
             assert workflow.trace.tasks().size() == 34
             // FIXME assert snapshot(workflow).match()

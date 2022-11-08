@@ -43,7 +43,7 @@
                     },
                     "fastqc": {
                         "branch": "master",
-                        "git_sha": "f6a11408536fbee6cbea1f5977605011873de3ca"
+                        "git_sha": "3dd73937b084b547f9272bc901e0f120a7913fd8"
                     },
                     "methyldackel/extract": {
                         "branch": "master",
