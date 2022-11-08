@@ -18,10 +18,10 @@ nextflow_pipeline {
             // FIXME assert snapshot(workflow).match()
             assert new File("$outputDir/multiqc/bismark/multiqc_report.html").exists()
 
-            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
-            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
-            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
-            assert path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_T1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").md5 == "f53f4450ccb90bfa9587c0dc030cfd4f"
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt").md5 == "cfd86032a2c4c913d90e155e87120a54"
         }
     }
 
