@@ -4,67 +4,73 @@ on:
   push:
     branches:
       - dev
+      - dsl2
   pull_request:
   release:
     types: [published]
 
+env:
+  NXF_ANSI_LOG: false
+
 jobs:
   test:
-    name: workflow
+    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
-    env:
-      NXF_VER: ${{ matrix.nxf_ver }}
-      NXF_ANSI_LOG: false
     strategy:
       matrix:
-        # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['20.07.1', '']
-        aligner: ['bismark', 'bismark_hisat', 'bwameth']
-        include:
-          - aligner: 'bismark'
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bismark_hisat'
-            ref_index: --bismark_index results/reference_genome/BismarkIndex/
-          - aligner: 'bwameth'
-            ref_index: --bwa_meth_index results/reference_genome/genome.fa
+        NXF_VER:
+          - "21.10.3"
+          - "latest-everything"
+        aligner:
+          - bismark
+          - bismark_hisat
+          - bwameth
+        profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Check if Dockerfile or Conda environment changed
-        uses: technote-space/get-diff-action@v4
+      - uses: actions/cache@v2
         with:
-          FILES: |
-            Dockerfile
-            environment.yml
-
-      - name: Build new docker image
-        if: env.MATCHED_FILES
-        run: docker build --no-cache . -t nfcore/methylseq:1.6.1
-
-      - name: Pull docker image
-        if: ${{ !env.MATCHED_FILES }}
-        run: |
-          docker pull nfcore/methylseq:dev
-          docker tag nfcore/methylseq:dev nfcore/methylseq:1.6.1
+          path: /usr/local/bin/nextflow
+          key: ${{ runner.os }}
+          restore-keys: |
+            ${{ runner.os }}-nextflow-
 
       - name: Install Nextflow
-        env:
-          CAPSULE_LOG: none
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.NXF_VER }}"
+
+      - name: Install nf-test
         run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
 
-      - name: Test - Single End
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --save_reference
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
+        uses: eWaterCycle/setup-singularity@v5
+        with:
+          singularity-version: 3.7.1
 
-      - name: Test - Single End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
+      - name: Set up miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          channels: conda-forge,bioconda,defaults
+          python-version: ${{ matrix.python-version }}
 
-      - name: Test - Single End RRBS
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test,docker --aligner ${{matrix.aligner}} --skip_trimming --rrbs
+      - name: Conda clean
+        if: matrix.profile == 'conda'
+        run: conda clean -a
 
-      - name: Test - Paired End with index
-        run: nextflow run ${GITHUB_WORKSPACE} -profile test_paired,docker --aligner ${{matrix.aligner}} ${{matrix.ref_index}}
+      - name: Run nf-test
+        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test --tap=test.tap
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap

@@ -1,0 +1,80 @@
+nextflow_pipeline {
+
+    name "bismark_hisat"
+    script "main.nf"
+
+    test("Single End") {
+        when {
+            params {
+                aligner = "bismark_hisat"
+                save_reference = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 35
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End with index") {
+        when {
+            params {
+                aligner = "bismark_hisat"
+                save_reference = true
+                // FIXME Doesn't exist
+                bismark_index = "results/bismark_hisat/reference_genome/BismarkIndex/"
+                local_alignment = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.failed
+            assert workflow.trace.tasks().size() == 9
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS") {
+        when {
+            params {
+                aligner = "bismark_hisat"
+                skip_trimming = true
+                rrbs = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 29
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS with index") {
+        when {
+            params {
+                aligner = "bismark_hisat"
+                skip_trimming = true
+                rrbs = true
+                save_reference = true
+                // FIXME Doesn't exist
+                bismark_index = "results/bismark_hisat/reference_genome/BismarkIndex/"
+                local_alignment = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.failed
+            // FIXME Flakes between 3 and 4
+            // assert workflow.trace.tasks().size() == 4
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+}

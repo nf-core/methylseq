@@ -1,0 +1,104 @@
+{
+    "name": "nf-core/methylseq",
+    "homePage": "https://github.com/nf-core/methylseq",
+    "repos": {
+        "https://github.com/nf-core/modules.git": {
+            "modules": {
+                "nf-core": {
+                    "bismark/align": {
+                        "branch": "master",
+                        "git_sha": "a7e1292e0a9600c93a4c9b5b0c191aaf0c17ed00"
+                    },
+                    "bismark/deduplicate": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "bismark/genomepreparation": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "bismark/methylationextractor": {
+                        "branch": "master",
+                        "git_sha": "a7e1292e0a9600c93a4c9b5b0c191aaf0c17ed00"
+                    },
+                    "bismark/report": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "bismark/summary": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "bwameth/align": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "bwameth/index": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "custom/dumpsoftwareversions": {
+                        "branch": "master",
+                        "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0"
+                    },
+                    "fastqc": {
+                        "branch": "master",
+                        "git_sha": "3dd73937b084b547f9272bc901e0f120a7913fd8"
+                    },
+                    "methyldackel/extract": {
+                        "branch": "master",
+                        "git_sha": "6a041ec7dba0b65b23d267b602301dc963610266"
+                    },
+                    "methyldackel/mbias": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "multiqc": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "picard/markduplicates": {
+                        "branch": "master",
+                        "git_sha": "eca65aa4a5e2e192ac44d6962c8f9260f314ffb8"
+                    },
+                    "preseq/lcextrap": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "qualimap/bamqc": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "qualimap/bamqccram": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "samtools/faidx": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "samtools/flagstat": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "samtools/index": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "samtools/sort": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "samtools/stats": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                    },
+                    "trimgalore": {
+                        "branch": "master",
+                        "git_sha": "b51a69e30973c71950225c817ad07a3337d22c40"
+                    }
+                }
+            }
+        }
+    }
+}

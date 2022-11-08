@@ -1,0 +1,85 @@
+nextflow_pipeline {
+
+    name "bismark"
+    script "main.nf"
+
+    test("Single End") {
+        when {
+            params {
+                aligner = "bismark"
+                save_reference = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 35
+            // FIXME assert snapshot(workflow).match()
+            assert new File("$outputDir/multiqc/bismark/multiqc_report.html").exists()
+
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert new File("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt").exists()
+            assert path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt").md5 == "cfd86032a2c4c913d90e155e87120a54"
+        }
+    }
+
+    test("Single End with index") {
+        when {
+            params {
+                aligner = "bismark"
+                save_reference = true
+                // FIXME Doesn't exist
+                bismark_index = "results/bismark/reference_genome/BismarkIndex/"
+                cytosine_report = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.failed
+            // assert workflow.trace.tasks().size() == 9
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS") {
+        when {
+            params {
+                aligner = "bismark"
+                skip_trimming = true
+                rrbs = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 29
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+    test("Single End RRBS with index") {
+        when {
+            params {
+                aligner = "bismark"
+                skip_trimming = true
+                rrbs = true
+                save_reference = true
+                // FIXME Doesn't exist
+                bismark_index = "results/bismark/reference_genome/BismarkIndex/"
+                cytosine_report = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.failed
+            // assert workflow.trace.tasks().size() == 4
+            // FIXME assert snapshot(workflow).match()
+        }
+    }
+
+}
