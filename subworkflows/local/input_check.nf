@@ -16,7 +16,7 @@ workflow INPUT_CHECK {
         .set { reads }
 
     emit:
-    reads                                     // channel: [ val(meta), [ reads ], [ genome.fa ] ]
+    reads                                     // channel: [ val(meta), [ reads ] ]
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
