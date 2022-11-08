@@ -113,6 +113,7 @@ class RowChecker:
                 f"It should be one of: {', '.join(self.VALID_FORMATS)}"
             )
 
+    # TODO: ADD THIS BACK WHEN WE HAVE LANE MERGING?
     def validate_unique_samples(self):
         """
         Assert that the combination of sample name and FASTQ filename is unique.
@@ -209,7 +210,8 @@ def check_samplesheet(file_in, file_out):
             except AssertionError as error:
                 logger.critical(f"{str(error)} On line {i + 2}.")
                 sys.exit(1)
-        checker.validate_unique_samples()
+        # TODO: ADD THIS BACK WHEN WE HAVE LANE MERGING?
+        # checker.validate_unique_samples()
     header = list(reader.fieldnames)
     header.insert(1, "single_end")
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
