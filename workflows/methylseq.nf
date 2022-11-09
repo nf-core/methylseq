@@ -16,45 +16,6 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
-// Trimming / kit presets
-if(params.pbat){
-    params.clip_r1 = 9
-    params.clip_r2 = 9
-    params.three_prime_clip_r1 = 9
-    params.three_prime_clip_r2 = 9
-}
-else if( params.single_cell ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 6
-    params.three_prime_clip_r2 = 6
-}
-else if( params.epignome ){
-    params.clip_r1 = 8
-    params.clip_r2 = 8
-    params.three_prime_clip_r1 = 8
-    params.three_prime_clip_r2 = 8
-}
-else if( params.accel || params.zymo ){
-    params.clip_r1 = 10
-    params.clip_r2 = 15
-    params.three_prime_clip_r1 = 10
-    params.three_prime_clip_r2 = 10
-}
-else if( params.cegx ){
-    params.clip_r1 = 6
-    params.clip_r2 = 6
-    params.three_prime_clip_r1 = 2
-    params.three_prime_clip_r2 = 2
-}
-else if( params.em_seq ){
-    params.maxins = 1000
-    params.clip_r1 = 8
-    params.clip_r2 = 8
-    params.three_prime_clip_r1 = 8
-    params.three_prime_clip_r2 = 8
-}
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
