@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "a7e1292e0a9600c93a4c9b5b0c191aaf0c17ed00"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
@@ -15,31 +15,31 @@
                     },
                     "bismark/deduplicate": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
-                        "git_sha": "a7e1292e0a9600c93a4c9b5b0c191aaf0c17ed00"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
@@ -51,11 +51,11 @@
                     },
                     "methyldackel/extract": {
                         "branch": "master",
-                        "git_sha": "6a041ec7dba0b65b23d267b602301dc963610266"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
                     },
                     "multiqc": {
                         "branch": "master",

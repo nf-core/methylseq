@@ -4,9 +4,12 @@
 
 ### Pipeline Updates
 
+- ✨ Added option to run the Bismark `coverage2cytosine` script using the `--coverage2cytosine` and `--nomeseq` parameters.
 - 🐛 Fixed bad bug where trimming presets were not being applied ([#261](https://github.com/nf-core/methylseq/pull/261))
 
 ### Software Updates
+
+- Update Bismark v0.23.0 to v0.24.0
 
 ## [v2.0.0](https://github.com/nf-core/methylseq/releases/tag/2.0) - 2022-11-09
 
