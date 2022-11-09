@@ -6,7 +6,6 @@ nextflow_pipeline {
     test("Should run with clipping params") {
         when {
             params {
-                aligner = "bismark"
                 em_seq = true
                 clip_r1 = 2
                 outdir = "$outputDir"
