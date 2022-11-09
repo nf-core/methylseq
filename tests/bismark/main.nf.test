@@ -82,4 +82,19 @@ nextflow_pipeline {
         }
     }
 
+    test("Single End NOMe-seq") {
+        when {
+            params {
+                aligner = "bismark"
+                nomeseq = true
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 30
+        }
+    }
+
 }
