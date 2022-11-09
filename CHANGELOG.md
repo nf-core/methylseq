@@ -1,21 +1,25 @@
 # nf-core/methylseq
 
-## v2.0
+## [v2.0](https://github.com/nf-core/methylseq/releases/tag/2.0) - 2022-11-09
+
+### Pipeline Updates
 
 Major pipeline rewrite to use DSL2 with shared [nf-core/modules](https://github.com/nf-core/modules).
 
-> **Warning:** Breaking change!
->
-> The pipeline now requires a sample sheet to be passed to the pipeline with `--input`:
->
-> | sample | fastq_1 | fastq_2 | genome |
-> | ------ | ------- | ------- | ------ |
->
-> See an example [here](https://github.com/nf-core/test-datasets/blob/methylseq/samplesheet.csv)
->
-> The `genome` column is not yet used but will give the ability to map to multiple genomes in a single run in a future release. See [#181](https://github.com/nf-core/methylseq/issues/181).
->
-> Supplying the reference geneome with `--genome` as before works as usual.
+> **Warning**: Breaking change! ⚠️
+
+The pipeline now requires a sample sheet to be passed to the pipeline with `--input`:
+
+| sample | fastq_1 | fastq_2 | genome |
+| ------ | ------- | ------- | ------ |
+
+See an example [here](https://github.com/nf-core/test-datasets/blob/methylseq/samplesheet.csv)
+
+> **Note**: The `genome` column is not yet used but will give the ability to map to multiple genomes in a single run in a future release. See [#181](https://github.com/nf-core/methylseq/issues/181).
+
+Supplying the reference geneome with `--genome` as before works as usual.
+
+### Software Updates
 
 Major updates in commands and software versions for nearly every tool.
 
