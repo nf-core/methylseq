@@ -3,10 +3,11 @@
  */
 include { BISMARK_GENOMEPREPARATION                   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BISMARK_ALIGN                               } from '../../modules/nf-core/bismark/align/main'
-include { BISMARK_METHYLATIONEXTRACTOR                } from '../../modules/nf-core/bismark/methylationextractor/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED      } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED } from '../../modules/nf-core/samtools/sort/main'
 include { BISMARK_DEDUPLICATE                         } from '../../modules/nf-core/bismark/deduplicate/main'
+include { BISMARK_METHYLATIONEXTRACTOR                } from '../../modules/nf-core/bismark/methylationextractor/main'
+include { BISMARK_COVERAGE2CYTOSINE                   } from '../../modules/nf-core/bismark/coverage2cytosine/main'
 include { BISMARK_REPORT                              } from '../../modules/nf-core/bismark/report/main'
 include { BISMARK_SUMMARY                             } from '../../modules/nf-core/bismark/summary/main'
 
@@ -67,6 +68,18 @@ workflow BISMARK {
         bismark_index
     )
     versions = versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
+
+
+    /*
+     * Run coverage2cytosine
+     */
+    if (params.coverage2cytosine) {
+        BISMARK_COVERAGE2CYTOSINE (
+            BISMARK_METHYLATIONEXTRACTOR.out.coverage,
+            bismark_index
+        )
+        versions = versions.mix(BISMARK_COVERAGE2CYTOSINE.out.versions)
+    }
 
     /*
      * Generate bismark sample reports

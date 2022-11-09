@@ -9,6 +9,10 @@
                         "branch": "master",
                         "git_sha": "a7e1292e0a9600c93a4c9b5b0c191aaf0c17ed00"
                     },
+                    "bismark/coverage2cytosine": {
+                        "branch": "master",
+                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
+                    },
                     "bismark/deduplicate": {
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
