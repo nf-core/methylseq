@@ -1,0 +1,25 @@
+nextflow_pipeline {
+
+    name "Clipping"
+    script "main.nf"
+
+    test("Should run with clipping params") {
+        when {
+            params {
+                aligner = "bismark"
+                em_seq = true
+                clip_r1 = 2
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert workflow.trace.tasks().size() == 35
+            // TODO NFCORE_METHYLSEQ:METHYLSEQ:TRIMGALORE should include
+            // --three_prime_clip_r1 10 from the --em_seq preset
+            // --clip_r1 2 correctly overriding from --clip_r1
+        }
+    }
+
+}
