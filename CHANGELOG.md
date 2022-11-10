@@ -1,5 +1,11 @@
 # nf-core/methylseq
 
+## v2.2.0dev
+
+### Pipeline Updates
+
+### Software Updates
+
 ## [v2.1.0](https://github.com/nf-core/methylseq/releases/tag/2.1.0) - 2022-11-10
 
 ### Pipeline Updates
