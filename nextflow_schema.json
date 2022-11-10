@@ -71,7 +71,8 @@
                     "fa_icon": "fas fa-cut",
                     "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
                 }
-            }
+            },
+            "fa_icon": "fas fa-save"
         },
         "reference_genome_options": {
             "title": "Reference genome options",
@@ -297,19 +298,22 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Ignore read 2 methylation when it overlaps read 1",
-                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. "
+                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
+                    "fa_icon": "fas fa-allergies"
                 },
                 "ignore_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in first n bases of 5' end of R2",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details."
+                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "fa_icon": "far fa-eye-slash"
                 },
                 "ignore_3prime_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in last n bases of 3' end of R2",
-                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads."
+                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
+                    "fa_icon": "far fa-eye-slash"
                 },
                 "known_splices": {
                     "type": "string",
@@ -334,6 +338,17 @@
                     "fa_icon": "fas fa-expand-alt",
                     "description": "The maximum insert size for valid paired-end alignments.",
                     "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
+                },
+                "coverage2cytosine": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-align-center",
+                    "description": "Run bismark coverage2cytosine."
+                },
+                "nomeseq": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
+                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 },
                 "bismark_align_cpu_per_multicore": {
                     "type": "integer",
