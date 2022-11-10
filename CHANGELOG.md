@@ -4,6 +4,8 @@
 
 ### Pipeline Updates
 
+- ✨ Updated the `bismark2summary` step so that it no longer stages the aligned BAM files into the working directory. Should be much faster / cheaper for running on the cloud ([#268](https://github.com/nf-core/methylseq/pull/268))
+
 ### Software Updates
 
 ## [v2.1.0](https://github.com/nf-core/methylseq/releases/tag/2.1.0) - 2022-11-10
