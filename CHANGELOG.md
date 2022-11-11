@@ -6,6 +6,8 @@
 
 - ✨ Updated the `bismark2summary` step so that it no longer stages the aligned BAM files into the working directory. Should be much faster / cheaper for running on the cloud ([#268](https://github.com/nf-core/methylseq/pull/268))
 - 🐛 Fixed typo in parameter handling for input reference indices ([#263](https://github.com/nf-core/methylseq/issues/263))
+- 🧹 Removed orphaned `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` parameters.
+  - Multi-core usage for Bismark alignment is now automatically set. If you would like to overwrite this, you can do so by setting `ext.args` for the process in a custom config.
 
 ### Software Updates
 
