@@ -211,7 +211,7 @@ def check_samplesheet(file_in, file_out):
                 logger.critical(f"{str(error)} On line {i + 2}.")
                 sys.exit(1)
         # TODO: ADD THIS BACK WHEN WE HAVE LANE MERGING?
-        # checker.validate_unique_samples()
+        checker.validate_unique_samples()
     header = list(reader.fieldnames)
     header.insert(1, "single_end")
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
