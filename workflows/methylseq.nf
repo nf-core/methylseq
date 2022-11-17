@@ -56,6 +56,7 @@ else if ( params.aligner == 'bwameth' ){
 //
 // MODULE: Installed directly from nf-core/modules
 //
+include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -82,15 +83,40 @@ workflow METHYLSEQ {
     INPUT_CHECK (
         ch_input
     )
+    .reads
+    .map {
+        meta, fastq ->
+            def meta_clone = meta.clone()
+            meta_clone.id = meta_clone.id.split('_')[0..-2].join('_')
+            [ meta_clone, fastq ]
+    }
+    .groupTuple(by: [0])
+    .branch {
+        meta, fastq ->
+            single  : fastq.size() == 1
+                return [ meta, fastq.flatten() ]
+            multiple: fastq.size() > 1
+                return [ meta, fastq.flatten() ]
+    }
+    .set { ch_fastq }
     versions = versions.mix(INPUT_CHECK.out.versions)
 
-
+    //
+    // MODULE: Concatenate FastQ files from same sample if required
+    //
+    CAT_FASTQ (
+        ch_fastq.multiple
+    )
+    .reads
+    .mix(ch_fastq.single)
+    .set { ch_cat_fastq }
+    versions = versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
 
     //
     // MODULE: Run FastQC
     //
     FASTQC (
-        INPUT_CHECK.out.reads
+        ch_cat_fastq
     )
     versions = versions.mix(FASTQC.out.versions.first())
 
@@ -98,11 +124,11 @@ workflow METHYLSEQ {
      * MODULE: Run TrimGalore!
      */
     if (!params.skip_trimming) {
-        TRIMGALORE(INPUT_CHECK.out.reads)
+        TRIMGALORE(ch_cat_fastq)
         reads = TRIMGALORE.out.reads
         versions = versions.mix(TRIMGALORE.out.versions.first())
     } else {
-        reads = INPUT_CHECK.out.reads
+        reads = ch_cat_fastq
     }
 
 
