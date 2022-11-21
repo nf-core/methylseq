@@ -271,7 +271,7 @@
                 },
                 "cytosine_report": {
                     "type": "boolean",
-                    "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step.",
+                    "description": "Output stranded cytosine report, following Bismark's bismark_methylation_extractor step.",
                     "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
                     "fa_icon": "fas fa-clipboard"
                 },
@@ -338,11 +338,6 @@
                     "fa_icon": "fas fa-expand-alt",
                     "description": "The maximum insert size for valid paired-end alignments.",
                     "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
-                },
-                "coverage2cytosine": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-align-center",
-                    "description": "Run bismark coverage2cytosine."
                 },
                 "nomeseq": {
                     "type": "boolean",
