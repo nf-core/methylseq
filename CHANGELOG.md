@@ -8,7 +8,8 @@
 
 ### Pipeline Updates
 
-- ✨ Updated the `bismark2summary` step so that it no longer stages the aligned BAM files into the working directory. Should be much faster / cheaper for running on the cloud ([#268](https://github.com/nf-core/methylseq/pull/268))
+- ✨ Updated the `bismark2summary` step so that it no longer stages the aligned BAM files into the working directory ([#268](https://github.com/nf-core/methylseq/pull/268))
+  - Should be much faster / cheaper for running on the cloud.
 - ✨ Added ability to merge FastQ files based on shared IDs in sample sheet ([#272](https://github.com/nf-core/methylseq/pull/272))
 
 ### Bug fixes & refactoring
@@ -19,8 +20,6 @@
 - 🧹 Removed duplicate option `--coverage2cytosine` ([#273](https://github.com/nf-core/methylseq/issues/273))
   - Use the existing option `--cytosine_report` to launch the new `COVERAGE2CYTOSINE` process.
   - Removed option `--cytosine_report genome_index` from the Bismark methylation extractor.
-
-### Software Updates
 
 ## [v2.1.0](https://github.com/nf-core/methylseq/releases/tag/2.1.0) - 2022-11-10
 
