@@ -271,7 +271,7 @@
                 },
                 "cytosine_report": {
                     "type": "boolean",
-                    "description": "Output stranded cytosine report during Bismark's bismark_methylation_extractor step.",
+                    "description": "Output stranded cytosine report, following Bismark's bismark_methylation_extractor step.",
                     "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
                     "fa_icon": "fas fa-clipboard"
                 },
@@ -339,30 +339,11 @@
                     "description": "The maximum insert size for valid paired-end alignments.",
                     "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
                 },
-                "coverage2cytosine": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-align-center",
-                    "description": "Run bismark coverage2cytosine."
-                },
                 "nomeseq": {
                     "type": "boolean",
                     "fa_icon": "fas fa-dna",
                     "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
                     "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
-                },
-                "bismark_align_cpu_per_multicore": {
-                    "type": "integer",
-                    "description": "Specify how many CPUs are required per --multicore for bismark align",
-                    "hidden": true,
-                    "help_text": "The pipeline makes use of the `--multicore` option for Bismark align. When using this option, Bismark uses a large number of CPUs for every `--multicore` specified. The pipeline calculates the number of `--multicore` based on the resources available to the task. It divides the available CPUs by 3, or by 5 if any of `--single_cell`, `--zymo` or `--non_directional` are specified. This is based on usage for a typical mouse genome.\n\nYou may find when running the pipeline that Bismark is not using this many CPUs. To fine tune the usage and speed, you can specify an integer with `--bismark_align_cpu_per_multicore` and the pipeline will divide the available CPUs by this value instead.\n\nSee the [bismark documentation](https://github.com/FelixKrueger/Bismark/tree/master/Docs#alignment) for more information.",
-                    "fa_icon": "fas fa-cogs"
-                },
-                "bismark_align_mem_per_multicore": {
-                    "type": "string",
-                    "description": "Specify how much memory is required per --multicore for bismark align",
-                    "hidden": true,
-                    "help_text": "Exactly the same as with `--bismark_align_cpu_per_multicore`, but for memory. By default, the pipeline divides the available memory by `13.GB`, or `18.GB` if any of `--single_cell`, `--zymo` or `--non_directional` are specified.\n\nNote that the final `--multicore` value is based on the lowest limiting factor of both CPUs and memory.",
-                    "fa_icon": "fas fa-cogs"
                 }
             }
         },

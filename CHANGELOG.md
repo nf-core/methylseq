@@ -1,5 +1,18 @@
 # nf-core/methylseq
 
+## v2.2.0dev
+
+### Pipeline Updates
+
+- ✨ Updated the `bismark2summary` step so that it no longer stages the aligned BAM files into the working directory. Should be much faster / cheaper for running on the cloud ([#268](https://github.com/nf-core/methylseq/pull/268))
+- 🐛 Fixed typo in parameter handling for input reference indices ([#263](https://github.com/nf-core/methylseq/issues/263))
+- 🧹 Removed orphaned `--bismark_align_cpu_per_multicore` and `--bismark_align_cpu_per_multicore` parameters.
+  - Multi-core usage for Bismark alignment is now automatically set. If you would like to overwrite this, you can do so by setting `ext.args` for the process in a custom config.
+- 🐛 Fixed bug where the index for Bismark or bwa-meth had been specified (incorrectly) as `bismark_index` or `bwameth_index` ([#273](https://github.com/nf-core/methylseq/pull/273))
+- Removed duplicate option `--coverage2cytosine`. Use the existing option `--cytosine_report` to launch the new `COVERAGE2CYTOSINE` process. Removed option `--cytosine_report genome_index` from methylation extractor. ([#273](https://github.com/nf-core/methylseq/issues/273))
+
+### Software Updates
+
 ## [v2.1.0](https://github.com/nf-core/methylseq/releases/tag/2.1.0) - 2022-11-10
 
 ### Pipeline Updates

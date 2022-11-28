@@ -31,7 +31,7 @@
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
+                        "git_sha": "e84cc8f07607ad7970db9b6cf79b815b78d9cacd"
                     },
                     "bwameth/align": {
                         "branch": "master",
