@@ -93,7 +93,7 @@ workflow METHYLSEQ {
     .groupTuple(by: [0])
     .branch {
         meta, fastq ->
-            single  : fastq.size() == 1
+            single: fastq.size() == 1
                 return [ meta, fastq.flatten() ]
             multiple: fastq.size() > 1
                 return [ meta, fastq.flatten() ]
