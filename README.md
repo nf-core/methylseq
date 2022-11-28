@@ -28,6 +28,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Step                                         | Bismark workflow | bwa-meth workflow     |
 | -------------------------------------------- | ---------------- | --------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
+| Merge re-sequenced FastQ files               | cat              | cat                   |
 | Raw data QC                                  | FastQC           | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
 | Align Reads                                  | Bismark          | bwa-meth              |
