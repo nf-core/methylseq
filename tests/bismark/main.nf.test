@@ -14,7 +14,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 35
+            assert workflow.trace.tasks().size() == 26
             // FIXME assert snapshot(workflow).match()
             assert new File("$outputDir/multiqc/bismark/multiqc_report.html").exists()
 
@@ -56,7 +56,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 29
+            assert workflow.trace.tasks().size() == 22
             // FIXME assert snapshot(workflow).match()
         }
     }
