@@ -73,7 +73,7 @@ workflow BISMARK {
     /*
      * Run coverage2cytosine
      */
-    if (params.coverage2cytosine || params.nomeseq) {
+    if (params.cytosine_report || params.nomeseq) {
         BISMARK_COVERAGE2CYTOSINE (
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
             bismark_index
@@ -95,7 +95,7 @@ workflow BISMARK {
      * Generate bismark summary report
      */
     BISMARK_SUMMARY (
-        BISMARK_ALIGN.out.bam.collect{ it[1] }.ifEmpty([]),
+        BISMARK_ALIGN.out.bam.collect{ it[1].name }.ifEmpty([]),
         alignment_reports.collect{ it[1] }.ifEmpty([]),
         alignment_reports.collect{ it[2] }.ifEmpty([]),
         BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] }.ifEmpty([]),

@@ -31,7 +31,7 @@
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
+                        "git_sha": "e84cc8f07607ad7970db9b6cf79b815b78d9cacd"
                     },
                     "bwameth/align": {
                         "branch": "master",
@@ -40,6 +40,10 @@
                     "bwameth/index": {
                         "branch": "master",
                         "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
+                    },
+                    "cat/fastq": {
+                        "branch": "master",
+                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
