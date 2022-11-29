@@ -4,6 +4,8 @@
 
 ### Pipeline Updates
 
+- 🐛 Fix typo in index tests for bwameth
+
 ## [v2.2.0](https://github.com/nf-core/methylseq/releases/tag/2.2.0) - 2022-11-29
 
 ### Pipeline Updates
