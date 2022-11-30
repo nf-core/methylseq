@@ -43,7 +43,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 6
+            assert workflow.trace.tasks().size() == 25
             // FIXME assert snapshot(workflow).match()
         }
     }
