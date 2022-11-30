@@ -10,7 +10,15 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowMethylseq.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta, params.known_splices ]
+def checkPathParamList = [
+    params.input,
+    params.multiqc_config,
+    params.fasta,
+    params.fasta_index,
+    params.bwa_meth_index,
+    params.bismark_index,
+    params.known_splices,
+]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters

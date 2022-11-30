@@ -4,6 +4,8 @@
 
 ### Pipeline Updates
 
+- 🐛 Fix a bunch of problems in the CI tests using nf-test ([#279](https://github.com/nf-core/methylseq/pull/279))
+
 ## [v2.2.0](https://github.com/nf-core/methylseq/releases/tag/2.2.0) - 2022-11-29
 
 ### Pipeline Updates
