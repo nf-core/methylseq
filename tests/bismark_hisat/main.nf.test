@@ -20,7 +20,7 @@ nextflow_pipeline {
             new File(".nf-test/indexes/").mkdirs()
             // Copy the ref genome to a stable location for next tests
             FileUtil.copyDirectory(
-                new File("$outputDir/bismark/reference_genome/BismarkIndex/").getAbsolutePath(),
+                new File("$outputDir/bismark_hisat/reference_genome/BismarkIndex/").getAbsolutePath(),
                 new File(".nf-test/indexes/BismarkIndex/").getAbsolutePath()
             )
 
