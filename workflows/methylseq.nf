@@ -147,7 +147,27 @@ workflow METHYLSEQ {
 
     // Aligner: bismark or bismark_hisat
     if( params.aligner =~ /bismark/ ){
-        BISMARK (reads)
+
+        /*
+         * Generate bismark index if not supplied
+         */
+        if (params.bismark_index) {
+            bismark_index = file(params.bismark_index)
+        } else {
+            BISMARK_GENOMEPREPARATION(file(params.fasta))
+            bismark_index = BISMARK_GENOMEPREPARATION.out.index
+            versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
+        }
+
+        /*
+         * Run Bismark alignment + downstream processing
+         */
+        BISMARK (
+            reads,
+            bismark_index,
+            params.skip_deduplication || params.rrbs,
+            params.cytosine_report || params.nomeseq
+        )
         versions = versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
         ch_dedup = BISMARK.out.dedup
