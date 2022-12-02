@@ -27,7 +27,7 @@ workflow BWAMETH {
     if (params.bwa_meth_index) {
         bwameth_index = file(params.bwa_meth_index)
     } else {
-        BWAMETH_INDEX(params.fasta)
+        BWAMETH_INDEX(file(params.fasta))
         bwameth_index = BWAMETH_INDEX.out.index
         versions = versions.mix(BWAMETH_INDEX.out.versions)
     }
@@ -38,7 +38,7 @@ workflow BWAMETH {
     if (params.fasta_index) {
         fasta_index = file(params.fasta_index)
     } else {
-        SAMTOOLS_FAIDX([[:], params.fasta])
+        SAMTOOLS_FAIDX([[:], file(params.fasta)])
         fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
         versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
     }
@@ -83,7 +83,7 @@ workflow BWAMETH {
         */
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
-            params.fasta,
+            file(params.fasta),
             fasta_index
         )
         /*
@@ -105,12 +105,12 @@ workflow BWAMETH {
 
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
-        params.fasta,
+        file(params.fasta),
         fasta_index
     )
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
-        params.fasta,
+        file(params.fasta),
         fasta_index
     )
     versions = versions.mix(METHYLDACKEL_EXTRACT.out.versions)
