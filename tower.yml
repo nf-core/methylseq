@@ -1,11 +1,11 @@
 reports:
   multiqc_report.html:
-    display: "MultiQC HTML report"
+    display: "MultiQC report"
   bismark_summary_report.html:
     display: "Bismark summary report"
   "bismark/reports/*/*report.html":
-    display: "All samples Bismark reports"
+    display: "Bismark sample report"
   qualimapReport.html:
-    display: "All samples Qualimap reports"
+    display: "Qualimap sample report"
   "*_fastqc.html":
-    display: "All samples FastQC reports, before and after trimming"
+    display: "FastQC reports"
