@@ -8,4 +8,6 @@ reports:
   qualimapReport.html:
     display: "Qualimap sample report"
   "*_fastqc.html":
-    display: "FastQC reports"
+    display: "FastQC report, before trimming"
+  "*_val_*_fastqc.html":
+    display: "FastQC report, after trimming"
