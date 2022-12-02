@@ -24,10 +24,10 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
-if (params.fasta) { fasta = file(params.fasta) }
-if (params.fasta_index) { fasta_index = file(params.fasta_index) }
-if (params.bismark_index) { bismark_index = file(params.bismark_index) }
-if (params.bwa_meth_index) { bwameth_index = file(params.bwa_meth_index) }
+if (params.fasta) { ch_fasta = file(params.fasta) }
+
+
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,7 +160,9 @@ workflow METHYLSEQ {
          * Generate bismark index if not supplied
          */
         if (params.bismark_index) {
-            BISMARK_GENOMEPREPARATION(fasta)
+            bismark_index = file(params.bismark_index)
+        } else {
+            BISMARK_GENOMEPREPARATION(ch_fasta)
             bismark_index = BISMARK_GENOMEPREPARATION.out.index
             versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
         }
@@ -185,8 +187,10 @@ workflow METHYLSEQ {
         /*
          * Generate bwameth index if not supplied
          */
-        if (!params.bwa_meth_index) {
-            BWAMETH_INDEX(fasta)
+        if (params.bwa_meth_index) {
+            bwameth_index = file(params.bwa_meth_index)
+        } else {
+            BWAMETH_INDEX(ch_fasta)
             bwameth_index = BWAMETH_INDEX.out.index
             versions = versions.mix(BWAMETH_INDEX.out.versions)
         }
@@ -194,8 +198,10 @@ workflow METHYLSEQ {
         /*
          * Generate fasta index if not supplied
          */
-        if (!params.fasta_index) {
-            SAMTOOLS_FAIDX([[:], fasta])
+        if (params.fasta_index) {
+            fasta_index = file(params.fasta_index)
+        } else {
+            SAMTOOLS_FAIDX([[:], ch_fasta])
             fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
             versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
@@ -203,7 +209,7 @@ workflow METHYLSEQ {
         BWAMETH (
             reads,
             bwameth_index,
-            fasta,
+            ch_fasta,
             fasta_index,
             params.skip_deduplication || params.rrbs,
         )
