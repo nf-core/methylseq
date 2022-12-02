@@ -1,7 +1,6 @@
 /*
  * bismark subworkflow
  */
-include { BISMARK_GENOMEPREPARATION                   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BISMARK_ALIGN                               } from '../../modules/nf-core/bismark/align/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED      } from '../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED } from '../../modules/nf-core/samtools/sort/main'

@@ -24,6 +24,11 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
+fasta = file(params.fasta)
+fasta_index = file(params.fasta_index)
+bismark_index = file(params.bismark_index)
+bwameth_index = file(params.bwa_meth_index)
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -68,9 +73,12 @@ include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-include { TRIMGALORE      } from '../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC  } from '../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP } from '../modules/nf-core/preseq/lcextrap/main'
+include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
+include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
+include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
+include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
+include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -152,9 +160,7 @@ workflow METHYLSEQ {
          * Generate bismark index if not supplied
          */
         if (params.bismark_index) {
-            bismark_index = file(params.bismark_index)
-        } else {
-            BISMARK_GENOMEPREPARATION(file(params.fasta))
+            BISMARK_GENOMEPREPARATION(fasta)
             bismark_index = BISMARK_GENOMEPREPARATION.out.index
             versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
         }
@@ -175,7 +181,32 @@ workflow METHYLSEQ {
     }
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
-        BWAMETH (reads)
+
+        /*
+         * Generate bwameth index if not supplied
+         */
+        if (!params.bwa_meth_index) {
+            BWAMETH_INDEX(fasta)
+            bwameth_index = BWAMETH_INDEX.out.index
+            versions = versions.mix(BWAMETH_INDEX.out.versions)
+        }
+
+        /*
+         * Generate fasta index if not supplied
+         */
+        if (!params.fasta_index) {
+            SAMTOOLS_FAIDX([[:], fasta])
+            fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
+            versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
+        }
+
+        BWAMETH (
+            reads,
+            bwameth_index,
+            fasta,
+            fasta_index,
+            params.skip_deduplication || params.rrbs,
+        )
         versions = versions.mix(BWAMETH.out.versions.unique{ it.baseName })
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
