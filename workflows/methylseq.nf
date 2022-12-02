@@ -24,10 +24,10 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
-fasta = file(params.fasta)
-fasta_index = file(params.fasta_index)
-bismark_index = file(params.bismark_index)
-bwameth_index = file(params.bwa_meth_index)
+if (params.fasta) { fasta = file(params.fasta) }
+if (params.fasta_index) { fasta_index = file(params.fasta_index) }
+if (params.bismark_index) { bismark_index = file(params.bismark_index) }
+if (params.bwa_meth_index) { bwameth_index = file(params.bwa_meth_index) }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
