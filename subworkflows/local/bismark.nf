@@ -24,7 +24,7 @@ workflow BISMARK {
     if (params.bismark_index) {
         bismark_index = file(params.bismark_index)
     } else {
-        BISMARK_GENOMEPREPARATION(params.fasta)
+        BISMARK_GENOMEPREPARATION(file(params.fasta))
         bismark_index = BISMARK_GENOMEPREPARATION.out.index
         versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
     }
