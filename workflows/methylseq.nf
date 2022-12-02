@@ -42,17 +42,17 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 */
 
 //
-// SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
+// SUBWORKFLOWS: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
 
 // Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
-    include { BISMARK as ALIGNER } from '../subworkflows/local/bismark'
+    include { BISMARK } from '../subworkflows/local/bismark'
 }
 // Aligner: bwameth
 else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH as ALIGNER } from '../subworkflows/local/bwameth'
+    include { BWAMETH } from '../subworkflows/local/bwameth'
 }
 
 /*
@@ -144,14 +144,29 @@ workflow METHYLSEQ {
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
-    ALIGNER (reads)
-    versions = versions.mix(ALIGNER.out.versions.unique{ it.baseName })
+
+    // Aligner: bismark or bismark_hisat
+    if( params.aligner =~ /bismark/ ){
+        BISMARK (reads)
+        versions = versions.mix(BISMARK.out.versions.unique{ it.baseName })
+        ch_bam = BISMARK.out.bam
+        ch_dedup = BISMARK.out.dedup
+        ch_aligner_mqc = BISMARK.out.mqc
+    }
+    // Aligner: bwameth
+    else if ( params.aligner == 'bwameth' ){
+        BWAMETH (reads)
+        versions = versions.mix(BWAMETH.out.versions.unique{ it.baseName })
+        ch_bam = BWAMETH.out.bam
+        ch_dedup = BWAMETH.out.dedup
+        ch_aligner_mqc = BWAMETH.out.mqc
+    }
 
     /*
      * MODULE: Qualimap BamQC
      */
     QUALIMAP_BAMQC (
-        ALIGNER.out.dedup,
+        ch_dedup,
         []
     )
     versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
@@ -160,7 +175,7 @@ workflow METHYLSEQ {
      * MODULE: Run Preseq
      */
     PRESEQ_LCEXTRAP (
-        ALIGNER.out.bam
+        ch_bam
     )
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
 
@@ -184,7 +199,7 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ALIGNER.out.mqc.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
         }
