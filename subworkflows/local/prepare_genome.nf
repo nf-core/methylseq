@@ -2,9 +2,9 @@
 // Prepare reference genome files
 //
 
-include { BISMARK_GENOMEPREPARATION   } from '../modules/nf-core/bismark/genomepreparation/main'
-include { BWAMETH_INDEX               } from '../modules/nf-core/bwameth/index/main'
-include { SAMTOOLS_FAIDX              } from '../modules/nf-core/samtools/faidx/main'
+include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
+include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
+include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
 
 workflow PREPARE_GENOME {
     take:
