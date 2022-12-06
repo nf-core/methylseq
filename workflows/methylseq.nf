@@ -93,7 +93,7 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
     PREPARE_GENOME()
-    versions = versions.mix(INPUT_CHECK.out.versions)
+    versions = versions.mix(PREPARE_GENOME.out.versions)
 
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files

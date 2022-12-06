@@ -4,6 +4,8 @@
 
 ### Pipeline Updates
 
+- 🧹 Refactor genome indices preparation into a separate workflow
+- 🧹 Refactor subworkflow logic out of alignment subworkflows, for later sharing
 - 🐛 Fix a bug with using a local genome reference FASTA file
 - 🐛 Fix a bunch of problems in the CI tests using nf-test ([#279](https://github.com/nf-core/methylseq/pull/279))
 

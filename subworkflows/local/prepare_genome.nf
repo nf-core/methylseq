@@ -7,10 +7,6 @@ include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/inde
 include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
 
 workflow PREPARE_GENOME {
-    take:
-    prepare_tool_indices // list   : tools to prepare indices for
-    biotype              // string : if additional fasta file is provided biotype value to use when appending entries to GTF file
-    is_aws_igenome       // boolean: whether the genome files are from AWS iGenomes
 
     main:
     versions = Channel.empty()
