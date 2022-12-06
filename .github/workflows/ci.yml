@@ -14,7 +14,7 @@ env:
 
 jobs:
   test:
-    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
+    name: Run ${{ matrix.aligner }}-${{ matrix.test_profile }}-${{ matrix.software_profile }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
