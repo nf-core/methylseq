@@ -64,7 +64,9 @@ jobs:
           path: |
             /usr/local/bin/nextflow
             /usr/local/bin/nf-test
-          key: methylseq-${{ runner.os }}-${{ matrix.NXF_VER }}
+            /home/runner/.nf-test/
+            /home/runner/.nextflow/
+          key: methylseq-software-${{ runner.os }}-${{ matrix.NXF_VER }}
 
       - name: Install Nextflow
         if: steps.cache-software.outputs.cache-hit != 'true'
