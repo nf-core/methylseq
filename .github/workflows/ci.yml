@@ -50,11 +50,11 @@ jobs:
       - name: Replace remote paths in samplesheets
         run: |
           for f in samplesheet/*csv; do
-            sed -i '' 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
-            sed -i '' 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
-            echo '========== $f ============'
+            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
+            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
+            echo "========== $f ============"
             cat $f
-            echo '========================================'
+            echo "========================================"
           done;
 
       - name: Cache Nextflow installation
