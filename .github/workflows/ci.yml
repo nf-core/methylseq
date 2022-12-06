@@ -57,25 +57,12 @@ jobs:
             echo "========================================"
           done;
 
-      - name: Cache Nextflow installation
-        id: cache-software
-        uses: actions/cache@v3
-        with:
-          path: |
-            /usr/local/bin/nextflow
-            /usr/local/bin/nf-test
-            /home/runner/.nf-test/
-            /home/runner/.nextflow/
-          key: methylseq-software-${{ runner.os }}-${{ matrix.NXF_VER }}
-
       - name: Install Nextflow
-        if: steps.cache-software.outputs.cache-hit != 'true'
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
-        if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
           wget -qO- https://code.askimed.com/install/nf-test | bash
           sudo mv nf-test /usr/local/bin/
