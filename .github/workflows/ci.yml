@@ -37,7 +37,7 @@ jobs:
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ../test-datasets/
+          path: ./test-datasets/
 
       - uses: actions/cache@v2
         with:
