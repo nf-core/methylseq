@@ -32,6 +32,13 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v3
 
+      - name: Check out test data
+        uses: actions/checkout@v3
+        with:
+          repository: nf-core/test-datasets
+          ref: methylseq
+          path: ../test-datasets/
+
       - uses: actions/cache@v2
         with:
           path: /usr/local/bin/nextflow
@@ -68,7 +75,11 @@ jobs:
         run: conda clean -a
 
       - name: Run nf-test
-        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test --tap=test.tap
+        run: |
+          nf-test test \
+            --profile=test_local,${{ matrix.profile }} \
+            tests/${{ matrix.aligner }}/*.nf.test \
+            --tap=test.tap
 
       - uses: pcolby/tap-summary@v1
         with:
