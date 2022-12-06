@@ -89,7 +89,7 @@ jobs:
       - name: Run nf-test
         run: |
           nf-test test \
-            --profile=test_local,${{ matrix.profile }} \
+            --profile=test_ci,${{ matrix.profile }} \
             tests/${{ matrix.aligner }}/*.nf.test \
             --tap=test.tap
 
