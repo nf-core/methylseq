@@ -32,26 +32,38 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v3
 
+      - name: Cache test data
+        id: cache-testdata
+        uses: actions/cache@v3
+        with:
+          path: ./test-datasets/
+          key: methylseq-test-datasets
+
       - name: Check out test data
+        if: steps.cache-testdata.outputs.cache-hit != 'true'
         uses: actions/checkout@v3
         with:
           repository: nf-core/test-datasets
           ref: methylseq
           path: ./test-datasets/
 
-      - uses: actions/cache@v2
+      - name: Cache Nextflow installation
+        id: cache-software
+        uses: actions/cache@v3
         with:
-          path: /usr/local/bin/nextflow
-          key: ${{ runner.os }}
-          restore-keys: |
-            ${{ runner.os }}-nextflow-
+          path: |
+            /usr/local/bin/nextflow
+            /usr/local/bin/nf-test
+          key: methylseq-${{ runner.os }}-${{ matrix.NXF_VER }}
 
       - name: Install Nextflow
+        if: steps.cache-software.outputs.cache-hit != 'true'
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
+        if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
           wget -qO- https://code.askimed.com/install/nf-test | bash
           sudo mv nf-test /usr/local/bin/
