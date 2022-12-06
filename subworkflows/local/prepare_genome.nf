@@ -63,10 +63,10 @@ workflow PREPARE_GENOME {
     }
 
     emit:
-    fasta = fasta
-    bismark_index = bismark_index
-    bwameth_index = bwameth_index
-    fasta_index = fasta_index
-    versions = versions
+    fasta
+    bismark_index
+    bwameth_index
+    fasta_index
+    versions
 
 }
