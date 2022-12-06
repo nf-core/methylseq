@@ -5,7 +5,7 @@ results/
 .DS_Store
 testing/
 testing*
-test-datasets/
 *.pyc
 .vscode
 .nf-test
+test-datasets/
