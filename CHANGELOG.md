@@ -4,6 +4,7 @@
 
 ### Pipeline Updates
 
+- ⚙️ Dramatically increase the default process time config requests for Bismark and bwa meth alignment
 - 🧹 Refactor genome indices preparation into a separate workflow
 - 🧹 Refactor subworkflow logic out of alignment subworkflows, for later sharing
 - 🐛 Fix a bug with using a local genome reference FASTA file
