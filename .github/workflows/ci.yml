@@ -14,7 +14,7 @@ env:
 
 jobs:
   test:
-    name: Run ${{ matrix.aligner }}-${{ matrix.software_profile }}-${{ matrix.NXF_VER }}
+    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
           - bismark
           - bismark_hisat
           - bwameth
-        software_profile: ["docker"] # TODO , "singularity", "conda"]
+        profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
@@ -89,7 +89,7 @@ jobs:
         run: |
           nf-test test \
             --debug \
-            --profile=test_ci,${{ matrix.software_profile }} \
+            --profile=test_ci,test,${{ matrix.profile }} \
             tests/${{ matrix.aligner }}/*.nf.test \
             --tap=test.tap
 
