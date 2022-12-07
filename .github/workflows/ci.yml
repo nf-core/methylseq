@@ -87,7 +87,6 @@ jobs:
       - name: Run nf-test
         run: |
           nf-test test \
-            --debug \
             --profile=test_ci,test,${{ matrix.profile }} \
             tests/${{ matrix.aligner }}/*.nf.test \
             --tap=test.tap
