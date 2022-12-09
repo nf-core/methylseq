@@ -25,7 +25,7 @@ nextflow_pipeline {
             )
 
             assert workflow.success
-            assert workflow.trace.tasks().size() == 26
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
@@ -43,7 +43,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 25
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
@@ -61,7 +61,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 22
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
@@ -81,8 +81,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            // FIXME Flakes between 3 and 4
-            // assert workflow.trace.tasks().size() == 4
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }

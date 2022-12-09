@@ -24,6 +24,9 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
+
+
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     CONFIG FILES
@@ -42,17 +45,18 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 */
 
 //
-// SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
+// SUBWORKFLOWS: Consisting of a mix of local and nf-core/modules
 //
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { PREPARE_GENOME } from '../subworkflows/local/prepare_genome'
 
 // Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
-    include { BISMARK as ALIGNER } from '../subworkflows/local/bismark'
+    include { BISMARK } from '../subworkflows/local/bismark'
 }
 // Aligner: bwameth
 else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH as ALIGNER } from '../subworkflows/local/bwameth'
+    include { BWAMETH } from '../subworkflows/local/bwameth'
 }
 
 /*
@@ -68,9 +72,9 @@ include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-include { TRIMGALORE      } from '../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC  } from '../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP } from '../modules/nf-core/preseq/lcextrap/main'
+include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,6 +88,12 @@ def multiqc_report = []
 workflow METHYLSEQ {
 
     versions = Channel.empty()
+
+    //
+    // SUBWORKFLOW: Prepare any required reference genome indices
+    //
+    PREPARE_GENOME()
+    versions = versions.mix(PREPARE_GENOME.out.versions)
 
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
@@ -144,14 +154,45 @@ workflow METHYLSEQ {
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
-    ALIGNER (reads)
-    versions = versions.mix(ALIGNER.out.versions.unique{ it.baseName })
+
+    // Aligner: bismark or bismark_hisat
+    if( params.aligner =~ /bismark/ ){
+
+        /*
+         * Run Bismark alignment + downstream processing
+         */
+        BISMARK (
+            reads,
+            PREPARE_GENOME.out.bismark_index,
+            params.skip_deduplication || params.rrbs,
+            params.cytosine_report || params.nomeseq
+        )
+        versions = versions.mix(BISMARK.out.versions.unique{ it.baseName })
+        ch_bam = BISMARK.out.bam
+        ch_dedup = BISMARK.out.dedup
+        ch_aligner_mqc = BISMARK.out.mqc
+    }
+    // Aligner: bwameth
+    else if ( params.aligner == 'bwameth' ){
+
+        BWAMETH (
+            reads,
+            PREPARE_GENOME.out.bwameth_index,
+            PREPARE_GENOME.out.fasta,
+            PREPARE_GENOME.out.fasta_index,
+            params.skip_deduplication || params.rrbs,
+        )
+        versions = versions.mix(BWAMETH.out.versions.unique{ it.baseName })
+        ch_bam = BWAMETH.out.bam
+        ch_dedup = BWAMETH.out.dedup
+        ch_aligner_mqc = BWAMETH.out.mqc
+    }
 
     /*
      * MODULE: Qualimap BamQC
      */
     QUALIMAP_BAMQC (
-        ALIGNER.out.dedup,
+        ch_dedup,
         []
     )
     versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
@@ -160,7 +201,7 @@ workflow METHYLSEQ {
      * MODULE: Run Preseq
      */
     PRESEQ_LCEXTRAP (
-        ALIGNER.out.bam
+        ch_bam
     )
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
 
@@ -184,7 +225,7 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ALIGNER.out.mqc.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
         }

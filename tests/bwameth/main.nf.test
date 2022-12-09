@@ -25,7 +25,7 @@ nextflow_pipeline {
             )
 
             assert workflow.success
-            assert workflow.trace.tasks().size() == 31
+            assert snapshot(workflow.trace.tasks().size()).match()
             assert new File("$outputDir/multiqc/bwameth/multiqc_report.html").exists()
             assert new File("$outputDir/bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam").exists()
             assert new File("$outputDir/bwameth/reference_genome/bwameth/genome.fa.bwameth.c2t").exists()
@@ -46,7 +46,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 30
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
@@ -65,7 +65,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 25
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
@@ -85,7 +85,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 24
+            assert snapshot(workflow.trace.tasks().size()).match()
             // FIXME assert snapshot(workflow).match()
         }
     }
