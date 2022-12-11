@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   test:
-    name: Run pipeline with test data
+    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
@@ -26,18 +26,76 @@ jobs:
         NXF_VER:
           - "22.10.1"
           - "latest-everything"
+        aligner:
+          - bismark
+          - bismark_hisat
+          - bwameth
+        profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
+
+      - name: Cache test data
+        id: cache-testdata
+        uses: actions/cache@v3
+        with:
+          path: ./test-datasets/
+          key: methylseq-test-data
+
+      - name: Check out test data
+        if: steps.cache-testdata.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: nf-core/test-datasets
+          ref: methylseq
+          path: ./test-datasets/
+
+      - name: Replace remote paths in samplesheets
+        run: |
+          for f in ./test-datasets/samplesheet/*csv; do
+            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
+            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
+            echo "========== $f ============"
+            cat $f
+            echo "========================================"
+          done;
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Run pipeline with test data
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
+      - name: Install nf-test
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
+
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
+        uses: eWaterCycle/setup-singularity@v5
+        with:
+          singularity-version: 3.7.1
+
+      - name: Set up miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          channels: conda-forge,bioconda,defaults
+          python-version: ${{ matrix.python-version }}
+
+      - name: Conda clean
+        if: matrix.profile == 'conda'
+        run: conda clean -a
+
+      - name: Run nf-test
+        run: |
+          nf-test test \
+            --profile=test_ci,test,${{ matrix.profile }} \
+            tests/${{ matrix.aligner }}/*.nf.test \
+            --tap=test.tap
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap
