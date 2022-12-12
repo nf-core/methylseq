@@ -46,6 +46,10 @@ if( params.aligner =~ /bismark/ ){
 else if ( params.aligner == 'bwameth' ){
     include { BWAMETH as ALIGNER } from '../subworkflows/local/bwameth'
 }
+// Aligner: biscuit
+else if ( params.aligner == "biscuit" ){
+    include { BISCUIT as ALIGNER } from '../subworkflows/local/biscuit'
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
