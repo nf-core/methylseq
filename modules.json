@@ -13,10 +13,6 @@
                         "branch": "master",
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905"
                     },
-                    "biscuit/qc": {
-                        "branch": "master",
-                        "git_sha": "653588be2a4aadab487b530643dbc9baf7a485c4"
-                    },
                     "bismark/align": {
                         "branch": "master",
                         "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5"
