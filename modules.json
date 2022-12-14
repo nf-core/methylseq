@@ -5,6 +5,10 @@
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {
+                    "biscuit/align": {
+                        "branch": "master",
+                        "git_sha": "653588be2a4aadab487b530643dbc9baf7a485c4"
+                    },
                     "biscuit/biscuitblaster": {
                         "branch": "master",
                         "git_sha": "653588be2a4aadab487b530643dbc9baf7a485c4"

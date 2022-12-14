@@ -3,7 +3,7 @@
  */
 
 include { BISCUIT_INDEX } from '../../modules/nf-core/biscuit/index/main'
-include { BISCUIT_BLASTER } from '../../modules/nf-core/biscuit/biscuitblaster/main'
+include { BISCUIT_ALIGN } from '../../modules/nf-core/biscuit/align/main'
 
 workflow BISCUIT {
     take:
@@ -24,19 +24,26 @@ workflow BISCUIT {
     }
 
     /*
-     * Align with biscuit
+     * Align with biscuit; mark duplicates unless params.skip_deduplication
      */
-    BISCUIT_BLASTER (
-        reads,
-        biscuit_index
-    )
-    versions = versions.mix(BISCUIT_BLASTER.out.versions)
+    if (params.skip_deduplication || params.rrbs){
+        BISCUIT_ALIGN (
+            reads,
+            biscuit_index
+        )
+        versions = versions.mix(BISCUIT_ALIGN.out.versions)
+    } else {
+        BISCUIT_BLASTER (
+            reads,
+            biscuit_index
+        )
+    }
 
     multiqc_files = Channel.empty()
 
     emit:
-    bam   = BISCUIT_BLASTER.out.bam
-    dedup = BISCUIT_BLASTER.out.bam
+    bam   = BISCUIT_ALIGN.out.bam
+    dedup = BISCUIT_ALIGN.out.bam
     mqc   = multiqc_files                        // path: *{html,txt}
     versions
 }
