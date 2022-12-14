@@ -2,10 +2,11 @@
  * biscuit subworkflow
  */
 
-include { BISCUIT_INDEX  } from '../../modules/nf-core/biscuit/index/main'
-include { BISCUIT_ALIGN  } from '../../modules/nf-core/biscuit/align/main'
-include { BISCUIT_PILEUP } from '../../modules/nf-core/biscuit/pileup/main'
-include { BISCUIT_QC     } from '../../modules/nf-core/biscuit/qc/main'
+include { BISCUIT_INDEX   } from '../../modules/nf-core/biscuit/index/main'
+include { BISCUIT_ALIGN   } from '../../modules/nf-core/biscuit/align/main'
+include { BISCUIT_BLASTER } from '../../modules/nf-core/biscuit/biscuitblaster/main'
+include { BISCUIT_PILEUP  } from '../../modules/nf-core/biscuit/pileup/main'
+include { BISCUIT_QC      } from '../../modules/nf-core/biscuit/qc/main'
 
 workflow BISCUIT {
     take:
@@ -58,13 +59,18 @@ workflow BISCUIT {
     /*
      * QC alignments
      */
-
+    // BISCUIT_QC (
+        // alignments.map {
+        //     meta, bam, bai -> [ meta, bam ] // remove bai index
+        // },
+        // biscuit_index
+    // )
 
     multiqc_files = Channel.empty()
 
     emit:
-    bam   = BISCUIT_ALIGN.out.bam
-    dedup = BISCUIT_ALIGN.out.bam
+    bam   = alignments
+    dedup = alignments
     mqc   = multiqc_files                        // path: *{html,txt}
     versions
 }
