@@ -206,7 +206,7 @@ workflow METHYLSEQ {
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
-        versions.unique{ it.text }.collectFile(name: 'collated_versions.yml')
+        versions.unique().collectFile(name: 'collated_versions.yml')
     )
 
     //
