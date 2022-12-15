@@ -117,6 +117,11 @@
                     "help_text": "Directory for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
                 },
+                "biscuit_index": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cookie-bite",
+                    "description": "Path to a directory containing a Biscuit reference index"
+                },
                 "igenomes_base": {
                     "type": "string",
                     "description": "Directory / URL base for iGenomes references.",
@@ -385,6 +390,19 @@
             },
             "fa_icon": "far fa-circle"
         },
+        "biscuit_options": {
+            "title": "Biscuit options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "fa_icon": "fas fa-cookie-bite",
+            "properties": {
+                "bs_conv_filter": {
+                    "type": "number",
+                    "default": 0.1
+                }
+            }
+        },
         "skip_pipeline_steps": {
             "title": "Skip pipeline steps",
             "type": "object",
@@ -631,6 +649,9 @@
             "$ref": "#/definitions/bwa_meth_options"
         },
         {
+            "$ref": "#/definitions/biscuit_options"
+        },
+        {
             "$ref": "#/definitions/skip_pipeline_steps"
         },
         {
@@ -642,15 +663,5 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
-    ],
-    "properties": {
-        "bs_conv_filter": {
-            "type": "number",
-            "default": 0.1
-        },
-        "biscuit_index": {
-            "type": "string",
-            "default": null
-        }
-    }
+    ]
 }
