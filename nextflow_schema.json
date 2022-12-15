@@ -157,6 +157,32 @@
                     "description": "Output information for all cytosine contexts.",
                     "fa_icon": "fas fa-arrows-alt",
                     "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
+                },
+                "merge_cg": {
+                    "type": "boolean",
+                    "description": "Bismark: output stranded cytosine report. Biscuit: don't merge data from neighboring C and G in CpG context",
+                    "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
+                    "fa_icon": "fas fa-clipboard",
+                    "default": true
+                },
+                "no_overlap": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Ignore read 2 methylation when it overlaps read 1",
+                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
+                    "fa_icon": "fas fa-allergies"
+                },
+                "non_directional": {
+                    "type": "boolean",
+                    "description": "Run alignment against all four possible strands.",
+                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
+                    "fa_icon": "fas fa-exchange-alt"
+                },
+                "meth_cutoff": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage to report a methylation call",
+                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
+                    "fa_icon": "fas fa-angle-double-down"
                 }
             },
             "required": [
@@ -223,6 +249,12 @@
                     "fa_icon": "fas fa-cut",
                     "description": "Trimming preset for the Zymo kit.",
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                },
+                "nomeseq": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
+                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 }
             },
             "fa_icon": "fas fa-prescription-bottle"
@@ -273,18 +305,6 @@
             "default": "",
             "fa_icon": "fas fa-circle",
             "properties": {
-                "non_directional": {
-                    "type": "boolean",
-                    "description": "Run alignment against all four possible strands.",
-                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
-                    "fa_icon": "fas fa-exchange-alt"
-                },
-                "cytosine_report": {
-                    "type": "boolean",
-                    "description": "Output stranded cytosine report, following Bismark's bismark_methylation_extractor step.",
-                    "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
-                    "fa_icon": "fas fa-clipboard"
-                },
                 "relax_mismatches": {
                     "type": "boolean",
                     "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches).",
@@ -297,19 +317,6 @@
                     "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)",
                     "help_text": "Customise the penalty in the function used to filter reads based on mismatches. The parameter `--relax_mismatches` must also be specified.\n\nSee the parameter documentation for `--relax_mismatches` for an explanation.",
                     "fa_icon": "fas fa-calculator"
-                },
-                "meth_cutoff": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage to report a methylation call",
-                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
-                    "fa_icon": "fas fa-angle-double-down"
-                },
-                "no_overlap": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Ignore read 2 methylation when it overlaps read 1",
-                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
-                    "fa_icon": "fas fa-allergies"
                 },
                 "ignore_r2": {
                     "type": "integer",
@@ -348,12 +355,6 @@
                     "fa_icon": "fas fa-expand-alt",
                     "description": "The maximum insert size for valid paired-end alignments.",
                     "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
-                },
-                "nomeseq": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-dna",
-                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
-                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 }
             }
         },
@@ -641,5 +642,15 @@
         {
             "$ref": "#/definitions/institutional_config_options"
         }
-    ]
+    ],
+    "properties": {
+        "bs_conv_filter": {
+            "type": "number",
+            "default": 0.1
+        },
+        "biscuit_index": {
+            "type": "string",
+            "default": null
+        }
+    }
 }

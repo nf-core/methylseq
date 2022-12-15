@@ -73,7 +73,7 @@ workflow BISMARK {
     /*
      * Run coverage2cytosine
      */
-    if (params.cytosine_report || params.nomeseq) {
+    if (!params.merge_cg || params.nomeseq) {
         BISMARK_COVERAGE2CYTOSINE (
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
             bismark_index

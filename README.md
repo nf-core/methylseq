@@ -34,7 +34,6 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Align Reads                                  | Bismark          | bwa-meth              | biscuit `align`  |
 | Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates | samblaster       |
 | Extract methylation calls                    | Bismark          | MethylDackel          | Biscuit `pileup` |
-| Summarize methylation data to bsseq object   | -                | -                     | Biscuiteer       |
 | Sample report                                | Bismark          | -                     | Biscuit `qc`     |
 | Summary Report                               | Bismark          | -                     | Biscuit `qc`     |
 | Alignment QC                                 | Qualimap         | Qualimap              | Qualimap         |
