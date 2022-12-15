@@ -6,10 +6,11 @@ include { BISCUIT_INDEX   } from '../../modules/nf-core/biscuit/index/main'
 include { BISCUIT_ALIGN   } from '../../modules/nf-core/biscuit/align/main'
 include { BISCUIT_BLASTER } from '../../modules/nf-core/biscuit/biscuitblaster/main'
 include { BISCUIT_BSCONV  } from '../../modules/nf-core/biscuit/bsconv/main'
+include { SAMTOOLS_INDEX  } from '../../modules/nf-core/samtools/index/main'
 include { BISCUIT_PILEUP  } from '../../modules/nf-core/biscuit/pileup/main'
-include { BISCUIT_VCF2BED } from '../../modules/nf-core/biscuit/vcf2bed/main'
-include { BISCUIT_MERGECG } from '../../modules/nf-core/biscuit/mergecg/main'
 include { BISCUIT_QC      } from '../../modules/nf-core/biscuit/qc/main'
+include { BISCUIT_VCF2BED as BISCUIT_VCF2BED_METH } from '../../modules/nf-core/biscuit/vcf2bed/main'
+include { BISCUIT_MERGECG as BISCUIT_MERGECG_METH } from '../../modules/nf-core/biscuit/mergecg/main'
 if (params.nomeseq) {
     include { BISCUIT_VCF2BED as BISCUIT_VCF2BED_NOME } from '../../modules/nf-core/biscuit/vcf2bed/main'
     include { BISCUIT_MERGECG as BISCUIT_MERGECG_NOME } from '../../modules/nf-core/biscuit/mergecg/main'
@@ -51,33 +52,41 @@ workflow BISCUIT {
             biscuit_index
         )
         versions = versions.mix(BISCUIT_ALIGN.out.versions)
-        alignments = BISCUIT_ALIGN.out.bam
+        alignments = BISCUIT_ALIGN.out.indexed_bam
     } else {
         BISCUIT_BLASTER (
             reads,
             biscuit_index
         )
         versions = versions.mix(BISCUIT_BLASTER.out.versions)
-        alignments = BISCUIT_BLASTER.out.bam
+        alignments = BISCUIT_BLASTER.out.indexed_bam
     }
 
     /*
      * Filter out reads with poor bisulfite conversion
      */
-    if (params.skip_bs_conv_filter < 1) {
-        BISCUIT_BSCONV(
+    if (params.bs_conv_filter < 1) {
+        BISCUIT_BSCONV (
             alignments,
             biscuit_index
         )
-        alignments = BISCUIT_BSCONV.out.bsconv_bam
+
+        SAMTOOLS_INDEX ( BISCUIT_BSCONV.out.bsconv_bam )
+
+        BISCUIT_BSCONV.out.bsconv_bam
+            .mix(SAMTOOLS_INDEX.out.bai)
+            .groupTuple(by: 0, size: 2)
+            .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
+            .set{ alignments }
         versions = versions.mix(BISCUIT_BSCONV.out.versions)
+        versions = versions.mix(SAMTOOLS_INDEX.out.versions)
     }
 
     /*
      * Extract all snp and methlyation information
      */
     BISCUIT_PILEUP (
-        alignments,
+        alignments.map{ meta, bam, bai -> [ meta, bam, bai, [], [] ] }, // add in blank lists for paired 'tumor' bam and index
         biscuit_index
     )
     versions = versions.mix(BISCUIT_PILEUP.out.versions)
@@ -85,55 +94,50 @@ workflow BISCUIT {
     /*
      * Extract methlation information
      */
-    BISCUIT_VCF2BED (
+    BISCUIT_VCF2BED_METH (
         BISCUIT_PILEUP.out.vcf
     )
-    versions = versions.mix(BISCUIT_VCF2BED.out.versions)
+    versions = versions.mix(BISCUIT_VCF2BED_METH.out.versions)
 
+    /*
+    * Extract accessibility information
+    */
     if (params.nomeseq) {
-        /*
-        * Extract accessibility information
-        */
         BISCUIT_VCF2BED_NOME (
             BISCUIT_PILEUP.out.vcf
         )
+        nome_bed = BISCUIT_VCF2BED_NOME.out.bed
         versions = versions.mix(BISCUIT_VCF2BED_NOME.out.versions)
-
-        /*
-        * Merge information from neighboring C and G, where both are in HCGD context
-        */
-        if (params.merge_cg) {
-            BISCUIT_MERGECG_NOME (
-                BISCUIT_VCF2BED.out.bed,
-                biscuit_index
-            )
-            me_bed = BISCUIT_MERGECG.out.bed
-            versions = versions.mix(BISCUIT_MERGECG.out.versions)
-        } else {
-            me_bed = BISCUIT_VCF2BED.out.bed
-        }
-
     }
 
     /*
      * Merge information from neighboring C and G in CpG context
      */
     if (params.merge_cg) {
-        BISCUIT_MERGECG (
-            BISCUIT_VCF2BED.out.bed,
+        BISCUIT_MERGECG_METH (
+            BISCUIT_VCF2BED_METH.out.bed,
             biscuit_index
         )
-        me_bed = BISCUIT_MERGECG.out.bed
-        versions = versions.mix(BISCUIT_MERGECG.out.versions)
+        me_bed = BISCUIT_MERGECG_METH.out.mergecg_bed
+        versions = versions.mix(BISCUIT_MERGECG_METH.out.versions)
+
+        if (params.nomeseq) {
+            BISCUIT_MERGECG_NOME (
+                BISCUIT_VCF2BED_NOME.out.bed,
+                biscuit_index
+            )
+            nome_bed = BISCUIT_MERGECG_NOME.out.mergecg_bed
+            versions = versions.mix(BISCUIT_MERGECG_NOME.out.versions)
+        }
     } else {
-        me_bed = BISCUIT_VCF2BED.out.bed
+        me_bed = BISCUIT_VCF2BED_METH.out.bed
     }
 
     /*
      * QC alignments
      */
     BISCUIT_QC (
-        alignments,
+        alignments.map{meta, bam, bai -> [meta, bam]},
         biscuit_index
     )
     versions = versions.mix(BISCUIT_QC.out.versions)
