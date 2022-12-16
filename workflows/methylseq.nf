@@ -128,7 +128,7 @@ workflow METHYLSEQ {
     .reads
     .mix(ch_fastq.single)
     .set { ch_cat_fastq }
-    versions = versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
+    versions = versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
@@ -203,7 +203,7 @@ workflow METHYLSEQ {
     PRESEQ_LCEXTRAP (
         ch_bam
     )
-    versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first().ifEmpty(null))
+    versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         versions.unique().collectFile(name: 'collated_versions.yml')
