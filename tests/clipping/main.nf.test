@@ -15,7 +15,7 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert workflow.trace.tasks().size() == 35
+            assert snapshot(workflow.trace.tasks().size()).match()
             // TODO NFCORE_METHYLSEQ:METHYLSEQ:TRIMGALORE should include
             // --three_prime_clip_r1 10 from the --em_seq preset
             // --clip_r1 2 correctly overriding from --clip_r1
