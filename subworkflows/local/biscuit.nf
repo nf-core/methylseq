@@ -54,7 +54,7 @@ workflow BISCUIT {
         versions = versions.mix(BISCUIT_ALIGN.out.versions)
         BISCUIT_ALIGN.out.bam
             .mix(BISCUIT_ALIGN.out.bai)
-            .groupTuple(by: 0, size: 2)
+            .groupTuple(by: 0, size: 2, sort: true)
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
     } else {
@@ -65,7 +65,7 @@ workflow BISCUIT {
         versions = versions.mix(BISCUIT_BLASTER.out.versions)
         BISCUIT_BLASTER.out.bam
             .mix(BISCUIT_BLASTER.out.bai)
-            .groupTuple(by: 0, size: 2)
+            .groupTuple(by: 0, size: 2, sort: true)
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
     }
@@ -83,7 +83,7 @@ workflow BISCUIT {
 
         BISCUIT_BSCONV.out.bsconv_bam
             .mix(SAMTOOLS_INDEX.out.bai)
-            .groupTuple(by: 0, size: 2)
+            .groupTuple(by: 0, size: 2, sort: true)
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
         versions = versions.mix(BISCUIT_BSCONV.out.versions)
