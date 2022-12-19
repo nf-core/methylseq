@@ -52,14 +52,22 @@ workflow BISCUIT {
             biscuit_index
         )
         versions = versions.mix(BISCUIT_ALIGN.out.versions)
-        alignments = BISCUIT_ALIGN.out.indexed_bam
+        BISCUIT_ALIGN.out.bam
+            .mix(BISCUIT_ALIGN.out.bai)
+            .groupTuple(by: 0, size: 2)
+            .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
+            .set{ alignments }
     } else {
         BISCUIT_BLASTER (
             reads,
             biscuit_index
         )
         versions = versions.mix(BISCUIT_BLASTER.out.versions)
-        alignments = BISCUIT_BLASTER.out.indexed_bam
+        BISCUIT_BLASTER.out.bam
+            .mix(BISCUIT_BLASTER.out.bai)
+            .groupTuple(by: 0, size: 2)
+            .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
+            .set{ alignments }
     }
 
     /*

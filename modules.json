@@ -5,16 +5,6 @@
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {
-                    "biscuit/align": {
-                        "branch": "master",
-                        "git_sha": "653588be2a4aadab487b530643dbc9baf7a485c4",
-                        "installed_by": ["modules"]
-                    },
-                    "biscuit/biscuitblaster": {
-                        "branch": "master",
-                        "git_sha": "653588be2a4aadab487b530643dbc9baf7a485c4",
-                        "installed_by": ["modules"]
-                    },
                     "biscuit/bsconv": {
                         "branch": "master",
                         "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
@@ -168,6 +158,22 @@
                     "trimgalore": {
                         "branch": "master",
                         "git_sha": "b51a69e30973c71950225c817ad07a3337d22c40",
+                        "installed_by": ["modules"]
+                    }
+                }
+            }
+        },
+        "https://github.com/njspix/modules": {
+            "modules": {
+                "nf-core": {
+                    "biscuit/align": {
+                        "branch": "master",
+                        "git_sha": "ff4a08b5155b1e21d782bba7984a2169a6515d77",
+                        "installed_by": ["modules"]
+                    },
+                    "biscuit/biscuitblaster": {
+                        "branch": "master",
+                        "git_sha": "086027e28e2cdccf2fd5f6c9914c80c76bfbb61d",
                         "installed_by": ["modules"]
                     }
                 }
