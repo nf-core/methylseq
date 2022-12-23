@@ -70,7 +70,9 @@ jobs:
         id: cache-nf-test
         uses: actions/cache@v3
         with:
-          path: /usr/local/bin/nf-test
+          path: |
+            /usr/local/bin/nf-test
+            /home/runner/.nf-test/nf-test.jar
           key: methylseq-nf-test
 
       - name: Install nf-test
