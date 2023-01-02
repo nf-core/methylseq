@@ -19,20 +19,12 @@ if (params.nomeseq) {
 workflow BISCUIT {
     take:
     reads  // channel: [ val(meta), [ reads ] ]
+    biscuit_index // channel : /path/to/biscuit/index
+    skip_deduplication
+    merge_cg
 
     main:
     versions = Channel.empty()
-
-    /*
-     * Generate biscuit index if not supplied
-     */
-    if (params.biscuit_index) {
-        biscuit_index = file(params.biscuit_index)
-    } else {
-        BISCUIT_INDEX(params.fasta)
-        biscuit_index = BISCUIT_INDEX.out.index
-        versions = versions.mix(BISCUIT_INDEX.out.versions)
-    }
 
     /*
      *  If we're using the --pbat option, biscuit will be set to -b 1.
@@ -46,7 +38,7 @@ workflow BISCUIT {
     /*
      * Align with biscuit; mark duplicates unless params.skip_deduplication
      */
-    if (params.skip_deduplication || params.rrbs){
+    if (skip_deduplication){
         BISCUIT_ALIGN (
             reads,
             biscuit_index
@@ -54,7 +46,7 @@ workflow BISCUIT {
         versions = versions.mix(BISCUIT_ALIGN.out.versions)
         BISCUIT_ALIGN.out.bam
             .mix(BISCUIT_ALIGN.out.bai)
-            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1})
+            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1}) // make sure the bam is always before its index
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
     } else {
@@ -83,7 +75,7 @@ workflow BISCUIT {
 
         BISCUIT_BSCONV.out.bsconv_bam
             .mix(SAMTOOLS_INDEX_BSCONV.out.bai)
-            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1})
+            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1}) // make sure bam is always before bai
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
         versions = versions.mix(BISCUIT_BSCONV.out.versions)
@@ -94,7 +86,7 @@ workflow BISCUIT {
      * Extract all snp and methlyation information
      */
     BISCUIT_PILEUP (
-        alignments.map{ meta, bam, bai -> [ meta, bam, bai, [], [] ] }, // add in blank lists for paired 'tumor' bam and index
+        alignments.map{ meta, bam, bai -> [ meta, bam, bai, [], [] ] }, // add in blank lists to cover 'optional' pileup inputs
         biscuit_index
     )
     versions = versions.mix(BISCUIT_PILEUP.out.versions)
@@ -169,10 +161,7 @@ workflow BISCUIT {
 
 
 // TODO:
-// methylation extraction
-// samtools flagstat, stats
-// reports
-// multiqc
+// include SNP information?
 
 
 
