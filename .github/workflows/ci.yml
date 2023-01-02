@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - dev
-      - dsl2
   pull_request:
   release:
     types: [published]
 
 env:
   NXF_ANSI_LOG: false
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -21,7 +24,7 @@ jobs:
     strategy:
       matrix:
         NXF_VER:
-          - "21.10.3"
+          - "22.10.1"
           - "latest-everything"
         aligner:
           - bismark
@@ -30,14 +33,32 @@ jobs:
         profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - name: Cache test data
+        id: cache-testdata
+        uses: actions/cache@v3
         with:
-          path: /usr/local/bin/nextflow
-          key: ${{ runner.os }}
-          restore-keys: |
-            ${{ runner.os }}-nextflow-
+          path: ./test-datasets/
+          key: methylseq-test-data
+
+      - name: Check out test data
+        if: steps.cache-testdata.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: nf-core/test-datasets
+          ref: methylseq
+          path: ./test-datasets/
+
+      - name: Replace remote paths in samplesheets
+        run: |
+          for f in ./test-datasets/samplesheet/*csv; do
+            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
+            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
+            echo "========== $f ============"
+            cat $f
+            echo "========================================"
+          done;
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
@@ -68,7 +89,11 @@ jobs:
         run: conda clean -a
 
       - name: Run nf-test
-        run: nf-test test --profile=${{ matrix.profile }} tests/${{ matrix.aligner }}/*.nf.test --tap=test.tap
+        run: |
+          nf-test test \
+            --profile=test_ci,test,${{ matrix.profile }} \
+            tests/${{ matrix.aligner }}/*.nf.test \
+            --tap=test.tap
 
       - uses: pcolby/tap-summary@v1
         with:
