@@ -2,13 +2,13 @@
  * biscuit subworkflow
  */
 
-include { BISCUIT_INDEX   } from '../../modules/nf-core/biscuit/index/main'
-include { BISCUIT_ALIGN   } from '../../modules/nf-core/biscuit/align/main'
-include { BISCUIT_BLASTER } from '../../modules/nf-core/biscuit/biscuitblaster/main'
-include { BISCUIT_BSCONV  } from '../../modules/nf-core/biscuit/bsconv/main'
-include { SAMTOOLS_INDEX  } from '../../modules/nf-core/samtools/index/main'
-include { BISCUIT_PILEUP  } from '../../modules/nf-core/biscuit/pileup/main'
-include { BISCUIT_QC      } from '../../modules/nf-core/biscuit/qc/main'
+include { BISCUIT_INDEX                           } from '../../modules/nf-core/biscuit/index/main'
+include { BISCUIT_ALIGN                           } from '../../modules/nf-core/biscuit/align/main'
+include { BISCUIT_BLASTER                         } from '../../modules/nf-core/biscuit/biscuitblaster/main'
+include { BISCUIT_BSCONV                          } from '../../modules/nf-core/biscuit/bsconv/main'
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_BSCONV } from '../../modules/nf-core/samtools/index/main'
+include { BISCUIT_PILEUP                          } from '../../modules/nf-core/biscuit/pileup/main'
+include { BISCUIT_QC                              } from '../../modules/nf-core/biscuit/qc/main'
 include { BISCUIT_VCF2BED as BISCUIT_VCF2BED_METH } from '../../modules/nf-core/biscuit/vcf2bed/main'
 include { BISCUIT_MERGECG as BISCUIT_MERGECG_METH } from '../../modules/nf-core/biscuit/mergecg/main'
 if (params.nomeseq) {
@@ -54,7 +54,7 @@ workflow BISCUIT {
         versions = versions.mix(BISCUIT_ALIGN.out.versions)
         BISCUIT_ALIGN.out.bam
             .mix(BISCUIT_ALIGN.out.bai)
-            .groupTuple(by: 0, size: 2, sort: true)
+            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1})
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
     } else {
@@ -65,7 +65,7 @@ workflow BISCUIT {
         versions = versions.mix(BISCUIT_BLASTER.out.versions)
         BISCUIT_BLASTER.out.bam
             .mix(BISCUIT_BLASTER.out.bai)
-            .groupTuple(by: 0, size: 2, sort: true)
+            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1})
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
     }
@@ -79,15 +79,15 @@ workflow BISCUIT {
             biscuit_index
         )
 
-        SAMTOOLS_INDEX ( BISCUIT_BSCONV.out.bsconv_bam )
+        SAMTOOLS_INDEX_BSCONV ( BISCUIT_BSCONV.out.bsconv_bam )
 
         BISCUIT_BSCONV.out.bsconv_bam
-            .mix(SAMTOOLS_INDEX.out.bai)
-            .groupTuple(by: 0, size: 2, sort: true)
+            .mix(SAMTOOLS_INDEX_BSCONV.out.bai)
+            .groupTuple(by: 0, size: 2, sort: {a, b -> a.toString() =~ /\.bai$/ ? 1: -1})
             .map{ meta, bam_bai -> [ meta, bam_bai[0], bam_bai[1] ] }
             .set{ alignments }
         versions = versions.mix(BISCUIT_BSCONV.out.versions)
-        versions = versions.mix(SAMTOOLS_INDEX.out.versions)
+        versions = versions.mix(SAMTOOLS_INDEX_BSCONV.out.versions)
     }
 
     /*
