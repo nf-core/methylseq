@@ -60,7 +60,7 @@ else if ( params.aligner == 'bwameth' ){
 }
 // Aligner: biscuit
 else if ( params.aligner == "biscuit" ){
-    include { BISCUIT as ALIGNER } from '../subworkflows/local/biscuit'
+    include { BISCUIT } from '../subworkflows/local/biscuit'
 }
 
 /*
@@ -153,8 +153,6 @@ workflow METHYLSEQ {
         reads = ch_cat_fastq
     }
 
-
-
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
@@ -169,7 +167,7 @@ workflow METHYLSEQ {
             reads,
             PREPARE_GENOME.out.bismark_index,
             params.skip_deduplication || params.rrbs,
-            params.cytosine_report || params.nomeseq
+            params.merge_cg || params.nomeseq
         )
         versions = versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
@@ -190,6 +188,20 @@ workflow METHYLSEQ {
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
+    }
+    // Aligner: biscuit
+    else if ( params.aligner == "biscuit" ){
+
+        BISCUIT(
+            reads,
+            PREPARE_GENOME.out.biscuit_index,
+            params.skip_deduplication || params.rrbs,
+            params.merge_cg || params.nomeseq
+        )
+        versions = versions.mix(BISCUIT.out.versions.unique{ it.baseName })
+        ch_bam = BISCUIT.out.bam
+        ch_dedup = BISCUIT.out.dedup
+        ch_aligner_mqc = BISCUIT.out.mqc
     }
 
     /*

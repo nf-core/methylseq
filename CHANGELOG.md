@@ -1,5 +1,15 @@
 # nf-core/methylseq
 
+## Working list...
+
+### Pipeline Updates
+
+- Add `Biscuit` aligner as a separate, 3rd workflow
+
+## Refactoring
+
+- Replace `--cytosine_report` parameter with the more broadly applicable `--merge_cg` parameter (default `TRUE`). Setting `--merge_cg false` is equivalent to setting `--cytosine_report`. Parameter name is a bit more descriptive and allows for unified behavior between different pipelines.
+
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
 ### Pipeline Updates

@@ -5,6 +5,7 @@
 include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
 include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
+include { BISCUIT_INDEX               } from '../../modules/nf-core/biscuit/index/main'
 
 workflow PREPARE_GENOME {
 
@@ -15,6 +16,7 @@ workflow PREPARE_GENOME {
     bismark_index = Channel.empty()
     bwameth_index = Channel.empty()
     fasta_index = Channel.empty()
+    biscuit_index = Channel.empty()
 
     // FASTA, if supplied
     if (params.fasta) {
@@ -61,12 +63,27 @@ workflow PREPARE_GENOME {
             versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
+    // Aligner: biscuit
+    else if ( params.aligner == "biscuit" ){
+
+        /*
+        * Generate biscuit index if not supplied
+        */
+        if (params.biscuit_index) {
+            biscuit_index = file(params.biscuit_index)
+        } else {
+            BISCUIT_INDEX(params.fasta)
+            biscuit_index = BISCUIT_INDEX.out.index
+            versions = versions.mix(BISCUIT_INDEX.out.versions)
+        }
+    }
 
     emit:
     fasta
     bismark_index
     bwameth_index
     fasta_index
+    biscuit_index
     versions
 
 }
