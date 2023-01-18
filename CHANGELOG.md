@@ -9,6 +9,7 @@
 ## Refactoring
 
 - Replace `--cytosine_report` parameter with the more broadly applicable `--merge_cg` parameter (default `TRUE`). Setting `--merge_cg false` is equivalent to setting `--cytosine_report`. Parameter name is a bit more descriptive and allows for unified behavior between different pipelines.
+- Move several parameters around (e.g. `--meth_cutoff` is now applicable to both the Bismark and Biscuit workflows)
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
