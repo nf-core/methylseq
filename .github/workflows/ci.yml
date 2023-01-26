@@ -5,6 +5,14 @@ on:
     branches:
       - dev
   pull_request:
+    paths:
+      - '**.nf'
+      - '**.groovy'
+      - '**.config'
+      - 'bin/'
+      - 'tests/'
+      - 'nextflow_schema.json'
+      - '.github/workflows/*'
   release:
     types: [published]
 
