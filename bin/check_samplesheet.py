@@ -3,13 +3,14 @@
 
 """Provide a command line tool to validate and transform tabular samplesheets."""
 
-
 import argparse
 import csv
 import logging
 import sys
 from collections import Counter
 from pathlib import Path
+
+import yaml
 
 logger = logging.getLogger()
 
@@ -158,10 +159,13 @@ def sniff_format(handle):
     peek = read_head(handle)
     handle.seek(0)
     sniffer = csv.Sniffer()
-    if not sniffer.has_header(peek):
-        logger.critical("The given sample sheet does not appear to contain a header.")
+    try:
+        dialect = sniffer.sniff(peek)
+    except csv.Error as e:
+        logger.critical(f"Could not determine sample sheet delimiter: {handle.name}")
+        logger.critical(e)
         sys.exit(1)
-    dialect = sniffer.sniff(peek)
+
     return dialect
 
 
@@ -194,11 +198,14 @@ def check_samplesheet(file_in, file_out):
     required_columns = {"sample", "fastq_1", "fastq_2"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
-        reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
+        dialect = sniff_format(in_handle)
+        logger.info(f"Detected samplesheet format: '{dialect.delimiter}'")
+        reader = csv.DictReader(in_handle, dialect=dialect)
         # Validate the existence of the expected header columns.
         if not required_columns.issubset(reader.fieldnames):
             req_cols = ", ".join(required_columns)
-            logger.critical(f"The sample sheet **must** contain these column headers: {req_cols}.")
+            logger.critical(f"The sample sheet **must** contain these column headers: {req_cols}")
+            logger.critical(f"Found the following: {', '.join(reader.fieldnames)}")
             sys.exit(1)
         # Validate each row.
         checker = RowChecker()
@@ -208,6 +215,7 @@ def check_samplesheet(file_in, file_out):
             except AssertionError as error:
                 logger.critical(f"{str(error)} On line {i + 2}.")
                 sys.exit(1)
+        # Ties into FastQ merging process
         checker.validate_unique_samples()
     header = list(reader.fieldnames)
     header.insert(1, "single_end")
@@ -242,7 +250,7 @@ def parse_args(argv=None):
         "--log-level",
         help="The desired log level (default WARNING).",
         choices=("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"),
-        default="WARNING",
+        default="INFO",
     )
     return parser.parse_args(argv)
 

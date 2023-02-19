@@ -4,9 +4,66 @@
 
 > _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
 
+## Table of contents
+
+- [Table of contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+- [Running the pipeline](#running-the-pipeline)
+  - [Updating the pipeline](#updating-the-pipeline)
+  - [Reproducibility](#reproducibility)
+
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.
+
+Since bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.
+
+The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.
+
+## Samplesheet input
+
+You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+
+```bash
+--input '[path to samplesheet file]'
+```
+
+### Multiple runs of the same sample
+
+The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+
+```bash
+sample,fastq_1,fastq_2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
+CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+```
+
+### Full samplesheet
+
+The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 4 columns to match those defined in the table below.
+
+A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
+
+```bash
+sample,fastq_1,fastq_2
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
+CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
+CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
+TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
+TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
+TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
+TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+```
+
+| Column    | Description                                                                                                                |
+| --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample.              |
+| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz". |
+| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz". |
+
+An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Samplesheet input
 
@@ -71,7 +128,7 @@ work                # Directory containing the nextflow working files
 # Other nextflow hidden files, eg. history of pipeline runs and old logs.
 ```
 
-### Updating the pipeline
+## Updating the pipeline
 
 When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
 
@@ -79,7 +136,7 @@ When you run the above command, Nextflow automatically pulls the pipeline code f
 nextflow pull nf-core/methylseq
 ```
 
-### Reproducibility
+## Reproducibility
 
 It is a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
@@ -185,9 +242,9 @@ The custom config below can then be provided to the pipeline via the [`-c`](#-c)
 
 ```nextflow
 process {
-    withName: 'NFCORE_RNASEQ:RNASEQ:ALIGN_STAR:STAR_ALIGN' {
-        memory = 100.GB
-    }
+  withName: bismark_align {
+    memory = 32.GB
+  }
 }
 ```
 
@@ -268,3 +325,35 @@ We recommend adding the following line to your environment to limit this (typica
 ```bash
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
+
+## Nextflow edge releases
+
+Stable releases will be becoming more infrequent as Nextflow shifts its development model to becoming more dynamic via the usage of plugins. This will allow functionality to be added as an extension to the core codebase with a release cycle that could potentially be independent to that of Nextflow itself. As a result of the reduction in stable releases, some pipelines may be required to use Nextflow `edge` releases in order to be able to exploit cutting "edge" features e.g. version 3.0 of the nf-core/rnaseq pipeline requires Nextflow `>=20.11.0-edge` in order to be able to directly download Singularity containers over `http` (see [nf-core/rnaseq#496](https://github.com/nf-core/rnaseq/issues/496)).
+
+There are a number of ways you can install Nextflow `edge` releases, the main difference with stable releases being that you have to `export` the version you would like to install before issuing the appropriate installation/execution commands as highlighted below.
+
+- If you have Nextflow installed already, you can issue the version you would like to use on the same line as the pipeline command and it will be fetched if required before the pipeline execution.
+
+```bash
+NXF_VER="20.11.0-edge" nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+- If you have Nextflow installed already, another alternative to the option above is to `export` it as an environment variable before you run the pipeline command:
+
+```bash
+export NXF_VER="20.11.0-edge"
+nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+- If you would like to download and install a Nextflow `edge` release from scratch with minimal fuss:
+
+```bash
+export NXF_VER="20.11.0-edge"
+wget -qO- get.nextflow.io | bash
+sudo mv nextflow /usr/local/bin/
+nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+> Note if you don't have `sudo` privileges required for the last command above then you can move the `nextflow` binary to somewhere else and export that directory to `$PATH` instead. One way of doing that on Linux would be to add `export PATH=$PATH:/path/to/nextflow/binary/` to your `~/.bashrc` file so that it is available every time you login to your system.
+
+- Manually download and install Nextflow from the available [assets](https://github.com/nextflow-io/nextflow/releases) on Github. See [Nextflow installation docs](https://www.nextflow.io/docs/latest/getstarted.html#installation).
