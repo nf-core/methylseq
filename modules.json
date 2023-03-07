@@ -7,42 +7,42 @@
                 "nf-core": {
                     "biscuit/align": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/biscuitblaster": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/bsconv": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/index": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/mergecg": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/pileup": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/qc": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "biscuit/vcf2bed": {
                         "branch": "master",
-                        "git_sha": "014209cabf9120e1a89014e95ad687170ca9c37a",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "bismark/align": {
@@ -122,12 +122,12 @@
                     },
                     "picard/markduplicates": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "2f88b26e9804b99e98f7cd08e74c3f88288a3358",
                         "installed_by": ["modules"]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqc": {
@@ -147,22 +147,22 @@
                     },
                     "samtools/flagstat": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/index": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/sort": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/stats": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "trimgalore": {
