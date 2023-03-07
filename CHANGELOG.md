@@ -5,11 +5,17 @@
 ### Pipeline Updates
 
 - Add `Biscuit` aligner as a separate, 3rd workflow
+  - Add `biscuit_index` parameter
+- Add a `--save_merged` option to save merged (`cat`'d) fastq files for the same sample
 
-## Refactoring
+### Refactoring
 
-- Replace `--cytosine_report` parameter with the more broadly applicable `--merge_cg` parameter (default `TRUE`). Setting `--merge_cg false` is equivalent to setting `--cytosine_report`. Parameter name is a bit more descriptive and allows for unified behavior between different pipelines.
-- Move several parameters around (e.g. `--meth_cutoff` is now applicable to both the Bismark and Biscuit workflows)
+- 🧹 Refactoring of parameters, especially those that generalize across aligners:
+  - `--non_directional` is now under 'Alignment options' rather than 'Bismark options', as both the Bismark and Biscuit aligners support directional and non-directional alignment.
+  - New `Methylation calling options` section
+    - `--no_merge_cg` replaces the former `--cytosine_report` option. Biscuit produces stranded methylation calls, while bismark does not (by default).
+    - `--meth_cutoff`, `--comprehensive` applies to all 3 aligners
+    - `--no_overlap` applies to biscuit and bismark but NOT bwa-meth
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
