@@ -13,8 +13,8 @@
 - 🧹 Refactoring of parameters, especially those that generalize across aligners:
   - `--non_directional` is now under 'Alignment options' rather than 'Bismark options', as both the Bismark and Biscuit aligners support directional and non-directional alignment.
   - New `Methylation calling options` section
-    - `--no_merge_cg` replaces the former `--cytosine_report` option. Biscuit produces stranded methylation calls, while bismark does not (by default).
-    - `--meth_cutoff`, `--comprehensive` applies to all 3 aligners
+    - `--no_merge_cg` replaces the former `--cytosine_report` option. Biscuit and bwa-meth produce stranded methylation calls by default, while bismark does not. This flag abstracts away
+    - `--meth_cutoff`, `--comprehensive`, and the `--ignore` parameters apply to all 3 aligners
     - `--no_overlap` applies to biscuit and bismark but NOT bwa-meth
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
