@@ -342,7 +342,8 @@
                 "nextseq_trim": {
                     "type": "integer",
                     "default": 0,
-                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
+                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases",
+                    "fa_icon": "fas fa-cut"
                 }
             },
             "fa_icon": "fas fa-cut",
@@ -355,12 +356,6 @@
             "default": "",
             "fa_icon": "fas fa-circle",
             "properties": {
-                "local_alignment": {
-                    "type": "boolean",
-                    "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments).",
-                    "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
-                    "fa_icon": "fas fa-search"
-                },
                 "relax_mismatches": {
                     "type": "boolean",
                     "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches).",
@@ -379,6 +374,12 @@
                     "description": "Supply a .gtf file containing known splice sites (bismark_hisat only).",
                     "help_text": "Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline\n\n> NB: This only works when using the `bismark_hisat` aligner with `--align`",
                     "fa_icon": "fas fa-barcode"
+                },
+                "local_alignment": {
+                    "type": "boolean",
+                    "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments).",
+                    "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
+                    "fa_icon": "fas fa-search"
                 },
                 "minins": {
                     "type": "integer",
@@ -450,7 +451,8 @@
                 },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip MultiQC"
+                    "description": "Skip MultiQC",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
