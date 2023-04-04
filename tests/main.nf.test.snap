@@ -1,0 +1,36 @@
+{
+    "summary": {
+        "content": [
+            "bismark_summary_report.txt:md5,778a69ca99a0cce3772c78c383984f41"
+        ],
+        "timestamp": "2023-04-04T06:20:43+0000"
+    },
+    "reference_genome": {
+        "content": [
+            "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
+        ],
+        "timestamp": "2023-04-04T06:20:43+0000"
+    },
+    "qualimap": {
+        "content": [
+            "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
+            "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
+            "genome_results.txt:md5,29e911b75d7160e964530e9607110164"
+        ],
+        "timestamp": "2023-04-04T06:20:43+0000"
+    },
+    "software_versions": {
+        "content": [
+            "software_versions.yml:md5,3e2ad14fb81323eb12880a9050780621"
+        ],
+        "timestamp": "2023-04-04T06:20:43+0000"
+    },
+    "splitting_report": {
+        "content": [
+            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,292c73be0dfaad92ee7d54ec3e5d0dd6",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,3038a90a6e513c3b1c0de540439eb101"
+        ],
+        "timestamp": "2023-04-04T06:20:43+0000"
+    }
+}
