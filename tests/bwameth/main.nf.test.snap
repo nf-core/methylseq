@@ -1,26 +1,32 @@
 {
-    "Single End RRBS with index": {
+    "bwameth_single_end": {
         "content": [
-            34
+            "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
+            "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
+            "SRR389222_sub2.flagstat:md5,2166a52f81f9b3881e8ac060876aa2d9",
+            "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
+            "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
+            "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
+            "genome_results.txt:md5,1ee2e29ac41c2cd7e6a0f00741e8d16e",
+            "genome_results.txt:md5,2c755b15ae5ad4a1d29395320a6264ca",
+            "genome_results.txt:md5,3c7d14ea070df510941c55f72706a7a0",
+            "software_versions.yml:md5,a3d1297b7d2558c1b2dd75a6285bbd1f"
         ],
-        "timestamp": "2022-12-07T15:05:21+0000"
+        "timestamp": "2023-04-04T14:13:25+0000"
     },
-    "Single End with index": {
+    "bwameth_single_end_rrbs": {
         "content": [
-            43
+            "Ecoli_10K_methylated.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
+            "SRR389222_sub1.flagstat:md5,897d500a710a56a7098172167fa71108",
+            "SRR389222_sub2.flagstat:md5,2d680c5657fc029b703b217be4af68e2",
+            "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,3656c54896013b76de978ab95c3f5975",
+            "SRR389222_sub1.sorted_CpG.bedGraph:md5,4475a9462ce86a019015b69b82a9d5a2",
+            "SRR389222_sub2.sorted_CpG.bedGraph:md5,18b8845d9d985d3c203ca6c9c40aab1b",
+            "genome_results.txt:md5,ca30867e16c5ca25c850c81d88563d41",
+            "genome_results.txt:md5,f01c68dd46ca9ec0af3d6ec926763b75",
+            "genome_results.txt:md5,f4513f5aa1622937ccdcfe92a6f877c0",
+            "software_versions.yml:md5,ad74749da14e07c5344b02023e2e6c55"
         ],
-        "timestamp": "2022-12-07T15:05:21+0000"
-    },
-    "Single End": {
-        "content": [
-            44
-        ],
-        "timestamp": "2022-12-07T15:05:21+0000"
-    },
-    "Single End RRBS": {
-        "content": [
-            35
-        ],
-        "timestamp": "2022-12-07T15:05:21+0000"
+        "timestamp": "2023-04-04T14:13:25+0000"
     }
 }

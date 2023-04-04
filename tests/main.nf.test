@@ -4,7 +4,7 @@ nextflow_pipeline {
 
     name "Test Workflow main.nf"
     script "main.nf"
-    tag "METHYLSEQ:MAIN"
+    tag "methylseq"
 
     test("METHYLSEQ Workflow main.nf") {
 
@@ -16,16 +16,6 @@ nextflow_pipeline {
         }
 
         then {
-            // Clean up anything from previous runs
-            FileUtil.deleteDirectory(new File(".nf-test/indexes/"));
-            // Create the indexes directory
-            new File(".nf-test/indexes/").mkdirs()
-            // Copy the ref genome to a stable location for next tests
-            FileUtil.copyDirectory(
-                new File("$outputDir/bismark/reference_genome/BismarkIndex/").getAbsolutePath(),
-                new File(".nf-test/indexes/BismarkIndex/").getAbsolutePath()
-            )
-
             // Assert Workflow Success
             assert workflow.success
 
