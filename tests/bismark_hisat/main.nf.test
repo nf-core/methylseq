@@ -2,10 +2,10 @@ import com.askimed.nf.test.util.FileUtil;
 
 nextflow_pipeline {
 
-    name "bismark_hisat"
+    name "Bismark Hisat"
     script "main.nf"
 
-    test("BISMARK_HISAT_Single_End") {
+    test("Single End") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -24,22 +24,21 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/BismarkIndex/").getAbsolutePath()
             )
 
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.deduplicated_splitting_report.txt"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_hisat2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_hisat2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bismark_hisat_single_end")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+            )
         }
     }
 
-    test("BISMARK_HISAT_Single_End_with_Index") {
+    test("Single End With Index") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -51,12 +50,11 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }
 
-    test("BISMARK_HISAT_Single_End_RRBS") {
+    test("Single End With RRBS") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -68,22 +66,21 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub1_bismark_hisat2_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub2.merged_bismark_hisat2_splitting_report.txt"),
                             path("$outputDir/bismark_hisat/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bismark_hisat_single_end_rrbs")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+            )
         }
     }
 
-    test("BISMARK_HISAT_Single_End_RRBS_With_Index") {
+    test("Single End With RRBS With Index") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -97,7 +94,6 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }

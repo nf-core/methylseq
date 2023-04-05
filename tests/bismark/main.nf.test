@@ -2,10 +2,10 @@ import com.askimed.nf.test.util.FileUtil;
 
 nextflow_pipeline {
 
-    name "BISMARK"
+    name "Bismark"
     script "main.nf"
 
-    test("BISMARK_Single_End") {
+    test("Single End") {
         when {
             params {
                 aligner = "bismark"
@@ -24,22 +24,21 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/BismarkIndex/").getAbsolutePath()
             )
 
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bismark_single_end")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+            )
         }
     }
 
-    test("BISMARK_Single_End_With_Index") {
+    test("Single End With Index") {
         when {
             params {
                 aligner = "bismark"
@@ -51,12 +50,11 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }
 
-    test("BISMARK_Single_End_RRBS") {
+    test("Single End With RRBS") {
         when {
             params {
                 aligner = "bismark"
@@ -68,22 +66,21 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_bismark_bt2_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2.merged_bismark_bt2_splitting_report.txt"),
                             path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bismark_single_end_rrbs")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+            )
         }
     }
 
-    test("BISMARK_Single_End_RRBS_With_Index") {
+    test("Single End With RRBS With Index") {
         when {
             params {
                 aligner = "bismark"
@@ -97,12 +94,11 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }
 
-    test("BISMARK_Single_End_NOMe-seq") {
+    test("Single End NOMe-seq") {
         when {
             params {
                 aligner = "bismark"
@@ -112,22 +108,21 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bismark_single_end_nomeseq")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_nomeseq") }
+            )
         }
     }
 
-    test("BISMARK_Clipping_Params") {
+    test("Clipping Params") {
         when {
             params {
                 aligner = "bismark"
@@ -138,11 +133,10 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bismark/summary/bismark_summary_report.txt")).match("bismark_clipping_params")
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark/summary/bismark_summary_report.txt")).match("Clipping Params") }
+            )
         }
     }
 

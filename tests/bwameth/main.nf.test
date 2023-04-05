@@ -2,10 +2,10 @@ import com.askimed.nf.test.util.FileUtil;
 
 nextflow_pipeline {
 
-    name "bwameth"
+    name "Bwameth"
     script "main.nf"
 
-    test("BWAMETH_Single_End") {
+    test("Single End") {
         when {
             params {
                 aligner = "bwameth"
@@ -24,11 +24,9 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/bwameth/").getAbsolutePath()
             )
 
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
                             path("$outputDir/methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph"),
@@ -37,11 +35,12 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bwameth_single_end")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+            )
         }
     }
 
-    test("BWAMETH_Single_End_With_Index") {
+    test("Single End With Index") {
         when {
             params {
                 aligner = "bwameth"
@@ -53,12 +52,11 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }
 
-    test("BWAMETH_Single_End_RRBS") {
+    test("Single End RRBS") {
         when {
             params {
                 aligner = "bwameth"
@@ -71,11 +69,9 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
-            assert workflow.success
-
-            // Snapshot
-            assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
                             path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
                             path("$outputDir/methyldackel/Ecoli_10K_methylated.sorted_CpG.bedGraph"),
@@ -84,11 +80,12 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("bwameth_single_end_rrbs")
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+            )
         }
     }
 
-    test("BWAMETH_Single_End_RRBS_With_Index") {
+    test("Single End RRBS With Index") {
         when {
             params {
                 aligner = "bwameth"
@@ -102,7 +99,6 @@ nextflow_pipeline {
         }
 
         then {
-            // Assert Workflow Success
             assert workflow.success
         }
     }

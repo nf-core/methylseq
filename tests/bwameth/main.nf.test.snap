@@ -1,5 +1,5 @@
 {
-    "bwameth_single_end": {
+    "single_end": {
         "content": [
             "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
             "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
@@ -12,9 +12,9 @@
             "genome_results.txt:md5,3c7d14ea070df510941c55f72706a7a0",
             "software_versions.yml:md5,a3d1297b7d2558c1b2dd75a6285bbd1f"
         ],
-        "timestamp": "2023-04-04T14:13:25+0000"
+        "timestamp": "2023-04-05T16:40:58+0000"
     },
-    "bwameth_single_end_rrbs": {
+    "single_end_rrbs": {
         "content": [
             "Ecoli_10K_methylated.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
             "SRR389222_sub1.flagstat:md5,897d500a710a56a7098172167fa71108",
@@ -27,6 +27,6 @@
             "genome_results.txt:md5,f4513f5aa1622937ccdcfe92a6f877c0",
             "software_versions.yml:md5,ad74749da14e07c5344b02023e2e6c55"
         ],
-        "timestamp": "2023-04-04T14:13:25+0000"
+        "timestamp": "2023-04-05T16:40:58+0000"
     }
 }
