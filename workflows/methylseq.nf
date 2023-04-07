@@ -193,7 +193,7 @@ workflow METHYLSEQ {
      */
     QUALIMAP_BAMQC (
         ch_dedup,
-        []
+        params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ) : Channel.empty()
     )
     versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
