@@ -391,7 +391,8 @@
             "properties": {
                 "bamqc_regions_file": {
                     "type": "string",
-                    "description": "gff/bed file containing the target regions"
+                    "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
                 }
             }
         },

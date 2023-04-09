@@ -1,5 +1,9 @@
 # nf-core/methylseq
 
+### Pipeline Updates
+
+- Add `--bamqc_regions_file` parameter for targeted methylation sequencing data.
+
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
 ### Pipeline Updates
