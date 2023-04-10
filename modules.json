@@ -7,47 +7,47 @@
                 "nf-core": {
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/deduplicate": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "e84cc8f07607ad7970db9b6cf79b815b78d9cacd",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "cat/fastq": {
@@ -57,77 +57,77 @@
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
-                        "git_sha": "8022c68e7403eecbd8ba9c49496f69f8c49d50f0",
+                        "git_sha": "7101db4432d3268b7fcb5b8f75fa0a022dc5561b",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {
                         "branch": "master",
-                        "git_sha": "3dd73937b084b547f9272bc901e0f120a7913fd8",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/extract": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
-                        "git_sha": "cdaaf00a580a2b3378926b08dd44db1de44ed7b5",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "ee80d14721e76e2e079103b8dcd5d57129e584ba",
                         "installed_by": ["modules"]
                     },
                     "picard/markduplicates": {
                         "branch": "master",
-                        "git_sha": "eca65aa4a5e2e192ac44d6962c8f9260f314ffb8",
+                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
                         "installed_by": ["modules"]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqc": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqccram": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
                         "installed_by": ["modules"]
                     },
                     "samtools/flagstat": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/index": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/sort": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "samtools/stats": {
                         "branch": "master",
-                        "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
+                        "git_sha": "0f8a77ff00e65eaeebc509b8156eaa983192474b",
                         "installed_by": ["modules"]
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "b51a69e30973c71950225c817ad07a3337d22c40",
+                        "git_sha": "64a3dbc0a30a94cdaed7869d8e34fbb85e886614",
                         "installed_by": ["modules"]
                     }
                 }
