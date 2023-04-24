@@ -67,12 +67,12 @@
                     },
                     "methyldackel/extract": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "2093f9348b5a7cb5e38a50f1673c3bcfe5311ed0",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
-                        "git_sha": "c8e35eb2055c099720a75538d1b8adb3fb5a464c",
+                        "git_sha": "2093f9348b5a7cb5e38a50f1673c3bcfe5311ed0",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
@@ -92,12 +92,12 @@
                     },
                     "qualimap/bamqc": {
                         "branch": "master",
-                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
+                        "git_sha": "0a9c4eb264cce197707491861ce058a4c79d9c4f",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqccram": {
                         "branch": "master",
-                        "git_sha": "75027bf77472b1f4fd2cdd7e46f83119dfb0f2c6",
+                        "git_sha": "0a9c4eb264cce197707491861ce058a4c79d9c4f",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
