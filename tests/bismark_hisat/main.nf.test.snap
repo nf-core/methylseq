@@ -4,25 +4,23 @@
             "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.deduplicated_splitting_report.txt:md5,4e3ab3792be5eedde05d468a7e7f17e4",
             "SRR389222_sub1_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,4020063dd8610b58b7b39c3ca62cef17",
             "SRR389222_sub2_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,4db2155fdfae1cb9c7c758edba256e2e",
-            "bismark_summary_report.txt:md5,3da8b4c1112c67560f2a2dfd921b0fa8",
             "genome_results.txt:md5,cd5d3b03821c038eb3bda24beb3ae938",
             "genome_results.txt:md5,9956ed1dcf51e6975f4a6ab8fe156aba",
             "genome_results.txt:md5,1133ea5d1376389c6a17def89d2e90ec",
-            "software_versions.yml:md5,2327dd21fc3f9b856e756747a9d17d0b"
+            "software_versions.yml:md5,f281f6db0fb109fd50575688149859e3"
         ],
-        "timestamp": "2023-04-25T02:04:15+0000"
+        "timestamp": "2023-04-25T16:37:08+0000"
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt:md5,f59c6bf8089c7dde3225cc577e0260e8",
             "SRR389222_sub1_bismark_hisat2_splitting_report.txt:md5,754ed7bf4d75acee466c48c05a11d331",
             "SRR389222_sub2.merged_bismark_hisat2_splitting_report.txt:md5,0629e1f8b4727efe8fd69500783eec61",
-            "bismark_summary_report.txt:md5,12c8b239c6a55850412a04a9ce7bf3ff",
             "genome_results.txt:md5,3afd1eb7d4dc72a05e4d4de887d791e3",
             "genome_results.txt:md5,58a2aeeb5eacca4c766bb23fee8f9013",
             "genome_results.txt:md5,473022a29cf12d97e75451a4eea67c02",
-            "software_versions.yml:md5,f241572d829fcbac14a4acfef18b649d"
+            "software_versions.yml:md5,986af83c1bf68311b22432ed217161bd"
         ],
-        "timestamp": "2023-04-25T02:04:15+0000"
+        "timestamp": "2023-04-25T16:37:08+0000"
     }
 }

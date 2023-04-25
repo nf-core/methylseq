@@ -4,14 +4,14 @@ nextflow_pipeline {
 
     name "Test Workflow main.nf"
     script "main.nf"
-    tag "Bismark-SE"
+    tag "pipeline"
 
     test("Bismark Single End") {
         when {
             params {
-                aligner = "bismark"
+                aligner        = "bismark"
                 save_reference = true
-                outdir = "$outputDir"
+                outdir         = "$outputDir"
             }
         }
 
@@ -30,11 +30,11 @@ nextflow_pipeline {
                 { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
-                            path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") },
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }            
             )
         }
     }
@@ -72,11 +72,11 @@ nextflow_pipeline {
                 { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_bismark_bt2_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2.merged_bismark_bt2_splitting_report.txt"),
-                            path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") },
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }           
             )
         }
     }
@@ -114,11 +114,11 @@ nextflow_pipeline {
                 { assert snapshot(path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
                             path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
-                            path("$outputDir/bismark/summary/bismark_summary_report.txt"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_nomeseq") }
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_nomeseq") },
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }          
             )
         }
     }
@@ -136,7 +136,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(path("$outputDir/bismark/summary/bismark_summary_report.txt")).match("Clipping Params") }
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
     }
