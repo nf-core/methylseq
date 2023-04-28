@@ -158,13 +158,7 @@ def sniff_format(handle):
     peek = read_head(handle)
     handle.seek(0)
     sniffer = csv.Sniffer()
-    try:
-        dialect = sniffer.sniff(peek)
-    except csv.Error as e:
-        logger.critical(f"Could not determine sample sheet delimiter: {handle.name}")
-        logger.critical(e)
-        sys.exit(1)
-
+    dialect = sniffer.sniff(peek)
     return dialect
 
 
