@@ -9,16 +9,15 @@ include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/fai
 workflow PREPARE_GENOME {
 
     main:
-    versions = Channel.empty()
-
-    fasta = Channel.empty()
-    bismark_index = Channel.empty()
-    bwameth_index = Channel.empty()
-    fasta_index = Channel.empty()
+    ch_versions      = Channel.empty()
+    ch_fasta         = Channel.empty()
+    ch_bismark_index = Channel.empty()
+    ch_bwameth_index = Channel.empty()
+    ch_fasta_index   = Channel.empty()
 
     // FASTA, if supplied
     if (params.fasta) {
-        fasta = Channel.value(file(params.fasta))
+        ch_fasta = Channel.value(file(params.fasta))
     }
 
     // Aligner: bismark or bismark_hisat
@@ -28,11 +27,11 @@ workflow PREPARE_GENOME {
          * Generate bismark index if not supplied
          */
         if (params.bismark_index) {
-            bismark_index = Channel.value(file(params.bismark_index))
+            ch_bismark_index = Channel.value(file(params.bismark_index))
         } else {
-            BISMARK_GENOMEPREPARATION(fasta)
-            bismark_index = BISMARK_GENOMEPREPARATION.out.index
-            versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
+            BISMARK_GENOMEPREPARATION(ch_fasta)
+            ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index
+            ch_versions = ch_versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
         }
 
     }
@@ -43,30 +42,30 @@ workflow PREPARE_GENOME {
          * Generate bwameth index if not supplied
          */
         if (params.bwa_meth_index) {
-            bwameth_index = Channel.value(file(params.bwa_meth_index))
+            ch_bwameth_index = Channel.value(file(params.bwa_meth_index))
         } else {
             BWAMETH_INDEX(fasta)
-            bwameth_index = BWAMETH_INDEX.out.index
-            versions = versions.mix(BWAMETH_INDEX.out.versions)
+            ch_bwameth_index = BWAMETH_INDEX.out.index
+            ch_versions = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
 
         /*
          * Generate fasta index if not supplied
          */
         if (params.fasta_index) {
-            fasta_index = Channel.value(file(params.fasta_index))
+            ch_fasta_index = Channel.value(file(params.fasta_index))
         } else {
             SAMTOOLS_FAIDX([[:], fasta])
-            fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
-            versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
+            ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
+            ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
 
     emit:
-    fasta
-    bismark_index
-    bwameth_index
-    fasta_index
-    versions
+    fasta         = ch_fasta                  // channel: path(genome.fasta)
+    bismark_index = ch_bismark_index          // channel: path(genome.fasta)
+    bwameth_index = ch_bwameth_index          // channel: path(genome.fasta)
+    fasta_index   = ch_fasta_index            // channel: path(genome.fasta)
+    versions      = ch_versions.ifEmpty(null) // channel: [ versions.yml ]
 
 }
