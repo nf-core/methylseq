@@ -18,7 +18,7 @@ workflow PREPARE_GENOME {
 
     // FASTA, if supplied
     if (params.fasta) {
-        fasta = file(params.fasta)
+        fasta = Channel.value(file(params.fasta))
     }
 
     // Aligner: bismark or bismark_hisat
@@ -28,7 +28,7 @@ workflow PREPARE_GENOME {
          * Generate bismark index if not supplied
          */
         if (params.bismark_index) {
-            bismark_index = file(params.bismark_index)
+            bismark_index = Channel.value(file(params.bismark_index))
         } else {
             BISMARK_GENOMEPREPARATION(fasta)
             bismark_index = BISMARK_GENOMEPREPARATION.out.index
@@ -43,7 +43,7 @@ workflow PREPARE_GENOME {
          * Generate bwameth index if not supplied
          */
         if (params.bwa_meth_index) {
-            bwameth_index = file(params.bwa_meth_index)
+            bwameth_index = Channel.value(file(params.bwa_meth_index))
         } else {
             BWAMETH_INDEX(fasta)
             bwameth_index = BWAMETH_INDEX.out.index
@@ -54,7 +54,7 @@ workflow PREPARE_GENOME {
          * Generate fasta index if not supplied
          */
         if (params.fasta_index) {
-            fasta_index = file(params.fasta_index)
+            fasta_index = Channel.value(file(params.fasta_index))
         } else {
             SAMTOOLS_FAIDX([[:], fasta])
             fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
