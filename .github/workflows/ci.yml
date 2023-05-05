@@ -25,7 +25,6 @@ jobs:
       fail-fast: false
       matrix:
         NXF_VER:
-          - "22.10.1"
           - "latest-everything"
         aligner:
           - bismark
