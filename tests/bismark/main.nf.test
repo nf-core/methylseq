@@ -34,7 +34,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
                             path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") },
-                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }            
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
     }
@@ -76,7 +76,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
                             path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") },
-                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }           
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
     }
@@ -118,7 +118,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
                             path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_nomeseq") },
-                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }          
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
     }
