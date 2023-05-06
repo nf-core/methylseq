@@ -8,7 +8,7 @@
 
 - 🤖 GitHub Actions CI - remove testing of minimum supported Nextflow version
 - 🤖 GitHub Actions CI - set lint `actions_ci` to false in `.nf-core.yml`
-- 🤖 GitHub Actions CI - ✨ CI nf-tests snapshots 
+- 🤖 GitHub Actions CI - ✨ CI nf-tests snapshots
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
