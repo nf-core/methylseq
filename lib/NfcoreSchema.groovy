@@ -2,7 +2,6 @@
 // This file holds several functions used to perform JSON parameter validation, help and summary rendering for the nf-core pipeline template.
 //
 
-import nextflow.Nextflow
 import org.everit.json.schema.Schema
 import org.everit.json.schema.loader.SchemaLoader
 import org.everit.json.schema.ValidationException
@@ -84,7 +83,6 @@ class NfcoreSchema {
             'stub-run',
             'test',
             'w',
-            'with-apptainer',
             'with-charliecloud',
             'with-conda',
             'with-dag',
@@ -179,7 +177,7 @@ class NfcoreSchema {
         }
 
         if (has_error) {
-            Nextflow.error('Exiting!')
+            System.exit(1)
         }
     }
 
