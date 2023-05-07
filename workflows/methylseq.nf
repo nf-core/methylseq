@@ -75,6 +75,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
+include { MARKDUPLICATES              } from '../modules/nf-core/picard/markduplicates/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,6 +138,8 @@ workflow METHYLSEQ {
         ch_cat_fastq
     )
     versions = versions.mix(FASTQC.out.versions.first())
+   
+
 
     /*
      * MODULE: Run TrimGalore!
@@ -154,6 +157,10 @@ workflow METHYLSEQ {
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
+     
+     /*
+ * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
+ */
 
     // Aligner: bismark or bismark_hisat
     if( params.aligner =~ /bismark/ ){
@@ -172,6 +179,12 @@ workflow METHYLSEQ {
         ch_dedup = BISMARK.out.dedup
         ch_aligner_mqc = BISMARK.out.mqc
     }
+    // SUBWORKFLOW: delete mark duplicates
+
+    MARKDUPLICATES (
+    ch_bam  
+    )
+    
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
