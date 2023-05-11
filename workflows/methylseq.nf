@@ -179,12 +179,19 @@ workflow METHYLSEQ {
         ch_dedup = BISMARK.out.dedup
         ch_aligner_mqc = BISMARK.out.mqc
     }
-    // SUBWORKFLOW: delete mark duplicates
-
-    MARKDUPLICATES (
-    ch_bam  
+    /*
+     * Run Mark Duplicates on the BAM file
+     */
+        MARK_DUPLICATES (
+        ch_bam,
+        PREPARE_GENOME.out.fasta,
+        PREPARE_GENOME.out.fai
     )
-    
+    ch_bam = MARK_DUPLICATES.out.bam
+    ch_bai = MARK_DUPLICATES.out.bai
+    ch_markduplicates_flagstat_multiqc = MARK_DUPLICATES.out.flagstat
+    ch_versions = ch_versions.mix(MARK_DUPLICATES.out.versions)
+}
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
@@ -200,7 +207,23 @@ workflow METHYLSEQ {
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
     }
+        /*
+     * Run Mark Duplicates on the BAM file
+     */
+        
+        MARK_DUPLICATES (
+        ch_bam,
+        PREPARE_GENOME.out.fasta,
+        PREPARE_GENOME.out.fai
+    )
+    
+    ch_bam = MARK_DUPLICATES.out.bam
+    ch_bai = MARK_DUPLICATES.out.bai
+    ch_markduplicates_flagstat_multiqc = MARK_DUPLICATES.out.flagstat
+    ch_versions = ch_versions.mix(MARK_DUPLICATES.out.versions)
+    ch_multiqc_files = ch_multiqc_files.mix(ch_markduplicates_flagstat_multiqc)
 
+}
     /*
      * MODULE: Qualimap BamQC
      */
