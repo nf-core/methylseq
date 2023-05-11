@@ -76,6 +76,7 @@ include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
 include { MARKDUPLICATES              } from '../modules/nf-core/picard/markduplicates/main'
+include {PICARD_COLLECTHSMETRICS      } from '../modules/nf-core/picard_collecthsmetrics/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -224,6 +225,20 @@ workflow METHYLSEQ {
     ch_multiqc_files = ch_multiqc_files.mix(ch_markduplicates_flagstat_multiqc)
 
 }
+
+/*
+ * SUBWORKFLOW: Collect hybrid selection metrics with Picard
+ */
+def minMQ = params.min_mapping_quality ?: 20
+MARKDUPLICATES(reads)
+PICARD_COLLECTHSMETRICS(
+    reference_genome: PREPARE_GENOME.out.reference_genome,
+    intervals: params.intervals ? file(params.intervals, checkIfExists: true) : null,
+    minimum_mapping_quality: minMQ
+)
+.set { ch_hsmetrics }
+
+
     /*
      * MODULE: Qualimap BamQC
      */
