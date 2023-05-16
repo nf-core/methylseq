@@ -1,32 +1,38 @@
 {
-    "Single End RRBS with index": {
+    "single_end_nomeseq": {
         "content": [
-            32
+            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,292c73be0dfaad92ee7d54ec3e5d0dd6",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,3038a90a6e513c3b1c0de540439eb101",
+            "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
+            "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
+            "genome_results.txt:md5,29e911b75d7160e964530e9607110164",
+            "software_versions.yml:md5,f281f6db0fb109fd50575688149859e3"
         ],
-        "timestamp": "2022-12-07T14:59:14+0000"
+        "timestamp": "2023-04-25T16:12:43+0000"
     },
-    "Single End NOMe-seq": {
+    "single_end": {
         "content": [
-            39
+            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,292c73be0dfaad92ee7d54ec3e5d0dd6",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,3038a90a6e513c3b1c0de540439eb101",
+            "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
+            "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
+            "genome_results.txt:md5,29e911b75d7160e964530e9607110164",
+            "software_versions.yml:md5,f281f6db0fb109fd50575688149859e3"
         ],
-        "timestamp": "2022-12-07T14:59:14+0000"
+        "timestamp": "2023-04-25T16:12:43+0000"
     },
-    "Single End with index": {
+    "single_end_rrbs": {
         "content": [
-            38
+            "Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt:md5,9f72ee663677fb74fde3752b08350858",
+            "SRR389222_sub1_bismark_bt2_splitting_report.txt:md5,f59eac7a30ec7f1f690aac921a5591c0",
+            "SRR389222_sub2.merged_bismark_bt2_splitting_report.txt:md5,43ca6c76e47ce2eb1c8dd6027475b5a6",
+            "genome_results.txt:md5,41becdcecee6ebbdd46f472629731892",
+            "genome_results.txt:md5,7a86634fd1c768d8302e071088641815",
+            "genome_results.txt:md5,9e9b6841f3b3a46a299c61c516aa125e",
+            "software_versions.yml:md5,986af83c1bf68311b22432ed217161bd"
         ],
-        "timestamp": "2022-12-07T14:59:14+0000"
-    },
-    "Single End": {
-        "content": [
-            36
-        ],
-        "timestamp": "2022-12-07T14:59:14+0000"
-    },
-    "Single End RRBS": {
-        "content": [
-            30
-        ],
-        "timestamp": "2022-12-07T14:59:14+0000"
+        "timestamp": "2023-04-25T16:12:43+0000"
     }
 }

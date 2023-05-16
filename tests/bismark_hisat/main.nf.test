@@ -2,10 +2,12 @@ import com.askimed.nf.test.util.FileUtil;
 
 nextflow_pipeline {
 
-    name "bismark_hisat"
+    name "Test Workflow main.nf"
     script "main.nf"
+    profile "test,docker"
+    tag "pipeline"
 
-    test("Single End") {
+    test("Bismark Hisat Single End") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -24,13 +26,21 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/BismarkIndex/").getAbsolutePath()
             )
 
-            assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.deduplicated_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_hisat2.deduplicated_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_hisat2.deduplicated_splitting_report.txt"),
+                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.txt").exists() }
+            )
         }
     }
 
-    test("Single End with index") {
+    test("Bismark Hisat Single End With Index") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -43,12 +53,10 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
         }
     }
 
-    test("Single End RRBS") {
+    test("Bismark Hisat Single End With RRBS") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -60,13 +68,21 @@ nextflow_pipeline {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub1_bismark_hisat2_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_sub2.merged_bismark_hisat2_splitting_report.txt"),
+                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.txt").exists() }
+            )
         }
     }
 
-    test("Single End RRBS with index") {
+    test("Bismark Hisat Single End With RRBS With Index") {
         when {
             params {
                 aligner = "bismark_hisat"
@@ -81,8 +97,6 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
         }
     }
 
