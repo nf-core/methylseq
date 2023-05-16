@@ -4,7 +4,6 @@
     nf-core/methylseq
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Github : https://github.com/nf-core/methylseq
-
     Website: https://nf-co.re/methylseq
     Slack  : https://nfcore.slack.com/channels/methylseq
 ----------------------------------------------------------------------------------------
