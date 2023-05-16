@@ -87,13 +87,13 @@ def multiqc_report = []
 
 workflow METHYLSEQ {
 
-    versions = Channel.empty()
+    ch_versions = Channel.empty()
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
     PREPARE_GENOME()
-    versions = versions.mix(PREPARE_GENOME.out.versions)
+    ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
@@ -117,7 +117,7 @@ workflow METHYLSEQ {
                 return [ meta, fastq.flatten() ]
     }
     .set { ch_fastq }
-    versions = versions.mix(INPUT_CHECK.out.versions)
+    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
 
     //
     // MODULE: Concatenate FastQ files from same sample if required
@@ -128,7 +128,7 @@ workflow METHYLSEQ {
     .reads
     .mix(ch_fastq.single)
     .set { ch_cat_fastq }
-    versions = versions.mix(CAT_FASTQ.out.versions.first())
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
@@ -136,7 +136,7 @@ workflow METHYLSEQ {
     FASTQC (
         ch_cat_fastq
     )
-    versions = versions.mix(FASTQC.out.versions.first())
+    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
     /*
      * MODULE: Run TrimGalore!
@@ -144,7 +144,7 @@ workflow METHYLSEQ {
     if (!params.skip_trimming) {
         TRIMGALORE(ch_cat_fastq)
         reads = TRIMGALORE.out.reads
-        versions = versions.mix(TRIMGALORE.out.versions.first())
+        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
     } else {
         reads = ch_cat_fastq
     }
@@ -167,7 +167,7 @@ workflow METHYLSEQ {
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
-        versions = versions.mix(BISMARK.out.versions.unique{ it.baseName })
+        ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
         ch_dedup = BISMARK.out.dedup
         ch_aligner_mqc = BISMARK.out.mqc
@@ -182,7 +182,7 @@ workflow METHYLSEQ {
             PREPARE_GENOME.out.fasta_index,
             params.skip_deduplication || params.rrbs,
         )
-        versions = versions.mix(BWAMETH.out.versions.unique{ it.baseName })
+        ch_versions = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
@@ -195,7 +195,7 @@ workflow METHYLSEQ {
         ch_dedup,
         []
     )
-    versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
     /*
      * MODULE: Run Preseq
@@ -238,7 +238,7 @@ workflow METHYLSEQ {
             ch_multiqc_logo.toList()
         )
         multiqc_report = MULTIQC.out.report.toList()
-        versions    = versions.mix(MULTIQC.out.versions)
+        ch_versions    = ch_versions.mix(MULTIQC.out.versions)
     }
 }
 
