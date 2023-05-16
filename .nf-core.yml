@@ -2,4 +2,6 @@
 actions_ci: False
 files_exist:
   - bin/markdown_to_html.py
+files_unchanged:
+  - .gitattributes
 repository_type: pipeline

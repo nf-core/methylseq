@@ -29,7 +29,7 @@ jobs:
         id: get_version
         run: |
           VERSION=$(grep 'nextflowVersion' nextflow.config | awk -F'= ' '{print $2}' | tr -d '!>=" ')
-          echo "::set-output name=version::$VERSION"
+          echo "nxf_version=$VERSION" >> $GITHUB_OUTPUT
 
   test:
     name: Run ${{ matrix.profile }} pipeline test
@@ -107,7 +107,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/ --tap=test.tap
+          nf-test test tests/pipeline/ --tap=test.tap
 
       - uses: pcolby/tap-summary@v1
         with:
