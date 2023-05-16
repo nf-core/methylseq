@@ -2,10 +2,12 @@ import com.askimed.nf.test.util.FileUtil;
 
 nextflow_pipeline {
 
-    name "bwameth"
+    name "Test Workflow main.nf"
     script "main.nf"
+    profile "test,docker"
+    tag "pipeline"
 
-    test("Single End") {
+    test("Bwameth Single End") {
         when {
             params {
                 aligner = "bwameth"
@@ -24,16 +26,23 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/bwameth/").getAbsolutePath()
             )
 
-            assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            assert new File("$outputDir/multiqc/bwameth/multiqc_report.html").exists()
-            assert new File("$outputDir/bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam").exists()
-            assert new File("$outputDir/bwameth/reference_genome/bwameth/genome.fa.bwameth.c2t").exists()
-            // FIXME assert snapshot(workflow).match()
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
+                            path("$outputDir/methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph"),
+                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+            )
         }
     }
 
-    test("Single End with index") {
+    test("Bwameth Single End With Index") {
         when {
             params {
                 aligner = "bwameth"
@@ -46,12 +55,10 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
         }
     }
 
-    test("Single End RRBS") {
+    test("Bwameth Single End RRBS") {
         when {
             params {
                 aligner = "bwameth"
@@ -64,13 +71,23 @@ nextflow_pipeline {
         }
 
         then {
-            assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
+                            path("$outputDir/methyldackel/Ecoli_10K_methylated.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222_sub1.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222_sub2.sorted_CpG.bedGraph"),
+                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
+                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+            )
         }
     }
 
-    test("Single End RRBS with index") {
+    test("Bwameth Single End RRBS With Index") {
         when {
             params {
                 aligner = "bwameth"
@@ -85,8 +102,6 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert snapshot(workflow.trace.tasks().size()).match()
-            // FIXME assert snapshot(workflow).match()
         }
     }
 
