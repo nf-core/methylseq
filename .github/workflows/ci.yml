@@ -107,10 +107,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test \
-            --profile=test_ci,test,${{ matrix.profile }} \
-            tests/${{ matrix.aligner }}/*.nf.test \
-            --tap=test.tap
+          nf-test test tests/ --tap=test.tap
 
       - uses: pcolby/tap-summary@v1
         with:
