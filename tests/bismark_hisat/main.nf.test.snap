@@ -1,0 +1,26 @@
+{
+    "Single End RRBS with index": {
+        "content": [
+            29
+        ],
+        "timestamp": "2022-12-07T15:38:47+0000"
+    },
+    "Single End with index": {
+        "content": [
+            35
+        ],
+        "timestamp": "2022-12-07T15:38:47+0000"
+    },
+    "Single End": {
+        "content": [
+            36
+        ],
+        "timestamp": "2022-12-07T15:38:47+0000"
+    },
+    "Single End RRBS": {
+        "content": [
+            30
+        ],
+        "timestamp": "2022-12-07T15:38:47+0000"
+    }
+}

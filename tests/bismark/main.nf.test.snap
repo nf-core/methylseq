@@ -1,0 +1,32 @@
+{
+    "Single End RRBS with index": {
+        "content": [
+            32
+        ],
+        "timestamp": "2022-12-07T14:59:14+0000"
+    },
+    "Single End NOMe-seq": {
+        "content": [
+            39
+        ],
+        "timestamp": "2022-12-07T14:59:14+0000"
+    },
+    "Single End with index": {
+        "content": [
+            38
+        ],
+        "timestamp": "2022-12-07T14:59:14+0000"
+    },
+    "Single End": {
+        "content": [
+            36
+        ],
+        "timestamp": "2022-12-07T14:59:14+0000"
+    },
+    "Single End RRBS": {
+        "content": [
+            30
+        ],
+        "timestamp": "2022-12-07T14:59:14+0000"
+    }
+}

@@ -19,14 +19,15 @@
                     "pattern": "^\\S+\\.csv$",
                     "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/methylseq/usage#samplesheet-input).",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re//usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "./results"
                 },
                 "email": {
                     "type": "string",
@@ -42,30 +43,79 @@
                 }
             }
         },
+        "save_intermediate_files": {
+            "title": "Save intermediate files",
+            "type": "object",
+            "description": "Options for saving a variety of intermediate files",
+            "default": "",
+            "properties": {
+                "save_reference": {
+                    "type": "boolean",
+                    "description": "Save reference(s) to results directory",
+                    "fa_icon": "far fa-save"
+                },
+                "save_align_intermeds": {
+                    "type": "boolean",
+                    "description": "Save aligned intermediates to results directory",
+                    "fa_icon": "fas fa-save"
+                },
+                "unmapped": {
+                    "type": "boolean",
+                    "description": "Bismark only - Save unmapped reads to FastQ files",
+                    "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.",
+                    "fa_icon": "fas fa-recycle"
+                },
+                "save_trimmed": {
+                    "type": "boolean",
+                    "description": "Save trimmed reads to results directory.",
+                    "fa_icon": "fas fa-cut",
+                    "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
+                }
+            },
+            "fa_icon": "fas fa-save"
+        },
         "reference_genome_options": {
             "title": "Reference genome options",
             "type": "object",
             "fa_icon": "fas fa-dna",
-            "description": "Reference genome related files and options required for the workflow.",
+            "description": "Options for the reference genome indices used to align reads.",
             "properties": {
                 "genome": {
                     "type": "string",
                     "description": "Name of iGenomes reference.",
                     "fa_icon": "fas fa-book",
-                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
+                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`.\n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
                 },
                 "fasta": {
                     "type": "string",
                     "format": "file-path",
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file.",
-                    "help_text": "This parameter is *mandatory* if `--genome` is not specified. If you don't have a BWA index available this will be generated for you automatically. Combine with `--save_reference` to save BWA index for future runs.",
-                    "fa_icon": "far fa-file-code"
+                    "pattern": "^\\S+\\.fn?a(sta)?$",
+                    "description": "Path to FASTA genome file",
+                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future."
+                },
+                "fasta_index": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to Fasta index file.",
+                    "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
+                    "fa_icon": "fas fa-bookmark"
+                },
+                "bismark_index": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to a directory containing a Bismark reference index.",
+                    "fa_icon": "fas fa-dot-circle"
+                },
+                "bwa_meth_index": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "bwameth index filename base",
+                    "help_text": "Directory for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/`.",
+                    "fa_icon": "far fa-dot-circle"
                 },
                 "igenomes_base": {
                     "type": "string",
-                    "format": "directory-path",
                     "description": "Directory / URL base for iGenomes references.",
                     "default": "s3://ngi-igenomes/igenomes",
                     "fa_icon": "fas fa-cloud-download-alt",
@@ -80,51 +130,381 @@
                 }
             }
         },
-        "institutional_config_options": {
-            "title": "Institutional config options",
+        "alignment_options": {
+            "title": "Alignment options",
             "type": "object",
-            "fa_icon": "fas fa-university",
-            "description": "Parameters used to describe centralised config profiles. These should not be edited.",
-            "help_text": "The centralised nf-core configuration profiles use a handful of pipeline parameters to describe themselves. This information is then printed to the Nextflow log when you run a pipeline. You should not need to change these values when you run a pipeline.",
+            "description": "",
+            "default": "",
             "properties": {
-                "custom_config_version": {
+                "aligner": {
                     "type": "string",
-                    "description": "Git commit id for Institutional configs.",
-                    "default": "master",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
+                    "default": "bismark",
+                    "description": "Alignment tool to use.",
+                    "fa_icon": "fas fa-dot-circle",
+                    "enum": ["bismark", "bismark_hisat", "bwameth"],
+                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
                 },
-                "custom_config_base": {
-                    "type": "string",
-                    "description": "Base directory for Institutional configs.",
-                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
-                    "hidden": true,
-                    "help_text": "If you're running offline, Nextflow will not be able to fetch the institutional config files from the internet. If you don't need them, then this is not a problem. If you do need them, you should download the files from the repo and tell Nextflow where to find them with this parameter.",
-                    "fa_icon": "fas fa-users-cog"
+                "comprehensive": {
+                    "type": "boolean",
+                    "description": "Output information for all cytosine contexts.",
+                    "fa_icon": "fas fa-arrows-alt",
+                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
+                }
+            },
+            "required": ["aligner"],
+            "fa_icon": "fas fa-braille"
+        },
+        "special_library_types": {
+            "title": "Special library types",
+            "type": "object",
+            "description": "Presets for working with specific bisulfite library preparation methods.",
+            "default": "",
+            "properties": {
+                "pbat": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-outdent",
+                    "description": "Preset for working with PBAT libraries.",
+                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 6` `--clip_r2 9` `--three_prime_clip_r1 6` `--three_prime_clip_r2 9`"
                 },
-                "config_profile_name": {
-                    "type": "string",
-                    "description": "Institutional config name.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
+                "rrbs": {
+                    "type": "boolean",
+                    "description": "Turn on if dealing with MspI digested material.",
+                    "help_text": "Use this parameter when working with RRBS _(Reduced Representation Bisulfite Sequencing)_ data, that is digested using MspI.\n\nSpecifying `--rrbs` will pass on the `--rrbs` parameter to TrimGalore! See the [TrimGalore! documentation](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md#rrbs-specific-options-mspi-digested-material) to read more about the effects of this option.\n\nThis parameter also makes the pipeline skip the deduplication step.",
+                    "fa_icon": "fas fa-compress"
                 },
-                "config_profile_description": {
-                    "type": "string",
-                    "description": "Institutional config description.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
+                "slamseq": {
+                    "type": "boolean",
+                    "description": "Run bismark in SLAM-seq mode.",
+                    "fa_icon": "fas fa-wave-square",
+                    "help_text": "Specify to run Bismark with the `--slam` flag to run bismark in [SLAM-seq mode](https://github.com/FelixKrueger/Bismark/blob/master/CHANGELOG.md#slam-seq-mode) \n\n> NB: Only works with when using the `bismark_hisat` aligner (`--aligner bismark_hisat`)"
                 },
-                "config_profile_contact": {
-                    "type": "string",
-                    "description": "Institutional config contact information.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
+                "em_seq": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cubes",
+                    "description": "Preset for EM-seq libraries.",
+                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
                 },
-                "config_profile_url": {
+                "single_cell": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for single-cell bisulfite libraries.",
+                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 6` `--three_prime_clip_r2 6`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                },
+                "accel": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`",
+                    "description": "Trimming preset for the Accel kit."
+                },
+                "cegx": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the CEGX bisulfite kit.",
+                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
+                },
+                "epignome": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the Epignome kit.",
+                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`"
+                },
+                "zymo": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-cut",
+                    "description": "Trimming preset for the Zymo kit.",
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                }
+            },
+            "fa_icon": "fas fa-prescription-bottle"
+        },
+        "adapter_trimming": {
+            "title": "Adapter Trimming",
+            "type": "object",
+            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.",
+            "default": "",
+            "properties": {
+                "clip_r1": {
+                    "type": "integer",
+                    "description": "Trim bases from the 5' end of read 1 (or single-end reads).",
+                    "default": 0,
+                    "fa_icon": "fas fa-cut"
+                },
+                "clip_r2": {
+                    "type": "integer",
+                    "description": "Trim bases from the 5' end of read 2 (paired-end only).",
+                    "default": 0,
+                    "fa_icon": "fas fa-cut"
+                },
+                "three_prime_clip_r1": {
+                    "type": "integer",
+                    "description": "Trim bases from the 3' end of read 1 AFTER adapter/quality trimming.",
+                    "default": 0,
+                    "fa_icon": "fas fa-cut"
+                },
+                "three_prime_clip_r2": {
+                    "type": "integer",
+                    "description": "Trim bases from the 3' end of read 2 AFTER adapter/quality trimming",
+                    "default": 0,
+                    "fa_icon": "fas fa-cut"
+                },
+                "nextseq_trim": {
+                    "type": "integer",
+                    "default": 0,
+                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
+                }
+            },
+            "fa_icon": "fas fa-cut",
+            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |\n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 6          | 9          | 6          | 9          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n| `--epignome`    | 8          | 8          | 8          | 8          |\n| `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         |\n| `--cegx`        | 6          | 6          | 2          | 2          |\n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
+        },
+        "bismark_options": {
+            "title": "Bismark options",
+            "type": "object",
+            "description": "Parameters specific to the Bismark workflow",
+            "default": "",
+            "fa_icon": "fas fa-circle",
+            "properties": {
+                "non_directional": {
+                    "type": "boolean",
+                    "description": "Run alignment against all four possible strands.",
+                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
+                    "fa_icon": "fas fa-exchange-alt"
+                },
+                "cytosine_report": {
+                    "type": "boolean",
+                    "description": "Output stranded cytosine report, following Bismark's bismark_methylation_extractor step.",
+                    "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
+                    "fa_icon": "fas fa-clipboard"
+                },
+                "relax_mismatches": {
+                    "type": "boolean",
+                    "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches).",
+                    "help_text": "By default, Bismark is pretty strict about which alignments it accepts as valid. If you have good reason to believe that your reads will contain more mismatches than normal, this flags can be used to relax the stringency that Bismark uses when accepting alignments. This can greatly improve the number of aligned reads you get back, but may negatively impact the quality of your data.\n\nBismark uses the Bowtie alignment scoring mechanism to filter reads. Mismatches cost `-6`, gap opening `-5` and gap extension `-2`. So, a threshold of`-60` would allow 10 mismatches or ~ 8 x 1-2bp indels. The threshold is dependent on the length of reads, so a penalty value is used where `penalty * bp read length = threshold`.\n\nThe penalty value used by Bismark by default is `0.2`, so for 100bp reads this would be a threshold of `-20`. \n\nIf you specifying the `--relax_mismatches` pipeline flag, Bismark instead uses `0.6`, or a threshold of `-60`. This adds the Bismark flag `--score_min L,0,-0.6` to the alignment command.\n\nThe penalty value can be modified using the `--num_mismatches` pipeline option.",
+                    "fa_icon": "fas fa-bullseye"
+                },
+                "num_mismatches": {
+                    "type": "number",
+                    "default": 0.6,
+                    "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)",
+                    "help_text": "Customise the penalty in the function used to filter reads based on mismatches. The parameter `--relax_mismatches` must also be specified.\n\nSee the parameter documentation for `--relax_mismatches` for an explanation.",
+                    "fa_icon": "fas fa-calculator"
+                },
+                "meth_cutoff": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage to report a methylation call",
+                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+                "no_overlap": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Ignore read 2 methylation when it overlaps read 1",
+                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
+                    "fa_icon": "fas fa-allergies"
+                },
+                "ignore_r2": {
+                    "type": "integer",
+                    "default": 2,
+                    "description": "Ignore methylation in first n bases of 5' end of R2",
+                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "fa_icon": "far fa-eye-slash"
+                },
+                "ignore_3prime_r2": {
+                    "type": "integer",
+                    "default": 2,
+                    "description": "Ignore methylation in last n bases of 3' end of R2",
+                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
+                    "fa_icon": "far fa-eye-slash"
+                },
+                "known_splices": {
                     "type": "string",
-                    "description": "Institutional config URL link.",
+                    "description": "Supply a .gtf file containing known splice sites (bismark_hisat only).",
+                    "help_text": "Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline\n\n> NB: This only works when using the `bismark_hisat` aligner with `--align`",
+                    "fa_icon": "fas fa-barcode"
+                },
+                "local_alignment": {
+                    "type": "boolean",
+                    "description": "Allow soft-clipping of reads (potentially useful for single-cell experiments).",
+                    "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
+                    "fa_icon": "fas fa-search"
+                },
+                "minins": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-compress-alt",
+                    "description": "The minimum insert size for valid paired-end alignments.",
+                    "help_text": "For example, if `--minins 60` is specified and a paired-end alignment consists of two 20-bp alignments in the appropriate orientation with a 20-bp gap between them, that alignment is considered valid (as long as `--maxins` is also satisfied). A 19-bp gap would not be valid in that case.\n\nDefault: no flag (Bismark default: `0`)."
+                },
+                "maxins": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-expand-alt",
+                    "description": "The maximum insert size for valid paired-end alignments.",
+                    "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
+                },
+                "nomeseq": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
+                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
+                }
+            }
+        },
+        "bwa_meth_options": {
+            "title": "bwa-meth options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "min_depth": {
+                    "type": "integer",
+                    "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
+                    "default": 0,
+                    "fa_icon": "fas fa-angle-double-down"
+                },
+                "ignore_flags": {
+                    "type": "boolean",
+                    "description": "MethylDackel - ignore SAM flags",
+                    "fa_icon": "fas fa-eye-slash",
+                    "help_text": "Run MethylDackel with the `--ignore_flags` option, to ignore SAM flags."
+                },
+                "methyl_kit": {
+                    "type": "boolean",
+                    "description": "Save files for use with methylKit",
+                    "help_text": "Run MethylDackel with the `--methyl_kit` option, to produce files suitable for use with the methylKit R package.",
+                    "fa_icon": "fas fa-ellipsis-h"
+                }
+            },
+            "fa_icon": "far fa-circle"
+        },
+        "skip_pipeline_steps": {
+            "title": "Skip pipeline steps",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "skip_trimming": {
+                    "type": "boolean",
+                    "description": "Skip read trimming.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_deduplication": {
+                    "type": "boolean",
+                    "description": "Skip deduplication step after alignment.",
+                    "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_multiqc": {
+                    "type": "boolean",
+                    "description": "Skip MultiQC"
+                }
+            },
+            "fa_icon": "fas fa-fast-forward"
+        },
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "fa_icon": "fas fa-file-import",
+            "description": "Less common options for the pipeline, typically set in a config file.",
+            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "properties": {
+                "help": {
+                    "type": "boolean",
+                    "description": "Display help text.",
                     "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Display version and exit.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                },
+                "publish_dir_mode": {
+                    "type": "string",
+                    "default": "copy",
+                    "hidden": true,
+                    "description": "Method used to save pipeline results to output directory.",
+                    "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
+                    "fa_icon": "fas fa-copy",
+                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"]
+                },
+                "validate_params": {
+                    "type": "boolean",
+                    "description": "Boolean whether to validate parameters against the schema at runtime",
+                    "default": true,
+                    "fa_icon": "fas fa-check-square",
+                    "hidden": true
+                },
+                "email_on_fail": {
+                    "type": "string",
+                    "description": "Email address for completion summary, only when pipeline fails.",
+                    "fa_icon": "fas fa-exclamation-triangle",
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+                    "hidden": true,
+                    "help_text": "This works exactly as with `--email`, except emails are only sent if the workflow is not successful."
+                },
+                "plaintext_email": {
+                    "type": "boolean",
+                    "description": "Send plain-text email instead of HTML.",
+                    "fa_icon": "fas fa-remove-format",
+                    "hidden": true,
+                    "help_text": "Set to receive plain-text e-mails instead of HTML formatted."
+                },
+                "max_multiqc_email_size": {
+                    "type": "string",
+                    "description": "File size limit when attaching MultiQC reports to summary emails.",
+                    "default": "25.MB",
+                    "fa_icon": "fas fa-file-upload",
+                    "hidden": true,
+                    "help_text": "If file generated by pipeline exceeds the threshold, it will not be attached."
+                },
+                "monochrome_logs": {
+                    "type": "boolean",
+                    "description": "Do not use coloured log outputs.",
+                    "fa_icon": "fas fa-palette",
+                    "hidden": true,
+                    "help_text": "Set to disable colourful command line output and live life in monochrome."
+                },
+                "hook_url": {
+                    "type": "string",
+                    "description": "Incoming hook URL for messaging service",
+                    "fa_icon": "fas fa-people-group",
+                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
+                    "hidden": true
+                },
+                "multiqc_config": {
+                    "type": "string",
+                    "description": "Custom config file to supply to MultiQC.",
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
+                },
+                "multiqc_logo": {
+                    "type": "string",
+                    "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
+                    "fa_icon": "fas fa-image",
+                    "hidden": true
+                },
+                "multiqc_methods_description": {
+                    "type": "string",
+                    "description": "Custom MultiQC yaml file containing HTML including a methods description.",
+                    "fa_icon": "fas fa-cog"
+                },
+                "tracedir": {
+                    "type": "string",
+                    "description": "Directory to keep pipeline Nextflow logs and reports.",
+                    "default": "${params.outdir}/pipeline_info",
+                    "fa_icon": "fas fa-cogs",
+                    "hidden": true
+                },
+                "show_hidden_params": {
+                    "type": "boolean",
+                    "fa_icon": "far fa-eye-slash",
+                    "description": "Show all params when using `--help`",
+                    "hidden": true,
+                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
+                },
+                "enable_conda": {
+                    "type": "boolean",
+                    "description": "Run this workflow with Conda. You can also use '-profile condo' instead of providing this parameter.",
+                    "hidden": true
                 }
             }
         },
@@ -163,106 +543,59 @@
                 }
             }
         },
-        "generic_options": {
-            "title": "Generic options",
+        "institutional_config_options": {
+            "title": "Institutional config options",
             "type": "object",
-            "fa_icon": "fas fa-file-import",
-            "description": "Less common options for the pipeline, typically set in a config file.",
-            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "fa_icon": "fas fa-university",
+            "description": "Parameters used to describe centralised config profiles. These should not be edited.",
+            "help_text": "The centralised nf-core configuration profiles use a handful of pipeline parameters to describe themselves. This information is then printed to the Nextflow log when you run a pipeline. You should not need to change these values when you run a pipeline.",
             "properties": {
-                "help": {
-                    "type": "boolean",
-                    "description": "Display help text.",
-                    "fa_icon": "fas fa-question-circle",
-                    "hidden": true
-                },
-                "version": {
-                    "type": "boolean",
-                    "description": "Display version and exit.",
-                    "fa_icon": "fas fa-question-circle",
-                    "hidden": true
-                },
-                "publish_dir_mode": {
+                "custom_config_version": {
                     "type": "string",
-                    "default": "copy",
-                    "description": "Method used to save pipeline results to output directory.",
-                    "help_text": "The Nextflow `publishDir` option specifies which intermediate files should be saved to the output directory. This option tells the pipeline what method should be used to move these files. See [Nextflow docs](https://www.nextflow.io/docs/latest/process.html#publishdir) for details.",
-                    "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
-                    "hidden": true
-                },
-                "email_on_fail": {
-                    "type": "string",
-                    "description": "Email address for completion summary, only when pipeline fails.",
-                    "fa_icon": "fas fa-exclamation-triangle",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
-                    "help_text": "An email address to send a summary email to when the pipeline is completed - ONLY sent if the pipeline does not exit successfully.",
-                    "hidden": true
-                },
-                "plaintext_email": {
-                    "type": "boolean",
-                    "description": "Send plain-text email instead of HTML.",
-                    "fa_icon": "fas fa-remove-format",
-                    "hidden": true
-                },
-                "max_multiqc_email_size": {
-                    "type": "string",
-                    "description": "File size limit when attaching MultiQC reports to summary emails.",
-                    "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
-                    "default": "25.MB",
-                    "fa_icon": "fas fa-file-upload",
-                    "hidden": true
-                },
-                "monochrome_logs": {
-                    "type": "boolean",
-                    "description": "Do not use coloured log outputs.",
-                    "fa_icon": "fas fa-palette",
-                    "hidden": true
-                },
-                "hook_url": {
-                    "type": "string",
-                    "description": "Incoming hook URL for messaging service",
-                    "fa_icon": "fas fa-people-group",
-                    "help_text": "Incoming hook URL for messaging service. Currently, MS Teams and Slack are supported.",
-                    "hidden": true
-                },
-                "multiqc_config": {
-                    "type": "string",
-                    "description": "Custom config file to supply to MultiQC.",
-                    "fa_icon": "fas fa-cog",
-                    "hidden": true
-                },
-                "multiqc_logo": {
-                    "type": "string",
-                    "description": "Custom logo file to supply to MultiQC. File name must also be set in the MultiQC config file",
-                    "fa_icon": "fas fa-image",
-                    "hidden": true
-                },
-                "multiqc_methods_description": {
-                    "type": "string",
-                    "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog"
-                },
-                "tracedir": {
-                    "type": "string",
-                    "description": "Directory to keep pipeline Nextflow logs and reports.",
-                    "default": "${params.outdir}/pipeline_info",
-                    "fa_icon": "fas fa-cogs",
-                    "hidden": true
-                },
-                "validate_params": {
-                    "type": "boolean",
-                    "description": "Boolean whether to validate parameters against the schema at runtime",
-                    "default": true,
-                    "fa_icon": "fas fa-check-square",
-                    "hidden": true
-                },
-                "show_hidden_params": {
-                    "type": "boolean",
-                    "fa_icon": "far fa-eye-slash",
-                    "description": "Show all params when using `--help`",
+                    "description": "Git commit id for Institutional configs.",
+                    "default": "master",
                     "hidden": true,
+                    "fa_icon": "fas fa-users-cog",
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
+                },
+                "custom_config_base": {
+                    "type": "string",
+                    "description": "Base directory for Institutional configs.",
+                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
+                    "hidden": true,
+                    "help_text": "If you're running offline, nextflow will not be able to fetch the institutional config files from the internet. If you don't need them, then this is not a problem. If you do need them, you should download the files from the repo and tell nextflow where to find them with the `custom_config_base` option. For example:\n\n```bash\n## Download and unzip the config files\ncd /path/to/my/configs\nwget https://github.com/nf-core/configs/archive/master.zip\nunzip master.zip\n\n## Run the pipeline\ncd /path/to/my/data\nnextflow run /path/to/pipeline/ --custom_config_base /path/to/my/configs/configs-master/\n```\n\n> Note that the nf-core/tools helper package has a `download` command to download all required pipeline files + singularity containers + institutional configs in one go for you, to make this process easier.",
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "config_profile_name": {
+                    "type": "string",
+                    "description": "Institutional config name.",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "config_profile_description": {
+                    "type": "string",
+                    "description": "Institutional config description.",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "config_profile_contact": {
+                    "type": "string",
+                    "description": "Institutional config contact information.",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "config_profile_url": {
+                    "type": "string",
+                    "description": "Institutional config URL link.",
+                    "hidden": true,
+                    "fa_icon": "fas fa-users-cog"
+                },
+                "test_data_base": {
+                    "type": "string",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq",
+                    "description": "Base path / URL for data used in the test profiles",
+                    "help_text": "Warning: The `-profile test` samplesheet file itself contains remote paths. Setting this parameter does not alter the contents of that file.",
+                    "hidden": true
                 }
             }
         }
@@ -272,16 +605,37 @@
             "$ref": "#/definitions/input_output_options"
         },
         {
+            "$ref": "#/definitions/save_intermediate_files"
+        },
+        {
             "$ref": "#/definitions/reference_genome_options"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/definitions/alignment_options"
+        },
+        {
+            "$ref": "#/definitions/special_library_types"
+        },
+        {
+            "$ref": "#/definitions/adapter_trimming"
+        },
+        {
+            "$ref": "#/definitions/bismark_options"
+        },
+        {
+            "$ref": "#/definitions/bwa_meth_options"
+        },
+        {
+            "$ref": "#/definitions/skip_pipeline_steps"
+        },
+        {
+            "$ref": "#/definitions/generic_options"
         },
         {
             "$ref": "#/definitions/max_job_request_options"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/definitions/institutional_config_options"
         }
     ]
 }
