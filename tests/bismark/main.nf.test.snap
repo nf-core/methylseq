@@ -7,9 +7,9 @@
             "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
             "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
             "genome_results.txt:md5,29e911b75d7160e964530e9607110164",
-            "software_versions.yml:md5,f281f6db0fb109fd50575688149859e3"
+            "software_versions.yml:md5,be66a55d78874ca301b4043fa994d846"
         ],
-        "timestamp": "2023-04-25T16:12:43+0000"
+        "timestamp": "2023-05-16T20:24:22+0000"
     },
     "single_end": {
         "content": [
@@ -19,9 +19,9 @@
             "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
             "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
             "genome_results.txt:md5,29e911b75d7160e964530e9607110164",
-            "software_versions.yml:md5,f281f6db0fb109fd50575688149859e3"
+            "software_versions.yml:md5,be66a55d78874ca301b4043fa994d846"
         ],
-        "timestamp": "2023-04-25T16:12:43+0000"
+        "timestamp": "2023-05-16T20:24:22+0000"
     },
     "single_end_rrbs": {
         "content": [
@@ -31,8 +31,8 @@
             "genome_results.txt:md5,41becdcecee6ebbdd46f472629731892",
             "genome_results.txt:md5,7a86634fd1c768d8302e071088641815",
             "genome_results.txt:md5,9e9b6841f3b3a46a299c61c516aa125e",
-            "software_versions.yml:md5,986af83c1bf68311b22432ed217161bd"
+            "software_versions.yml:md5,0660a77e92fd716304141e5e1bfc1f40"
         ],
-        "timestamp": "2023-04-25T16:12:43+0000"
+        "timestamp": "2023-05-16T20:24:22+0000"
     }
 }
