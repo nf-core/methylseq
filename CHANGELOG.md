@@ -4,7 +4,7 @@
 
 ### Pipeline Updates
 
-- Nothing yet..
+- Updated template to nf-core/tools v2.8
 
 ### Bug fixes & refactoring
 
