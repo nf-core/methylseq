@@ -75,8 +75,8 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoft
 include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
-include { MARKDUPLICATES              } from '../modules/nf-core/picard/markduplicates/main'
-include {PICARD_COLLECTHSMETRICS      } from '../modules/nf-core/picard_collecthsmetrics/main'
+include { PICARD_MARKDUPLICATES       } from '../modules/nf-core/picard/markduplicates/main'
+include { PICARD_COLLECTHSMETRICS     } from '../modules/nf-core/picard_collecthsmetrics/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
