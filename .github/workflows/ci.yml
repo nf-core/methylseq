@@ -16,41 +16,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  get_version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v3
-
-      - name: Get Minimum supported Nextflow version
-        id: get_version
-        run: |
-          VERSION=$(grep 'nextflowVersion' nextflow.config | awk -F'= ' '{print $2}' | tr -d '!>=" ')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
   test:
-    name: Run ${{ matrix.profile }} pipeline test
-    needs: get_version
-
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/fetchngs') }}"
-
+    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
-    env:
-      NXF_VER: ${{ needs.get_version.outputs.version }}
-
     strategy:
       matrix:
-        profile: ["docker"]
-
+        NXF_VER:
+          - "22.10.1"
+          - "latest-everything"
+        aligner:
+          - bismark
+          - bismark_hisat
+          - bwameth
+        profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
-
-      - name: Use Nextflow version
-        run: echo "Using Nextflow version $NXF_VER"
 
       - name: Cache test data
         id: cache-testdata
@@ -107,7 +90,14 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/ --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
+
+      # If the test fails, output the software_versions.yml using the 'batcat' utility
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always /home/runner/work/fetchngs/fetchngs/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       - uses: pcolby/tap-summary@v1
         with:

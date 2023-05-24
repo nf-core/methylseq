@@ -4,7 +4,6 @@ nextflow_pipeline {
 
     name "Test Workflow main.nf"
     script "main.nf"
-    profile "test,docker"
     tag "pipeline"
 
     test("Bwameth Single End") {
@@ -26,6 +25,10 @@ nextflow_pipeline {
                 new File(".nf-test/indexes/bwameth/").getAbsolutePath()
             )
 
+            // Remove Nextflow version from software_versions.yml
+            def softwareVersions = path("$outputDir/pipeline_info/software_versions.yml").yaml
+            if (softwareVersions.containsKey("Workflow")) { softwareVersions.Workflow.remove("Nextflow") }
+
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
@@ -36,8 +39,8 @@ nextflow_pipeline {
                             path("$outputDir/methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end") }
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end") },
+                { assert snapshot(softwareVersions).match("software_versions") }            
             )
         }
     }
@@ -71,6 +74,10 @@ nextflow_pipeline {
         }
 
         then {
+            // Remove Nextflow version from software_versions.yml
+            def softwareVersions = path("$outputDir/pipeline_info/software_versions.yml").yaml
+            if (softwareVersions.containsKey("Workflow")) { softwareVersions.Workflow.remove("Nextflow") }
+
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
@@ -81,8 +88,8 @@ nextflow_pipeline {
                             path("$outputDir/methyldackel/SRR389222_sub2.sorted_CpG.bedGraph"),
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
-                            path("$outputDir/pipeline_info/software_versions.yml")).match("single_end_rrbs") }
+                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end_rrbs") },
+                { assert snapshot(softwareVersions).match("software_versions") }            
             )
         }
     }
