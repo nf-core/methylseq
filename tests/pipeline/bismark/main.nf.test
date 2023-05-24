@@ -37,7 +37,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end") },
-                { assert snapshot(softwareVersions).match("software_versions") },
+                { assert snapshot(softwareVersions).match("single_end_software_versions") },
                 { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
@@ -83,7 +83,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end_rrbs") },
-                { assert snapshot(softwareVersions).match("software_versions") },
+                { assert snapshot(softwareVersions).match("single_end_rrbs_software_versions") },
                 { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
@@ -129,7 +129,7 @@ nextflow_pipeline {
                             path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end_nomeseq") },
-                { assert snapshot(softwareVersions).match("software_versions") },
+                { assert snapshot(softwareVersions).match("single_end_nomeseq_software_versions") },
                 { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
@@ -152,7 +152,7 @@ nextflow_pipeline {
 
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(softwareVersions).match("software_versions") },
+                { assert snapshot(softwareVersions).match("clipping_params_software_versions") },
                 { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() }
             )
         }
