@@ -16,7 +16,7 @@ nextflow_pipeline {
         }
 
         then {
-            // issue #278: Clean up anything from previous runs 
+            // issue #278: Clean up anything from previous runs
             FileUtil.deleteDirectory(new File(".nf-test/indexes/"));
             new File(".nf-test/indexes/").mkdirs()
             // Copy the ref genome to a stable location for next tests
