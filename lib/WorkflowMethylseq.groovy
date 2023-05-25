@@ -13,8 +13,7 @@ class WorkflowMethylseq {
     public static void initialise(params, log) {
         genomeExistsError(params, log)
 
-
-        if (!params.fasta) {
+        if (!params.fasta && params.aligner != 'bismark') {
             Nextflow.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
         }
     }
