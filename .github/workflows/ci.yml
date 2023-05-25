@@ -5,6 +5,9 @@ on:
     branches:
       - dev
   pull_request:
+    branches:
+      - dev
+      - master
   release:
     types: [published]
 
@@ -16,20 +19,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+  test-dev:
+    if: github.base_ref == 'dev' || github.event_name == 'push'
+    name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        NXF_VER:
-          - "22.10.1"
-          - "latest-everything"
-        aligner:
-          - bismark
-          - bismark_hisat
-          - bwameth
+        NXF_VER: ["latest-everything"]
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
         profile: ["docker"] # TODO , "singularity", "conda"]
     steps:
       - name: Check out pipeline code
@@ -70,24 +67,6 @@ jobs:
           wget -qO- https://code.askimed.com/install/nf-test | bash
           sudo mv nf-test /usr/local/bin/
 
-      - name: Set up Singularity
-        if: matrix.profile == 'singularity'
-        uses: eWaterCycle/setup-singularity@v5
-        with:
-          singularity-version: 3.7.1
-
-      - name: Set up miniconda
-        if: matrix.profile == 'conda'
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          channels: conda-forge,bioconda,defaults
-          python-version: ${{ matrix.python-version }}
-
-      - name: Conda clean
-        if: matrix.profile == 'conda'
-        run: conda clean -a
-
       - name: Run nf-test
         run: |
           nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
@@ -97,7 +76,67 @@ jobs:
         if: failure()
         run: |
           sudo apt install bat > /dev/null
-          batcat --decorations=always --color=always /home/runner/work/fetchngs/fetchngs/.nf-test/tests/*/output/pipeline_info/software_versions.yml
+          batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap
+
+  test-master:
+    if: github.base_ref == 'master'
+    name: Run pipeline with test data on master
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        NXF_VER: ["22.10.1", "latest-everything"]
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
+        profile: ["docker"] # TODO , "singularity", "conda"]
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v3
+
+      - name: Cache test data
+        id: cache-testdata
+        uses: actions/cache@v3
+        with:
+          path: ./test-datasets/
+          key: methylseq-test-data
+
+      - name: Check out test data
+        if: steps.cache-testdata.outputs.cache-hit != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: nf-core/test-datasets
+          ref: methylseq
+          path: ./test-datasets/
+
+      - name: Replace remote paths in samplesheets
+        run: |
+          for f in ./test-datasets/samplesheet/*csv; do
+            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
+            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
+            echo "========== $f ============"
+            cat $f
+            echo "========================================"
+          done;
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "${{ matrix.NXF_VER }}"
+
+      - name: Install nf-test
+        run: |
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
+
+      # If the test fails, output the software_versions.yml using the 'batcat' utility
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       - uses: pcolby/tap-summary@v1
         with:
