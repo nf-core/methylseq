@@ -80,6 +80,16 @@
                         "git_sha": "5e34754d42cd2d5d248ca8673c0a53cdf5624905",
                         "installed_by": ["modules"]
                     },
+                    "picard/collecthsmetrics": {
+                        "branch": "master",
+                        "git_sha": "0ce3ab0ac301f160225b22254fa238478b4389f2",
+                        "installed_by": ["modules"]
+                    },
+                    "picard/createsequencedictionary": {
+                        "branch": "master",
+                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "installed_by": ["modules"]
+                    },
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "eca65aa4a5e2e192ac44d6962c8f9260f314ffb8",
