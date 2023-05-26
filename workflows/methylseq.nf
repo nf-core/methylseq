@@ -1,3 +1,4 @@
+params.target_interval = null
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE INPUTS
@@ -18,14 +19,15 @@ def checkPathParamList = [
     params.bwa_meth_index,
     params.bismark_index,
     params.known_splices,
+    params.target_interval
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 
-
-
+// Check if target interval BED file is provided
+def targetIntervalProvided = params.target_interval ? true : false
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,13 +70,16 @@ else if ( params.aligner == 'bwameth' ){
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
-include { FASTQC                      } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
+include { CAT_FASTQ                                  } from '../modules/nf-core/cat/fastq/main'
+include { FASTQC                                     } from '../modules/nf-core/fastqc/main'
+include { MULTIQC                                    } from '../modules/nf-core/multiqc/main'
+include { CUSTOM_DUMPSOFTWAREVERSIONS                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { TRIMGALORE                                 } from '../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC                             } from '../modules/nf-core/qualimap/bamqc/main'
+include { QUALIMAP_BAMQC as QUALIMAP_BAMQC2          } from '../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP                            } from '../modules/nf-core/preseq/lcextrap/main'
+include { PICARD_MARKDUPLICATES                      } from '../modules/nf-core/picard/markduplicates/main'
+include { PICARD_COLLECTHSMETRICS                    } from '../modules/nf-core/picard_collecthsmetrics/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,6 +142,8 @@ workflow METHYLSEQ {
         ch_cat_fastq
     )
     versions = versions.mix(FASTQC.out.versions.first())
+   
+
 
     /*
      * MODULE: Run TrimGalore!
@@ -154,6 +161,10 @@ workflow METHYLSEQ {
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
+     
+     /*
+ * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
+ */
 
     // Aligner: bismark or bismark_hisat
     if( params.aligner =~ /bismark/ ){
@@ -172,6 +183,7 @@ workflow METHYLSEQ {
         ch_dedup = BISMARK.out.dedup
         ch_aligner_mqc = BISMARK.out.mqc
     }
+ 
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
@@ -187,7 +199,7 @@ workflow METHYLSEQ {
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
     }
-
+  
     /*
      * MODULE: Qualimap BamQC
      */
@@ -196,6 +208,22 @@ workflow METHYLSEQ {
         []
     )
     versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    
+    // MODULE: PICARD_MARKDUPLICATES
+
+    PICARD_MARKDUPLICATES (
+        PREPARE_GENOME.out.fasta,
+        PREPARE_GENOME.out.fasta_index
+        ch_bam
+    )
+    versions = versions.mix(PICARD_MARKDUPLICATES.out.versions.first())
+    ch_dedupm = PICARD_MARKDUPLICATES.out.bam
+
+    QUALIMAP_BAMQC2 (
+        ch_dedupm,
+        []
+    )
+    versions = versions.mix(QUALIMAP_BAMQC2.out.versions.first())
 
     /*
      * MODULE: Run Preseq
@@ -204,6 +232,25 @@ workflow METHYLSEQ {
         ch_bam
     )
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    
+    /*
+     * MODULE: HS METRICS.
+     */ 
+    if (targetIntervalProvided){
+        PICARD_COLLECTHSMETRICS (
+            ch_bam,
+            file(params.target_interval)
+        )    
+    } else {
+    process warning {
+        input:
+        script:
+        '''
+        echo "Target interval BED file not provided. HS metrics module will be skipped."
+        '''
+    }
+    ch_bam // Pass the BAM channel directly to the next step without running the HS metrics module   
+}
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         versions.unique().collectFile(name: 'collated_versions.yml')
@@ -223,7 +270,8 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[0] }.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC2.out.results.collect{ it[0] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
