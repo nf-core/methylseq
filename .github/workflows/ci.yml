@@ -1,5 +1,5 @@
-name: nf-core CI
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+name: nf-core CI
 on:
   push:
     branches:
@@ -20,14 +20,16 @@ concurrency:
 
 jobs:
   test-dev:
+    # Only run if the pull request is against the dev branch or if the push is to the dev branch
     if: github.base_ref == 'dev' || github.event_name == 'push'
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
+    # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
         NXF_VER: ["latest-everything"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO , "singularity", "conda"]
+        profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
@@ -80,19 +82,22 @@ jobs:
 
       # Comment on the PR with the test results
       - name: PR comment with file
+        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
           filePath: test.tap
 
   test-master:
+    # Only run if the pull request is against the master branch
     if: github.base_ref == 'master'
     name: Run pipeline with test data on master
     runs-on: ubuntu-latest
+    # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
         NXF_VER: ["22.10.1", "latest-everything"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO , "singularity", "conda"]
+        profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
@@ -141,6 +146,7 @@ jobs:
 
       # Comment on the PR with the test results
       - name: PR comment with file
+        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
           filePath: test.tap
