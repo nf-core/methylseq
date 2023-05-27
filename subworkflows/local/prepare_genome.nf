@@ -31,7 +31,7 @@ workflow PREPARE_GENOME {
         } else {
             BISMARK_GENOMEPREPARATION(ch_fasta)
             ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index
-            ch_versions = versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
+            ch_versions = ch_versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
         }
 
     }
@@ -46,7 +46,7 @@ workflow PREPARE_GENOME {
         } else {
             BWAMETH_INDEX(ch_fasta)
             ch_bwameth_index = BWAMETH_INDEX.out.index
-            ch_versions = versions.mix(BWAMETH_INDEX.out.versions)
+            ch_versions = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
 
         /*
@@ -57,7 +57,7 @@ workflow PREPARE_GENOME {
         } else {
             SAMTOOLS_FAIDX([[:], ch_fasta])
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
-            ch_versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
+            ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
 
