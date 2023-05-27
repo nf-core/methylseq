@@ -2,18 +2,16 @@
 name: nf-core CI
 on:
   push:
-    branches:
-      - dev
+    branches: ["dev"]
   pull_request:
-    branches:
-      - dev
-      - master
+    branches: ["dev", "master"]
   release:
     types: [published]
 
 env:
   NXF_ANSI_LOG: false
 
+# cancel-in-progress: true ensures that if a new push is made to the same branch while a previous run is still in progress, the previous run is cancelled
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
@@ -26,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
+      # Do not fail fast if one of the tests fails
+      fail-fast: false
       matrix:
         NXF_VER: ["latest-everything"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
@@ -34,12 +34,17 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v3
 
+      - name: Hash Github Workspace
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
+
       - name: Cache test data
         id: cache-testdata
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
 
       - name: Check out test data
         if: steps.cache-testdata.outputs.cache-hit != 'true'
@@ -47,7 +52,7 @@ jobs:
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ./test-datasets/
+          path: test-datasets/
 
       - name: Replace remote paths in samplesheets
         run: |
@@ -102,12 +107,17 @@ jobs:
       - name: Check out pipeline code
         uses: actions/checkout@v3
 
+      - name: Hash Github Workspace
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
+
       - name: Cache test data
         id: cache-testdata
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
 
       - name: Check out test data
         if: steps.cache-testdata.outputs.cache-hit != 'true'
@@ -115,7 +125,7 @@ jobs:
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ./test-datasets/
+          path: test-datasets/
 
       - name: Replace remote paths in samplesheets
         run: |
