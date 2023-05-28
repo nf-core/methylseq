@@ -19,7 +19,7 @@ concurrency:
 jobs:
   test-dev:
     # Only run if the pull request is against the dev branch or if the push is to the dev branch
-    if: github.base_ref == 'dev' || github.event_name == 'push'
+    if: ${{ (github.base_ref == 'dev' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq')) && !contains(github.event.head_commit.message, '[ci fast]') }}
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
     # Set up the matrix of different pipeline versions and profiles to test
@@ -94,7 +94,7 @@ jobs:
 
   test-master:
     # Only run if the pull request is against the master branch
-    if: github.base_ref == 'master'
+    if: ${{ (github.base_ref == 'master' && github.repository == 'nf-core/methylseq') }}
     name: Run pipeline with test data on master
     runs-on: ubuntu-latest
     # Set up the matrix of different pipeline versions and profiles to test
