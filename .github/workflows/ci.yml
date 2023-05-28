@@ -149,6 +149,10 @@ jobs:
           wget -qO- https://code.askimed.com/install/nf-test | bash -s ${{ matrix.NFTEST_VER }}
           sudo mv nf-test /usr/local/bin/
 
+      - name: Run nf-test
+        run: |
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
+
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
         if: failure()
