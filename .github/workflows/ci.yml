@@ -19,7 +19,7 @@ concurrency:
 jobs:
   test-dev:
     # Only run if the pull request is against the dev branch or if the push is to the dev branch
-    if: ${{ (github.base_ref == 'dev' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq')) && !contains(github.event.head_commit.message, '[ci fast]') }}
+    if: ${{ (github.base_ref == 'dev' || (github.event_name == 'push')) && !contains(github.event.head_commit.message, '[ci skip]') }}
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
     # Set up the matrix of different pipeline versions and profiles to test
@@ -28,6 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         NXF_VER: ["latest-everything"]
+        NFTEST_VER: ["0.7.3"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
         profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
@@ -71,7 +72,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s ${{ matrix.NFTEST_VER }}
           sudo mv nf-test /usr/local/bin/
 
       - name: Run nf-test
@@ -94,13 +95,14 @@ jobs:
 
   test-master:
     # Only run if the pull request is against the master branch
-    if: ${{ (github.base_ref == 'master' && github.repository == 'nf-core/methylseq') }}
+    if: ${{ (github.base_ref == 'master') }}
     name: Run pipeline with test data on master
     runs-on: ubuntu-latest
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
         NXF_VER: ["22.10.1", "latest-everything"]
+        NFTEST_VER: ["0.7.3"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
         profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
@@ -144,7 +146,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s ${{ matrix.NFTEST_VER }}
           sudo mv nf-test /usr/local/bin/
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
