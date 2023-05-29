@@ -87,11 +87,12 @@ jobs:
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       # Comment on the PR with the test results
-      - name: PR comment with file
-        if: github.event_name == 'pull_request'
+      - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: test.tap
+          message: |
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+          comment_tag: execution
 
   test-master:
     # Only run if the pull request is against the master branch
@@ -161,8 +162,9 @@ jobs:
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       # Comment on the PR with the test results
-      - name: PR comment with file
-        if: github.event_name == 'pull_request'
+      - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: test.tap
+          message: |
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+          comment_tag: execution
