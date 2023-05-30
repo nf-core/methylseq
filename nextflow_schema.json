@@ -92,7 +92,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?$",
                     "description": "Path to FASTA genome file",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. If using Bismark, this parameter is ignored."
+                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. If aligner is Bismark and bismark_index is specified, this parameter is ignored."
                 },
                 "fasta_index": {
                     "type": "string",
