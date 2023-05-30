@@ -374,6 +374,19 @@
             },
             "fa_icon": "far fa-circle"
         },
+        "qualimap_options": {
+            "title": "Qualimap Options",
+            "type": "object",
+            "description": "Qualimap configurations",
+            "default": "",
+            "properties": {
+                "bamqc_regions_file": {
+                    "type": "string",
+                    "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
+                }
+            }
+        },
         "skip_pipeline_steps": {
             "title": "Skip pipeline steps",
             "type": "object",
@@ -619,6 +632,9 @@
         },
         {
             "$ref": "#/definitions/bwa_meth_options"
+        },
+        {
+            "$ref": "#/definitions/qualimap_options"
         },
         {
             "$ref": "#/definitions/skip_pipeline_steps"
