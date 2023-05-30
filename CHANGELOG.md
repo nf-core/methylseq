@@ -4,9 +4,8 @@
 
 ### Pipeline Updates
 
-- Add `--bamqc_regions_file` parameter for targeted methylation sequencing data.
 - Updated template to nf-core/tools v2.8
-- - Add `--bamqc_regions_file` parameter for targeted methylation sequencing data.
+- Add `--bamqc_regions_file` parameter for targeted methylation sequencing data.
 
 ### Bug fixes & refactoring
 
