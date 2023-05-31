@@ -89,7 +89,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}"" --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
@@ -172,7 +172,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}"" --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
