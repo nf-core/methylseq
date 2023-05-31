@@ -89,18 +89,12 @@ jobs:
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
-      # Concatenate all the test results into a single file
-      - name: Concatenate test results
-        id: concat
-        run: |
-          echo "TEST_RESULTS=$(cat *.tap)" >> $GITHUB_OUTPUT
-
       # Comment on the PR with the test results
       - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(execution **${{ steps.concat.outputs.TEST_RESULTS }}**)_
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
           comment_tag: execution
           reactions: eyes
 
@@ -173,17 +167,11 @@ jobs:
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
-      # Concatenate all the test results into a single file
-      - name: Concatenate test results
-        id: concat
-        run: |
-          echo "TEST_RESULTS=$(cat *.tap)" >> $GITHUB_OUTPUT
-
       # Comment on the PR with the test results
       - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(execution **${{ steps.concat.outputs.TEST_RESULTS }}**)_
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
           comment_tag: execution
           reactions: eyes
