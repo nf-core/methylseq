@@ -22,6 +22,9 @@ jobs:
     if: ${{ (github.base_ref == 'dev' || (github.event_name == 'push')) && !contains(github.event.head_commit.message, '[ci skip]') }}
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
+    # Add PR write permissions to allow commenting on the PR
+    permissions:
+      pull-requests: write
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       # Do not fail fast if one of the tests fails
@@ -92,13 +95,20 @@ jobs:
         with:
           message: |
             _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+            ```
+            $(cat *.tap)
+            ```
           comment_tag: execution
+          reactions: eyes, rocket
 
   test-master:
     # Only run if the pull request is against the master branch
     if: ${{ (github.base_ref == 'master') }}
     name: Run pipeline with test data on master
     runs-on: ubuntu-latest
+    # Add PR write permissions to allow commenting on the PR
+    permissions:
+      pull-requests: write
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
@@ -167,4 +177,8 @@ jobs:
         with:
           message: |
             _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+            ```
+            $(cat *.tap)
+            ```
           comment_tag: execution
+          reactions: eyes, rocket
