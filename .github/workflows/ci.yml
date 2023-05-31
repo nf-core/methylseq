@@ -2,11 +2,15 @@
 name: nf-core CI
 on:
   push:
-    branches: ["dev"]
+    branches:
+      - "dev"
   pull_request:
-    branches: ["dev", "master"]
+    branches:
+      - "dev"
+      - "master"
   release:
-    types: [published]
+    types:
+      - "published"
 
 env:
   NXF_ANSI_LOG: false
@@ -31,9 +35,14 @@ jobs:
       # Do not fail fast if one of the tests fails
       fail-fast: false
       matrix:
-        NXF_VER: ["latest-everything"]
-        aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO ["singularity", "conda"]
+        NXF_VER:
+          - "latest-everything"
+        aligner:
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile: # TODO ["singularity", "conda"]
+          - "docker"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
@@ -80,7 +89,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}"" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
@@ -109,9 +118,14 @@ jobs:
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
-        NXF_VER: ["22.10.1", "latest-everything"]
-        aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO ["singularity", "conda"]
+        NXF_VER:
+          - "latest-everything"
+        aligner:
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile: # TODO ["singularity", "conda"]
+          - "docker"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
@@ -158,7 +172,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}"" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
