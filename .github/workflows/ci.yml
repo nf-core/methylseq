@@ -10,6 +10,7 @@ on:
 
 env:
   NXF_ANSI_LOG: false
+  NFTEST_VER: "0.7.3"
 
 # cancel-in-progress: true ensures that if a new push is made to the same branch while a previous run is still in progress, the previous run is cancelled
 concurrency:
@@ -19,7 +20,7 @@ concurrency:
 jobs:
   test-dev:
     # Only run if the pull request is against the dev branch or if the push is to the dev branch
-    if: ${{ (github.base_ref == 'dev' || (github.event_name == 'push')) && !contains(github.event.head_commit.message, '[ci skip]') }}
+    if: github.base_ref == 'dev' || (github.event_name == 'push')
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
     # Add PR write permissions to allow commenting on the PR
@@ -31,7 +32,6 @@ jobs:
       fail-fast: false
       matrix:
         NXF_VER: ["latest-everything"]
-        NFTEST_VER: ["0.7.3"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
         profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash -s ${{ matrix.NFTEST_VER }}
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
           sudo mv nf-test /usr/local/bin/
 
       - name: Run nf-test
@@ -89,17 +89,20 @@ jobs:
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
+      # Concatenate all the test results into a single file
+      - name: Concatenate test results
+        id: concat
+        run: |
+          echo "TEST_RESULTS=$(cat *.tap)" >> $GITHUB_OUTPUT
+
       # Comment on the PR with the test results
       - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-            ```
-            $(cat *.tap)
-            ```
+            _(execution **${{ steps.concat.outputs.TEST_RESULTS }}**)_
           comment_tag: execution
-          reactions: eyes, rocket
+          reactions: eyes
 
   test-master:
     # Only run if the pull request is against the master branch
@@ -113,7 +116,6 @@ jobs:
     strategy:
       matrix:
         NXF_VER: ["22.10.1", "latest-everything"]
-        NFTEST_VER: ["0.7.3"]
         aligner: ["bismark", "bismark_hisat", "bwameth"]
         profile: ["docker"] # TODO ["singularity", "conda"]
     steps:
@@ -157,7 +159,7 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash -s ${{ matrix.NFTEST_VER }}
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
           sudo mv nf-test /usr/local/bin/
 
       - name: Run nf-test
@@ -171,14 +173,17 @@ jobs:
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
+      # Concatenate all the test results into a single file
+      - name: Concatenate test results
+        id: concat
+        run: |
+          echo "TEST_RESULTS=$(cat *.tap)" >> $GITHUB_OUTPUT
+
       # Comment on the PR with the test results
       - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-            ```
-            $(cat *.tap)
-            ```
+            _(execution **${{ steps.concat.outputs.TEST_RESULTS }}**)_
           comment_tag: execution
-          reactions: eyes, rocket
+          reactions: eyes
