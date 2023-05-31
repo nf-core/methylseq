@@ -5,6 +5,7 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "main.nf"
     tag "bwameth"
+    tag "pipeline"
 
     test("Bwameth Single-End") {
         when {
