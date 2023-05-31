@@ -8,7 +8,7 @@
 
 ### Bug fixes & refactoring
 
-- Nothing yet..
+- 🐛 fix `ignore_3prime_r2` param #299
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 
