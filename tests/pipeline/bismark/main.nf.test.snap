@@ -1,175 +1,59 @@
 {
     "clipping_params_software_versions": {
         "content": [
-            {
-                "BISMARK_ALIGN": {
-                    "bismark": "0.24.0"
-                },
-                "BISMARK_GENOMEPREPARATION": {
-                    "bismark": "0.24.0"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "TRIMGALORE": {
-                    "cutadapt": "3.4",
-                    "trimgalore": "0.6.7"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end_software_versions": {
         "content": [
-            {
-                "BISMARK_ALIGN": {
-                    "bismark": "0.24.0"
-                },
-                "BISMARK_GENOMEPREPARATION": {
-                    "bismark": "0.24.0"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "TRIMGALORE": {
-                    "cutadapt": "3.4",
-                    "trimgalore": "0.6.7"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
-            {
-                "BISMARK_ALIGN": {
-                    "bismark": "0.24.0"
-                },
-                "BISMARK_GENOMEPREPARATION": {
-                    "bismark": "0.24.0"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "TRIMGALORE": {
-                    "cutadapt": "3.4",
-                    "trimgalore": "0.6.7"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end_nomeseq": {
         "content": [
-            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,292c73be0dfaad92ee7d54ec3e5d0dd6",
+            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,5ce32b88b28766d6fa0bf91ea9df77d6",
             "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
             "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,3038a90a6e513c3b1c0de540439eb101",
             "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
             "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
             "genome_results.txt:md5,29e911b75d7160e964530e9607110164"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            {
-                "BISMARK_ALIGN": {
-                    "bismark": "0.24.0"
-                },
-                "BISMARK_GENOMEPREPARATION": {
-                    "bismark": "0.24.0"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end": {
         "content": [
-            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,292c73be0dfaad92ee7d54ec3e5d0dd6",
+            "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,5ce32b88b28766d6fa0bf91ea9df77d6",
             "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
             "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,3038a90a6e513c3b1c0de540439eb101",
             "genome_results.txt:md5,7886cc1a96ee892e49898b0d69ed66f2",
             "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
             "genome_results.txt:md5,29e911b75d7160e964530e9607110164"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     },
     "single_end_rrbs": {
         "content": [
-            "Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt:md5,9f72ee663677fb74fde3752b08350858",
+            "Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt:md5,fa089f6146df9667862970b6ddc998b0",
             "SRR389222_sub1_bismark_bt2_splitting_report.txt:md5,f59eac7a30ec7f1f690aac921a5591c0",
             "SRR389222_sub2.merged_bismark_bt2_splitting_report.txt:md5,43ca6c76e47ce2eb1c8dd6027475b5a6",
             "genome_results.txt:md5,41becdcecee6ebbdd46f472629731892",
             "genome_results.txt:md5,7a86634fd1c768d8302e071088641815",
             "genome_results.txt:md5,9e9b6841f3b3a46a299c61c516aa125e"
         ],
-        "timestamp": "2023-05-24T14:17:30+0000"
+        "timestamp": "2023-06-01T02:27:54+0000"
     }
 }

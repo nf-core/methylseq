@@ -1,71 +1,15 @@
 {
     "single_end_software_versions": {
         "content": [
-            {
-                "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.2"
-                },
-                "BWAMETH_INDEX": {
-                    "bwameth": "0.2.2"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "TRIMGALORE": {
-                    "cutadapt": "3.4",
-                    "trimgalore": "0.6.7"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:29:18+0000"
+        "timestamp": "2023-05-28T00:53:43+0000"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            {
-                "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.2"
-                },
-                "BWAMETH_INDEX": {
-                    "bwameth": "0.2.2"
-                },
-                "CAT_FASTQ": {
-                    "cat": "8.30"
-                },
-                "CUSTOM_DUMPSOFTWAREVERSIONS": {
-                    "python": "3.11.0",
-                    "yaml": "6.0"
-                },
-                "FASTQC": {
-                    "fastqc": "0.11.9"
-                },
-                "QUALIMAP_BAMQC": {
-                    "qualimap": "2.2.2-dev"
-                },
-                "SAMPLESHEET_CHECK": {
-                    "python": "3.8.3"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "2.4.0dev"
-                }
-            }
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, Workflow={nf-core/methylseq=2.4.0dev}}"
         ],
-        "timestamp": "2023-05-24T14:29:18+0000"
+        "timestamp": "2023-05-28T00:53:43+0000"
     },
     "single_end": {
         "content": [
@@ -79,7 +23,7 @@
             "genome_results.txt:md5,2c755b15ae5ad4a1d29395320a6264ca",
             "genome_results.txt:md5,3c7d14ea070df510941c55f72706a7a0"
         ],
-        "timestamp": "2023-05-24T14:29:18+0000"
+        "timestamp": "2023-05-28T00:53:43+0000"
     },
     "single_end_rrbs": {
         "content": [
@@ -93,6 +37,6 @@
             "genome_results.txt:md5,f01c68dd46ca9ec0af3d6ec926763b75",
             "genome_results.txt:md5,f4513f5aa1622937ccdcfe92a6f877c0"
         ],
-        "timestamp": "2023-05-24T14:29:18+0000"
+        "timestamp": "2023-05-28T00:53:43+0000"
     }
 }

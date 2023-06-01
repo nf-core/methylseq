@@ -5,11 +5,18 @@
 ### Pipeline Updates
 
 - Updated template to nf-core/tools v2.8
-- Add `--bamqc_regions_file` parameter for targeted methylation sequencing data.
+- Add `--bamqc_regions_file` parameter for targeted methylation sequencing data #302
+- ✨ Add NF-TEST tests and snapshots for the pipeline test profile #310
 
 ### Bug fixes & refactoring
 
-- Nothing yet..
+- 🛠️ update index file channels to explicit value channels (`877ad9f`)
+- 🐛 fix `params.test_data_base` in test and test_full configs (`1105d4f`)
+- 🤖 GitHub Actions CI - pull_reqest to `dev` tests with NXF_VER `latest-everything`
+- 🤖 GitHub Actions CI - pull_reqest to `master` tests with NXF_VER `22.10.1` & `latest-everything`
+- 🤖 GitHub Actions CI - `fail-fast` set to false
+- 🐛 fix `ignore_3prime_r2` param #299
+- 🐛 removed unused directory (`299e5c5`)
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 

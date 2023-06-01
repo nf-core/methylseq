@@ -3,17 +3,20 @@ name: nf-core CI
 on:
   push:
     branches:
-      - dev
+      - "dev"
   pull_request:
     branches:
-      - dev
-      - master
+      - "dev"
+      - "master"
   release:
-    types: [published]
+    types:
+      - "published"
 
 env:
   NXF_ANSI_LOG: false
+  NFTEST_VER: "0.7.3"
 
+# cancel-in-progress: true ensures that if a new push is made to the same branch while a previous run is still in progress, the previous run is cancelled
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
@@ -21,25 +24,40 @@ concurrency:
 jobs:
   test-dev:
     # Only run if the pull request is against the dev branch or if the push is to the dev branch
-    if: github.base_ref == 'dev' || github.event_name == 'push'
+    if: github.base_ref == 'dev' || (github.event_name == 'push')
     name: Run pipeline with test data on dev
     runs-on: ubuntu-latest
+    # Add PR write permissions to allow commenting on the PR
+    permissions:
+      pull-requests: write
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
+      # Do not fail fast if one of the tests fails
+      fail-fast: false
       matrix:
-        NXF_VER: ["latest-everything"]
-        aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO ["singularity", "conda"]
+        NXF_VER:
+          - "latest-everything"
+        aligner:
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile: # TODO ["singularity", "conda"]
+          - "docker"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
+
+      - name: Hash Github Workspace
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
 
       - name: Cache test data
         id: cache-testdata
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
 
       - name: Check out test data
         if: steps.cache-testdata.outputs.cache-hit != 'true'
@@ -47,7 +65,7 @@ jobs:
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ./test-datasets/
+          path: test-datasets/
 
       - name: Replace remote paths in samplesheets
         run: |
@@ -66,12 +84,12 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
           sudo mv nf-test /usr/local/bin/
 
       - name: Run nf-test
         run: |
-          nf-test test tests/pipeline/${{ matrix.aligner }}/ --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
@@ -81,33 +99,48 @@ jobs:
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       # Comment on the PR with the test results
-      - name: PR comment with file
-        if: github.event_name == 'pull_request'
+      - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: test.tap
+          message: |
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+          comment_tag: execution
+          reactions: eyes
 
   test-master:
     # Only run if the pull request is against the master branch
-    if: github.base_ref == 'master'
+    if: ${{ (github.base_ref == 'master') }}
     name: Run pipeline with test data on master
     runs-on: ubuntu-latest
+    # Add PR write permissions to allow commenting on the PR
+    permissions:
+      pull-requests: write
     # Set up the matrix of different pipeline versions and profiles to test
     strategy:
       matrix:
-        NXF_VER: ["22.10.1", "latest-everything"]
-        aligner: ["bismark", "bismark_hisat", "bwameth"]
-        profile: ["docker"] # TODO ["singularity", "conda"]
+        NXF_VER:
+          - "latest-everything"
+        aligner:
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile: # TODO ["singularity", "conda"]
+          - "docker"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
+
+      - name: Hash Github Workspace
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
 
       - name: Cache test data
         id: cache-testdata
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
 
       - name: Check out test data
         if: steps.cache-testdata.outputs.cache-hit != 'true'
@@ -115,7 +148,7 @@ jobs:
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ./test-datasets/
+          path: test-datasets/
 
       - name: Replace remote paths in samplesheets
         run: |
@@ -134,8 +167,12 @@ jobs:
 
       - name: Install nf-test
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
           sudo mv nf-test /usr/local/bin/
+
+      - name: Run nf-test
+        run: |
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
 
       # If the test fails, output the software_versions.yml using the 'batcat' utility
       - name: Output log on failure
@@ -145,8 +182,10 @@ jobs:
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
       # Comment on the PR with the test results
-      - name: PR comment with file
-        if: github.event_name == 'pull_request'
+      - name: Comment PR with execution number
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: test.tap
+          message: |
+            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
+          comment_tag: execution
+          reactions: eyes
