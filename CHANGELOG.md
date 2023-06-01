@@ -6,7 +6,7 @@
 
 - Updated template to nf-core/tools v2.8
 - Add `--bamqc_regions_file` parameter for targeted methylation sequencing data #302
-- ✨ Add NF-TEST tests and snapshots for the pipeline test profile
+- ✨ Add NF-TEST tests and snapshots for the pipeline test profile #310
 
 ### Bug fixes & refactoring
 
