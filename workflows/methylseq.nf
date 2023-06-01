@@ -86,6 +86,7 @@ include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf
 
 // Info required for completion email and summary
 def multiqc_report = []
+ch_metrics = Channel.empty()
 
 workflow METHYLSEQ {
 
@@ -220,12 +221,14 @@ workflow METHYLSEQ {
      */ 
     if (params.target_interval){
         
-        ch_bam_bai.value([[],ch_bam,ch_bai,file(params.target_intervals)])
-        ch_fasta.value([[],PREPARE_GENOME.out.fasta,])
-        ch_fai.value([[],PREPARE_GENOME.out.fasta_index])
-        ch_dic.value([[],ch_dict])
-
+        ch_bam_bai =   Channel.value([[],ch_bam,ch_bai,file(params.target_intervals)])
+        ch_fasta   =   Channel.value([[],PREPARE_GENOME.out.fasta,])
+        ch_fai     =   Channel.value([[],PREPARE_GENOME.out.fasta_index])
+        ch_dic     =   Channel.value([[],ch_dict])
+        
         PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)
+        versions = versions.mix(PICARD_COLLECTHSMETRICS.out.versions.first())
+        ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics)
     } else { exit 2, "Target interval BED file not provided. HS metrics module will be skipped." }
     
     ch_bam // Pass the BAM channel directly to the next step without running the HS metrics module   
@@ -274,6 +277,8 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC2.out.results.collect{ it[0] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_metrics.ifEmpty([]))  
+
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
         }
