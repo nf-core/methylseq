@@ -1,4 +1,3 @@
-params.target_interval = null
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     VALIDATE INPUTS
@@ -25,9 +24,6 @@ for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
-
-// Check if target interval BED file is provided
-def targetIntervalProvided = params.target_interval ? true : false
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +74,6 @@ include { TRIMGALORE                                 } from '../modules/nf-core/
 include { QUALIMAP_BAMQC                             } from '../modules/nf-core/qualimap/bamqc/main'
 include { QUALIMAP_BAMQC as QUALIMAP_BAMQC2          } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP                            } from '../modules/nf-core/preseq/lcextrap/main'
-include { PICARD_MARKDUPLICATES                      } from '../modules/nf-core/picard/markduplicates/main'
 include { PICARD_COLLECTHSMETRICS                    } from '../modules/nf-core/picard_collecthsmetrics/main'
 
 /*
@@ -199,7 +194,41 @@ workflow METHYLSEQ {
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
     }
-  
+    
+    /* 
+    * MODULE: Index Alignments
+    */
+    SAMTOOLS_INDEX_ALIGNMENTS (ch_bam)
+
+    ch_bai = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
+    versions = versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.bai)
+
+    /*
+    * MODULE: Picard CreateSequenceDictionary
+    */
+    PICARD_CREATESEQUENCEDICTIONARY (
+    PREPARE_GENOME.out.fasta,
+    PREPARE_GENOME.out.fasta_index
+    )
+    ch_dict  = PICARD_CREATESEQUENCEDICTIONARY.out.dict
+    versions = versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
+    
+    /*
+     * MODULE: HS METRICS.
+     */ 
+    if (params.target_interval){
+        
+        ch_bam_bai.value([[],ch_bam,ch_bai,file(params.target_intervals)])
+        ch_fasta.value([[],PREPARE_GENOME.out.fasta,])
+        ch_fai.value([[],PREPARE_GENOME.out.fasta_index])
+        ch_dic.value([[],ch_dict])
+
+        PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)
+    } else { exit 2, "Target interval BED file not provided. HS metrics module will be skipped." }
+    
+    ch_bam // Pass the BAM channel directly to the next step without running the HS metrics module   
+
+
     /*
      * MODULE: Qualimap BamQC
      */
@@ -209,21 +238,7 @@ workflow METHYLSEQ {
     )
     versions = versions.mix(QUALIMAP_BAMQC.out.versions.first())
     
-    // MODULE: PICARD_MARKDUPLICATES
-
-    PICARD_MARKDUPLICATES (
-        PREPARE_GENOME.out.fasta,
-        PREPARE_GENOME.out.fasta_index
-        ch_bam
-    )
-    versions = versions.mix(PICARD_MARKDUPLICATES.out.versions.first())
-    ch_dedupm = PICARD_MARKDUPLICATES.out.bam
-
-    QUALIMAP_BAMQC2 (
-        ch_dedupm,
-        []
-    )
-    versions = versions.mix(QUALIMAP_BAMQC2.out.versions.first())
+   
 
     /*
      * MODULE: Run Preseq
@@ -233,23 +248,6 @@ workflow METHYLSEQ {
     )
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
     
-    /*
-     * MODULE: HS METRICS.
-     */ 
-    if (targetIntervalProvided){
-        PICARD_COLLECTHSMETRICS (
-            ch_bam,
-            file(params.target_interval)
-        )    
-    } else {
-    process warning {
-        input:
-        script:
-        '''
-        echo "Target interval BED file not provided. HS metrics module will be skipped."
-        '''
-    }
-    ch_bam // Pass the BAM channel directly to the next step without running the HS metrics module   
 }
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
