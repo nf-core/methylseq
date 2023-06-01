@@ -75,6 +75,8 @@ include { QUALIMAP_BAMQC                             } from '../modules/nf-core/
 include { QUALIMAP_BAMQC as QUALIMAP_BAMQC2          } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP                            } from '../modules/nf-core/preseq/lcextrap/main'
 include { PICARD_COLLECTHSMETRICS                    } from '../modules/nf-core/picard_collecthsmetrics/main'
+include { PICARD_CREATESEQUENCEDICTIONARY } from '../modules/nf-core/picard/createsequencedictionary/main'
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf-core/samtools/index/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
