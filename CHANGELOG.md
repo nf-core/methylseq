@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## v2.4.0dev - [date]
+## [v2.4.0](https://github.com/nf-core/methylseq/releases/tag/2.4.0) - 2023-06-02
 
 ### Pipeline Updates
 
@@ -10,13 +10,14 @@
 
 ### Bug fixes & refactoring
 
-- 🛠️ update index file channels to explicit value channels (`877ad9f`)
-- 🐛 fix `params.test_data_base` in test and test_full configs (`1105d4f`)
-- 🤖 GitHub Actions CI - pull_reqest to `dev` tests with NXF_VER `latest-everything`
-- 🤖 GitHub Actions CI - pull_reqest to `master` tests with NXF_VER `22.10.1` & `latest-everything`
-- 🤖 GitHub Actions CI - `fail-fast` set to false
+- 🛠️ update index file channels to explicit value channels #310
+- 🐛 fix `params.test_data_base` in test and test_full configs #310
+- 🤖 GitHub Actions CI - pull_reqest to `dev` tests with NXF_VER `latest-everything` #310
+- 🤖 GitHub Actions CI - pull_reqest to `master` tests with NXF_VER `22.10.1` & `latest-everything` #310
+- 🤖 GitHub Actions CI - `fail-fast` set to false #310
+- 🐛 get to the bottom of index tests #278
 - 🐛 fix `ignore_3prime_r2` param #299
-- 🐛 removed unused directory (`299e5c5`)
+- 🐛 removed unused directory #297
 
 ## [v2.3.0](https://github.com/nf-core/methylseq/releases/tag/2.3.0) - 2022-12-16
 

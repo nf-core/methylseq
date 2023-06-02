@@ -98,16 +98,6 @@ jobs:
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
 
-      # Comment on the PR with the test results
-      - name: Comment PR with execution number
-        if: github.event_name == 'pull_request' && github.ref != 'refs/heads/dev'
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-          comment_tag: execution
-          reactions: eyes
-
   test-master:
     # Only run if the pull request is against the master branch
     if: ${{ (github.base_ref == 'master') }}
@@ -181,13 +171,3 @@ jobs:
         run: |
           sudo apt install bat > /dev/null
           batcat --decorations=always --color=always /home/runner/work/methylseq/methylseq/.nf-test/tests/*/output/pipeline_info/software_versions.yml
-
-      # Comment on the PR with the test results
-      - name: Comment PR with execution number
-        if: github.event_name == 'pull_request' && github.ref != 'refs/heads/dev'
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: |
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-          comment_tag: execution
-          reactions: eyes
