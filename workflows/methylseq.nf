@@ -18,7 +18,6 @@ def checkPathParamList = [
     params.bwa_meth_index,
     params.bismark_index,
     params.known_splices,
-    params.target_interval
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -209,29 +208,25 @@ workflow METHYLSEQ {
     /*
     * MODULE: Picard CreateSequenceDictionary
     */
-    PICARD_CREATESEQUENCEDICTIONARY (
-    PREPARE_GENOME.out.fasta,
-    PREPARE_GENOME.out.fasta_index
-    )
+    ch_fasta   =   Channel.value([[:],PREPARE_GENOME.out.fasta])
+    PICARD_CREATESEQUENCEDICTIONARY (ch_fasta)
     ch_dict  = PICARD_CREATESEQUENCEDICTIONARY.out.dict
     versions = versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
     
     /*
      * MODULE: HS METRICS.
      */ 
-    if (params.target_interval){
-        
-        ch_bam_bai =   Channel.value([[],ch_bam,ch_bai,file(params.target_intervals)])
-        ch_fasta   =   Channel.value([[],PREPARE_GENOME.out.fasta,])
-        ch_fai     =   Channel.value([[],PREPARE_GENOME.out.fasta_index])
-        ch_dic     =   Channel.value([[],ch_dict])
-        
-        PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)
-        versions = versions.mix(PICARD_COLLECTHSMETRICS.out.versions.first())
-        ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics)
-    } else { exit 2, "Target interval BED file not provided. HS metrics module will be skipped." }
+     
+    ch_bait_intervals   = params.bait_intervals   ? Channel.value(file(params.bait_intervals, checkIfExists: true))   : Channel.value([])
+    ch_target_intervals = params.target_intervals ? Channel.value(file(params.target_intervals, checkIfExists: true)) : Channel.value([])
+    ch_bam_bai =   Channel.value([[:],ch_bam,ch_bai,ch_bait_intervals,ch_target_intervals])
+    ch_fai     =   Channel.value([[:],PREPARE_GENOME.out.fasta_index])
+    ch_dic     =   Channel.value([[:],ch_dict])
     
-    ch_bam // Pass the BAM channel directly to the next step without running the HS metrics module   
+    PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dic)
+    
+    versions   = versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
+    ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics) 
 
 
     /*
