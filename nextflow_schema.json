@@ -127,6 +127,22 @@
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
                     "help_text": "Do not load `igenomes.config` when running the pipeline. You may choose this option if you observe clashes between custom parameters and those supplied in `igenomes.config`."
+                },
+                "bait_intervals": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "description": "Path to BED file containing bait intervals."
+                    "pattern": "^\\S+\\.bed$",
+                    "fa_icon": "fas fa-procedures"
+                },
+                "target_intervals": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.bed$",
+                    "description": "Path to BED file containing target intervals.",
+                    "fa_icon": "fas fa-procedures"
                 }
             }
         },
