@@ -12,10 +12,11 @@
 
 - 🛠️ update index file channels to explicit value channels #310
 - 🐛 fix `params.test_data_base` in test and test_full configs #310
-- 🤖 GitHub Actions CI - pull_reqest to `dev` tests with NXF_VER `latest-everything` #310
-- 🤖 GitHub Actions CI - pull_reqest to `master` tests with NXF_VER `22.10.1` & `latest-everything` #310
+- 🤖 GitHub Actions CI - pull_request to `dev` tests with NXF_VER `latest-everything` #310
+- 🤖 GitHub Actions CI - pull_request to `master` tests with NXF_VER `22.10.1` & `latest-everything` #310
 - 🤖 GitHub Actions CI - `fail-fast` set to false #310
 - 🐛 get to the bottom of index tests #278
+- 🛠️ rename `ignore` -> `ignore_r1` and `ignore_3prime` -> `ignore_3prime_r1` params
 - 🐛 fix `ignore_3prime_r2` param #299
 - 🐛 removed unused directory #297
 
