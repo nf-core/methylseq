@@ -41,7 +41,7 @@ jobs:
           - "bismark"
           - "bismark_hisat"
           - "bwameth"
-        profile: # TODO ["singularity", "conda"]
+        profile:
           - "docker"
     steps:
       - name: Check out pipeline code
@@ -115,7 +115,7 @@ jobs:
           - "bismark"
           - "bismark_hisat"
           - "bwameth"
-        profile: # TODO ["singularity", "conda"]
+        profile:
           - "docker"
     steps:
       - name: Check out pipeline code
