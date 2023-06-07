@@ -209,7 +209,7 @@ workflow METHYLSEQ {
     */
     ch_fasta   =   Channel.of([[],PREPARE_GENOME.out.fasta])
     PICARD_CREATESEQUENCEDICTIONARY (ch_fasta)
-    ch_dict  = Channel.of([[],PICARD_CREATESEQUENCEDICTIONARY.out.dict])    
+    ch_dict = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict.collect()
     versions = versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
     
     /*
@@ -222,8 +222,7 @@ workflow METHYLSEQ {
     ch_bam_bai =   Channel.of([[],ch_bam,ch_bai,ch_bait_intervals,ch_target_intervals])
     ch_fai     =   Channel.of([[],PREPARE_GENOME.out.fasta_index])
     
-    
-    PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dic)
+    PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)
     
     versions   = versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
     ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics) 
