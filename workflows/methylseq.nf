@@ -71,11 +71,10 @@ include { MULTIQC                                    } from '../modules/nf-core/
 include { CUSTOM_DUMPSOFTWAREVERSIONS                } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { TRIMGALORE                                 } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC                             } from '../modules/nf-core/qualimap/bamqc/main'
-include { QUALIMAP_BAMQC as QUALIMAP_BAMQC2          } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP                            } from '../modules/nf-core/preseq/lcextrap/main'
-include { PICARD_COLLECTHSMETRICS                    } from '../modules/nf-core/picard_collecthsmetrics/main'
+include { PICARD_COLLECTHSMETRICS                    } from '../modules/nf-core/picard/collecthsmetrics/main'
 include { PICARD_CREATESEQUENCEDICTIONARY            } from '../modules/nf-core/picard/createsequencedictionary/main'
-include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../modules/nf-core/samtools/index/main'
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../modules/nf-core/samtools/index/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -248,8 +247,7 @@ workflow METHYLSEQ {
         ch_bam
     )
     versions = versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
-    
-}
+   
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         versions.unique().collectFile(name: 'collated_versions.yml')
@@ -270,7 +268,6 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
         ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[0] }.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC2.out.results.collect{ it[0] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_metrics.ifEmpty([]))  
