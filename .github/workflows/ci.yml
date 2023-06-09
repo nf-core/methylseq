@@ -40,7 +40,7 @@ jobs:
       - name: Skip condition
         id: condition
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "dev" && "${{ matrix.NXF_VER }}" == "22.10.1" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "dev" && "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
             echo "skip=true" >> $GITHUB_OUTPUT
           fi
 
