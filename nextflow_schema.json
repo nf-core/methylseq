@@ -301,32 +301,32 @@
                     "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
                     "fa_icon": "fas fa-allergies"
                 },
-                "ignore": {
+                "ignore_r1": {
                     "type": "integer",
                     "default": 0,
                     "description": "Ignore methylation in first n bases of 5' end of R1",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove e.g. a restriction enzyme site at the start of each read or any other source of bias (such as PBAT-Seq data).",
+                    "help_text": "Ignore the first 0 bp from the 5' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove e.g. a restriction enzyme site at the start of each read or any other source of bias (such as PBAT-Seq data).",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "ignore_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in first n bases of 5' end of R2",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "help_text": "Ignore the first 2 bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
                     "fa_icon": "far fa-eye-slash"
                 },
-                "ignore_3prime": {
+                "ignore_3prime_r1": {
                     "type": "integer",
                     "default": 0,
                     "description": "Ignore methylation in last n bases of 3' end of R1",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "help_text": "Ignore the first 0 bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "ignore_3prime_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in last n bases of 3' end of R2",
-                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
+                    "help_text": "Ignore the last 2 bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "known_splices": {
