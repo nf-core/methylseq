@@ -17,7 +17,7 @@
 - 🤖 GitHub Actions CI - `fail-fast` set to false #310
 - 🐛 get to the bottom of index tests #278
 - ✨ Support for Bismark methylation extraction `ignore` and `ignore_3prime` parameters when `ignore_r1` or `ignore_3prime_r1` are greater than 0. #322
-- 🛠️ rename `ignore` -> `ignore_r1` and `ignore_3prime` -> `ignore_3prime_r1` params
+- 🛠️ rename `ignore` -> `ignore_r1` and `ignore_3prime` -> `ignore_3prime_r1` params #322
 - 🐛 fix `ignore_3prime_r2` param #299
 - 🐛 removed unused directory #297
 
