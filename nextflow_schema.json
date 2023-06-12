@@ -92,7 +92,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?$",
                     "description": "Path to FASTA genome file",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future."
+                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. If aligner is Bismark and bismark_index is specified, this parameter is ignored."
                 },
                 "fasta_index": {
                     "type": "string",
@@ -301,10 +301,24 @@
                     "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. ",
                     "fa_icon": "fas fa-allergies"
                 },
+                "ignore_r1": {
+                    "type": "integer",
+                    "default": 0,
+                    "description": "Ignore methylation in first n bases of 5' end of R1",
+                    "help_text": "Ignore the first <int> bp from the 5' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove e.g. a restriction enzyme site at the start of each read or any other source of bias (such as PBAT-Seq data).",
+                    "fa_icon": "far fa-eye-slash"
+                },
                 "ignore_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in first n bases of 5' end of R2",
+                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "fa_icon": "far fa-eye-slash"
+                },
+                "ignore_3prime_r1": {
+                    "type": "integer",
+                    "default": 0,
+                    "description": "Ignore methylation in last n bases of 3' end of R1",
                     "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
                     "fa_icon": "far fa-eye-slash"
                 },
@@ -373,6 +387,19 @@
                 }
             },
             "fa_icon": "far fa-circle"
+        },
+        "qualimap_options": {
+            "title": "Qualimap Options",
+            "type": "object",
+            "description": "Qualimap configurations",
+            "default": "",
+            "properties": {
+                "bamqc_regions_file": {
+                    "type": "string",
+                    "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
+                }
+            }
         },
         "skip_pipeline_steps": {
             "title": "Skip pipeline steps",
@@ -500,11 +527,6 @@
                     "description": "Show all params when using `--help`",
                     "hidden": true,
                     "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
-                },
-                "enable_conda": {
-                    "type": "boolean",
-                    "description": "Run this workflow with Conda. You can also use '-profile condo' instead of providing this parameter.",
-                    "hidden": true
                 }
             }
         },
@@ -556,7 +578,7 @@
                     "default": "master",
                     "hidden": true,
                     "fa_icon": "fas fa-users-cog",
-                    "help_text": "Provide git commit id for custom Institutional configs hosted at `nf-core/configs`. This was implemented for reproducibility purposes. Default: `master`.\n\n```bash\n## Download and use config file with following git commit id\n--custom_config_version d52db660777c4bf36546ddb188ec530c3ada1b96\n```"
+                    "help_text": "By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters."
                 },
                 "custom_config_base": {
                     "type": "string",
@@ -624,6 +646,9 @@
         },
         {
             "$ref": "#/definitions/bwa_meth_options"
+        },
+        {
+            "$ref": "#/definitions/qualimap_options"
         },
         {
             "$ref": "#/definitions/skip_pipeline_steps"

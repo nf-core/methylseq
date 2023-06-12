@@ -1,15 +1,20 @@
-name: nf-core CI
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+name: nf-core CI
 on:
   push:
     branches:
-      - dev
+      - "dev"
   pull_request:
+    branches:
+      - "dev"
+      - "master"
   release:
-    types: [published]
+    types:
+      - "published"
 
 env:
   NXF_ANSI_LOG: false
+  NFTEST_VER: "0.7.3"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -17,40 +22,57 @@ concurrency:
 
 jobs:
   test:
-    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    name: Run pipeline with test data
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         NXF_VER:
           - "22.10.1"
           - "latest-everything"
         aligner:
-          - bismark
-          - bismark_hisat
-          - bwameth
-        profile: ["docker"] # TODO , "singularity", "conda"]
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile:
+          - "docker"
     steps:
+      # Skip if it's a pull_request to dev and NXF_VER is '22.10.1'
+      - name: Skip condition
+        id: condition
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "dev" && "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check out pipeline code
+        if: steps.condition.outputs.skip != 'true'
         uses: actions/checkout@v3
 
+      - name: Hash Github Workspace
+        if: steps.condition.outputs.skip != 'true'
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
+
       - name: Cache test data
+        if: steps.condition.outputs.skip != 'true'
         id: cache-testdata
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
 
       - name: Check out test data
-        if: steps.cache-testdata.outputs.cache-hit != 'true'
+        if: steps.cache-testdata.outputs.cache-hit != 'true' && steps.condition.outputs.skip != 'true'
         uses: actions/checkout@v3
         with:
           repository: nf-core/test-datasets
           ref: methylseq
-          path: ./test-datasets/
+          path: test-datasets/
 
       - name: Replace remote paths in samplesheets
+        if: steps.condition.outputs.skip != 'true'
         run: |
           for f in ./test-datasets/samplesheet/*csv; do
             sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
@@ -61,41 +83,25 @@ jobs:
           done;
 
       - name: Install Nextflow
+        if: steps.condition.outputs.skip != 'true'
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
+        if: steps.condition.outputs.skip != 'true'
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
           sudo mv nf-test /usr/local/bin/
 
-      - name: Set up Singularity
-        if: matrix.profile == 'singularity'
-        uses: eWaterCycle/setup-singularity@v5
-        with:
-          singularity-version: 3.7.1
-
-      - name: Set up miniconda
-        if: matrix.profile == 'conda'
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          channels: conda-forge,bioconda,defaults
-          python-version: ${{ matrix.python-version }}
-
-      - name: Conda clean
-        if: matrix.profile == 'conda'
-        run: conda clean -a
-
       - name: Run nf-test
+        if: steps.condition.outputs.skip != 'true'
         run: |
-          nf-test test \
-            --profile=test_ci,test,${{ matrix.profile }} \
-            tests/${{ matrix.aligner }}/*.nf.test \
-            --tap=test.tap
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
 
-      - uses: pcolby/tap-summary@v1
-        with:
-          path: >-
-            test.tap
+      # If the test fails, output the software_versions.yml using the 'batcat' utility
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always ${{ github.workspace }}/.nf-test/tests/*/output/pipeline_info/software_versions.yml
