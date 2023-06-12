@@ -220,17 +220,11 @@ workflow METHYLSEQ {
     ch_target_intervals = params.target_intervals ? Channel.value(file(params.target_intervals, checkIfExists: true)) : Channel.value([])
     
     ch_bam_bai =   Channel.combine([[],ch_bam,ch_bai,ch_bait_intervals,ch_target_intervals])
- 
-    ch_bam_bai_T = ch_bam_bai.map { meta, bam, bai, bait_intervals, target_intervals ->
-    [meta, bam, bai, bait_intervals, target_intervals]}   
     ch_fai     =   Channel.of([[],PREPARE_GENOME.out.fasta_index])
-    ch_meta_fasta = ch_fasta.map {meta, fasta -> [meta,fasta]}.collect()
-    ch_meta_fai = ch_fai.map {meta, fai -> [meta,fai]}.collect()
-
-    PICARD_COLLECTHSMETRICS (ch_bam_bai_T,ch_meta_fasta,ch_meta_fai,ch_dict)    
+    
+    PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)    
     versions   = versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
     ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics) 
-
 
     /*
      * MODULE: Qualimap BamQC
