@@ -207,7 +207,7 @@ workflow METHYLSEQ {
     /*
     * MODULE: Picard CreateSequenceDictionary
     */
-    ch_fasta   =   Channel.of([[:],PREPARE_GENOME.out.fasta])
+    ch_fasta = PREPARE_GENOME.out.fasta.map{ fasta -> [[:],fasta]}.collect()
     PICARD_CREATESEQUENCEDICTIONARY (ch_fasta)
     ch_dict = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict.collect()
     versions = versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
@@ -219,10 +219,14 @@ workflow METHYLSEQ {
     ch_bait_intervals   = params.bait_intervals   ? Channel.value(file(params.bait_intervals, checkIfExists: true))   : Channel.value([])
     ch_target_intervals = params.target_intervals ? Channel.value(file(params.target_intervals, checkIfExists: true)) : Channel.value([])
     
-    ch_bam_bai =   Channel.combine([[:],ch_bam,ch_bai,ch_bait_intervals,ch_target_intervals])
-    ch_fai     =   Channel.of([[:],PREPARE_GENOME.out.fasta_index])
+    ch_fai = PREPARE_GENOME.out.fasta_index.map{ fai -> [[:],fai]}.collect()
     
-    PICARD_COLLECTHSMETRICS (ch_bam_bai,ch_fasta,ch_fai,ch_dict)    
+    ch_bam_bai   = ch_bam.combine(ch_bai)
+    ch_intervals = ch_target_intervals.combine(ch_bait_intervals)
+
+    ch_bam_intervals = ch_bam_bai.combine(ch_intervals)    
+    
+    PICARD_COLLECTHSMETRICS (ch_bam_intervals,ch_fasta,ch_fai,ch_dic)
     versions   = versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
     ch_metrics = ch_metrics.mix(PICARD_COLLECTHSMETRICS.out.metrics) 
 
