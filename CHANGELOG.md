@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 create a test for samplesheet with technical replicates [#477](https://github.com/nf-core/methylseq/pull/486)
 - 🔧 Update README, docs/usage and docs/output docs [#487](https://github.com/nf-core/methylseq/pull/489)
 - 🔧 Add Bisulfite Sequencing & Three-Base Aligners primer doc [#405](https://github.com/nf-core/methylseq/pull/494)
+- 🔧 Add `skip_fastqc` parameter
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 

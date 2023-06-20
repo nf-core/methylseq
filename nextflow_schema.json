@@ -429,7 +429,12 @@
             "type": "object",
             "description": "",
             "default": "",
-            "properties": {
+            "properties":  {
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "description": "Skip FastQC.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
                 "skip_trimming": {
                     "type": "boolean",
                     "description": "Skip read trimming.",
