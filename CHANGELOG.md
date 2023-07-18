@@ -5,6 +5,7 @@
 ### Pipeline Updates
 
 ### Bug fixes & refactoring
+- 🐛 leave some spare memory for samtools sort (again) #81
 
 ## [v2.4.0](https://github.com/nf-core/methylseq/releases/tag/2.4.0) - 2023-06-02
 
