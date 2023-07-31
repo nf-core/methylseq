@@ -4,6 +4,9 @@
 
 ### Pipeline Updates
 
+- Updated nf-core modules for FastQC, samtools sort, samtools flagstat
+  - Removes problematic `-m` memory assignment for samtools sort [#81](https://github.com/nf-core/methylseq/issues/81)
+
 ### Bug fixes & refactoring
 
 ## [v2.4.0](https://github.com/nf-core/methylseq/releases/tag/2.4.0) - 2023-06-02
