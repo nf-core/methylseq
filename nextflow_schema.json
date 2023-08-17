@@ -190,7 +190,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-cubes",
                     "description": "Preset for EM-seq libraries.",
-                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
+                    "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 10` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
                 },
                 "single_cell": {
                     "type": "boolean",
