@@ -1,15 +1,20 @@
-name: nf-core CI
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+name: nf-core CI
 on:
   push:
     branches:
-      - dev
+      - "dev"
   pull_request:
+    branches:
+      - "dev"
+      - "master"
   release:
-    types: [published]
+    types:
+      - "published"
 
 env:
   NXF_ANSI_LOG: false
+  NFTEST_VER: "0.7.3"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
@@ -18,26 +23,85 @@ concurrency:
 jobs:
   test:
     name: Run pipeline with test data
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         NXF_VER:
           - "23.04.0"
           - "latest-everything"
+        aligner:
+          - "bismark"
+          - "bismark_hisat"
+          - "bwameth"
+        profile:
+          - "docker"
     steps:
+      # Skip if it's a pull_request to dev and NXF_VER is '22.10.1'
+      - name: Skip condition
+        id: condition
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "dev" && "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check out pipeline code
+        if: steps.condition.outputs.skip != 'true'
         uses: actions/checkout@v3
 
+      - name: Hash Github Workspace
+        if: steps.condition.outputs.skip != 'true'
+        id: hash_workspace
+        run: |
+          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
+
+      - name: Cache test data
+        if: steps.condition.outputs.skip != 'true'
+        id: cache-testdata
+        uses: actions/cache@v3
+        with:
+          path: test-datasets/
+          key: ${{ steps.hash_workspace.outputs.digest }}
+
+      - name: Check out test data
+        if: steps.cache-testdata.outputs.cache-hit != 'true' && steps.condition.outputs.skip != 'true'
+        uses: actions/checkout@v3
+        with:
+          repository: nf-core/test-datasets
+          ref: methylseq
+          path: test-datasets/
+
+      - name: Replace remote paths in samplesheets
+        if: steps.condition.outputs.skip != 'true'
+        run: |
+          for f in ./test-datasets/samplesheet/*csv; do
+            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
+            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
+            echo "========== $f ============"
+            cat $f
+            echo "========================================"
+          done;
+
       - name: Install Nextflow
+        if: steps.condition.outputs.skip != 'true'
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Run pipeline with test data
-        # TODO nf-core: You can customise CI pipeline run tests as required
-        # For example: adding multiple test runs with different parameters
-        # Remember that you can parallelise this by using strategy.matrix
+      - name: Install nf-test
+        if: steps.condition.outputs.skip != 'true'
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,docker --outdir ./results
+          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
+          sudo mv nf-test /usr/local/bin/
+
+      - name: Run nf-test
+        if: steps.condition.outputs.skip != 'true'
+        run: |
+          nf-test test tests/pipeline/${{ matrix.aligner }}/ --profile "test,${{ matrix.profile }}" --tap=test.tap
+
+      # If the test fails, output the software_versions.yml using the 'batcat' utility
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always ${{ github.workspace }}/.nf-test/tests/*/output/pipeline_info/software_versions.yml
