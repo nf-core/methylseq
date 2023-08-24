@@ -4,6 +4,8 @@
 
 ### Pipeline Updates
 
+- Updated template to nf-core/tools v2.9
+
 ### Bug fixes & refactoring
 
 - 🛠️ Added publishing of coverage (`*cov.gz`) files for NOMe-seq filtered reads for `coverage2cytosine`
