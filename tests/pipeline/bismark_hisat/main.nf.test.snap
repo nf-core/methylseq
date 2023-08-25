@@ -1,15 +1,15 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.5.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.5.0dev}}"
         ],
-        "timestamp": "2023-06-01T02:43:30+0000"
+        "timestamp": "2023-08-25T19:31:06+0000"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, SAMPLESHEET_CHECK={python=3.8.3}, Workflow={nf-core/methylseq=2.5.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.5.0dev}}"
         ],
-        "timestamp": "2023-06-01T02:43:30+0000"
+        "timestamp": "2023-08-25T19:31:06+0000"
     },
     "single_end": {
         "content": [
@@ -20,7 +20,7 @@
             "genome_results.txt:md5,9956ed1dcf51e6975f4a6ab8fe156aba",
             "genome_results.txt:md5,1133ea5d1376389c6a17def89d2e90ec"
         ],
-        "timestamp": "2023-06-01T02:43:30+0000"
+        "timestamp": "2023-08-25T19:31:06+0000"
     },
     "single_end_rrbs": {
         "content": [
@@ -31,6 +31,6 @@
             "genome_results.txt:md5,58a2aeeb5eacca4c766bb23fee8f9013",
             "genome_results.txt:md5,473022a29cf12d97e75451a4eea67c02"
         ],
-        "timestamp": "2023-06-01T02:43:30+0000"
+        "timestamp": "2023-08-25T19:31:06+0000"
     }
 }
