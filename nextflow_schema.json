@@ -98,7 +98,7 @@
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?$",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file",
                     "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. If aligner is Bismark and bismark_index is specified, this parameter is ignored."
                 },
@@ -107,6 +107,7 @@
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to Fasta index file.",
                     "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
                     "fa_icon": "fas fa-bookmark"
@@ -345,6 +346,7 @@
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
+                    "pattern": "^\\S+\\.gtf(\\.gz)?$",
                     "description": "Supply a .gtf file containing known splice sites (bismark_hisat only).",
                     "help_text": "Specify to run Bismark with the `--known-splicesite-infile` flag to run splice-aware alignment using HISAT2. A `.gtf` file has to be provided from which a list of known splicesites is created by the pipeline\n\n> NB: This only works when using the `bismark_hisat` aligner with `--align`",
                     "fa_icon": "fas fa-barcode"
@@ -412,6 +414,7 @@
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/plain",
+                    "pattern": "^\\S+\\.gff|\\.bed(\\.gz)?$",
                     "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
                     "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
                 }
