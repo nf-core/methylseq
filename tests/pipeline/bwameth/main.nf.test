@@ -28,16 +28,32 @@ nextflow_pipeline {
 
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
-                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
-                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
-                            path("$outputDir/methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph"),
-                            path("$outputDir/methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph"),
-                            path("$outputDir/methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph"),
-                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end") },
-                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_software_versions") }
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_software_versions") },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K.stats"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.stats"),
+                            path("$outputDir/bwameth/deduplicated/Ecoli_10K.markdup.sorted.bam"),
+                            path("$outputDir/bwameth/deduplicated/Ecoli_10K.markdup.sorted.bam.bai"),
+                            path("$outputDir/bwameth/deduplicated/SRR389222.markdup.sorted.bam"),
+                            path("$outputDir/bwameth/deduplicated/SRR389222.markdup.sorted.bam.bai"),
+                            path("$outputDir/bwameth/reference_genome/").list(),
+                            path("$outputDir/cat/SRR389222.merged.fastq.gz"),
+                            path("$outputDir/methyldackel/Ecoli_10K.markdup.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222.markdup.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/mbias/Ecoli_10K.mbias.txt"),
+                            path("$outputDir/methyldackel/mbias/SRR389222.mbias.txt"),
+                            path("$outputDir/qualimap/Ecoli_10K/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end") },
+                { assert new File("$outputDir/fastqc/Ecoli_10K_1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_10K_2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_fastqc.html").exists() },
+                { assert new File("$outputDir/multiqc/bwameth/multiqc_report.html").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_10K_1.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_10K_2.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/SRR389222.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/Ecoli_10K.markdup.sorted.MarkDuplicates.metrics.txt").exists() },
+                { assert new File("$outputDir/bwameth/deduplicated/picard_metrics/SRR389222.markdup.sorted.MarkDuplicates.metrics.txt").exists() }
             )
         }
     }
@@ -73,16 +89,23 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat"),
-                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat"),
-                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat"),
-                            path("$outputDir/methyldackel/Ecoli_10K_methylated.sorted_CpG.bedGraph"),
-                            path("$outputDir/methyldackel/SRR389222_sub1.sorted_CpG.bedGraph"),
-                            path("$outputDir/methyldackel/SRR389222_sub2.sorted_CpG.bedGraph"),
-                            path("$outputDir/qualimap/Ecoli_10K_methylated/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
-                            path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt")).match("single_end_rrbs") },
-                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_rrbs_software_versions") }
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_rrbs_software_versions") },
+                { assert snapshot(path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/Ecoli_10K.stats"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.flagstat"),
+                            path("$outputDir/bwameth/alignments/samtools_stats/SRR389222.stats"),
+                            path("$outputDir/bwameth/reference_genome/").list(),
+                            path("$outputDir/cat/SRR389222.merged.fastq.gz"),
+                            path("$outputDir/methyldackel/Ecoli_10K.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/SRR389222.sorted_CpG.bedGraph"),
+                            path("$outputDir/methyldackel/mbias/Ecoli_10K.mbias.txt"),
+                            path("$outputDir/methyldackel/mbias/SRR389222.mbias.txt"),
+                            path("$outputDir/qualimap/Ecoli_10K/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end_rrbs") },
+                { assert new File("$outputDir/fastqc/Ecoli_10K_1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_10K_2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_fastqc.html").exists() },
+                { assert new File("$outputDir/multiqc/bwameth/multiqc_report.html").exists() }
             )
         }
     }

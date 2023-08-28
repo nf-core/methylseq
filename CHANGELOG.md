@@ -7,6 +7,7 @@
 - Updated template to nf-core/tools v2.9
 - Updated nf-core modules for FastQC, samtools sort, samtools flagstat
   - Removes problematic `-m` memory assignment for samtools sort [#81](https://github.com/nf-core/methylseq/issues/81)
+- Use `fromSamplesheet` from nf-validation [#341](https://github.com/nf-core/methylseq/pull/341)
 
 ### Bug fixes & refactoring
 
