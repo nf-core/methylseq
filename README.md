@@ -86,6 +86,10 @@ These scripts were originally written for use at the [National Genomics Infrastr
 
 - Main author:
   - Phil Ewels ([@ewels](https://github.com/ewels/))
+- Maintainers:
+  - Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))
+  - Sateesh Peri ([@Sateesh_Peri](https://github.com/sateeshperi))
+  - Edmund Miller ([@EMiller88](https://github.com/emiller88))
 - Contributors:
   - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
