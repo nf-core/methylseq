@@ -9,6 +9,9 @@ jobs:
     name: Run AWS tests
     if: github.repository == 'nf-core/methylseq'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
     steps:
       # Launch workflow using Tower CLI tool action
       - name: Launch workflow via tower
@@ -21,7 +24,8 @@ jobs:
           workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/methylseq/work-${{ github.sha }}
           parameters: |
             {
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/methylseq/results-test-${{ github.sha }}"
+              "aligner": "${{ matrix.aligner }}",
+              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/methylseq/results-test-${{ github.sha }}/${{matrix.aligner}}"
             }
           profiles: test
 
