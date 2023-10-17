@@ -9,6 +9,7 @@
   - Removes problematic `-m` memory assignment for samtools sort [#81](https://github.com/nf-core/methylseq/issues/81)
 - Use `fromSamplesheet` from nf-validation [#341](https://github.com/nf-core/methylseq/pull/341)
 - Update Maintainers and add CODEOWNERS [#345](https://github.com/nf-core/methylseq/pull/345)
+- Update schema to utilize exists and add more patterns [#342](https://github.com/nf-core/methylseq/pull/342)
 
 ### Bug fixes & refactoring
 
