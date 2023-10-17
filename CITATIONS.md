@@ -26,6 +26,9 @@
 
   > <https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/>
 
+  <!-- TODO https://github.com/FelixKrueger/TrimGalore/issues/25 -->
+  <!-- https://zenodo.org/records/7598955 -->
+
 - [Bismark](https://doi.org/10.1093/bioinformatics/btr167)
 
   > Felix Krueger, Simon R. Andrews, Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications, Bioinformatics, Volume 27, Issue 11, 1 June 2011, Pages 1571–1572, doi: [10.1093/bioinformatics/btr167](https://doi.org/10.1093/bioinformatics/btr167)
