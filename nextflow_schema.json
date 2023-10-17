@@ -107,22 +107,20 @@
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/plain",
-                    "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
+                    "pattern": "^\\S+\\.fn?a(sta)?.fai$",
                     "description": "Path to Fasta index file.",
                     "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
                     "fa_icon": "fas fa-bookmark"
                 },
                 "bismark_index": {
                     "type": "string",
-                    "format": "directory-path",
-                    "exists": true,
+                    "format": "path",
                     "description": "Path to a directory containing a Bismark reference index.",
                     "fa_icon": "fas fa-dot-circle"
                 },
                 "bwa_meth_index": {
                     "type": "string",
-                    "format": "directory-path",
-                    "exists": true,
+                    "format": "path",
                     "description": "bwameth index filename base",
                     "help_text": "Directory for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
