@@ -55,12 +55,16 @@ class WorkflowMethylseq {
 
     public static String toolCitationText(params) {
 
-        // TODO nf-core: Optionally add in-text citation tools to this list.
-        // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-        // Uncomment function in methodsDescriptionText to render in MultiQC report
+        // FIXME Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
         def citation_text = [
                 "Tools used in the workflow included:",
                 "FastQC (Andrews 2010),",
+                "Trim Galore! (Krueger)",
+                "Bismark (Krueger 2011)",
+                "bwa-meth (Pedersen 2014)",
+                "Picard (Broad Institute 2019)",
+                "Qualimap (Okonechnikov 2015)",
+                "Preseq (Daley 2013)",
                 "MultiQC (Ewels et al. 2016)",
                 "."
             ].join(' ').trim()
@@ -96,7 +100,7 @@ class WorkflowMethylseq {
         meta["tool_bibliography"] = ""
 
         // TODO Only uncomment below if logic in toolCitationText/toolBibliographyText has been filled!
-        //meta["tool_citations"] = toolCitationText(params).replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
+        meta["tool_citations"] = toolCitationText(params).replaceAll(", \\.", ".").replaceAll("\\. \\.", ".").replaceAll(", \\.", ".")
         //meta["tool_bibliography"] = toolBibliographyText(params)
 
 
