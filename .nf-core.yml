@@ -1,4 +1,3 @@
-# FIXME - CI currently runs for dev and dsl2 branches, remove the latter before merging to dev
 repository_type: pipeline
 lint:
   files_unchanged:
@@ -6,3 +5,4 @@ lint:
   files_exist:
     - bin/markdown_to_html.py
   actions_ci: False
+  multiqc_config: False
