@@ -1,31 +1,19 @@
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    VALIDATE INPUTS
+    PRINT PARAMS SUMMARY
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
+include { paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
 
-// Validate input parameters
+def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
+def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
+def summary_params = paramsSummaryMap(workflow)
+
+// Print parameter summary log to screen
+log.info logo + paramsSummaryLog(workflow) + citation
+
 WorkflowMethylseq.initialise(params, log)
-
-// Check input path parameters to see if they exist
-def checkPathParamList = [
-    params.input,
-    params.multiqc_config,
-    params.fasta,
-    params.fasta_index,
-    params.bwa_meth_index,
-    params.bismark_index,
-    params.known_splices,
-]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-// Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
-
-
-
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,7 +35,6 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOWS: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { PREPARE_GENOME } from '../subworkflows/local/prepare_genome'
 
 // Aligner: bismark or bismark_hisat
@@ -96,28 +83,34 @@ workflow METHYLSEQ {
     ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
     //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    // Create input channel from input file provided through params.input
     //
-    INPUT_CHECK (
-        ch_input
-    )
-    .reads
-    .map {
-        meta, fastq ->
+    Channel
+        .fromSamplesheet("input")
+        .map {
+            meta, fastq_1, fastq_2 ->
+            if (!fastq_2) {
+                return [ meta + [ single_end:true ], [ fastq_1 ] ]
+            } else {
+                return [ meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
+            }
+        }
+        .groupTuple()
+        .map {
+            meta, fastq ->
             def meta_clone = meta.clone()
             meta_clone.id = meta_clone.id.split('_')[0..-2].join('_')
             [ meta_clone, fastq ]
-    }
-    .groupTuple(by: [0])
-    .branch {
-        meta, fastq ->
+        }
+        .groupTuple(by: [0])
+        .branch {
+            meta, fastq ->
             single: fastq.size() == 1
-                return [ meta, fastq.flatten() ]
+            return [ meta, fastq.flatten() ]
             multiple: fastq.size() > 1
-                return [ meta, fastq.flatten() ]
-    }
-    .set { ch_fastq }
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+            return [ meta, fastq.flatten() ]
+        }
+        .set { ch_fastq }
 
     //
     // MODULE: Concatenate FastQ files from same sample if required
@@ -216,7 +209,7 @@ workflow METHYLSEQ {
         workflow_summary    = WorkflowMethylseq.paramsSummaryMultiqc(workflow, summary_params)
         ch_workflow_summary = Channel.value(workflow_summary)
 
-        methods_description    = WorkflowMethylseq.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
+        methods_description    = WorkflowMethylseq.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description, params)
         ch_methods_description = Channel.value(methods_description)
 
         ch_multiqc_files = Channel.empty()
@@ -252,6 +245,7 @@ workflow.onComplete {
     if (params.email || params.email_on_fail) {
         NfcoreTemplate.email(workflow, params, summary_params, projectDir, log, multiqc_report)
     }
+    NfcoreTemplate.dump_parameters(workflow, params)
     NfcoreTemplate.summary(workflow, params, log)
     if (params.hook_url) {
         NfcoreTemplate.IM_notification(workflow, params, summary_params, projectDir, log)
