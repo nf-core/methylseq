@@ -3,9 +3,6 @@ process QUALIMAP_BAMQC {
     label 'process_medium'
 
     conda "bioconda::qualimap=2.2.2d"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/qualimap:2.2.2d--1' :
-        'biocontainers/qualimap:2.2.2d--1' }"
 
     input:
     tuple val(meta), path(bam)
