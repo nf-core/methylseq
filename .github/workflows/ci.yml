@@ -21,67 +21,59 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  define_nxf_versions:
-    name: Choose nextflow versions to test against depending on target branch
-    runs-on: ubuntu-latest
+  list:
+    name: List Tests
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     outputs:
-      matrix: ${{ steps.nxf_versions.outputs.matrix }}
+      # Expose matched filters as job 'modules' output variable
+      tests: ${{ steps.list.outputs.tests }}
+    runs-on: ubuntu-latest
     steps:
-      - id: nxf_versions
+      - uses: actions/checkout@v3
+
+      - name: Setup Nextflow
+        uses: nf-core/setup-nextflow@v1
+
+      - name: Install nf-test
+        if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.base_ref }}" == "dev" && "${{ matrix.NXF_VER }}" != "latest-everything" ]]; then
-            echo matrix='["latest-everything"]' | tee -a $GITHUB_OUTPUT
-          else
-            echo matrix='["latest-everything", "23.04.0"]' | tee -a $GITHUB_OUTPUT
-          fi
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
+
+      - name: List nf-test
+        id: list
+        run: |
+          echo "tests=$(nf-test list --silent --format=json)" >> "$GITHUB_OUTPUT"
 
   test:
-    name: Run pipeline with test data
-    needs: define_nxf_versions
+    name: ${{ matrix.tags }} (${{ matrix.profile }}-${{ matrix.NXF_VER }})
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: needs.list.outputs.tests != '[]'
+    needs: [list]
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        NXF_VER: ${{ fromJson(needs.define_nxf_versions.outputs.matrix) }}
-        test_tags:
-          - "bismark"
-          - "bismark_hisat"
-          - "bwameth"
-        profile:
-          - "docker"
-
+        NXF_VER:
+          - "23.04.0"
+          - "latest-everything"
+        profile: ["docker"] # TODO , "singularity", "conda"]
+        test: ["${{ fromJson(needs.list.outputs.tests) }}"]
+        exclude:
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@3508b8c9"
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@716555be"
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@306b4b15"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v3
 
-      - name: Hash Github Workspace
-        id: hash_workspace
-        run: |
-          echo "digest=$(echo methylseq2_${{ github.workspace }} | md5sum | cut -c 1-25)" >> $GITHUB_OUTPUT
-
-      - name: Cache test data
-        id: cache-testdata
+      - name: Cache Nextflow installation
+        id: cache-software
         uses: actions/cache@v3
         with:
-          path: test-datasets/
-          key: ${{ steps.hash_workspace.outputs.digest }}
-
-      - name: Check out test data
-        uses: actions/checkout@v3
-        with:
-          repository: nf-core/test-datasets
-          ref: methylseq
-          path: test-datasets/
-
-      - name: Replace remote paths in samplesheets
-        run: |
-          for f in ./test-datasets/samplesheet/*csv; do
-            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
-            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
-            echo "========== $f ============"
-            cat $f
-            echo "========================================"
-          done;
+          path: |
+            /usr/local/bin/nf-test
+            /home/runner/.nf-test/nf-test.jar
+          key: methylseq-${{ runner.os }}-${{ matrix.NXF_VER }}
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
@@ -89,13 +81,41 @@ jobs:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
+        if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
-          wget -qO- https://code.askimed.com/install/nf-test | bash -s $NFTEST_VER
+          wget -qO- https://code.askimed.com/install/nf-test | bash
           sudo mv nf-test /usr/local/bin/
+
+      - name: Set up Singularity
+        if: matrix.profile == 'singularity'
+        uses: eWaterCycle/setup-singularity@v5
+        with:
+          singularity-version: 3.7.1
+
+      - name: Set up miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          channels: conda-forge,bioconda,defaults
+          python-version: ${{ matrix.python-version }}
+
+      - name: Conda clean
+        if: matrix.profile == 'conda'
+        run: conda clean -a
 
       - name: Run nf-test
         run: |
-          nf-test test --tag ${{ matrix.test_tags }} --profile "test,${{ matrix.profile }}" --junitxml=test.xml
+          nf-test test \
+            --profile="test,${{ matrix.profile }}" \
+            ${{ matrix.test }} \
+            --junitxml=${{ matrix.test }}-${{ matrix.profile }}.xml
+
+      - uses: actions/upload-artifact@v3 # upload test results
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: test-results
+          path: ${{ matrix.test }}-${{ matrix.profile }}.xml
 
       - name: Output log on failure
         if: failure()
