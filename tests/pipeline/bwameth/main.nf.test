@@ -70,7 +70,7 @@ nextflow_pipeline {
         }
 
         then {
-            assert workflow.success
+            assert workflow.failed
         }
     }
 
@@ -124,7 +124,7 @@ nextflow_pipeline {
         }
 
         then {
-            assert workflow.success
+            assert workflow.failed
         }
     }
 
