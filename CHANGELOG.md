@@ -1,5 +1,11 @@
 # nf-core/methylseq
 
+### Pipeline Updates
+
+### Bug fixes & refactoring
+
+- 🐛 fix `ignore_r1` and `ignore_3prime_r1` variable expansion #359
+
 ## [v2.5.0](https://github.com/nf-core/methylseq/releases/tag/2.5.0) - 2023-10-18
 
 ### Pipeline Updates
