@@ -1,5 +1,11 @@
 # nf-core/methylseq
 
+## Dev
+
+### Bug fixes & refactoring
+
+- 🛠 Copy methylKit-compatible files to publishDir [#357](https://github.com/nf-core/methylseq/pull/357)
+
 ## [v2.5.0](https://github.com/nf-core/methylseq/releases/tag/2.5.0) - 2023-10-18
 
 ### Pipeline Updates
