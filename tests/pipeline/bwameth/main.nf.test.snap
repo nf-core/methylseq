@@ -33,8 +33,6 @@
                 ]
             ],
             "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
-            "Ecoli_10K.markdup.sorted_CpG.bedGraph:md5,2fbe52f528b14b77380eceea8a621687",
-            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
             "Ecoli.markdup.sorted_CpG.bedGraph:md5,00132adede8128b3a111136713a2a4ff",
             "SRR389222.markdup.sorted_CpG.bedGraph:md5,febd0f93f46dfccabf69dbba3f518add",
             "Ecoli.mbias.txt:md5,3a448a2a6364b2de3129365a271c0534",

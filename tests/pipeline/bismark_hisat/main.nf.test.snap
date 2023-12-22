@@ -3,13 +3,13 @@
         "content": [
             "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-08-28T10:04:42+0000"
+        "timestamp": "2023-12-22T22:14:40.465488234"
     },
     "single_end_rrbs_software_versions": {
         "content": [
             "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-08-28T10:04:42+0000"
+        "timestamp": "2023-12-22T22:37:56.693097833"
     },
     "single_end": {
         "content": [
@@ -41,14 +41,12 @@
             "genome_results.txt:md5,3703ab8cc04a6f3307ea1ffcfe23479a",
             "genome_results.txt:md5,7706d3790aee0e9244c490941ecd394f"
         ],
-        "timestamp": "2023-12-20T02:58:11.727470144"
+        "timestamp": "2023-12-22T22:14:39.589478621"
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe.bam:md5,53c34edee0bc7f34c9f4e9a3685dd706",
             "SRR389222.merged_bismark_hisat2.bam:md5,204123a5f7cd77cba3a90b904443c7eb",
-            "Ecoli_10K_methylated_R1_bismark_hisat2_pe.bedGraph.gz:md5,357196071c54757566cdd0bb7ab79fa8",
-            "SRR389222.merged_bismark_hisat2.bedGraph.gz:md5,d509b1e8e4ec03dcde48a127cf976594",
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe.bedGraph.gz:md5,357196071c54757566cdd0bb7ab79fa8",
             "SRR389222.merged_bismark_hisat2.bedGraph.gz:md5,d509b1e8e4ec03dcde48a127cf976594",
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe.M-bias.txt:md5,5fd8655f4b9dba2249a52b769fe50faf",
@@ -66,21 +64,7 @@
                 "CpG_OB_SRR389222.merged_bismark_hisat2.txt.gz:md5,b8b2de10044869b6c1097afc21c878a0",
                 "CpG_OT_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,9712eef973883f44dcc0a307af28ba70",
                 "CpG_OT_SRR389222.merged_bismark_hisat2.txt.gz:md5,877b026664516cb8851c1d80bf0d8495"
-                "CHG_OB_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,6d2ca2e6548640e3885c94a3ca6beae0",
-                "CHG_OB_SRR389222.merged_bismark_hisat2.txt.gz:md5,eeb08e87d7e3dca0acbb2c5ba2be66fb",
-                "CHG_OT_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,5e5aefaa3f63e73f30342ad843eb210b",
-                "CHG_OT_SRR389222.merged_bismark_hisat2.txt.gz:md5,7add3136b9f74de6aa83d38dde191060",
-                "CHH_OB_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,abd48ddf1c9e844d8164de5150850d10",
-                "CHH_OB_SRR389222.merged_bismark_hisat2.txt.gz:md5,a135c7e8a6c1b909a318ef17d47dca94",
-                "CHH_OT_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,978ad87fef01e39283a620253320ee45",
-                "CHH_OT_SRR389222.merged_bismark_hisat2.txt.gz:md5,8f1910f962b724592546a6187ad0a677",
-                "CpG_OB_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,51f8b079b9fd91e23e495d9e0e289530",
-                "CpG_OB_SRR389222.merged_bismark_hisat2.txt.gz:md5,b8b2de10044869b6c1097afc21c878a0",
-                "CpG_OT_Ecoli_10K_methylated_R1_bismark_hisat2_pe.txt.gz:md5,9712eef973883f44dcc0a307af28ba70",
-                "CpG_OT_SRR389222.merged_bismark_hisat2.txt.gz:md5,877b026664516cb8851c1d80bf0d8495"
             ],
-            "Ecoli_10K_methylated_R1_bismark_hisat2_pe.bismark.cov.gz:md5,d8342eca72089408d8e4d7c5ec5e95bf",
-            "SRR389222.merged_bismark_hisat2.bismark.cov.gz:md5,29943eb00da6057a67e5530580668130",
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe.bismark.cov.gz:md5,d8342eca72089408d8e4d7c5ec5e95bf",
             "SRR389222.merged_bismark_hisat2.bismark.cov.gz:md5,29943eb00da6057a67e5530580668130",
             "Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt:md5,76868c2015864a3f7c2b4cd1738e4765",
@@ -89,6 +73,6 @@
             "genome_results.txt:md5,58bf4e22f697120806f09b48d9ffdc9e",
             "genome_results.txt:md5,ae5b10e9a3ffa1ac7a4f4e736228ec49"
         ],
-        "timestamp": "2023-12-20T03:00:29.750687681"
+        "timestamp": "2023-12-22T22:37:54.382841284"
     }
 }
