@@ -55,7 +55,7 @@ nextflow_pipeline {
         when {
             params {
                 aligner         = "bismark_hisat"
-                bismark_index   = "https://github.com/nf-core/test-datasets/raw/07ff447f2023e1e7b2e91396526601af485655fa/reference/BismarkIndex.tar.gz"
+                bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
                 local_alignment = true
                 outdir          = "$outputDir"
             }
@@ -117,7 +117,7 @@ nextflow_pipeline {
                 aligner         = "bismark_hisat"
                 skip_trimming   = true
                 rrbs            = true
-                bismark_index   = "https://github.com/nf-core/test-datasets/raw/07ff447f2023e1e7b2e91396526601af485655fa/reference/BismarkIndex.tar.gz"
+                bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
                 local_alignment = true
                 outdir          = "$outputDir"
             }

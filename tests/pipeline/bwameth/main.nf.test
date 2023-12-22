@@ -53,7 +53,7 @@ nextflow_pipeline {
         when {
             params {
                 aligner        = "bwameth"
-                bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/07ff447f2023e1e7b2e91396526601af485655fa/reference/bwameth.tar.gz"
+                bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
                 methyl_kit     = true
                 outdir         = "$outputDir"
             }
@@ -108,7 +108,7 @@ nextflow_pipeline {
                 aligner = "bwameth"
                 skip_trimming = true
                 rrbs = true
-                bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/07ff447f2023e1e7b2e91396526601af485655fa/reference/bwameth.tar.gz"
+                bwa_meth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
                 methyl_kit = true
                 outdir = "$outputDir"
             }
