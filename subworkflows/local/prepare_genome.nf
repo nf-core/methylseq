@@ -47,7 +47,7 @@ workflow PREPARE_GENOME {
          * Generate bwameth index if not supplied
          */
         if (params.bwa_meth_index) {
-            if (params.bwa_meth_index.endsWith('.gz')) {
+            if (params.bwa_meth_index.endsWith('.tar.gz')) {
                 ch_bismark_index = UNTAR ( [ [:], file(params.bwa_meth_index) ] ).untar.map { it[1] }
             } else {
                 ch_bismark_index = Channel.value(file(params.bwa_meth_index))
