@@ -1,0 +1,72 @@
+{
+    "single_end_software_versions": {
+        "content": [
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
+        ],
+        "timestamp": "2023-08-28T00:28:04+0000"
+    },
+    "single_end_rrbs_software_versions": {
+        "content": [
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0dev}}"
+        ],
+        "timestamp": "2023-08-28T00:28:04+0000"
+    },
+    "single_end": {
+        "content": [
+            "Ecoli_10K.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
+            "Ecoli_10K.stats:md5,b744221f284d3b3f5afe0b4b2d1849d7",
+            "SRR389222.flagstat:md5,f5a2dd6c9532bbfb8fe78aad010d8737",
+            "SRR389222.stats:md5,cc81b8c56d038e437a99d9c04b61ce2d",
+            "Ecoli_10K.markdup.sorted.bam:md5,f582d626f4b78f4e9cc63ca6e20b42cd",
+            "Ecoli_10K.markdup.sorted.bam.bai:md5,faa46b80545d7eb45dfc659b46f419b0",
+            "SRR389222.markdup.sorted.bam:md5,46b5b49280efe5d5c5d1692092e8926f",
+            "SRR389222.markdup.sorted.bam.bai:md5,ad6cfa0344e1ba5b9057ea39f337b3d2",
+            [
+                [
+                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
+                    "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
+                    "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
+                    "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
+                    "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
+                    "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
+                    "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
+                ]
+            ],
+            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
+            "Ecoli_10K.markdup.sorted_CpG.bedGraph:md5,2fbe52f528b14b77380eceea8a621687",
+            "SRR389222.markdup.sorted_CpG.bedGraph:md5,febd0f93f46dfccabf69dbba3f518add",
+            "Ecoli_10K.mbias.txt:md5,3a448a2a6364b2de3129365a271c0534",
+            "SRR389222.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
+            "genome_results.txt:md5,0f4749b54f9d923f0d4f20ad404b2062",
+            "genome_results.txt:md5,c786cc367645cee286360707e2624dca"
+        ],
+        "timestamp": "2023-12-22T14:15:08.478775696"
+    },
+    "single_end_rrbs": {
+        "content": [
+            "Ecoli_10K.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
+            "Ecoli_10K.stats:md5,ff675c98abdae3c1bd83b26704d89e82",
+            "SRR389222.flagstat:md5,a90f1bdcb30f4d0597ccf69fe0b37b1f",
+            "SRR389222.stats:md5,b99800367e21a0c7c0d87e5fe29d9609",
+            [
+                [
+                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
+                    "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
+                    "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
+                    "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
+                    "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
+                    "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
+                    "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
+                ]
+            ],
+            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
+            "Ecoli_10K.sorted_CpG.bedGraph:md5,513797bcafa8724fc61484e2686af517",
+            "SRR389222.sorted_CpG.bedGraph:md5,a754358e8b95db30602aa29835a896bd",
+            "Ecoli_10K.mbias.txt:md5,ec13da6deba1ce147624bce065ec5df6",
+            "SRR389222.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
+            "genome_results.txt:md5,e5e1ab8eb875aaf090b3a0d9b1927810",
+            "genome_results.txt:md5,199902f9d8f10f73bcb0a1ce29ceca5d"
+        ],
+        "timestamp": "2023-12-22T14:16:15.148388923"
+    }
+}
