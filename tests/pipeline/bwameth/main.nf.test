@@ -1,9 +1,8 @@
-import com.askimed.nf.test.util.FileUtil;
-
 nextflow_pipeline {
 
     name "Test Workflow main.nf"
     script "main.nf"
+
     tag "bwameth"
     tag "pipeline"
 

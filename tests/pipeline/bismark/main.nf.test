@@ -1,9 +1,8 @@
-import com.askimed.nf.test.util.FileUtil;
-
 nextflow_pipeline {
 
     name "Test Workflow main.nf"
     script "main.nf"
+
     tag "bismark"
     tag "pipeline"
 
@@ -14,7 +13,6 @@ nextflow_pipeline {
                 save_reference = true
                 outdir         = "$outputDir"
             }
-
         }
 
         then {
@@ -161,7 +159,7 @@ nextflow_pipeline {
                             path("$outputDir/cat/SRR389222.merged.fastq.gz"),
                             path("$outputDir/qualimap/Ecoli_10K/genome_results.txt"),
                             path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end_nomeseq") },
-                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end__nomeseq_software_versions") },
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_nomeseq_software_versions") },
                 { assert new File("$outputDir/bismark/alignments/logs/Ecoli_10K_1_val_1_bismark_bt2_PE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/alignments/logs/SRR389222_trimmed_bismark_bt2_SE_report.txt").exists() },
                 { assert new File("$outputDir/bismark/reports/Ecoli_10K_1_val_1_bismark_bt2_PE_report.html").exists() },
