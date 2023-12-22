@@ -32,7 +32,7 @@
                     "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
                 ]
             ],
-            "SRR389222.merged.fastq.gz:md5,ba5df0639e25988059a6f5bf309dbb6e",
+            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
             "Ecoli_10K.markdup.sorted_CpG.bedGraph:md5,2fbe52f528b14b77380eceea8a621687",
             "SRR389222.markdup.sorted_CpG.bedGraph:md5,febd0f93f46dfccabf69dbba3f518add",
             "Ecoli_10K.mbias.txt:md5,3a448a2a6364b2de3129365a271c0534",
@@ -40,7 +40,7 @@
             "genome_results.txt:md5,0f4749b54f9d923f0d4f20ad404b2062",
             "genome_results.txt:md5,c786cc367645cee286360707e2624dca"
         ],
-        "timestamp": "2023-08-28T00:28:04+0000"
+        "timestamp": "2023-12-22T14:15:08.478775696"
     },
     "single_end_rrbs": {
         "content": [
@@ -59,7 +59,7 @@
                     "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
                 ]
             ],
-            "SRR389222.merged.fastq.gz:md5,ba5df0639e25988059a6f5bf309dbb6e",
+            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
             "Ecoli_10K.sorted_CpG.bedGraph:md5,513797bcafa8724fc61484e2686af517",
             "SRR389222.sorted_CpG.bedGraph:md5,a754358e8b95db30602aa29835a896bd",
             "Ecoli_10K.mbias.txt:md5,ec13da6deba1ce147624bce065ec5df6",
@@ -67,6 +67,6 @@
             "genome_results.txt:md5,e5e1ab8eb875aaf090b3a0d9b1927810",
             "genome_results.txt:md5,199902f9d8f10f73bcb0a1ce29ceca5d"
         ],
-        "timestamp": "2023-08-28T00:28:04+0000"
+        "timestamp": "2023-12-22T14:16:15.148388923"
     }
 }

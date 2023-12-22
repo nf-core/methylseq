@@ -2,6 +2,7 @@
 // Prepare reference genome files
 //
 
+include { UNTAR                       } from '../../modules/nf-core/untar/main'
 include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
 include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
@@ -27,7 +28,11 @@ workflow PREPARE_GENOME {
          * Generate bismark index if not supplied
          */
         if (params.bismark_index) {
-            ch_bismark_index = Channel.value(file(params.bismark_index))
+            if (params.bismark_index.endsWith('.gz')) {
+                ch_bismark_index = UNTAR ( [ [:], file(params.bismark_index) ] ).untar.map { it[1] }
+            } else {
+                ch_bismark_index = Channel.value(file(params.bismark_index))
+            }
         } else {
             BISMARK_GENOMEPREPARATION(ch_fasta)
             ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index
@@ -42,7 +47,11 @@ workflow PREPARE_GENOME {
          * Generate bwameth index if not supplied
          */
         if (params.bwa_meth_index) {
-            ch_bwameth_index = Channel.value(file(params.bwa_meth_index))
+            if (params.bwa_meth_index.endsWith('.tar.gz')) {
+                ch_bismark_index = UNTAR ( [ [:], file(params.bwa_meth_index) ] ).untar.map { it[1] }
+            } else {
+                ch_bismark_index = Channel.value(file(params.bwa_meth_index))
+            }
         } else {
             BWAMETH_INDEX(ch_fasta)
             ch_bwameth_index = BWAMETH_INDEX.out.index
