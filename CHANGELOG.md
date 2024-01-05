@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## Dev
+## v2.6.0dev - [date]
 
 ### Bug fixes & refactoring
 

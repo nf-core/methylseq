@@ -1,21 +1,21 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-12-22T22:42:59.896228401"
+        "timestamp": "2024-01-05T14:14:17.281822498"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-12-22T22:56:03.882046934"
+        "timestamp": "2024-01-05T14:21:31.783610175"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-12-22T22:52:44.437869745"
+        "timestamp": "2024-01-05T14:17:51.992881339"
     },
     "single_end_nomeseq": {
         "content": [
@@ -55,9 +55,9 @@
     },
     "clip_r1_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.0, yaml=6.0}, FASTQC={fastqc=0.11.9}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0dev}}"
         ],
-        "timestamp": "2023-12-22T22:57:41.01411097"
+        "timestamp": "2024-01-05T14:23:04.466332751"
     },
     "single_end": {
         "content": [
