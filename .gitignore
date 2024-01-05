@@ -8,4 +8,5 @@ testing*
 *.pyc
 .vscode
 .nf-test
+.nf-test.log
 test-datasets/
