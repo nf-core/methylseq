@@ -37,6 +37,7 @@ jobs:
           repo: nextflow-io/nextflow
           tag: v23.10.0
           extension-matching: disable
+          binaries-location: nextflow
           cache: enable
 
       - name: Setup nf-test
@@ -78,6 +79,7 @@ jobs:
           repo: nextflow-io/nextflow
           tag: v23.10.0
           extension-matching: disable
+          binaries-location: nextflow
           cache: enable
 
       - name: Setup nf-test
