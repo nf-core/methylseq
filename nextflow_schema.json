@@ -214,13 +214,6 @@
                     "fa_icon": "fas fa-arrows-alt",
                     "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nThis flag has the following effects for each of the workflows:\n\nBismark: sets the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\nbwa-meth: sets the `--CHG` and `--CHH` flags in MethylDackel `extract`\nBiscuit: sets `-t c` in biscuit `pileup`"
                 },
-                "no_overlap": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Ignore read 2 methylation when it overlaps read 1",
-                    "help_text": "For paired-end reads it is theoretically possible that read_1 and read_2 overlap. To avoid scoring overlapping methylation calls twice, this is set to `true` by default. (Only methylation calls of read 1 are used since read 1 has historically higher quality basecalls than read 2). Whilst this option removes a bias towards more methylation calls in the center of sequenced fragments it may de facto remove a sizable proportion of the data. To count methylation data from both reads in overlapping regions, set this to `false`. \n\nThis option has the following effects for the different workflows:\n\nBismark: sets `--no_overlap` if set to `true`, otherwise sets `--include_overlap`\nBiscuit: sets the `-d` flag in biscuit `pileup` if set to `false`\n\n**Note that bwa-meth has no option to double-count cytosines in overlapping reads**",
-                    "fa_icon": "fas fa-allergies"
-                },
                 "ignore": {
                     "type": "integer",
                     "default": 0,
@@ -380,12 +373,6 @@
                     "help_text": "Customise the penalty in the function used to filter reads based on mismatches. The parameter `--relax_mismatches` must also be specified.\n\nSee the parameter documentation for `--relax_mismatches` for an explanation.",
                     "fa_icon": "fas fa-calculator"
                 },
-                "meth_cutoff": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage to report a methylation call",
-                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
-                    "fa_icon": "fas fa-angle-double-down"
-                },
                 "no_overlap": {
                     "type": "boolean",
                     "default": true,
@@ -400,25 +387,11 @@
                     "help_text": "Ignore the first <int> bp from the 5' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove e.g. a restriction enzyme site at the start of each read or any other source of bias (such as PBAT-Seq data).",
                     "fa_icon": "far fa-eye-slash"
                 },
-                "ignore_r2": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Ignore methylation in first n bases of 5' end of R2",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
-                    "fa_icon": "far fa-eye-slash"
-                },
                 "ignore_3prime_r1": {
                     "type": "integer",
                     "default": 0,
                     "description": "Ignore methylation in last n bases of 3' end of R1",
                     "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
-                    "fa_icon": "far fa-eye-slash"
-                },
-                "ignore_3prime_r2": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Ignore methylation in last n bases of 3' end of R2",
-                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "known_splices": {
