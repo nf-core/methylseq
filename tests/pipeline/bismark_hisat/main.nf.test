@@ -1,0 +1,132 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "main.nf"
+
+    tag "bismark_hisat"
+    tag "pipeline"
+
+    test("Bismark Hisat Single-End") {
+        when {
+            params {
+                aligner        = "bismark_hisat"
+                save_reference = true
+                outdir         = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/deduplicated/Ecoli_1_val_1_bismark_hisat2_pe.deduplicated.bam"),
+                            path("$outputDir/bismark_hisat/deduplicated/SRR389222_trimmed_bismark_hisat2.deduplicated.bam"),
+                            path("$outputDir/bismark_hisat/methylation_calls/bedGraph/Ecoli_1_val_1_bismark_hisat2_pe.deduplicated.bedGraph.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/bedGraph/SRR389222_trimmed_bismark_hisat2.deduplicated.bedGraph.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/mbias/Ecoli_1_val_1_bismark_hisat2_pe.deduplicated.M-bias.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/mbias/SRR389222_trimmed_bismark_hisat2.deduplicated.M-bias.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_calls/").list(),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_coverage/Ecoli_1_val_1_bismark_hisat2_pe.deduplicated.bismark.cov.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_coverage/SRR389222_trimmed_bismark_hisat2.deduplicated.bismark.cov.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_1_val_1_bismark_hisat2_pe.deduplicated_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222_trimmed_bismark_hisat2.deduplicated_splitting_report.txt"),
+                            path("$outputDir/cat/SRR389222.merged.fastq.gz"),
+                            path("$outputDir/qualimap/Ecoli/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end") },
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_software_versions") },
+                { assert new File("$outputDir/bismark_hisat/alignments/logs/Ecoli_1_val_1_bismark_hisat2_PE_report.txt").exists() },
+                { assert new File("$outputDir/bismark_hisat/alignments/logs/SRR389222_trimmed_bismark_hisat2_SE_report.txt").exists() },
+                { assert new File("$outputDir/bismark_hisat/reports/Ecoli_1_val_1_bismark_hisat2_PE_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/reports/SRR389222_trimmed_bismark_hisat2_SE_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.txt").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_fastqc.html").exists() },
+                { assert new File("$outputDir/multiqc/bismark_hisat/multiqc_report.html").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_1.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_2.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/SRR389222.fastq.gz_trimming_report.txt").exists() }
+            )
+        }
+    }
+
+    test("Bismark Hisat Single-End With Index") {
+        when {
+            params {
+                aligner         = "bismark_hisat"
+                bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
+                local_alignment = true
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+            )
+        }
+    }
+
+    test("Bismark Hisat Single-End With RRBS") {
+        when {
+            params {
+                aligner        = "bismark_hisat"
+                save_reference = true
+                skip_trimming  = true
+                rrbs           = true
+                outdir         = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(path("$outputDir/bismark_hisat/alignments/Ecoli_10K_methylated_R1_bismark_hisat2_pe.bam"),
+                            path("$outputDir/bismark_hisat/alignments/SRR389222.merged_bismark_hisat2.bam"),
+                            path("$outputDir/bismark_hisat/methylation_calls/bedGraph/Ecoli_10K_methylated_R1_bismark_hisat2_pe.bedGraph.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/bedGraph/SRR389222.merged_bismark_hisat2.bedGraph.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/mbias/Ecoli_10K_methylated_R1_bismark_hisat2_pe.M-bias.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/mbias/SRR389222.merged_bismark_hisat2.M-bias.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_calls/").list(),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_coverage/Ecoli_10K_methylated_R1_bismark_hisat2_pe.bismark.cov.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/methylation_coverage/SRR389222.merged_bismark_hisat2.bismark.cov.gz"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/Ecoli_10K_methylated_R1_bismark_hisat2_pe_splitting_report.txt"),
+                            path("$outputDir/bismark_hisat/methylation_calls/splitting_report/SRR389222.merged_bismark_hisat2_splitting_report.txt"),
+                            path("$outputDir/cat/SRR389222.merged.fastq.gz"),
+                            path("$outputDir/qualimap/Ecoli/genome_results.txt"),
+                            path("$outputDir/qualimap/SRR389222/genome_results.txt")).match("single_end_rrbs") },
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_rrbs_software_versions") },
+                { assert new File("$outputDir/bismark_hisat/alignments/logs/Ecoli_10K_methylated_R1_bismark_hisat2_PE_report.txt").exists() },
+                { assert new File("$outputDir/bismark_hisat/alignments/logs/SRR389222.merged_bismark_hisat2_SE_report.txt").exists() },
+                { assert new File("$outputDir/bismark_hisat/reports/Ecoli_10K_methylated_R1_bismark_hisat2_PE_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/reports/SRR389222.merged_bismark_hisat2_SE_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.html").exists() },
+                { assert new File("$outputDir/bismark_hisat/summary/bismark_summary_report.txt").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_fastqc.html").exists() },
+                { assert new File("$outputDir/multiqc/bismark_hisat/multiqc_report.html").exists() }
+            )
+        }
+    }
+
+    test("Bismark Hisat Single-End With RRBS With Index") {
+        when {
+            params {
+                aligner         = "bismark_hisat"
+                skip_trimming   = true
+                rrbs            = true
+                bismark_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
+                local_alignment = true
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+            )
+        }
+    }
+
+}

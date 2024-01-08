@@ -9,7 +9,9 @@ Please use the pre-filled template to save time.
 However, don't be put off by this template - other more general issues and suggestions are welcome!
 Contributions to the code are even more welcome ;)
 
-> If you need help using or modifying nf-core/methylseq then the best place to ask is on the nf-core Slack [#methylseq](https://nfcore.slack.com/channels/methylseq) channel ([join our Slack here](https://nf-co.re/join/slack)).
+:::info
+If you need help using or modifying nf-core/methylseq then the best place to ask is on the nf-core Slack [#methylseq](https://nfcore.slack.com/channels/methylseq) channel ([join our Slack here](https://nf-co.re/join/slack)).
+:::
 
 ## Contribution workflow
 
@@ -24,6 +26,9 @@ If you'd like to write some code for nf-core/methylseq, the standard workflow is
 If you're not used to this workflow with git, you can start with some [docs from GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests) or even their [excellent `git` resources](https://try.github.io/).
 
 ## Tests
+
+You can optionally test your changes by running the pipeline locally. Then it is recommended to use the `debug` profile to
+receive warnings about process selectors and other debug info. Example: `nextflow run . -profile debug,test,docker --outdir <OUTDIR>`.
 
 When you create a pull request with changes, [GitHub Actions](https://github.com/features/actions) will run automatic tests.
 Typically, pull-requests are only fully reviewed when these tests are passing, though of course we can help out before then.
@@ -116,4 +121,3 @@ To get started:
 Devcontainer specs:
 
 - [DevContainer config](.devcontainer/devcontainer.json)
-- [Dockerfile](.devcontainer/Dockerfile)

@@ -1,64 +1,79 @@
-name: nf-core CI
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+name: nf-core CI
 on:
   push:
     branches:
-      - dev
+      - "dev"
   pull_request:
+    branches:
+      - "dev"
+      - "master"
   release:
-    types: [published]
+    types:
+      - "published"
 
 env:
   NXF_ANSI_LOG: false
+  NFTEST_VER: "0.8.2"
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Run ${{ matrix.aligner }}-${{ matrix.profile }}-${{ matrix.NXF_VER }}
-    # Only run on push if this is the nf-core dev branch (merged PRs)
+  list:
+    name: List Tests
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    outputs:
+      # Expose matched filters as job 'modules' output variable
+      tests: ${{ steps.list.outputs.tests }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Nextflow
+        uses: nf-core/setup-nextflow@v1
+
+      - name: Install nf-test
+        if: steps.cache-software.outputs.cache-hit != 'true'
+        run: |
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
+
+      - name: List nf-test
+        id: list
+        run: |
+          echo "tests=$(nf-test list --silent --format=json)" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: ${{ matrix.tags }} (${{ matrix.profile }}-${{ matrix.NXF_VER }})
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: needs.list.outputs.tests != '[]'
+    needs: [list]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         NXF_VER:
-          - "22.10.1"
+          - "23.04.0"
           - "latest-everything"
-        aligner:
-          - bismark
-          - bismark_hisat
-          - bwameth
         profile: ["docker"] # TODO , "singularity", "conda"]
+        test: ["${{ fromJson(needs.list.outputs.tests) }}"]
+        exclude:
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@3508b8c9"
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@716555be"
+          - test: "tests/subworkflows/local/grohmm/main.nf.test@306b4b15"
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Cache test data
-        id: cache-testdata
+      - name: Cache Nextflow installation
+        id: cache-software
         uses: actions/cache@v3
         with:
-          path: ./test-datasets/
-          key: methylseq-test-data
-
-      - name: Check out test data
-        if: steps.cache-testdata.outputs.cache-hit != 'true'
-        uses: actions/checkout@v3
-        with:
-          repository: nf-core/test-datasets
-          ref: methylseq
-          path: ./test-datasets/
-
-      - name: Replace remote paths in samplesheets
-        run: |
-          for f in ./test-datasets/samplesheet/*csv; do
-            sed -i 's=https://github.com/nf-core/test-datasets/raw/methylseq/=./test-datasets/=g' $f
-            sed -i 's=https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/=./test-datasets/=g' $f
-            echo "========== $f ============"
-            cat $f
-            echo "========================================"
-          done;
+          path: |
+            /usr/local/bin/nf-test
+            /home/runner/.nf-test/nf-test.jar
+          key: methylseq-${{ runner.os }}-${{ matrix.NXF_VER }}
 
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v1
@@ -66,6 +81,7 @@ jobs:
           version: "${{ matrix.NXF_VER }}"
 
       - name: Install nf-test
+        if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
           wget -qO- https://code.askimed.com/install/nf-test | bash
           sudo mv nf-test /usr/local/bin/
@@ -91,11 +107,18 @@ jobs:
       - name: Run nf-test
         run: |
           nf-test test \
-            --profile=test_ci,test,${{ matrix.profile }} \
-            tests/${{ matrix.aligner }}/*.nf.test \
-            --tap=test.tap
+            --profile="test,${{ matrix.profile }}" \
+            ${{ matrix.test }} \
+            --junitxml=${{ matrix.test }}-${{ matrix.profile }}.xml
 
-      - uses: pcolby/tap-summary@v1
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure() # run this step even if previous step failed
         with:
-          path: >-
-            test.tap
+          path: ${{ matrix.test }}-${{ matrix.profile }}.xml
+
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always ${{ github.workspace }}/.nf-test/tests/*/output/pipeline_info/software_versions.yml

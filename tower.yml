@@ -1,6 +1,8 @@
 reports:
   multiqc_report.html:
-    display: "MultiQC report"
+    display: "MultiQC HTML report"
+  samplesheet.csv:
+    display: "Auto-created samplesheet with collated metadata and FASTQ paths"
   bismark_summary_report.html:
     display: "Bismark summary report"
   "bismark/reports/*report.html":
