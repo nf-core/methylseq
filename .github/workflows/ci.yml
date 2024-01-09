@@ -33,6 +33,8 @@ jobs:
 
       - name: Setup Nextflow
         uses: nf-core/setup-nextflow@v1
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Install nf-test
         if: steps.cache-software.outputs.cache-hit != 'true'
@@ -79,6 +81,7 @@ jobs:
         uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
+          token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Install nf-test
         if: steps.cache-software.outputs.cache-hit != 'true'
