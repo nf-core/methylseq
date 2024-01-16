@@ -45,6 +45,10 @@ if( params.aligner =~ /bismark/ ){
 else if ( params.aligner == 'bwameth' ){
     include { BWAMETH } from '../subworkflows/local/bwameth'
 }
+// Aligner: biscuit
+else if ( params.aligner == "biscuit" ){
+    include { BISCUIT } from '../subworkflows/local/biscuit'
+}
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,8 +147,6 @@ workflow METHYLSEQ {
         reads = ch_cat_fastq
     }
 
-
-
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
      */
@@ -159,7 +161,7 @@ workflow METHYLSEQ {
             reads,
             PREPARE_GENOME.out.bismark_index,
             params.skip_deduplication || params.rrbs,
-            params.cytosine_report || params.nomeseq
+            params.merge_cg || params.nomeseq
         )
         ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
         ch_bam = BISMARK.out.bam
@@ -180,6 +182,20 @@ workflow METHYLSEQ {
         ch_bam = BWAMETH.out.bam
         ch_dedup = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
+    }
+    // Aligner: biscuit
+    else if ( params.aligner == "biscuit" ){
+
+        BISCUIT(
+            reads,
+            PREPARE_GENOME.out.biscuit_index,
+            params.skip_deduplication || params.rrbs,
+            params.merge_cg || params.nomeseq
+        )
+        versions = versions.mix(BISCUIT.out.versions.unique{ it.baseName })
+        ch_bam = BISCUIT.out.bam
+        ch_dedup = BISCUIT.out.dedup
+        ch_aligner_mqc = BISCUIT.out.mqc
     }
 
     /*
@@ -221,7 +237,7 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
-            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.zip.collect{ it[1] })
         }
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 

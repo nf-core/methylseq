@@ -15,7 +15,7 @@ workflow BISMARK {
     reads              // channel: [ val(meta), [ reads ] ]
     bismark_index      // channel: /path/to/BismarkIndex/
     skip_deduplication // boolean: whether to deduplicate alignments
-    cytosine_report    // boolean: whether the run coverage2cytosine
+    merge_cg    // boolean: whether the run coverage2cytosine
 
     main:
     versions = Channel.empty()
@@ -65,7 +65,7 @@ workflow BISMARK {
     /*
      * Run coverage2cytosine
      */
-    if (cytosine_report) {
+    if (merge_cg) {
         BISMARK_COVERAGE2CYTOSINE (
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
             bismark_index

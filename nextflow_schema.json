@@ -10,7 +10,10 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "input",
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -59,7 +62,20 @@
                 "save_reference": {
                     "type": "boolean",
                     "description": "Save reference(s) to results directory",
-                    "fa_icon": "far fa-save"
+                    "fa_icon": "far fa-save",
+                    "help_text": "This can be helpful if you are generating an index for a species which does not already have one on iGenomes, and want to save time in subsequent runs."
+                },
+                "save_merged": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-file-medical",
+                    "description": "Save merged fastq(s) to results directory",
+                    "help_text": "By default, merged (raw, untrimmed) FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
+                },
+                "save_trimmed": {
+                    "type": "boolean",
+                    "description": "Save trimmed reads to results directory.",
+                    "fa_icon": "fas fa-cut",
+                    "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
                 },
                 "save_align_intermeds": {
                     "type": "boolean",
@@ -71,12 +87,6 @@
                     "description": "Bismark only - Save unmapped reads to FastQ files",
                     "help_text": "Use the `--unmapped` flag to set the `--unmapped` flag with Bismark align and save the unmapped reads to FastQ files.",
                     "fa_icon": "fas fa-recycle"
-                },
-                "save_trimmed": {
-                    "type": "boolean",
-                    "description": "Save trimmed reads to results directory.",
-                    "fa_icon": "fas fa-cut",
-                    "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete."
                 }
             },
             "fa_icon": "fas fa-save"
@@ -125,6 +135,11 @@
                     "help_text": "Directory for a bwa-meth genome reference index. Only used when using the bwa-meth aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwameth.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
                 },
+                "biscuit_index": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cookie-bite",
+                    "description": "Path to a directory containing a Biscuit reference index"
+                },
                 "igenomes_base": {
                     "type": "string",
                     "description": "Directory / URL base for iGenomes references.",
@@ -152,18 +167,82 @@
                     "default": "bismark",
                     "description": "Alignment tool to use.",
                     "fa_icon": "fas fa-dot-circle",
-                    "enum": ["bismark", "bismark_hisat", "bwameth"],
-                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
+                    "enum": [
+                        "bismark",
+                        "bismark_hisat",
+                        "bwameth",
+                        "biscuit"
+                    ],
+                    "help_text": "The nf-core/methylseq package is actually three pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel). To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\nThe third workflow uses [Biscuit](https://huishenlab.github.io/biscuit/). To run this workflow, run the pipeline with the command line flag `--aligner biscuit`."
+                },
+                "non_directional": {
+                    "type": "boolean",
+                    "description": "Run alignment against all four possible strands.",
+                    "help_text": "All three aligners (Biscuit, Bismark, and bwa-meth) support 'directional' alignment, where reads are aligned against only the (converted) genome sequence ('original top' and 'original bottom' sequences). If your libraries are directional, this should result in faster and more accurate alignments.\nHowever, some library preparations produce library molecules which align against all four strands ('original top', 'original bottom', 'complement to original top', and 'complement to original bottom'). If your library is of this type, you should set this flag and use either the Bismark or Biscuit aligners (bwa-meth does not support non-directional alignment). \nSee [Biscuit](https://huishenlab.github.io/biscuit/docs/alignment#which-strand-to-map)\nor [Bismark](https://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide.pdf) docs for more details. \n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
+                    "fa_icon": "fas fa-exchange-alt"
+                }
+            },
+            "required": [
+                "aligner"
+            ],
+            "fa_icon": "fas fa-braille"
+        },
+        "methylation_calling_options": {
+            "title": "Methylation calling options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "fa_icon": "fas fa-balance-scale-left",
+            "properties": {
+                "merge_cg": {
+                    "type": "boolean",
+                    "description": "Set to false to report stranded methylation calls",
+                    "help_text": "In many circumstances, it's desirable to merge the methylation data for the two paired cytosines in a CpG dinucleotide context. Such 'merged' data might also be referred to as 'unstranded methylation calls', as it does not differentiate between the two strands. \n\nIf this behavior is undesired, set this flag to `false` to retain information about strand-specific methylation. This has the following effects for each mapping tool:\n\n- Bismark: sets the `--cytosine_report` parameter for methylation extraction step\n- bwa-meth/MethylDackel: does not use the  `--mergeContext` option in MethylDackel extract\n- biscuit: skips the `mergecg` step in the pipeline",
+                    "fa_icon": "fas fa-clipboard",
+                    "default": true
+                },
+                "meth_cutoff": {
+                    "type": "integer",
+                    "description": "Minimum read depth to report a methylation call",
+                    "help_text": "Sets the minimum required depth to report cytosine methylation information (default, 1, reports methylation at all covered sites). This flag has the following actions for the different mapping workflows:\n\n- Bismark: sets the `--cutoff` flag\n- bwa-meth: sets the `--minDepth` flag in MethylDackel `extract`\n- Biscuit: sets the `-k` flag in `biscuit pileup`",
+                    "fa_icon": "fas fa-angle-double-down",
+                    "default": 1
                 },
                 "comprehensive": {
                     "type": "boolean",
                     "description": "Output information for all cytosine contexts.",
                     "fa_icon": "fas fa-arrows-alt",
-                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
+                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nThis flag has the following effects for each of the workflows:\n\nBismark: sets the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\nbwa-meth: sets the `--CHG` and `--CHH` flags in MethylDackel `extract`\nBiscuit: sets `-t c` in biscuit `pileup`"
+                },
+                "ignore": {
+                    "type": "integer",
+                    "default": 0,
+                    "fa_icon": "far fa-eye-slash",
+                    "description": "Ignore methylation in the first n bases of 5' end of reads",
+                    "help_text": "Methylation calls are frequently biased at the beginning and end of a read. Set this parameter to exclude methlation calls from the first few bases of a read. \n\n** Please note that the behavior of this flag differs in each aligner! **\n\nBismark: Ignore the first <int> bp from the 5' end of **Read 1** of paired-end sequencing results only.\nbwa-meth: Ignore the first <int> bp from the 5' end of **Read 1**\n\nBiscuit: Ignore the first <int> bp from the 5' end of **all** reads."
+                },
+                "ignore_3prime": {
+                    "type": "integer",
+                    "default": 0,
+                    "fa_icon": "far fa-eye-slash",
+                    "description": "Ignore methylation in the last n bases of 3' end of reads",
+                    "help_text": "Methylation calls are frequently biased at the beginning and end of a read. Set this parameter to exclude methlation calls from the first few bases of a read. \n\n** Please note that the behavior of this flag differs in each aligner! **\n\nBismark: Ignore the last <int> bp from the 3' end of **Read 1** of paired-end sequencing results only.\nbwa-meth: Ignore the last <int> bp from the 3' end of **Read 1**\n\nBiscuit: Ignore the last <int> bp from the 3' end of **all** reads."
+                },
+                "ignore_r2": {
+                    "type": "integer",
+                    "default": 2,
+                    "description": "Ignore methylation in first n bases of 5' end of R2",
+                    "help_text": "Methylation calls are frequently biased at the beginning and end of a read. Set this parameter to exclude methlation calls from the first few bases of a read. \n\n** Please note that the behavior of this flag differs in each aligner! **\n\nBismark: Ignore the first <int> bp from the 5' end of **Read 2** of paired-end sequencing results only.\nbwa-meth: Ignore the first <int> bp from the 5' end of **Read 2**\n\nBiscuit: not supported (Biscuit does not currently discriminate between read 1 and read 2 for this option; use the `ignore` and `ignore_3prime` options to ignore methylation at the ends of both reads)",
+                    "fa_icon": "far fa-eye-slash"
+                },
+                "ignore_3prime_r2": {
+                    "type": "integer",
+                    "default": 2,
+                    "description": "Ignore methylation in last n bases of 3' end of R2",
+                    "help_text": "Methylation calls are frequently biased at the beginning and end of a read. Set this parameter to exclude methlation calls from the first few bases of a read. \n\n** Please note that the behavior of this flag differs in each aligner! **\n\nBismark: Ignore the last <int> bp from the 3' end of **Read 2** of paired-end sequencing results only.\nbwa-meth: Ignore the last <int> bp from the 3' end of **Read 2**\n\nBiscuit: not supported (Biscuit does not currently discriminate between read 1 and read 2 for this option; use the `ignore` and `ignore_3prime` options to ignore methylation at the ends of both reads)",
+                    "fa_icon": "far fa-eye-slash"
                 }
-            },
-            "required": ["aligner"],
-            "fa_icon": "fas fa-braille"
+            }
         },
         "special_library_types": {
             "title": "Special library types",
@@ -224,6 +303,12 @@
                     "fa_icon": "fas fa-cut",
                     "description": "Trimming preset for the Zymo kit.",
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 10` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--non_directional` flag for Bismark."
+                },
+                "nomeseq": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
+                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 }
             },
             "fa_icon": "fas fa-prescription-bottle"
@@ -261,7 +346,8 @@
                 "nextseq_trim": {
                     "type": "integer",
                     "default": 0,
-                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
+                    "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases",
+                    "fa_icon": "fas fa-cut"
                 }
             },
             "fa_icon": "fas fa-cut",
@@ -274,18 +360,6 @@
             "default": "",
             "fa_icon": "fas fa-circle",
             "properties": {
-                "non_directional": {
-                    "type": "boolean",
-                    "description": "Run alignment against all four possible strands.",
-                    "help_text": "By default, Bismark assumes that libraries are directional and does not align against complementary strands. If your library prep was not directional, use `--non_directional` to align against all four possible strands.\n\nNote that the `--single_cell` and `--zymo` parameters both set the `--non_directional` workflow flag automatically.",
-                    "fa_icon": "fas fa-exchange-alt"
-                },
-                "cytosine_report": {
-                    "type": "boolean",
-                    "description": "Output stranded cytosine report, following Bismark's bismark_methylation_extractor step.",
-                    "help_text": "By default, Bismark does not produce stranded calls. With this option the output considers all Cs on both forward and reverse strands and reports their position, strand, trinucleotide context and methylation state.",
-                    "fa_icon": "fas fa-clipboard"
-                },
                 "relax_mismatches": {
                     "type": "boolean",
                     "description": "Turn on to relax stringency for alignment (set allowed penalty with --num_mismatches).",
@@ -298,12 +372,6 @@
                     "description": "0.6 will allow a penalty of bp * -0.6 - for 100bp reads (bismark default is 0.2)",
                     "help_text": "Customise the penalty in the function used to filter reads based on mismatches. The parameter `--relax_mismatches` must also be specified.\n\nSee the parameter documentation for `--relax_mismatches` for an explanation.",
                     "fa_icon": "fas fa-calculator"
-                },
-                "meth_cutoff": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage to report a methylation call",
-                    "help_text": "Use to discard any methylation calls with less than a given read coverage depth (in fold coverage) during Bismark's `bismark_methylation_extractor` step.",
-                    "fa_icon": "fas fa-angle-double-down"
                 },
                 "no_overlap": {
                     "type": "boolean",
@@ -319,25 +387,11 @@
                     "help_text": "Ignore the first <int> bp from the 5' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove e.g. a restriction enzyme site at the start of each read or any other source of bias (such as PBAT-Seq data).",
                     "fa_icon": "far fa-eye-slash"
                 },
-                "ignore_r2": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Ignore methylation in first n bases of 5' end of R2",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
-                    "fa_icon": "far fa-eye-slash"
-                },
                 "ignore_3prime_r1": {
                     "type": "integer",
                     "default": 0,
                     "description": "Ignore methylation in last n bases of 3' end of R1",
                     "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
-                    "fa_icon": "far fa-eye-slash"
-                },
-                "ignore_3prime_r2": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Ignore methylation in last n bases of 3' end of R2",
-                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "known_splices": {
@@ -366,12 +420,6 @@
                     "fa_icon": "fas fa-expand-alt",
                     "description": "The maximum insert size for valid paired-end alignments.",
                     "help_text": "For example, if `--maxins 100` is specified and a paired-end alignment consists of two 20-bp alignments in the proper orientation with a 60-bp gap between them, that alignment is considered valid (as long as `--minins` is also satisfied). A 61-bp gap would not be valid in that case.\n\nDefault: not specified. Bismark default: `500`."
-                },
-                "nomeseq": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-dna",
-                    "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
-                    "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
                 }
             }
         },
@@ -381,12 +429,6 @@
             "description": "",
             "default": "",
             "properties": {
-                "min_depth": {
-                    "type": "integer",
-                    "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
-                    "default": 0,
-                    "fa_icon": "fas fa-angle-double-down"
-                },
                 "ignore_flags": {
                     "type": "boolean",
                     "description": "MethylDackel - ignore SAM flags",
@@ -401,6 +443,22 @@
                 }
             },
             "fa_icon": "far fa-circle"
+        },
+        "biscuit_options": {
+            "title": "Biscuit options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "fa_icon": "fas fa-cookie-bite",
+            "properties": {
+                "bs_conv_filter": {
+                    "type": "number",
+                    "default": 0.1,
+                    "description": "Discard reads with excessive CpH retention",
+                    "help_text": "When the `biscuit` alignment option is selected, it is possible to remove reads that are likely to originate from molecules displaying poor bisulfite conversion. The default is 0.1, i.e. reads with more than 10% CpH methylation are discarded. Set to 1 to disable filtering.",
+                    "fa_icon": "fas fa-filter"
+                }
+            }
         },
         "qualimap_options": {
             "title": "Qualimap Options",
@@ -437,7 +495,8 @@
                 },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip MultiQC"
+                    "description": "Skip MultiQC",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -651,6 +710,9 @@
             "$ref": "#/definitions/alignment_options"
         },
         {
+            "$ref": "#/definitions/methylation_calling_options"
+        },
+        {
             "$ref": "#/definitions/special_library_types"
         },
         {
@@ -661,6 +723,9 @@
         },
         {
             "$ref": "#/definitions/bwa_meth_options"
+        },
+        {
+            "$ref": "#/definitions/biscuit_options"
         },
         {
             "$ref": "#/definitions/qualimap_options"

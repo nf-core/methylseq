@@ -20,6 +20,7 @@ nextflow.enable.dsl = 2
 params.fasta = WorkflowMain.getGenomeAttribute(params, 'fasta')
 params.fasta_index = WorkflowMain.getGenomeAttribute(params, 'fasta_index')
 params.bismark_index = WorkflowMain.getGenomeAttribute(params, 'bismark')
+params.biscuit_index = WorkflowMain.getGenomeAttribute(params, 'biscuit')
 params.bwa_meth_index = WorkflowMain.getGenomeAttribute(params, 'bwa_meth')
 
 /*

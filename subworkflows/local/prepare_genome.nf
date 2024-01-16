@@ -6,6 +6,7 @@ include { UNTAR                       } from '../../modules/nf-core/untar/main'
 include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
 include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
+include { BISCUIT_INDEX               } from '../../modules/nf-core/biscuit/index/main'
 
 workflow PREPARE_GENOME {
 
@@ -15,6 +16,7 @@ workflow PREPARE_GENOME {
     ch_bismark_index = Channel.empty()
     ch_bwameth_index = Channel.empty()
     ch_fasta_index   = Channel.empty()
+    ch_biscuit_index = Channel.empty()
 
     // FASTA, if supplied
     if (params.fasta) {
@@ -69,11 +71,40 @@ workflow PREPARE_GENOME {
             ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
+    // Aligner: biscuit
+    else if ( params.aligner == "biscuit" ){
+
+        /*
+        * Generate biscuit index if not supplied
+        */
+        if (params.biscuit_index) {
+            biscuit_index = file(params.biscuit_index)
+        } else {
+            BISCUIT_INDEX(params.fasta)
+            biscuit_index = BISCUIT_INDEX.out.index
+            versions = versions.mix(BISCUIT_INDEX.out.versions)
+        }
+    }
+    // Aligner: biscuit
+    else if ( params.aligner == "biscuit" ){
+
+        /*
+        * Generate biscuit index if not supplied
+        */
+        if (params.biscuit_index) {
+            biscuit_index = file(params.biscuit_index)
+        } else {
+            BISCUIT_INDEX(params.fasta)
+            biscuit_index = BISCUIT_INDEX.out.index
+            versions = versions.mix(BISCUIT_INDEX.out.versions)
+        }
+    }
 
     emit:
     fasta         = ch_fasta                  // channel: path(genome.fasta)
     bismark_index = ch_bismark_index          // channel: path(genome.fasta)
     bwameth_index = ch_bwameth_index          // channel: path(genome.fasta)
+    biscuit_index = ch_biscuit_index          // channel: path(genome.fasta)
     fasta_index   = ch_fasta_index            // channel: path(genome.fasta)
     versions      = ch_versions.ifEmpty(null) // channel: [ versions.yml ]
 
