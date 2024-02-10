@@ -1,5 +1,9 @@
 # nf-core/methylseq: Citations
 
+## [nf-core/methylseq](https://doi.org/10.5281/zenodo.1343417)
+
+> Phil Ewels, Patrick Hüther, Rickard Hammarén, mashehu, Alexander Peltzer, nf-core bot, Sven F., Johannes Alneberg, Paolo Di Tommaso, Maxime U. Garcia, Colin Davenport, Alessia, Felix Krueger, Guillaume Devailly, Harshil Patel, Robert Syme, VIJAY, & Noirot Céline. (2021). nf-core/methylseq: nf-core/methylseq version 1.6.1 [Nauseous Serpent] (1.6.1). Zenodo. doi: [10.5281/zenodo.4744708](https://doi.org/10.5281/zenodo.4744708)
+
 ## [nf-core](https://pubmed.ncbi.nlm.nih.gov/32055031/)
 
 > Ewels PA, Peltzer A, Fillinger S, Patel H, Alneberg J, Wilm A, Garcia MU, Di Tommaso P, Nahnsen S. The nf-core framework for community-curated bioinformatics pipelines. Nat Biotechnol. 2020 Mar;38(3):276-278. doi: 10.1038/s41587-020-0439-x. PubMed PMID: 32055031.
@@ -17,6 +21,33 @@
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 
   > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+
+- [Trim Galore!](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)
+
+  > <https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/>
+
+  <!-- TODO https://github.com/FelixKrueger/TrimGalore/issues/25 -->
+  <!-- https://zenodo.org/records/7598955 -->
+
+- [Bismark](https://doi.org/10.1093/bioinformatics/btr167)
+
+  > Felix Krueger, Simon R. Andrews, Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications, Bioinformatics, Volume 27, Issue 11, 1 June 2011, Pages 1571–1572, doi: [10.1093/bioinformatics/btr167](https://doi.org/10.1093/bioinformatics/btr167)
+
+- [bwa-meth](https://arxiv.org/abs/1401.1129)
+
+  > Pedersen, Brent S. and Eyring, Kenneth and De, Subhajyoti and Yang, Ivana V. and Schwartz, David A. Fast and accurate alignment of long bisulfite-seq reads, arXiv:1401.1129, doi: [10.48550/arXiv.1401.1129](https://doi.org/10.48550/arXiv.1401.1129)
+
+- [Picard](http://broadinstitute.github.io/picard/)
+
+  > Picard Tools, Broad Institute. <http://broadinstitute.github.io/picard/>
+
+- [Qualimap](https://doi.org/10.1093/bioinformatics/btv566)
+
+  > Konstantin Okonechnikov, Ana Conesa, Fernando García-Alcalde, Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data, Bioinformatics, Volume 32, Issue 2, 15 January 2016, Pages 292–294, doi: [10.1093/bioinformatics/btv566](https://doi.org/10.1093/bioinformatics/btv566)
+
+- [Preseq](https://doi.org/10.1038/nmeth.2375)
+
+  > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
 
 ## Software packaging/containerisation tools
 
