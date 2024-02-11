@@ -4,5 +4,6 @@ lint:
     - .gitattributes
   files_exist:
     - bin/markdown_to_html.py
+    - lib/nfcore_external_java_deps.jar
   actions_ci: False
   multiqc_config: False
