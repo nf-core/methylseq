@@ -1,15 +1,15 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.7, yaml=5.4.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:46:07.95961601"
+        "timestamp": "2024-02-09T22:35:11.787754038"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.7, yaml=5.4.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:47:24.172597347"
+        "timestamp": "2024-02-09T22:36:36.796510773"
     },
     "single_end": {
         "content": [

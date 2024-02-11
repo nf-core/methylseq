@@ -43,7 +43,7 @@ jobs:
       - name: List nf-test
         id: list
         run: |
-          echo "tests=$(nf-test list --silent --format=json)" >> "$GITHUB_OUTPUT"
+          echo "tests=$(nf-test list --silent --format=json tests/pipeline/**/*.nf.test)" >> "$GITHUB_OUTPUT"
 
   test:
     name: ${{ matrix.tags }} (${{ matrix.profile }}-${{ matrix.NXF_VER }})

@@ -57,12 +57,12 @@
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
-                        "git_sha": "37dee863936732fe7e05dc598bf6e183a8e7ef73",
+                        "git_sha": "8ec825f465b9c17f9d83000022995b4f7de6fe93",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {
                         "branch": "master",
-                        "git_sha": "65ad3e0b9a4099592e1102e92e10455dc661cf53",
+                        "git_sha": "c9488585ce7bd35ccd2a30faa2371454c8112fb9",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/extract": {
@@ -77,7 +77,7 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "642a0d8afe373ac45244a7947fb8a6c0a5a312d4",
+                        "git_sha": "9e71d8519dfbfc328c078bba14d4bd4c99e39a94",
                         "installed_by": ["modules"]
                     },
                     "picard/markduplicates": {
