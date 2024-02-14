@@ -377,24 +377,24 @@ if revFilenames:
 if SHOW_STATS:
     statsOut = open(statsFilename, "w")
     statsOut.write("\t".join(["Filename", "Both_RE", "Only_Fwd_RE", "Only_Rev_RE",
-               "No_RE", "Fwd_YG(G/A)_is_C", "Fwd_YG(G/A)_is_T",
-               "Fwd_4th_is_A", "Fwd_4th_is_C", "Fwd_4th_is_G", "Fwd_4th_is_T", "Fwd_4th_is_N",
-               "Rev_4th_is_A", "Rev_4th_is_C", "Rev_4th_is_G", "Rev_4th_is_T", "Rev_4th_is_N",
-               "Fwd_CGGCGG", "Fwd_TGGTGG", "Fwd_CGGTGG", "Fwd_TGGCGG",
-               "D0_reads",
-               "D1_base1_is_A", "D1_base1_is_C", "D1_base1_is_G", "D1_base1_is_T", "D1_base1_is_N",
-               "D2_base1_is_A", "D2_base1_is_C", "D2_base1_is_G", "D2_base1_is_T", "D2_base1_is_N",
-               "D2_base2_is_A", "D2_base2_is_C", "D2_base2_is_G", "D2_base2_is_T", "D2_base2_is_N",
-               "D3_base1_is_A", "D3_base1_is_C", "D3_base1_is_G", "D3_base1_is_T", "D3_base1_is_N",
-               "D3_base2_is_A", "D3_base2_is_C", "D3_base2_is_G", "D3_base2_is_T", "D3_base2_is_N",
-               "D3_base3_is_A", "D3_base3_is_C", "D3_base3_is_G", "D3_base3_is_T", "D3_base3_is_N",
-               "Rev_D0_reads",
-               "Rev_D1_base1_is_A", "Rev_D1_base1_is_C", "Rev_D1_base1_is_G", "Rev_D1_base1_is_T", "Rev_D1_base1_is_N",
-               "Rev_D2_base1_is_A", "Rev_D2_base1_is_C", "Rev_D2_base1_is_G", "Rev_D2_base1_is_T", "Rev_D2_base1_is_N",
-               "Rev_D2_base2_is_A", "Rev_D2_base2_is_C", "Rev_D2_base2_is_G", "Rev_D2_base2_is_T", "Rev_D2_base2_is_N",
-               "Rev_D3_base1_is_A", "Rev_D3_base1_is_C", "Rev_D3_base1_is_G", "Rev_D3_base1_is_T", "Rev_D3_base1_is_N",
-               "Rev_D3_base2_is_A", "Rev_D3_base2_is_C", "Rev_D3_base2_is_G", "Rev_D3_base2_is_T", "Rev_D3_base2_is_N",
-               "Rev_D3_base3_is_A", "Rev_D3_base3_is_C", "Rev_D3_base3_is_G", "Rev_D3_base3_is_T", "Rev_D3_base3_is_N"]))
+                "No_RE", "Fwd_YG(G/A)_is_C", "Fwd_YG(G/A)_is_T",
+                "Fwd_4th_is_A", "Fwd_4th_is_C", "Fwd_4th_is_G", "Fwd_4th_is_T", "Fwd_4th_is_N",
+                "Rev_4th_is_A", "Rev_4th_is_C", "Rev_4th_is_G", "Rev_4th_is_T", "Rev_4th_is_N",
+                "Fwd_CGGCGG", "Fwd_TGGTGG", "Fwd_CGGTGG", "Fwd_TGGCGG",
+                "D0_reads",
+                "D1_base1_is_A", "D1_base1_is_C", "D1_base1_is_G", "D1_base1_is_T", "D1_base1_is_N",
+                "D2_base1_is_A", "D2_base1_is_C", "D2_base1_is_G", "D2_base1_is_T", "D2_base1_is_N",
+                "D2_base2_is_A", "D2_base2_is_C", "D2_base2_is_G", "D2_base2_is_T", "D2_base2_is_N",
+                "D3_base1_is_A", "D3_base1_is_C", "D3_base1_is_G", "D3_base1_is_T", "D3_base1_is_N",
+                "D3_base2_is_A", "D3_base2_is_C", "D3_base2_is_G", "D3_base2_is_T", "D3_base2_is_N",
+                "D3_base3_is_A", "D3_base3_is_C", "D3_base3_is_G", "D3_base3_is_T", "D3_base3_is_N",
+                "Rev_D0_reads",
+                "Rev_D1_base1_is_A", "Rev_D1_base1_is_C", "Rev_D1_base1_is_G", "Rev_D1_base1_is_T", "Rev_D1_base1_is_N",
+                "Rev_D2_base1_is_A", "Rev_D2_base1_is_C", "Rev_D2_base1_is_G", "Rev_D2_base1_is_T", "Rev_D2_base1_is_N",
+                "Rev_D2_base2_is_A", "Rev_D2_base2_is_C", "Rev_D2_base2_is_G", "Rev_D2_base2_is_T", "Rev_D2_base2_is_N",
+                "Rev_D3_base1_is_A", "Rev_D3_base1_is_C", "Rev_D3_base1_is_G", "Rev_D3_base1_is_T", "Rev_D3_base1_is_N",
+                "Rev_D3_base2_is_A", "Rev_D3_base2_is_C", "Rev_D3_base2_is_G", "Rev_D3_base2_is_T", "Rev_D3_base2_is_N",
+                "Rev_D3_base3_is_A", "Rev_D3_base3_is_C", "Rev_D3_base3_is_G", "Rev_D3_base3_is_T", "Rev_D3_base3_is_N"]))
     statsOut.write("\n")
 
 for i in range(len(fwdFiles)):
