@@ -447,8 +447,8 @@ for i in range(len(fwdFiles)):
         recCount += 1
 
     statsList = [ stats["filename"], stats["nrBothRE"], stats["nrFwdRE"],
-                  stats["nrRevRE"], stats["nrNoRE"], stats["nrFwdREisC"],
-                  stats["nrFwdREisT"] ]
+                stats["nrRevRE"], stats["nrNoRE"], stats["nrFwdREisC"],
+                stats["nrFwdREisT"] ]
     statsList.extend(stats["bdFwd4thBase"])
     statsList.extend(stats["bdRev4thBase"])
     statsList.append(stats["nrCGGCGG"])
