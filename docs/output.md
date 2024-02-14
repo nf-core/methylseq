@@ -14,6 +14,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 
 - [FastQC](#fastqc) - Raw read QC
 - [TrimGalore](#trimgalore) - Adapter trimming
+- [NuMetRRBS](#numetrrbs) - Diversity trimming
 - [Alignment](#alignment) - Aligning reads to reference genome
 - [Deduplication](#deduplication) - Deduplicating reads
 - [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
@@ -65,6 +66,22 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
   - Trimming report (describes which parameters that were used)
 - `FastQC/sample_val_1_fastqc.zip`
   - FastQC report for trimmed reads
+
+Single-end data will have slightly different file names and only one FastQ file per sample.
+
+### NuMetRRBS
+
+The Ovation RRBS Methyl-Seq System produces libraries that are compatible with Illumina sequencing platforms. To prepare these libraries for alignment, it's necessary to first process the data by sample index, then perform trimming to eliminate adaptor sequences, low-quality reads, and diversity bases. Before proceeding to alignment, it's crucial to remove the extra sequences introduced by diversity adaptors. This specific trimming step is carried out using a custom Python script named trimRRBSdiversityAdaptCustomers.py, which NuGEN provides in [this](https://github.com/nugentechnologies/NuMetRRBS) repository.
+
+**Output directory: `results/trimdiversity`**
+
+Contains FastQ files with diversity sequence trimmed reads for each sample, along with a log file describing the trimming.
+
+- `sample_1_trimmed.fastq.gz`, `sample_2_trimmed.fastq.gz`
+  - Trimmed FastQ data, reads 1 and 2.
+  - **NB:** Only saved if `--save_trimmed` has been specified.
+- `logs/sample_trimmed.log`
+  - Trimming report (describes which parameters that were used)
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
 

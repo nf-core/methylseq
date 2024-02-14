@@ -1,0 +1,48 @@
+name: trimdiversity
+description: Diversity trimming and filtering with NuGEN's diversity trimming scripts.
+keywords:
+  - trimming
+  - adapters
+  - sequencing adapters
+  - fastq
+tools:
+  - trimgalore:
+      description: |
+        Following adaptor and quality trimming and prior to alignment, the additional sequence added by the diversity adaptors must be removed from the data. This trimming is performed by a custom python script trimRRBSdiversityAdaptCustomers.py provided by NuGEN in this repository. The script removes any reads that do not contain an MspI site signature YGG at the 5’ end. For paired end data an MspI site signature is required at the 5’ end of both sequences. The script accepts as input one or two fastq file strings, given either as complete filenames or as a pattern in quotes. When a pattern is given, the script will find all the filenames matching a specified pattern according to the rules used by the Unix shell (*,?). You may access the help option of this script for more details -h.
+      homepage: https://github.com/nugentechnologies/NuMetRRBS
+      documentation: https://github.com/nugentechnologies/NuMetRRBS/blob/master/README.md
+      licence: ["GPL-3.0-or-later"]
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - reads:
+      type: file
+      description: |
+        List of input FastQ files of size 1 and 2 for single-end and paired-end data,
+        respectively.
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - reads:
+      type: file
+      description: |
+        List of input adapter trimmed FastQ files of size 1 and 2 for
+        single-end and paired-end data, respectively.
+      pattern: "*_trimmed.fastq.gz"
+  - log:
+      type: file
+      description: |
+        Log file containing trimming statistics.
+      pattern: "*_trimmed.log"
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+authors:
+  - "@jma1991"

@@ -195,6 +195,12 @@
                     "description": "Preset for EM-seq libraries.",
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 10` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`.\n\nAlso sets the `--maxins` flag to `1000` for Bismark."
                 },
+                "ovation": {
+                    "type": "boolean",
+                    "description": "Preset for NuGen Ovation libraries.",
+                    "fa_icon": "fas fa-cubes",
+                    "help_text": "Use this parameter when processing NuGen Ovation RRBS data, that has been digested with MspI. This will run TrimGalore! using its default configuration, followed by forwarding the reads to the trimRRBSdiversityAdaptCustomers.py script for the removal of diversity bases."
+                },
                 "single_cell": {
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
@@ -669,13 +675,13 @@
             "$ref": "#/definitions/skip_pipeline_steps"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/definitions/institutional_config_options"
         },
         {
             "$ref": "#/definitions/max_job_request_options"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/definitions/generic_options"
         }
     ]
 }

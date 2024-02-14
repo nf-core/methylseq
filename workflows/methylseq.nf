@@ -53,6 +53,11 @@ else if ( params.aligner == 'bwameth' ){
 */
 
 //
+// MODULE: Installed directly from modules/local
+//
+include { TRIMDIVERSITY              } from '../modules/local/trimdiversity/main'
+
+//
 // MODULE: Installed directly from nf-core/modules
 //
 include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
@@ -135,7 +140,7 @@ workflow METHYLSEQ {
     /*
      * MODULE: Run TrimGalore!
      */
-    if (!params.skip_trimming) {
+    if (!params.skip_trimming || params.ovation) {
         TRIMGALORE(ch_cat_fastq)
         reads = TRIMGALORE.out.reads
         ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
@@ -143,7 +148,14 @@ workflow METHYLSEQ {
         reads = ch_cat_fastq
     }
 
-
+    /*
+     * MODULE: Run NuMetRRBS/trimRRBSdiversityAdaptCustomers.py
+     */
+    if (params.ovation) {
+        TRIMDIVERSITY(reads)
+        reads = TRIMDIVERSITY.out.reads
+        ch_versions = ch_versions.mix(TRIMDIVERSITY.out.versions.first())
+    }
 
     /*
      * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
@@ -222,6 +234,9 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        if (params.ovation) {
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMDIVERSITY.out.log.collect{ it[1] })
         }
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 
