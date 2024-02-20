@@ -56,9 +56,9 @@ workflow METHYLSEQ {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
-    /*
-     * MODULE: Run TrimGalore!
-     */
+    //
+    // MODULE: Run TrimGalore!
+    //
     if (!params.skip_trimming) {
         TRIMGALORE(ch_samplesheet)
         reads = TRIMGALORE.out.reads
@@ -67,16 +67,15 @@ workflow METHYLSEQ {
         reads = ch_samplesheet
     }
 
-    /*
-     * SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
-     */
+    //
+    // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
+    //
 
     // Aligner: bismark or bismark_hisat
     if( params.aligner =~ /bismark/ ){
-
-        /*
-         * Run Bismark alignment + downstream processing
-         */
+        //
+        // Run Bismark alignment + downstream processing
+        //
         BISMARK (
             reads,
             PREPARE_GENOME.out.bismark_index,
@@ -104,18 +103,18 @@ workflow METHYLSEQ {
         ch_aligner_mqc = BWAMETH.out.mqc
     }
 
-    /*
-     * MODULE: Qualimap BamQC
-     */
+    //
+    // MODULE: Qualimap BamQC
+    //
     QUALIMAP_BAMQC (
         ch_dedup,
         params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
     )
     ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
 
-    /*
-     * MODULE: Run Preseq
-     */
+    //
+    // MODULE: Run Preseq
+    //
     PRESEQ_LCEXTRAP (
         ch_bam
     )
