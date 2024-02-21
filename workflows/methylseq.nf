@@ -100,7 +100,7 @@ workflow METHYLSEQ {
             meta, fastq ->
             def meta_clone = meta.clone()
             parts = meta_clone.id.split('_')
-            meta_clone.id = parts.length > 1 ? parts[0..-2].join('_') : meta_clone.id
+            meta_clone.id = parts.length > 1 ? parts.join('_') : meta_clone.id
             [ meta_clone, fastq ]
         }
         .groupTuple(by: [0])
