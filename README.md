@@ -35,6 +35,7 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Merge re-sequenced FastQ files               | cat              | cat                   |
 | Raw data QC                                  | FastQC           | FastQC                |
 | Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
+| Diversity sequence trimming                  | NuMetRRBS        | NuMetRRBS             |
 | Align Reads                                  | Bismark          | bwa-meth              |
 | Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
 | Extract methylation calls                    | Bismark          | MethylDackel          |
@@ -95,6 +96,7 @@ These scripts were originally written for use at the [National Genomics Infrastr
   - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
   - Patrick Hüther ([@phue](https://github.com/phue/))
+  - James Ashmore ([@jma1991](https://github.com/jma1991/))
 
 ## Contributions and Support
 
