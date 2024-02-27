@@ -2,7 +2,7 @@
 
 class UTILS {
     public static String removeNextflowVersion(outputDir) {
-        def softwareVersions = path("$outputDir/pipeline_info/software_versions.yml").yaml
+        def softwareVersions = path("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml").yaml
         if (softwareVersions.containsKey("Workflow")) {
             softwareVersions.Workflow.remove("Nextflow")
         }
