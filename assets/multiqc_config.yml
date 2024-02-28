@@ -13,3 +13,11 @@ report_section_order:
 export_plots: true
 
 disable_version_detection: true
+
+table_columns_visible:
+  QualiMap:
+    avg_gc: false
+    30_x_pc: false
+    percentage_aligned: false
+top_modules:
+  - "bismark"
