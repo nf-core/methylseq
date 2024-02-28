@@ -1,23 +1,23 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.7, yaml=5.4.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
             "nf-test": "0.8.4",
             "nextflow": "23.10.1"
         },
-        "timestamp": "2024-02-21T22:52:02.102780846"
+        "timestamp": "2024-02-26T22:13:53.261605036"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.11.7, yaml=5.4.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.2}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
             "nf-test": "0.8.4",
             "nextflow": "23.10.1"
         },
-        "timestamp": "2024-02-21T22:53:27.861098792"
+        "timestamp": "2024-02-26T22:14:55.167421064"
     },
     "single_end": {
         "content": [
