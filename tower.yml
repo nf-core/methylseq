@@ -3,3 +3,11 @@ reports:
     display: "MultiQC HTML report"
   samplesheet.csv:
     display: "Auto-created samplesheet with collated metadata and FASTQ paths"
+  bismark_summary_report.html:
+    display: "Bismark summary report"
+  "bismark/reports/*report.html":
+    display: "Bismark sample report"
+  "*_val_*_fastqc.html":
+    display: "FastQC report, after trimming"
+  "*_fastqc.html":
+    display: "FastQC report, before trimming"
