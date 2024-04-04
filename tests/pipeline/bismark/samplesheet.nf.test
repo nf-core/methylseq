@@ -1,8 +1,7 @@
 nextflow_pipeline {
 
     name "Test Replicate Handling"
-    script "../../../main.nf"
-    config "../../../conf/test.config"
+    script "main.nf"
 
     tag "pipeline"
 
