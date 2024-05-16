@@ -102,11 +102,12 @@ workflow PIPELINE_INITIALISATION {
         }
         .groupTuple(by: [0])
         .branch {
-            meta, fastq ->
-            single: fastq.size() == 1
-            return [ meta, fastq.flatten() ]
-            multiple: fastq.size() > 1
-            return [ meta, fastq.flatten() ]
+            single:
+                it[0].single_end
+                return [ it[0], it[1].flatten() ]
+            multiple:
+                !it[0].single_end
+                return [ it[0], it[1].flatten() ]
         }
         .set { ch_fastq }
 
