@@ -84,29 +84,23 @@ workflow PIPELINE_INITIALISATION {
     //
     Channel
         .fromSamplesheet("input")
-        .map {
-            meta, fastq_1, fastq_2 ->
+        .map { meta, fastq_1, fastq_2 ->
             if (!fastq_2) {
-                return [ meta + [ single_end:true ], [ fastq_1 ] ]
+                return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
             } else {
-                return [ meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
+                return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
             }
         }
         .groupTuple()
-        .map {
-            meta, fastq ->
-            def meta_clone = meta.clone()
-            parts = meta_clone.id.split('_')
-            meta_clone.id = parts.length > 1 ? parts.join('_') : meta_clone.id
-            [ meta_clone, fastq ]
+        .map { input ->
+            def (metas, fastqs) = input[1..2]
+            return [ metas[0], fastqs ]
         }
-        .groupTuple(by: [0])
-        .branch {
-            meta, fastq ->
-            single: fastq.size() == 1
-            return [ meta, fastq.flatten() ]
-            multiple: fastq.size() > 1
-            return [ meta, fastq.flatten() ]
+        .branch { meta, fastqs ->
+            single  : fastqs.size() == 1
+                return [ meta, fastqs.flatten() ]
+            multiple: fastqs.size() > 1
+                return [ meta, fastqs.flatten() ]
         }
         .set { ch_fastq }
 
