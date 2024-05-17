@@ -1,0 +1,12 @@
+{
+    "single_end_software_versions": {
+        "content": [
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+        ],
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "24.04.0"
+        },
+        "timestamp": "2024-05-17T14:37:44.368983"
+    }
+}
