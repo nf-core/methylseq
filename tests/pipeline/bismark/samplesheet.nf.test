@@ -1,0 +1,24 @@
+nextflow_pipeline {
+
+    name "Test Replicate Handling"
+    script "main.nf"
+
+    tag "pipeline"
+
+    test("Should handle replicates and works") {
+        when {
+            params {
+                aligner        = "bismark"
+                save_reference = true
+                input          = "$baseDir/tests/pipeline/bismark/assets/samplesheet.csv"
+                outdir         = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success }
+            )
+        }
+    }
+}
