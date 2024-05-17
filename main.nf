@@ -17,10 +17,7 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-params.fasta          = getGenomeAttribute('fasta')
-params.fasta_index    = getGenomeAttribute('fasta_index')
-params.bismark_index  = getGenomeAttribute('bismark')
-params.bwa_meth_index = getGenomeAttribute('bwa_meth')
+params.fasta = getGenomeAttribute('fasta')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
