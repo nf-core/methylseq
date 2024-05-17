@@ -92,9 +92,8 @@ workflow PIPELINE_INITIALISATION {
             }
         }
         .groupTuple()
-        .map { input ->
-            def (metas, fastqs) = input[1..2]
-            return [ metas[0], fastqs ]
+        .map {
+            validateInputSamplesheet(it)
         }
         .branch { meta, fastqs ->
             single  : fastqs.size() == 1
