@@ -2,6 +2,15 @@
 
 ## v2.7.0dev - [date]
 
+### Bug fixes & refactoring
+
+- 🔄 Updated template to nf-core/tools v2.12 [#377](https://github.com/nf-core/methylseq/pull/377)
+- 🔄 Updated template to nf-core/tools v2.13 [#380](https://github.com/nf-core/methylseq/pull/380)
+- 🔄 Updated template to nf-core/tools v2.13.1 [#384](https://github.com/nf-core/methylseq/pull/384)
+- 🔄 Updated template to nf-core/tools v2.14.1 [#399](https://github.com/nf-core/methylseq/pull/399)
+- 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
+- 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
+
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
 ### Bug fixes & refactoring
