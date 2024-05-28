@@ -96,6 +96,7 @@ These scripts were originally written for use at the [National Genomics Infrastr
   - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
   - Patrick Hüther ([@phue](https://github.com/phue/))
+  - Maxime U Garica ([@maxulysse](https://github.com/maxulysse/))
 
 ## Contributions and Support
 
