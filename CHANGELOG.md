@@ -11,6 +11,10 @@
 - 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
 - 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
 
+### Pipeline Updates
+
+- 🔧 Updated nf-core modules for preseq [#390](https://github.com/nf-core/methylseq/pull/390)
+
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
 ### Bug fixes & refactoring
