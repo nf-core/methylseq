@@ -5,9 +5,9 @@
         ],
         "meta": {
             "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nextflow": "24.04.2"
         },
-        "timestamp": "2024-02-26T22:44:25.773445334"
+        "timestamp": "2024-06-28T15:35:18.303882773"
     },
     "single_end_rrbs_software_versions": {
         "content": [
