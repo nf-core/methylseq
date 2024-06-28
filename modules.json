@@ -82,7 +82,7 @@
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
-                        "git_sha": "911696ea0b62df80e900ef244d7867d177971f73",
+                        "git_sha": "4d178c536f91d022a3bff078bb84037e866c7da4",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqc": {
