@@ -35,6 +35,7 @@ workflow BISMARK {
      */
     SAMTOOLS_SORT_ALIGNED(
         BISMARK_ALIGN.out.bam,
+        [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
     versions = versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
@@ -99,7 +100,8 @@ workflow BISMARK {
      * MODULE: Run samtools sort
      */
     SAMTOOLS_SORT_DEDUPLICATED (
-        alignments
+        alignments,
+        [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
     versions = versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
 

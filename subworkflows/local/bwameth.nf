@@ -34,7 +34,10 @@ workflow BWAMETH {
     /*
      * Sort raw output BAM
      */
-    SAMTOOLS_SORT (BWAMETH_ALIGN.out.bam)
+    SAMTOOLS_SORT (
+        BWAMETH_ALIGN.out.bam,
+        [[:],[]] // Empty map and list due that is optional
+        )
     versions = versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
