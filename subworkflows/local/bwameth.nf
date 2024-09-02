@@ -34,7 +34,10 @@ workflow BWAMETH {
     /*
      * Sort raw output BAM
      */
-    SAMTOOLS_SORT (BWAMETH_ALIGN.out.bam)
+    SAMTOOLS_SORT (
+        BWAMETH_ALIGN.out.bam,
+        [[:],[]] // Empty map and list as is optional input but required for nextflow
+    )
     versions = versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
@@ -62,8 +65,8 @@ workflow BWAMETH {
         */
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
-            fasta,
-            fasta_index
+            [[:], fasta],
+            [[:], fasta_index]
         )
         /*
          * Run samtools index on deduplicated alignment

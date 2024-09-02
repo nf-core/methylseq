@@ -44,7 +44,12 @@ workflow METHYLSEQ {
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
-    PREPARE_GENOME()
+    PREPARE_GENOME(
+        params.fasta,
+        params.fasta_index,
+        params.bismark_index,
+        params.bwa_meth_index,
+    )
     ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
     //
@@ -175,7 +180,9 @@ workflow METHYLSEQ {
         ch_multiqc_files.collect(),
         ch_multiqc_config.toList(),
         ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList()
+        ch_multiqc_logo.toList(),
+        [],
+        []
     )
 
     emit:
