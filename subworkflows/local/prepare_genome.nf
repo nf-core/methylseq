@@ -53,11 +53,11 @@ workflow PREPARE_GENOME {
         /*
          * Generate bwameth index if not supplied
          */
-        if (params.bwa_meth_index) {
-            if (params.bwa_meth_index.endsWith('.tar.gz')) {
-                ch_bismark_index = UNTAR ( [ [:], file(bwa_meth_index) ] ).untar.map { it[1] }
+        if (params.bwameth_index) {
+            if (params.bwameth_index.endsWith('.tar.gz')) {
+                ch_bismark_index = UNTAR ( [ [:], file(bwameth_index) ] ).untar.map { it[1] }
             } else {
-                ch_bismark_index = Channel.value(file(bwa_meth_index))
+                ch_bismark_index = Channel.value(file(bwameth_index))
             }
         } else {
             BWAMETH_INDEX(ch_fasta)

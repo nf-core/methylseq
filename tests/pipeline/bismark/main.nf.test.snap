@@ -1,33 +1,33 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-26T22:47:28.24122693"
+        "timestamp": "2024-09-02T16:41:05.801175734"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-26T22:50:19.51468117"
+        "timestamp": "2024-09-02T16:50:17.346991979"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-26T22:48:48.028054983"
+        "timestamp": "2024-09-02T16:45:43.035545785"
     },
     "single_end_nomeseq": {
         "content": [
@@ -98,13 +98,13 @@
     },
     "clip_r1_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-26T22:51:30.508820559"
+        "timestamp": "2024-09-02T16:52:41.194083368"
     },
     "single_end": {
         "content": [

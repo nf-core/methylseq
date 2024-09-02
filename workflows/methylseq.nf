@@ -48,7 +48,7 @@ workflow METHYLSEQ {
         params.fasta,
         params.fasta_index,
         params.bismark_index,
-        params.bwa_meth_index,
+        params.bwameth_index,
     )
     ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 

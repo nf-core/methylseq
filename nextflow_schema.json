@@ -111,7 +111,7 @@
                     "description": "Path to a directory containing a Bismark reference index.",
                     "fa_icon": "fas fa-dot-circle"
                 },
-                "bwa_meth_index": {
+                "bwameth_index": {
                     "type": "string",
                     "format": "path",
                     "description": "bwameth index filename base",
