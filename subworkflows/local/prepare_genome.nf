@@ -3,6 +3,7 @@
 //
 
 include { UNTAR                       } from '../../modules/nf-core/untar/main'
+include { GUNZIP                      } from '../../modules/nf-core/gunzip/main'
 include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
 include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
 include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
@@ -22,8 +23,11 @@ workflow PREPARE_GENOME {
     ch_bwameth_index = Channel.empty()
 
     // FASTA, if supplied
-    if (params.fasta) {
-        ch_fasta = Channel.value(file(fasta))
+    if (fasta.endsWith('.gz')) {
+        ch_fasta    = GUNZIP_FASTA ( [ [:], file(fasta, checkIfExists: true) ] ).gunzip.map { it[1] }
+        ch_versions = ch_versions.mix(GUNZIP_FASTA.out.versions)
+    } else {
+        ch_fasta = Channel.value(file(fasta, checkIfExists: true))
     }
     ch_fasta.dump(tag: 'PREPARE_GENOME: ch_fasta')
 
@@ -33,8 +37,8 @@ workflow PREPARE_GENOME {
         /*
          * Generate bismark index if not supplied
          */
-        if (params.bismark_index) {
-            if (params.bismark_index.endsWith('.gz')) {
+        if (bismark_index) {
+            if (bismark_index.endsWith('.gz')) {
                 ch_bismark_index = UNTAR ( [ [:], file(bismark_index) ] ).untar.map { it[1] }
             } else {
                 ch_bismark_index = Channel.value(file(bismark_index))
@@ -53,8 +57,8 @@ workflow PREPARE_GENOME {
         /*
          * Generate bwameth index if not supplied
          */
-        if (params.bwameth_index) {
-            if (params.bwameth_index.endsWith('.tar.gz')) {
+        if (bwameth_index) {
+            if (bwameth_index.endsWith('.tar.gz')) {
                 ch_bismark_index = UNTAR ( [ [:], file(bwameth_index) ] ).untar.map { it[1] }
             } else {
                 ch_bismark_index = Channel.value(file(bwameth_index))
@@ -69,7 +73,7 @@ workflow PREPARE_GENOME {
         /*
          * Generate fasta index if not supplied
          */
-        if (params.fasta_index) {
+        if (fasta_index) {
             ch_fasta_index = Channel.value(file(fasta_index))
         } else {
             SAMTOOLS_FAIDX(ch_fasta.map{ fasta -> [[:], fasta]})

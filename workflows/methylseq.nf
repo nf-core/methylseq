@@ -4,7 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { PREPARE_GENOME } from '../subworkflows/local/prepare_genome'
+
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 
 // Aligner: bismark or bismark_hisat
@@ -35,22 +35,16 @@ workflow METHYLSEQ {
 
     take:
     ch_samplesheet // channel: samplesheet read in from --input
+    ch_versions          // channel: [ path(versions.yml) ]
+    ch_fasta             // channel: path(genome.fasta)
+    ch_fasta_index        // channel: path(star/index/)
+    ch_bismark_index        // channel: path(star/index/)
+    ch_bwameth_index        // channel: path(star/index/)
 
     main:
 
-    ch_versions = Channel.empty()
-    ch_multiqc_files = Channel.empty()
 
-    //
-    // SUBWORKFLOW: Prepare any required reference genome indices
-    //
-    PREPARE_GENOME(
-        params.fasta,
-        params.fasta_index,
-        params.bismark_index,
-        params.bwameth_index,
-    )
-    ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+    ch_multiqc_files = Channel.empty()
 
     //
     // MODULE: Run FastQC
@@ -83,7 +77,7 @@ workflow METHYLSEQ {
         //
         BISMARK (
             reads,
-            PREPARE_GENOME.out.bismark_index,
+            ch_bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
@@ -97,9 +91,9 @@ workflow METHYLSEQ {
 
         BWAMETH (
             reads,
-            PREPARE_GENOME.out.bwameth_index,
-            PREPARE_GENOME.out.fasta,
-            PREPARE_GENOME.out.fasta_index,
+            ch_bwameth_index,
+            ch_fasta,
+            ch_fasta_index,
             params.skip_deduplication || params.rrbs,
         )
         ch_versions = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })

@@ -28,6 +28,7 @@ params.bwameth_index = getGenomeAttribute('bwameth')
 */
 
 include { METHYLSEQ               } from './workflows/methylseq'
+include { PREPARE_GENOME          } from './subworkflows/local/prepare_genome'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 
@@ -47,15 +48,36 @@ workflow NFCORE_METHYLSEQ {
 
     main:
 
+    ch_versions = Channel.empty()
+
+    //
+    // SUBWORKFLOW: Prepare any required reference genome indices
+    //
+    PREPARE_GENOME(
+        params.fasta,
+        params.fasta_index,
+        params.bismark_index,
+        params.bwameth_index,
+    )
+    ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+
     //
     // WORKFLOW: Run pipeline
     //
     METHYLSEQ (
-        samplesheet
+        samplesheet,
+        ch_versions,
+        PREPARE_GENOME.out.fasta,
+        PREPARE_GENOME.out.fasta_index,
+        PREPARE_GENOME.out.bismark_index,
+        PREPARE_GENOME.out.bwameth_index,
     )
+
+    ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
+    versions       = ch_versions               // channel: [version1, version2, ...]
 
 }
 /*

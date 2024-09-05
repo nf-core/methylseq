@@ -60,6 +60,11 @@
                         "git_sha": "b49b8992e5271ce427f3a7cdb29628fc58400eb5",
                         "installed_by": ["modules"]
                     },
+                    "gunzip": {
+                        "branch": "master",
+                        "git_sha": "4e5f4687318f24ba944a13609d3ea6ebd890737d",
+                        "installed_by": ["modules"]
+                    },
                     "methyldackel/extract": {
                         "branch": "master",
                         "git_sha": "1c2bf5b317c89739d4cac7aa8eb661f59349c73f",
