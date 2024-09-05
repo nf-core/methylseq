@@ -43,9 +43,6 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_meth
 //
 workflow NFCORE_METHYLSEQ {
 
-    take:
-    samplesheet // channel: samplesheet read in from --input
-
     main:
 
     ch_versions = Channel.empty()
@@ -64,8 +61,10 @@ workflow NFCORE_METHYLSEQ {
     //
     // WORKFLOW: Run pipeline
     //
+    ch_samplesheet = Channel.value(file(params.input, checkIfExists: true))
+
     METHYLSEQ (
-        samplesheet,
+        ch_samplesheet,
         ch_versions,
         PREPARE_GENOME.out.fasta,
         PREPARE_GENOME.out.fasta_index,
@@ -89,7 +88,6 @@ workflow NFCORE_METHYLSEQ {
 workflow {
 
     main:
-
     //
     // SUBWORKFLOW: Run initialisation tasks
     //
@@ -99,16 +97,13 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
-        params.outdir,
-        params.input
+        params.outdir
     )
 
     //
     // WORKFLOW: Run main workflow
     //
-    NFCORE_METHYLSEQ (
-        PIPELINE_INITIALISATION.out.samplesheet
-    )
+    NFCORE_METHYLSEQ ()
 
     //
     // SUBWORKFLOW: Run completion tasks

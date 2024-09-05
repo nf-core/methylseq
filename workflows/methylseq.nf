@@ -5,7 +5,7 @@
 */
 
 
-include { FASTQC                      } from '../modules/nf-core/fastqc/main'
+include { FASTQC } from '../modules/nf-core/fastqc/main'
 
 // Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
@@ -16,14 +16,16 @@ else if ( params.aligner == 'bwameth' ){
     include { BWAMETH } from '../subworkflows/local/bwameth'
 }
 
-include { TRIMGALORE                  } from '../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC              } from '../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP             } from '../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMap       } from 'plugin/nf-validation'
-include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { TRIMGALORE               } from '../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC           } from '../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP          } from '../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                  } from '../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                } from '../modules/nf-core/cat/fastq/main'
+include { paramsSummaryMap         } from 'plugin/nf-validation'
+include { paramsSummaryMultiqc     } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText   } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,8 +45,40 @@ workflow METHYLSEQ {
 
     main:
 
-
     ch_multiqc_files = Channel.empty()
+
+    //
+    // Create channel from input file provided through params.input
+    //
+    Channel
+        .fromSamplesheet("input")
+        .map { meta, fastq_1, fastq_2 ->
+            if (!fastq_2) {
+                return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
+            } else {
+                return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
+            }
+        }
+        .groupTuple()
+        .map {
+            validateInputSamplesheet(it)
+        }
+        .branch { meta, fastqs ->
+            single  : fastqs.size() == 1
+                return [ meta, fastqs.flatten() ]
+            multiple: fastqs.size() > 1
+                return [ meta, fastqs.flatten() ]
+        }
+        .set { ch_fastq }
+
+    //
+    // MODULE: Concatenate FastQ files from same sample if required
+    //
+    CAT_FASTQ ( ch_fastq.multiple )
+        .reads
+        .mix(ch_fastq.single)
+        .set { ch_samplesheet }
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC

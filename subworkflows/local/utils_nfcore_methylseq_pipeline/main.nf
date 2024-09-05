@@ -20,7 +20,7 @@ include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { workflowCitation          } from '../../nf-core/utils_nfcore_pipeline'
 
-include { CAT_FASTQ                 } from '../../../modules/nf-core/cat/fastq/main'
+
 
 /*
 ========================================================================================
@@ -37,7 +37,6 @@ workflow PIPELINE_INITIALISATION {
     monochrome_logs   // boolean: Do not use coloured log outputs
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
-    input             //  string: Path to input samplesheet
 
     main:
 
@@ -79,42 +78,6 @@ workflow PIPELINE_INITIALISATION {
     //
     validateInputParameters()
 
-    //
-    // Create channel from input file provided through params.input
-    //
-    Channel
-        .fromSamplesheet("input")
-        .map { meta, fastq_1, fastq_2 ->
-            if (!fastq_2) {
-                return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-            } else {
-                return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-            }
-        }
-        .groupTuple()
-        .map {
-            validateInputSamplesheet(it)
-        }
-        .branch { meta, fastqs ->
-            single  : fastqs.size() == 1
-                return [ meta, fastqs.flatten() ]
-            multiple: fastqs.size() > 1
-                return [ meta, fastqs.flatten() ]
-        }
-        .set { ch_fastq }
-
-    //
-    // MODULE: Concatenate FastQ files from same sample if required
-    //
-    CAT_FASTQ ( ch_fastq.multiple )
-        .reads
-        .mix(ch_fastq.single)
-        .set { ch_samplesheet }
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
-
-    emit:
-    samplesheet = ch_samplesheet
-    versions    = ch_versions
 }
 
 /*
