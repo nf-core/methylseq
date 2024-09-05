@@ -1,23 +1,23 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.7}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:20:52.574555282"
+        "timestamp": "2024-09-05T08:49:28.82190833"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.2}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            "{BWAMETH_ALIGN={bwameth=0.2.7}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:23:19.204104864"
+        "timestamp": "2024-09-05T08:51:04.01671391"
     },
     "single_end": {
         "content": [
@@ -29,13 +29,13 @@
             "SRR389222_sub2.stats:md5,b3febb17ee40d112fa5515de6fa240ac",
             "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
             "SRR389222_sub3.stats:md5,3cd4f45e01d65329353918f98ec281d1",
-            "Ecoli.markdup.sorted.bam:md5,f4ca6a1a4a794292c341ed725f043aec",
+            "Ecoli.markdup.sorted.bam:md5,a3150388515b6e35d36ff993a7367e9f",
             "Ecoli.markdup.sorted.bam.bai:md5,618938a6ad66dc2d937424b12e1ac903",
-            "SRR389222_sub1.markdup.sorted.bam:md5,4d0ab70f7a7c34eac263ae17b8ceb6fd",
+            "SRR389222_sub1.markdup.sorted.bam:md5,d44d2716ae9c841733112dedafdb9e8d",
             "SRR389222_sub1.markdup.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-            "SRR389222_sub2.markdup.sorted.bam:md5,11187d6bcee9752ba6b621d17ec9f10a",
+            "SRR389222_sub2.markdup.sorted.bam:md5,8674f540111dae9b299d8516a449ad3e",
             "SRR389222_sub2.markdup.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-            "SRR389222_sub3.markdup.sorted.bam:md5,3b9ef4d1c3f29d7b4e1699bd382d19cb",
+            "SRR389222_sub3.markdup.sorted.bam:md5,679a0e10df4608a30db3455fb2e4ec2b",
             "SRR389222_sub3.markdup.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
             [
                 [
@@ -65,7 +65,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:20:52.878813787"
+        "timestamp": "2024-09-05T08:49:29.04820342"
     },
     "single_end_rrbs": {
         "content": [

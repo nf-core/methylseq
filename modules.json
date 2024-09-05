@@ -42,7 +42,7 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+                        "git_sha": "52bef5cea60e445400fa250079c02c206168d208",
                         "installed_by": ["modules"]
                     },
                     "bwameth/index": {
@@ -62,12 +62,12 @@
                     },
                     "methyldackel/extract": {
                         "branch": "master",
-                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+                        "git_sha": "1c2bf5b317c89739d4cac7aa8eb661f59349c73f",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
-                        "git_sha": "78a610dafe99808b42e4804ae4771022b168596b",
+                        "git_sha": "1c2bf5b317c89739d4cac7aa8eb661f59349c73f",
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
