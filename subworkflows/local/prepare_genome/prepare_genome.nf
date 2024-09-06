@@ -2,11 +2,11 @@
 // Prepare reference genome files
 //
 
-include { UNTAR                       } from '../../modules/nf-core/untar/main'
-include { GUNZIP                      } from '../../modules/nf-core/gunzip/main'
-include { BISMARK_GENOMEPREPARATION   } from '../../modules/nf-core/bismark/genomepreparation/main'
-include { BWAMETH_INDEX               } from '../../modules/nf-core/bwameth/index/main'
-include { SAMTOOLS_FAIDX              } from '../../modules/nf-core/samtools/faidx/main'
+include { UNTAR                       } from '../../../modules/nf-core/untar/main'
+include { GUNZIP                      } from '../../../modules/nf-core/gunzip/main'
+include { BISMARK_GENOMEPREPARATION   } from '../../../modules/nf-core/bismark/genomepreparation/main'
+include { BWAMETH_INDEX               } from '../../../modules/nf-core/bwameth/index/main'
+include { SAMTOOLS_FAIDX              } from '../../../modules/nf-core/samtools/faidx/main'
 
 workflow PREPARE_GENOME {
     take:

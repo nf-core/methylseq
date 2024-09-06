@@ -19,11 +19,11 @@ include { validateInputSamplesheet } from '../../subworkflows/local/utils_nfcore
 
 // Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
-    include { BISMARK } from '../../subworkflows/local/bismark'
+    include { BISMARK } from '../../subworkflows/local/bismark/bismark'
 }
 // Aligner: bwameth
 else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH } from '../../subworkflows/local/bwameth'
+    include { BWAMETH } from '../../subworkflows/local/bwameth/bwameth'
 }
 
 /*
