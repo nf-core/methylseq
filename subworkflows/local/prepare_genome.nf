@@ -73,7 +73,10 @@ workflow PREPARE_GENOME {
         if (fasta_index) {
             ch_fasta_index = Channel.value(file(fasta_index))
         } else {
-            SAMTOOLS_FAIDX(ch_fasta.map{ fasta -> [[:], fasta]})
+            SAMTOOLS_FAIDX(
+                ch_fasta.map{ fasta -> [[:], fasta]},
+                [[:], []]
+            )
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
             ch_versions = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
