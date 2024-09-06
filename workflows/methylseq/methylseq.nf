@@ -5,25 +5,25 @@
 */
 
 
-include { FASTQC                   } from '../modules/nf-core/fastqc/main'
-include { TRIMGALORE               } from '../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC           } from '../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP          } from '../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                  } from '../modules/nf-core/multiqc/main'
-include { CAT_FASTQ                } from '../modules/nf-core/cat/fastq/main'
+include { FASTQC                   } from '../../modules/nf-core/fastqc/main'
+include { TRIMGALORE               } from '../../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC           } from '../../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP          } from '../../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                  } from '../../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                } from '../../modules/nf-core/cat/fastq/main'
 include { paramsSummaryMap         } from 'plugin/nf-validation'
-include { paramsSummaryMultiqc     } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText   } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { paramsSummaryMultiqc     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML   } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
 // Aligner: bismark or bismark_hisat
 if( params.aligner =~ /bismark/ ){
-    include { BISMARK } from '../subworkflows/local/bismark'
+    include { BISMARK } from '../../subworkflows/local/bismark'
 }
 // Aligner: bwameth
 else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH } from '../subworkflows/local/bwameth'
+    include { BWAMETH } from '../../subworkflows/local/bwameth'
 }
 
 /*
