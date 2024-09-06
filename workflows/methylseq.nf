@@ -5,17 +5,7 @@
 */
 
 
-include { FASTQC } from '../modules/nf-core/fastqc/main'
-
-// Aligner: bismark or bismark_hisat
-if( params.aligner =~ /bismark/ ){
-    include { BISMARK } from '../subworkflows/local/bismark'
-}
-// Aligner: bwameth
-else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH } from '../subworkflows/local/bwameth'
-}
-
+include { FASTQC                   } from '../modules/nf-core/fastqc/main'
 include { TRIMGALORE               } from '../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC           } from '../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP          } from '../modules/nf-core/preseq/lcextrap/main'
@@ -27,6 +17,15 @@ include { softwareVersionsToYAML   } from '../subworkflows/nf-core/utils_nfcore_
 include { methodsDescriptionText   } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet } from '../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
+// Aligner: bismark or bismark_hisat
+if( params.aligner =~ /bismark/ ){
+    include { BISMARK } from '../subworkflows/local/bismark'
+}
+// Aligner: bwameth
+else if ( params.aligner == 'bwameth' ){
+    include { BWAMETH } from '../subworkflows/local/bwameth'
+}
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -36,12 +35,12 @@ include { validateInputSamplesheet } from '../subworkflows/local/utils_nfcore_me
 workflow METHYLSEQ {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
-    ch_versions          // channel: [ path(versions.yml) ]
-    ch_fasta             // channel: path(genome.fasta)
-    ch_fasta_index        // channel: path(star/index/)
-    ch_bismark_index        // channel: path(star/index/)
-    ch_bwameth_index        // channel: path(star/index/)
+    ch_samplesheet     // channel: samplesheet read in from --input
+    ch_versions        // channel: [ path(versions.yml) ]
+    ch_fasta           // channel: path(genome.fasta)
+    ch_fasta_index     // channel: path(star/index/)
+    ch_bismark_index   // channel: path(star/index/)
+    ch_bwameth_index   // channel: path(star/index/)
 
     main:
 
