@@ -73,18 +73,16 @@ workflow METHYLSEQ {
     //
     // MODULE: Concatenate FastQ files from same sample if required
     //
-    CAT_FASTQ ( ch_fastq.multiple )
+    CAT_FASTQ (ch_fastq.multiple)
         .reads
         .mix(ch_fastq.single)
-        .set { ch_samplesheet }
+        .set {ch_samplesheet}
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_samplesheet
-    )
+    FASTQC (ch_samplesheet)
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
@@ -114,9 +112,9 @@ workflow METHYLSEQ {
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
-        ch_versions = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
-        ch_bam = BISMARK.out.bam
-        ch_dedup = BISMARK.out.dedup
+        ch_versions    = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
+        ch_bam         = BISMARK.out.bam
+        ch_dedup       = BISMARK.out.dedup
         ch_aligner_mqc = BISMARK.out.mqc
     }
     // Aligner: bwameth
@@ -129,9 +127,9 @@ workflow METHYLSEQ {
             ch_fasta_index,
             params.skip_deduplication || params.rrbs,
         )
-        ch_versions = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })
-        ch_bam = BWAMETH.out.bam
-        ch_dedup = BWAMETH.out.dedup
+        ch_versions    = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })
+        ch_bam         = BWAMETH.out.bam
+        ch_dedup       = BWAMETH.out.dedup
         ch_aligner_mqc = BWAMETH.out.mqc
     }
 
@@ -147,9 +145,7 @@ workflow METHYLSEQ {
     //
     // MODULE: Run Preseq
     //
-    PRESEQ_LCEXTRAP (
-        ch_bam
-    )
+    PRESEQ_LCEXTRAP (ch_bam)
     ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
 
     //
@@ -166,8 +162,7 @@ workflow METHYLSEQ {
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_config        = Channel.fromPath(
-        "$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
     ch_multiqc_custom_config = params.multiqc_config ?
         Channel.fromPath(params.multiqc_config, checkIfExists: true) :
         Channel.empty()
@@ -175,18 +170,15 @@ workflow METHYLSEQ {
         Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
         Channel.empty()
 
-    summary_params      = paramsSummaryMap(
-        workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary = Channel.value(paramsSummaryMultiqc(summary_params))
+    summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+    ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
 
     ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
         file(params.multiqc_methods_description, checkIfExists: true) :
         file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_methods_description                = Channel.value(
-        methodsDescriptionText(ch_multiqc_custom_methods_description))
+    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
 
-    ch_multiqc_files = ch_multiqc_files.mix(
-        ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
     ch_multiqc_files = ch_multiqc_files.mix(
         ch_methods_description.collectFile(
