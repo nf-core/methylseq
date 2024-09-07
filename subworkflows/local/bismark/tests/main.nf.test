@@ -7,16 +7,15 @@ nextflow_workflow {
     test("Bismark Single-End") {
 
         when {
-            params {
-                // define parameters here. Example:
-                // outdir = "tests/results"
-            }
             workflow {
                 """
-                input[0] = file("test-file.txt") // reads
-                input[1] = file("test-file.txt") // bismark_index
-                input[2] = file("test-file.txt") // skip_deduplication
-                input[3] = file("test-file.txt") // cytosine_report
+                skip_deduplication = false
+                cytosine_report    = false
+
+                input[0] = file(https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz) // reads
+                input[1] = file(https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz) // bismark_index
+                input[2] = skip_deduplication
+                input[3] = cytosine_report
                 """
             }
         }

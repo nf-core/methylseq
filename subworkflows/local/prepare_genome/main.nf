@@ -38,6 +38,7 @@ workflow PREPARE_GENOME {
         if (bismark_index) {
             if (bismark_index.endsWith('.gz')) {
                 ch_bismark_index = UNTAR ([ [:], file(bismark_index) ]).untar.map { it[1] }
+                ch_versions      = ch_versions.mix(UNTAR.out.versions)
             } else {
                 ch_bismark_index = Channel.value(file(bismark_index))
             }

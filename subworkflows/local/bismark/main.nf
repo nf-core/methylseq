@@ -18,8 +18,8 @@ workflow BISMARK {
     cytosine_report    // boolean: whether the run coverage2cytosine
 
     main:
-    ch_versions = Channel.empty()
 
+    ch_versions = Channel.empty()
     /*
      * Align with bismark
      */
@@ -27,6 +27,9 @@ workflow BISMARK {
         reads,
         bismark_index
     )
+    BISMARK_ALIGN.out.bam.dump(tag: 'BISMARK_ALIGN: bam')
+    BISMARK_ALIGN.out.report.dump(tag: 'BISMARK_ALIGN: report')
+
     ch_versions = ch_versions.mix(BISMARK_ALIGN.out.versions)
 
     /*
@@ -36,11 +39,16 @@ workflow BISMARK {
         BISMARK_ALIGN.out.bam,
         [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
+    SAMTOOLS_SORT_ALIGNED.out.bam.dump(tag: 'BISMARK/SAMTOOLS_SORT_ALIGNED: bam')
+
     ch_versions = ch_versions.mix(SAMTOOLS_SORT_ALIGNED.out.versions)
 
     if (skip_deduplication) {
         alignments        = BISMARK_ALIGN.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
+
+        alignments.dump(tag: 'BISMARK/skip_deduplication: alignments')
+        alignment_reports.dump(tag: 'BISMARK/skip_deduplication: alignment_reports')
     } else {
         /*
         * Run deduplicate_bismark
@@ -50,6 +58,9 @@ workflow BISMARK {
         alignments        = BISMARK_DEDUPLICATE.out.bam
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
         ch_versions       = ch_versions.mix(BISMARK_DEDUPLICATE.out.versions)
+
+        alignments.dump(tag: 'BISMARK/deduplication: alignments')
+        alignment_reports.dump(tag: 'BISMARK/deduplication: alignment_reports')
     }
 
     /*
@@ -59,6 +70,9 @@ workflow BISMARK {
         alignments,
         bismark_index
     )
+    BISMARK_METHYLATIONEXTRACTOR.out.report.dump(tag: 'BISMARK_METHYLATIONEXTRACTOR: report')
+    BISMARK_METHYLATIONEXTRACTOR.out.mbias.dump(tag: 'BISMARK_METHYLATIONEXTRACTOR: mbias')
+
     ch_versions = ch_versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
 
 
@@ -70,6 +84,10 @@ workflow BISMARK {
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
             bismark_index
         )
+        BISMARK_COVERAGE2CYTOSINE.out.report.dump(tag: 'BISMARK_COVERAGE2CYTOSINE: report')
+        BISMARK_COVERAGE2CYTOSINE.out.coverage.dump(tag: 'BISMARK_COVERAGE2CYTOSINE: coverage')
+        BISMARK_COVERAGE2CYTOSINE.out.summary.dump(tag: 'BISMARK_COVERAGE2CYTOSINE: summary')
+
         ch_versions = ch_versions.mix(BISMARK_COVERAGE2CYTOSINE.out.versions)
     }
 
@@ -81,6 +99,8 @@ workflow BISMARK {
             .join(BISMARK_METHYLATIONEXTRACTOR.out.report)
             .join(BISMARK_METHYLATIONEXTRACTOR.out.mbias)
     )
+    BISMARK_REPORT.out.report.dump(tag: 'BISMARK_REPORT: report')
+
     ch_versions = ch_versions.mix(BISMARK_REPORT.out.versions)
 
     /*
@@ -93,6 +113,8 @@ workflow BISMARK {
         BISMARK_METHYLATIONEXTRACTOR.out.report.collect{ it[1] }.ifEmpty([]),
         BISMARK_METHYLATIONEXTRACTOR.out.mbias.collect{ it[1] }.ifEmpty([])
     )
+    BISMARK_SUMMARY.out.summary.dump(tag: 'BISMARK_REPORT: summary')
+
     ch_versions = ch_versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
@@ -102,6 +124,8 @@ workflow BISMARK {
         alignments,
         [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
+    SAMTOOLS_SORT_DEDUPLICATED.out.bam.dump(tag: 'BISMARK/SAMTOOLS_SORT_DEDUPLICATED: bam')
+
     ch_versions = ch_versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
 
     /*
