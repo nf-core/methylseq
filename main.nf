@@ -28,7 +28,7 @@ params.bwameth_index = getGenomeAttribute('bwameth')
 */
 
 include { METHYLSEQ               } from './workflows/methylseq/methylseq'
-include { PREPARE_GENOME          } from './subworkflows/local/prepare_genome/prepare_genome'
+include { PREPARE_GENOME          } from './subworkflows/local/prepare_genome/'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 

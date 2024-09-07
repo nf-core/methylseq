@@ -1,0 +1,34 @@
+nextflow_workflow {
+
+    name "Test Workflow BWAMETH"
+    script "subworkflows/local/bwameth/main.nf"
+    workflow "BWAMETH"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = file("test-file.txt") // reads
+                input[1] = file("test-file.txt") // bwameth_index
+                input[2] = file("test-file.txt") // fasta
+                input[3] = file("test-file.txt") // fasta_index
+                input[4] = file("test-file.txt") // skip_deduplication
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out).match() }
+            )
+        }
+
+    }
+
+}

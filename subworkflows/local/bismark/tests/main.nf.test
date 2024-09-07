@@ -1,0 +1,33 @@
+nextflow_workflow {
+
+    name "Test Workflow BISMARK"
+    script "../main.nf"
+    workflow "BISMARK"
+
+    test("Bismark Single-End") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = file("test-file.txt") // reads
+                input[1] = file("test-file.txt") // bismark_index
+                input[2] = file("test-file.txt") // skip_deduplication
+                input[3] = file("test-file.txt") // cytosine_report
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out).match() }
+            )
+        }
+
+    }
+
+}

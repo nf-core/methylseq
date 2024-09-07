@@ -1,0 +1,33 @@
+nextflow_workflow {
+
+    name "Test Workflow PREPARE_GENOME"
+    script "subworkflows/local/prepare_genome/main.nf"
+    workflow "PREPARE_GENOME"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                // define parameters here. Example:
+                // outdir = "tests/results"
+            }
+            workflow {
+                """
+                input[0] = file("test-file.txt") // fasta
+                input[1] = file("test-file.txt") // ch_fasta_index
+                input[2] = file("test-file.txt") // ch_bismark_index
+                input[3] = file("test-file.txt") // ch_bwameth_index
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(workflow.out).match() }
+            )
+        }
+
+    }
+
+}

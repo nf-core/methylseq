@@ -1,0 +1,20 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "../main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}
