@@ -17,6 +17,7 @@ workflow PREPARE_GENOME {
 
     main:
     ch_versions      = Channel.empty()
+    ch_fasta         = Channel.empty()
     ch_fasta_index   = Channel.empty()
     ch_bismark_index = Channel.empty()
     ch_bwameth_index = Channel.empty()
@@ -40,7 +41,7 @@ workflow PREPARE_GENOME {
                 ch_bismark_index = UNTAR ([ [:], file(bismark_index) ]).untar.map { it[1] }
                 ch_versions      = ch_versions.mix(UNTAR.out.versions)
             } else {
-                ch_bismark_index = Channel.value(file(bismark_index))
+                ch_bismark_index = Channel.value(file(bismark_index, checkIfExists: true))
             }
         } else {
             BISMARK_GENOMEPREPARATION(ch_fasta)
@@ -57,9 +58,9 @@ workflow PREPARE_GENOME {
          */
         if (bwameth_index) {
             if (bwameth_index.endsWith('.tar.gz')) {
-                ch_bwameth_index = UNTAR ([ [:], file(bwameth_index) ]).untar.map { it[1] }
+                ch_bwameth_index = UNTAR ([ [:], file(bwameth_index, checkIfExists: true) ]).untar.map { it[1] }
             } else {
-                ch_bwameth_index = Channel.value(file(bwameth_index))
+                ch_bwameth_index = Channel.value(file(bwameth_index, checkIfExists: true))
             }
         } else {
             BWAMETH_INDEX(ch_fasta)
@@ -67,12 +68,13 @@ workflow PREPARE_GENOME {
             ch_bwameth_index = BWAMETH_INDEX.out.index
             ch_versions      = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
+    }
 
         /*
          * Generate fasta index if not supplied
          */
         if (fasta_index) {
-            ch_fasta_index = Channel.value(file(fasta_index))
+            ch_fasta_index = Channel.value(file(fasta_index, checkIfExists: true))
         } else {
             SAMTOOLS_FAIDX(
                 ch_fasta.map{ fasta -> [[:], fasta]},
@@ -81,7 +83,6 @@ workflow PREPARE_GENOME {
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
             ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
-    }
 
     emit:
     fasta         = ch_fasta                  // channel: path(genome.fasta)
