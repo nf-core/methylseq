@@ -1,47 +1,5 @@
 {
-    "BWAMETH - All Indexes supplied": {
-        "content": [
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa.fai"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
-            ],
-            [
-                
-            ]
-        ],
-        "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2024-09-08T07:11:39.601007949"
-    },
-    "BISMARK - Generate Fasta Index": {
-        "content": [
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
-            ],
-            [
-                "versions.yml:md5,67124f8c3356bccd688e07c65a52e48a"
-            ]
-        ],
-        "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2024-09-08T07:13:17.406358667"
-    },
-    "BWAMETH - Generate Fasta Index & bwameth Index": {
+    "BWAMETH - Generate Index": {
         "content": [
             [
                 "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
@@ -69,57 +27,12 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-08T07:12:28.477635099"
+        "timestamp": "2024-09-08T12:38:36.730702552"
     },
-    "BWAMETH - Generate Fasta Index": {
+    "BISMARK - Generate Index": {
         "content": [
             [
                 "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
-            ],
-            [
-                "versions.yml:md5,67124f8c3356bccd688e07c65a52e48a"
-            ]
-        ],
-        "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2024-09-08T07:11:57.30233052"
-    },
-    "BISMARK - All Indexes supplied": {
-        "content": [
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa.fai"
-            ],
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
-            ],
-            [
-                
-            ]
-        ],
-        "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2024-09-08T07:12:48.994204422"
-    },
-    "BISMARK - Generate Fasta Index & Bowtie Index": {
-        "content": [
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
             ],
             [
                 [
@@ -147,14 +60,13 @@
                 ]
             ],
             [
-                "versions.yml:md5,48a4baa99421c3dd839946dd1af8d7aa",
-                "versions.yml:md5,67124f8c3356bccd688e07c65a52e48a"
+                "versions.yml:md5,48a4baa99421c3dd839946dd1af8d7aa"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-08T07:13:52.673839987"
+        "timestamp": "2024-09-08T12:38:22.021170374"
     }
 }

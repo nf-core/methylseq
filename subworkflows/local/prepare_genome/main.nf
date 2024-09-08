@@ -68,7 +68,6 @@ workflow PREPARE_GENOME {
             ch_bwameth_index = BWAMETH_INDEX.out.index
             ch_versions      = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
-    }
 
         /*
          * Generate fasta index if not supplied
@@ -83,6 +82,7 @@ workflow PREPARE_GENOME {
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
             ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
+    }
 
     emit:
     fasta         = ch_fasta                  // channel: path(genome.fasta)

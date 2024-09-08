@@ -4,67 +4,7 @@ nextflow_workflow {
     script "../main.nf"
     workflow "PREPARE_GENOME"
 
-    test("BISMARK - All Indexes supplied") {
-
-        when {
-            params {
-                aligner = "bismark"
-            }
-            workflow {
-                """
-                input[0] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
-                input[1] = file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true) // fasta_index
-                input[2] = file(params.pipelines_testdata_base_path + 'reference/Bowtie2_Index.tar.gz',  checkIfExists: true) // bismark_index
-                input[3] = [] // bwameth_index
-                """
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert snapshot(
-                    workflow.out.fasta,
-                    workflow.out.fasta_index,
-                    workflow.out.bismark_index,
-                    workflow.out.versions
-                    ).match() }
-            )
-        }
-
-    }
-
-    test("BISMARK - Generate Fasta Index") {
-
-        when {
-            params {
-                aligner = "bismark"
-            }
-            workflow {
-                """
-                input[0] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
-                input[1] = []  // fasta_index
-                input[2] = file(params.pipelines_testdata_base_path + 'reference/Bowtie2_Index.tar.gz',  checkIfExists: true) // bismark_index
-                input[3] = [] // bwameth_index
-                """
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert snapshot(
-                    workflow.out.fasta,
-                    workflow.out.fasta_index,
-                    workflow.out.bismark_index,
-                    workflow.out.versions
-                    ).match() }
-            )
-        }
-
-    }
-
-    test("BISMARK - Generate Fasta Index & Bowtie Index") {
+    test("BISMARK - Generate Index") {
 
         when {
             params {
@@ -85,7 +25,6 @@ nextflow_workflow {
                 { assert workflow.success },
                 { assert snapshot(
                     workflow.out.fasta,
-                    workflow.out.fasta_index,
                     workflow.out.bismark_index,
                     workflow.out.versions
                     ).match() }
@@ -94,67 +33,7 @@ nextflow_workflow {
 
     }
 
-    test("BWAMETH - All Indexes supplied") {
-
-        when {
-            params {
-                aligner = "bwameth"
-            }
-            workflow {
-                """
-                input[0] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
-                input[1] = file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true) // fasta_index
-                input[2] = [] // bismark_index
-                input[3] = file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz',  checkIfExists: true) // bwameth_index
-                """
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert snapshot(
-                    workflow.out.fasta,
-                    workflow.out.fasta_index,
-                    workflow.out.bwameth_index,
-                    workflow.out.versions
-                    ).match() }
-            )
-        }
-
-    }
-
-    test("BWAMETH - Generate Fasta Index") {
-
-        when {
-            params {
-                aligner = "bwameth"
-            }
-            workflow {
-                """
-                input[0] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
-                input[1] = []  // fasta_index
-                input[2] = [] // bismark_index
-                input[3] = file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz',  checkIfExists: true) // bwameth_index
-                """
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert snapshot(
-                    workflow.out.fasta,
-                    workflow.out.fasta_index,
-                    workflow.out.bwameth_index,
-                    workflow.out.versions
-                    ).match() }
-            )
-        }
-
-    }
-
-    test("BWAMETH - Generate Fasta Index & bwameth Index") {
+    test("BWAMETH - Generate Index") {
 
         when {
             params {
