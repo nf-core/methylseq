@@ -5,20 +5,47 @@ nextflow_workflow {
     workflow "BWAMETH"
     config "../nextflow.config"
 
-    test("Should run without failures") {
+    setup {
+            run("UNTAR") {
+                script "../../../../modules/nf-core/untar/main.nf"
+                process {
+                    """
+                    input[0] = [
+                        [:],
+                        file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz', checkIfExists: true)
+                    ]
+                    """
+                }
+            }
+    }
+
+    test("Bwameth Single-End") {
 
         when {
             params {
-                // define parameters here. Example:
-                // outdir = "tests/results"
+                aligner              = "bwameth"
+                publish_dir_mode     = 'copy'
+                unmapped             = false
+                save_align_intermeds = false
+                skip_deduplication   = false
+                rrbs                 = false
+                nomeseq              = false
+                slamseq              = false
+                save_reference       = true
+                outdir               = "results"
             }
             workflow {
                 """
-                input[0] = file("test-file.txt") // reads
-                input[1] = file("test-file.txt") // bwameth_index
-                input[2] = file("test-file.txt") // fasta
-                input[3] = file("test-file.txt") // fasta_index
-                input[4] = file("test-file.txt") // skip_deduplication
+                skip_deduplication = false
+
+                input[0] = Channel.of([
+                            [ id:'test', single_end:true ],
+                            file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // bwameth_index
+                input[2] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
+                input[3] = file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true) //fasta_index
+                input[4] = skip_deduplication
                 """
             }
         }
@@ -26,7 +53,12 @@ nextflow_workflow {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(workflow.out).match() }
+                { assert snapshot(
+                    workflow.out.bam.collect { bam(it[1]).getReadsMD5() },
+                    workflow.out.dedup.collect { bam(it[1]).getReadsMD5() },
+                    //workflow.out.mqc,
+                    workflow.out.versions
+                    ).match() }
             )
         }
 
