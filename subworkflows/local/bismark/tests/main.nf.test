@@ -3,17 +3,36 @@ nextflow_workflow {
     name "Test Workflow BISMARK"
     script "../main.nf"
     workflow "BISMARK"
+    config "../nextflow.config"
 
     test("Bismark Single-End") {
 
         when {
+            params {
+                aligner              = "bismark"
+                publish_dir_mode     = 'copy'
+                unmapped             = false
+                save_align_intermeds = false
+                skip_deduplication   = false
+                rrbs                 = false
+                nomeseq              = false
+                slamseq              = false
+                save_reference       = true
+                outdir               = "results"
+            }
             workflow {
                 """
                 skip_deduplication = false
                 cytosine_report    = false
 
-                input[0] = file(https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz) // reads
-                input[1] = file(https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz) // bismark_index
+                input[0] = Channel.of([
+                            [ id:'test', single_end:true ],
+                            file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = Channel.of([
+                            [ id:'test', single_end:true ],
+                            file(params.pipelines_testdata_base_path + 'reference/Bowtie2_Index.tar.gz', checkIfExists: true)
+                ])
                 input[2] = skip_deduplication
                 input[3] = cytosine_report
                 """
@@ -23,7 +42,12 @@ nextflow_workflow {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(workflow.out).match() }
+                { assert snapshot(
+                    workflow.out.bam,
+                    workflow.out.dedup,
+                    workflow.out.mqc,
+                    workflow.out.versions
+                    ).match() }
             )
         }
 

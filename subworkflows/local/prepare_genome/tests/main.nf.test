@@ -3,12 +3,15 @@ nextflow_workflow {
     name "Test Workflow PREPARE_GENOME"
     script "../main.nf"
     workflow "PREPARE_GENOME"
+    config "../nextflow.config"
 
     test("BISMARK - Generate Index") {
 
         when {
             params {
-                aligner = "bismark"
+                aligner          = "bismark"
+                publish_dir_mode = copy
+                save_reference   = false
             }
             workflow {
                 """
@@ -37,7 +40,9 @@ nextflow_workflow {
 
         when {
             params {
-                aligner = "bwameth"
+                aligner          = "bwameth"
+                publish_dir_mode = copy
+                save_reference   = false
             }
             workflow {
                 """

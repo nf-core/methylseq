@@ -1,8 +1,9 @@
 nextflow_workflow {
 
     name "Test Workflow BWAMETH"
-    script "subworkflows/local/bwameth/main.nf"
+    script "../main.nf"
     workflow "BWAMETH"
+    config "../nextflow.config"
 
     test("Should run without failures") {
 
