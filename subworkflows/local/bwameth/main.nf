@@ -70,8 +70,8 @@ workflow BWAMETH {
         */
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
-            [[:], fasta],
-            [[:], fasta_index],
+            fasta.map{ fasta -> [[:], fasta]},
+            fasta_index.map{ fasta_index -> [[:], fasta_index]},
         )
         /*
          * Run samtools index on deduplicated alignment

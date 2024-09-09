@@ -36,16 +36,15 @@ nextflow_workflow {
             }
             workflow {
                 """
-                skip_deduplication = false
 
                 input[0] = Channel.of([
                             [ id:'test', single_end:true ],
                             file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
                 ])
                 input[1] = UNTAR.out.untar.map { it[1] } // bwameth_index
-                input[2] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
-                input[3] = file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true) //fasta_index
-                input[4] = skip_deduplication
+                input[2] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true)) // fasta
+                input[3] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true)) //fasta_index
+                input[4] = params.skip_deduplication
                 """
             }
         }
