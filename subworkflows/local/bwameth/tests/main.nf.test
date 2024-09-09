@@ -36,7 +36,7 @@ nextflow_workflow {
             }
             workflow {
                 """
-                skip_deduplication = true
+                skip_deduplication = false
 
                 input[0] = Channel.of([
                             [ id:'test', single_end:true ],
