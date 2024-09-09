@@ -6,17 +6,17 @@ nextflow_workflow {
     config "../nextflow.config"
 
     setup {
-            run("UNTAR") {
-                script "../../../../modules/nf-core/untar/main.nf"
-                process {
-                    """
-                    input[0] = [
-                        [:],
-                        file(params.pipelines_testdata_base_path + 'reference/Bowtie2_Index.tar.gz', checkIfExists: true)
-                    ]
-                    """
-                }
+        run("UNTAR") {
+            script "../../../../modules/nf-core/untar/main.nf"
+            process {
+                """
+                input[0] = [
+                    [:],
+                    file(params.pipelines_testdata_base_path + 'reference/Bowtie2_Index.tar.gz', checkIfExists: true)
+                ]
+                """
             }
+        }
     }
 
     test("Bismark Single-End") {

@@ -6,17 +6,17 @@ nextflow_workflow {
     config "../nextflow.config"
 
     setup {
-            run("UNTAR") {
-                script "../../../../modules/nf-core/untar/main.nf"
-                process {
-                    """
-                    input[0] = [
-                        [:],
-                        file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz', checkIfExists: true)
-                    ]
-                    """
-                }
+        run("UNTAR") {
+            script "../../../../modules/nf-core/untar/main.nf"
+            process {
+                """
+                input[0] = [
+                    [:],
+                    file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz', checkIfExists: true)
+                ]
+                """
             }
+        }
     }
 
     test("Bwameth Single-End") {
@@ -25,14 +25,13 @@ nextflow_workflow {
             params {
                 aligner              = "bwameth"
                 publish_dir_mode     = 'copy'
-                unmapped             = false
-                save_align_intermeds = false
-                skip_deduplication   = false
-                rrbs                 = false
-                nomeseq              = false
-                slamseq              = false
-                save_reference       = true
                 outdir               = "results"
+                save_reference       = false
+                save_align_intermeds = false
+                min_depth            = 0
+                comprehensive        = false
+                ignore_flags         = false
+                methyl_kit           = false
             }
             workflow {
                 """
@@ -42,7 +41,7 @@ nextflow_workflow {
                             [ id:'test', single_end:true ],
                             file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
                 ])
-                input[1] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // bwameth_index
+                input[1] = UNTAR.out.untar.map { it[1] } // bwameth_index
                 input[2] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
                 input[3] = file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true) //fasta_index
                 input[4] = skip_deduplication

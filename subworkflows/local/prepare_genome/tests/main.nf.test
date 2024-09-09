@@ -12,6 +12,7 @@ nextflow_workflow {
                 aligner          = "bismark"
                 publish_dir_mode = copy
                 save_reference   = false
+                slamseq          = false
             }
             workflow {
                 """
@@ -43,6 +44,7 @@ nextflow_workflow {
                 aligner          = "bwameth"
                 publish_dir_mode = copy
                 save_reference   = false
+                slamseq          = false
             }
             workflow {
                 """
