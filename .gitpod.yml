@@ -7,6 +7,9 @@ tasks:
   - name: unset JAVA_TOOL_OPTIONS
     command: |
       unset JAVA_TOOL_OPTIONS
+  - name: conda update
+    command: |
+      conda update --all --yes   
 
 vscode:
   extensions: # based on nf-core.nf-core-extensionpack
