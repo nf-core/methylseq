@@ -32,6 +32,7 @@ nextflow_workflow {
                 comprehensive        = false
                 ignore_flags         = false
                 methyl_kit           = false
+                skip_deduplication   = false
             }
             workflow {
                 """

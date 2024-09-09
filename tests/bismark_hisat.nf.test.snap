@@ -7,7 +7,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T17:10:42.797510875"
+        "timestamp": "2024-09-09T15:28:08.105757122"
     },
     "single_end_rrbs_software_versions": {
         "content": [
@@ -17,7 +17,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T17:15:08.499755249"
+        "timestamp": "2024-09-09T15:32:23.722041013"
     },
     "single_end": {
         "content": [
@@ -73,10 +73,10 @@
             "genome_results.txt:md5,0950f0f4bb7fe3b64b120da8d43c227b"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-21T22:13:40.502832937"
+        "timestamp": "2024-09-09T15:28:07.819128322"
     },
     "single_end_rrbs": {
         "content": [
@@ -132,9 +132,9 @@
             "genome_results.txt:md5,99be975e957ea5ca013b3d4e97f35835"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-21T22:16:44.459903681"
+        "timestamp": "2024-09-09T15:32:22.040134799"
     }
 }

@@ -7,7 +7,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:41:05.801175734"
+        "timestamp": "2024-09-09T14:53:35.188010735"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
@@ -17,7 +17,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:50:17.346991979"
+        "timestamp": "2024-09-09T15:03:48.61455784"
     },
     "single_end_rrbs_software_versions": {
         "content": [
@@ -27,7 +27,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:45:43.035545785"
+        "timestamp": "2024-09-09T14:59:32.136322722"
     },
     "single_end_nomeseq": {
         "content": [
@@ -91,10 +91,10 @@
             "genome_results.txt:md5,41aa314da188306ead441ddcb14f79b2"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-20T22:39:38.003562486"
+        "timestamp": "2024-09-09T15:03:46.655729777"
     },
     "clip_r1_software_versions": {
         "content": [
@@ -104,7 +104,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:52:41.194083368"
+        "timestamp": "2024-09-09T15:05:51.239531215"
     },
     "single_end": {
         "content": [
@@ -183,10 +183,10 @@
             "genome_results.txt:md5,41aa314da188306ead441ddcb14f79b2"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-20T06:54:47.411238321"
+        "timestamp": "2024-09-09T14:53:34.472833262"
     },
     "single_end_rrbs": {
         "content": [
@@ -265,10 +265,10 @@
             "genome_results.txt:md5,3610180287e00094e5399a5a13bda7ea"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-20T21:22:37.920449641"
+        "timestamp": "2024-09-09T14:59:30.191080109"
     },
     "clip_r1": {
         "content": [
@@ -324,9 +324,9 @@
             "genome_results.txt:md5,5508ce90851b844946f4c1a5395c2b14"
         ],
         "meta": {
-            "nf-test": "0.8.4",
-            "nextflow": "23.10.1"
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-02-20T22:56:06.845565652"
+        "timestamp": "2024-09-09T15:05:49.289036002"
     }
 }

@@ -7,7 +7,7 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T08:49:28.82190833"
+        "timestamp": "2024-09-09T15:16:15.548457165"
     },
     "single_end_rrbs_software_versions": {
         "content": [
@@ -17,18 +17,18 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T08:51:04.01671391"
+        "timestamp": "2024-09-09T15:21:17.588280496"
     },
     "single_end": {
         "content": [
             "Ecoli.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-            "Ecoli.stats:md5,22e89d8663fed30edc6d9a8fe5bc9952",
+            "Ecoli.stats:md5,2522a6061d0cf2e064c88c929e5c6ee9",
             "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-            "SRR389222_sub1.stats:md5,5ad0a5920572fd0c754bf41f16cf1c9c",
+            "SRR389222_sub1.stats:md5,00808cae1313adf973547ea00f311e92",
             "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-            "SRR389222_sub2.stats:md5,b3febb17ee40d112fa5515de6fa240ac",
+            "SRR389222_sub2.stats:md5,ed3852b6d6dff68708a911da25c9f680",
             "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-            "SRR389222_sub3.stats:md5,3cd4f45e01d65329353918f98ec281d1",
+            "SRR389222_sub3.stats:md5,294e823e2fa62feb3b958a468cc05d5d",
             "Ecoli.markdup.sorted.bam:md5,a3150388515b6e35d36ff993a7367e9f",
             "Ecoli.markdup.sorted.bam.bai:md5,618938a6ad66dc2d937424b12e1ac903",
             "SRR389222_sub1.markdup.sorted.bam:md5,d44d2716ae9c841733112dedafdb9e8d",
@@ -65,18 +65,18 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-05T08:49:29.04820342"
+        "timestamp": "2024-09-09T15:16:15.566213973"
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
-            "Ecoli.stats:md5,8fa67545817effce49d142e776333b12",
+            "Ecoli.stats:md5,7b4e0210d62b81067c0cdf718647ed9e",
             "SRR389222_sub1.flagstat:md5,897d500a710a56a7098172167fa71108",
-            "SRR389222_sub1.stats:md5,f7845829d1a5c50e1ef0ba2a95d3e442",
+            "SRR389222_sub1.stats:md5,328b06da41d778d9e863b2fbccb5ec70",
             "SRR389222_sub2.flagstat:md5,37d33d68b31d4550620dc17582a3a750",
-            "SRR389222_sub2.stats:md5,5a828086b1eebb48cc2811fcef8fb4af",
+            "SRR389222_sub2.stats:md5,4e5c1d84a43183bc308e9a2c5539ed6d",
             "SRR389222_sub3.flagstat:md5,e3e925a7b7356e93d14f5e9e102c55b7",
-            "SRR389222_sub3.stats:md5,409e5092371343d2c95e5290e189e129",
+            "SRR389222_sub3.stats:md5,681de955578ad9aafd908ec18e6ac3de",
             [
                 [
                     "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
@@ -105,6 +105,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-02T16:23:19.338548374"
+        "timestamp": "2024-09-09T15:21:17.693314645"
     }
 }
