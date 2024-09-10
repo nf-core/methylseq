@@ -57,7 +57,7 @@ jobs:
           nf-test test \
               --ci \
               --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
-              --changed-since feat/workflow-updates \
+              --changed-since dev \
               --profile "+${{ matrix.profile }}" \
               --filter pipeline
 
