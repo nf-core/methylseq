@@ -1,7 +1,7 @@
-name: custom_dumpsoftwareversions
+name: preseq_lcextrap
 channels:
   - conda-forge
   - bioconda
   - defaults
 dependencies:
-  - bioconda::multiqc=1.17
+  - bioconda::preseq=3.1.2

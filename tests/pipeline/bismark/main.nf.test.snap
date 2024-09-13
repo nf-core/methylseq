@@ -1,90 +1,159 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:33:44.592961646"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-26T22:47:28.24122693"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:38:45.868954182"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-26T22:50:19.51468117"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:36:19.58008405"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-26T22:48:48.028054983"
     },
     "single_end_nomeseq": {
         "content": [
             "Ecoli.NOMe.CpG.cov.gz:md5,c2c4db8d0a2ec32d572e75b01b2f7d81",
             "Ecoli.NOMe.GpC.cov.gz:md5,a2b56291dbe8b344ee03a3ae58de8807",
-            "SRR389222.NOMe.CpG.cov.gz:md5,9738cb2fd47a65851626fc48d264c1b4",
-            "SRR389222.NOMe.GpC.cov.gz:md5,d5e6d60c93e76c7476b132b6aa4f8395",
+            "SRR389222_sub1.NOMe.CpG.cov.gz:md5,087f5da64b9ab087a0e22fa11536871e",
+            "SRR389222_sub2.NOMe.CpG.cov.gz:md5,016eabe6c88ef719d8edffbe13d1b2ce",
+            "SRR389222_sub3.NOMe.CpG.cov.gz:md5,85098361910f7398528dcbb0e46a7561",
+            "SRR389222_sub1.NOMe.GpC.cov.gz:md5,25211d7e44488baf6193f753a5095b2f",
+            "SRR389222_sub2.NOMe.GpC.cov.gz:md5,10837f6099f63dc4aae2895d821a582e",
+            "SRR389222_sub3.NOMe.GpC.cov.gz:md5,8005a9dad4d0f5562a3c7cf215a18908",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bam:md5,caa027599dac71c50c24de1857dbf5c7",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bam:md5,7dba45955ae74159596a6ab41a9dcc87",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bam:md5,66b4244c9f75ee798a77b0a1e47214ea",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bam:md5,79e4d27508ee03d74bf4c79d23d439fd",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bam:md5,d627ec0448a0bba875895615b90beab6",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,88e599178b08907aab7d248302b7d37e",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,fe6b3655db6da21bdd3076947e062f0b",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,ccf9537924fa4aa1db2f4462d2b9bc8e",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,c352886f5d59592bc679843548ca5eef",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,0a489f15a4d3bb11236a8acf38ba0984",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.M-bias.txt:md5,29f3b882a51b63ce77d3d9c69b0e5f85",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,bc48b8895f9ce84205a25899cf551624",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,ed28b3cce432eecfae73bc4a071ec4ee",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,b06ce0084e54193ff8c9b9dd0ec9757b",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,b865b7fb6e1225feeb6aef3372ef0b1d",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz:md5,962fe67f41f5e03d8e321ed381369513",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,82a55b84888ad5fe530f97c348738fdb",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,1a6e4ec040df8d20ca5ea84abd8c2f66",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,da676db243dde9438471d8ea8aa79fa5",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,55eadffbe1d31538a88d2fd5b65fd6e7",
             [
                 "CHG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,9c2248d95d96d6c315c65f1b8dc3bc39",
-                "CHG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,9d8098ce1a27c23961e20b6a95f237d1",
+                "CHG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,a10f4263bf7b9b1985b16ff3c1041240",
+                "CHG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,1b036ec35b09e0d3b748040381cb1fd5",
+                "CHG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,929b960ad908ec05687540b684106de0",
                 "CHG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,5e5aefaa3f63e73f30342ad843eb210b",
-                "CHG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e68463946c5bfdf461c3aa81524f8837",
+                "CHG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,87d488061e2d43db2060a37874c346cc",
+                "CHG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,2013c67301066dde516bb950731fb04a",
+                "CHG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e4d5f53c056424471038f28ffd49b2df",
                 "CHH_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,65f2afc6b1c76209af1acd1d4277a1cc",
-                "CHH_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,6834286d8d07a1b3a4399f71b5b3c3f8",
+                "CHH_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,172b329b6aabf8d07c8255a152d4105a",
+                "CHH_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,82e84337d3a4c5ca20260e7455c53022",
+                "CHH_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,d06408d5bb2071ae66a4d4260a73c491",
                 "CHH_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,978ad87fef01e39283a620253320ee45",
-                "CHH_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,4347c873d1a7c772a448dd01351e5c0f",
+                "CHH_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,20038a010d4258a2a76aa389e05b84ba",
+                "CHH_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e585363a40c045ea66c16257e507d3de",
+                "CHH_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,9b529b04d321e5fc11dcb023345fd136",
                 "CpG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,54def6bf13e27f38adbbd3dd06297596",
-                "CpG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,4dae933bcdc8c7d1de2f5e7239c1ae55",
+                "CpG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,d581258ecd66c080c70caeea30e31ca2",
+                "CpG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,dee4913db39eef1e706167d6c0f0c389",
+                "CpG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,74a9c8092dbd8c2f27d54bb627993f90",
                 "CpG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,9712eef973883f44dcc0a307af28ba70",
-                "CpG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,49ec41948052a2a4a952f651df13b344"
+                "CpG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,ff50e21971733216ea1315ba772bef09",
+                "CpG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,94302d0daeb2b275b015622a9a10ac25",
+                "CpG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e2fb1e0f57f5eaf10347b1221e6cd47c"
             ],
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,b759f31785293e8d952f1dd3246f9a7b",
-            "SRR389222_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,1c4a4288b3bcf1bbaa6b99e3c4b53ce9",
-            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,6cc81c365aa59992d510cdce467230d6",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,13883f84bb3b1cec4593541749571c12",
             "genome_results.txt:md5,886ffc763d05a84ead7f80a1d1db1fa2",
-            "genome_results.txt:md5,b99d4cfd82d21ac09ccb72865f9b3960"
+            "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
+            "genome_results.txt:md5,7838069da6060f756821c776cc3a4929",
+            "genome_results.txt:md5,41aa314da188306ead441ddcb14f79b2"
         ],
-        "timestamp": "2023-12-22T22:56:01.615992857"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-20T22:39:38.003562486"
     },
     "clip_r1_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, CAT_FASTQ={cat=8.30}, CUSTOM_DUMPSOFTWAREVERSIONS={python=3.12.0, yaml=6.0.1}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={cutadapt=3.4, trimgalore=0.6.7}, Workflow={nf-core/methylseq=2.6.0}}"
+            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.2.2-dev}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
         ],
-        "timestamp": "2024-01-05T13:39:54.162519593"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-26T22:51:30.508820559"
     },
     "single_end": {
         "content": [
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bam:md5,caa027599dac71c50c24de1857dbf5c7",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bam:md5,7dba45955ae74159596a6ab41a9dcc87",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bam:md5,66b4244c9f75ee798a77b0a1e47214ea",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bam:md5,79e4d27508ee03d74bf4c79d23d439fd",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bam:md5,d627ec0448a0bba875895615b90beab6",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,3a19363a47169044a01f7195eb83266c",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,d31df76c1c9128299367ebfe740357b9",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,010f32001bbc7805f8e041f3ef0d9ea9",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,d42e09af121ae14f6e0de5779e317b0b",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.M-bias.txt:md5,29f3b882a51b63ce77d3d9c69b0e5f85",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,bc48b8895f9ce84205a25899cf551624",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,ed28b3cce432eecfae73bc4a071ec4ee",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,b06ce0084e54193ff8c9b9dd0ec9757b",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,b865b7fb6e1225feeb6aef3372ef0b1d",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz:md5,8e6ba6fe66416d73e7f94b4da9ca77b1",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,389dc4fee59e34967d9af49958cb5cbe",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,5377d9fff4f1bf5b98dc2310fbeb6ec9",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,4713bda7b4f2bb16ce23853aea763cbd",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,f9a07c3e11e0caad6df3cd2e4d94d8ac",
             [
                 "CHG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,9c2248d95d96d6c315c65f1b8dc3bc39",
-                "CHG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,9d8098ce1a27c23961e20b6a95f237d1",
+                "CHG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,a10f4263bf7b9b1985b16ff3c1041240",
+                "CHG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,1b036ec35b09e0d3b748040381cb1fd5",
+                "CHG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,929b960ad908ec05687540b684106de0",
                 "CHG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,5e5aefaa3f63e73f30342ad843eb210b",
-                "CHG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e68463946c5bfdf461c3aa81524f8837",
+                "CHG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,87d488061e2d43db2060a37874c346cc",
+                "CHG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,2013c67301066dde516bb950731fb04a",
+                "CHG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e4d5f53c056424471038f28ffd49b2df",
                 "CHH_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,65f2afc6b1c76209af1acd1d4277a1cc",
-                "CHH_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,6834286d8d07a1b3a4399f71b5b3c3f8",
+                "CHH_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,172b329b6aabf8d07c8255a152d4105a",
+                "CHH_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,82e84337d3a4c5ca20260e7455c53022",
+                "CHH_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,d06408d5bb2071ae66a4d4260a73c491",
                 "CHH_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,978ad87fef01e39283a620253320ee45",
-                "CHH_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,4347c873d1a7c772a448dd01351e5c0f",
+                "CHH_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,20038a010d4258a2a76aa389e05b84ba",
+                "CHH_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e585363a40c045ea66c16257e507d3de",
+                "CHH_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,9b529b04d321e5fc11dcb023345fd136",
                 "CpG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,54def6bf13e27f38adbbd3dd06297596",
-                "CpG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,4dae933bcdc8c7d1de2f5e7239c1ae55",
+                "CpG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,d581258ecd66c080c70caeea30e31ca2",
+                "CpG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,dee4913db39eef1e706167d6c0f0c389",
+                "CpG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,74a9c8092dbd8c2f27d54bb627993f90",
                 "CpG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,9712eef973883f44dcc0a307af28ba70",
-                "CpG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,49ec41948052a2a4a952f651df13b344"
+                "CpG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,ff50e21971733216ea1315ba772bef09",
+                "CpG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,94302d0daeb2b275b015622a9a10ac25",
+                "CpG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e2fb1e0f57f5eaf10347b1221e6cd47c"
             ],
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,b759f31785293e8d952f1dd3246f9a7b",
-            "SRR389222_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,1c4a4288b3bcf1bbaa6b99e3c4b53ce9",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,d70ee229a29b68db8634fa7d568b7c53",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,6cc81c365aa59992d510cdce467230d6",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,13883f84bb3b1cec4593541749571c12",
             [
                 [
                     [
@@ -109,36 +178,64 @@
                 "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
             ],
             "genome_results.txt:md5,886ffc763d05a84ead7f80a1d1db1fa2",
-            "genome_results.txt:md5,b99d4cfd82d21ac09ccb72865f9b3960"
+            "genome_results.txt:md5,79287f69ff6c8a308f0bb988c97f0e15",
+            "genome_results.txt:md5,7838069da6060f756821c776cc3a4929",
+            "genome_results.txt:md5,41aa314da188306ead441ddcb14f79b2"
         ],
-        "timestamp": "2023-12-22T22:42:59.548979384"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-20T06:54:47.411238321"
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli_10K_methylated_R1_bismark_bt2_pe.bam:md5,1497e3a06ee045cb82f834ddb4bcfe88",
-            "SRR389222.merged_bismark_bt2.bam:md5,c3e94ff13a934e0c78ebb6d40f7c8230",
+            "SRR389222_sub1_bismark_bt2.bam:md5,6c2fbbb3090443d80a450d2c19afb4f3",
+            "SRR389222_sub2_bismark_bt2.bam:md5,1b63bc05317689d3372cabd98023a4c2",
+            "SRR389222_sub3_bismark_bt2.bam:md5,97c802ab43fe404ef4e7fc948b99f7e2",
             "Ecoli_10K_methylated_R1_bismark_bt2_pe.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
-            "SRR389222.merged_bismark_bt2.bedGraph.gz:md5,c154fe825d9bb867c9efcf55d6cb7e94",
+            "SRR389222_sub1_bismark_bt2.bedGraph.gz:md5,6896f135c70e2f4944cb43260a687c6c",
+            "SRR389222_sub2_bismark_bt2.bedGraph.gz:md5,376214d2ca1b5b3cb968b4057eaec2f1",
+            "SRR389222_sub3_bismark_bt2.bedGraph.gz:md5,9c86060be82ccbe1d8ed16a3755f4189",
             "Ecoli_10K_methylated_R1_bismark_bt2_pe.M-bias.txt:md5,29f3b882a51b63ce77d3d9c69b0e5f85",
-            "SRR389222.merged_bismark_bt2.M-bias.txt:md5,514f544046333337f0f74b7386b8afa6",
+            "SRR389222_sub1_bismark_bt2.M-bias.txt:md5,d1083f305a444487fe977362a0174159",
+            "SRR389222_sub2_bismark_bt2.M-bias.txt:md5,ca2e891e8b084d5d351eb0358a9b3ebb",
+            "SRR389222_sub3_bismark_bt2.M-bias.txt:md5,7391bc74f1be819d28adc084afc734a2",
             "Ecoli_10K_methylated_R1_bismark_bt2_pe.bismark.cov.gz:md5,8e6ba6fe66416d73e7f94b4da9ca77b1",
-            "SRR389222.merged_bismark_bt2.bismark.cov.gz:md5,d4a5b741ca46b486bf165ede18baadd0",
+            "SRR389222_sub1_bismark_bt2.bismark.cov.gz:md5,4e31b9a432731c75a604c89cb9d471ad",
+            "SRR389222_sub2_bismark_bt2.bismark.cov.gz:md5,b007423cd8cd61124080c4acb39e2c58",
+            "SRR389222_sub3_bismark_bt2.bismark.cov.gz:md5,229708f2641296eda12e6993567e6b32",
             [
                 "CHG_OB_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,9c2248d95d96d6c315c65f1b8dc3bc39",
-                "CHG_OB_SRR389222.merged_bismark_bt2.txt.gz:md5,eeb08e87d7e3dca0acbb2c5ba2be66fb",
+                "CHG_OB_SRR389222_sub1_bismark_bt2.txt.gz:md5,c8ccffe89627f497f9b542400c9db8c2",
+                "CHG_OB_SRR389222_sub2_bismark_bt2.txt.gz:md5,d845eb88cc123a6049020ab7c1f0be28",
+                "CHG_OB_SRR389222_sub3_bismark_bt2.txt.gz:md5,06e38fdf5846663bc46b2c47d057a117",
                 "CHG_OT_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,5e5aefaa3f63e73f30342ad843eb210b",
-                "CHG_OT_SRR389222.merged_bismark_bt2.txt.gz:md5,930f995efd5204b5b04a548afdef1a6e",
+                "CHG_OT_SRR389222_sub1_bismark_bt2.txt.gz:md5,79c158ffa9c9425340d30ad2a59bb659",
+                "CHG_OT_SRR389222_sub2_bismark_bt2.txt.gz:md5,c837e73dea116ad8ffb66c1d6fa65b5d",
+                "CHG_OT_SRR389222_sub3_bismark_bt2.txt.gz:md5,9ba1652d5c0ff85cecb56fb67265e3bd",
                 "CHH_OB_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,65f2afc6b1c76209af1acd1d4277a1cc",
-                "CHH_OB_SRR389222.merged_bismark_bt2.txt.gz:md5,a135c7e8a6c1b909a318ef17d47dca94",
+                "CHH_OB_SRR389222_sub1_bismark_bt2.txt.gz:md5,ddedeb6dcd4cc268d3db74e040fe21c3",
+                "CHH_OB_SRR389222_sub2_bismark_bt2.txt.gz:md5,d5ef03e73bd476a45d0c8ed2b50285bc",
+                "CHH_OB_SRR389222_sub3_bismark_bt2.txt.gz:md5,9909b6c627e4b520d623ece853806233",
                 "CHH_OT_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,978ad87fef01e39283a620253320ee45",
-                "CHH_OT_SRR389222.merged_bismark_bt2.txt.gz:md5,2a356ae7fe7774f140f11ed5d935f88c",
+                "CHH_OT_SRR389222_sub1_bismark_bt2.txt.gz:md5,ba3e403fcd8020b65bd0eb320800fe54",
+                "CHH_OT_SRR389222_sub2_bismark_bt2.txt.gz:md5,cfd6e3af7c5923ad8133cc41cd8a0aec",
+                "CHH_OT_SRR389222_sub3_bismark_bt2.txt.gz:md5,0ce32443b301a0b8565f84aad2741af1",
                 "CpG_OB_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,54def6bf13e27f38adbbd3dd06297596",
-                "CpG_OB_SRR389222.merged_bismark_bt2.txt.gz:md5,b8b2de10044869b6c1097afc21c878a0",
+                "CpG_OB_SRR389222_sub1_bismark_bt2.txt.gz:md5,2c91088668e203cf09eb2f6708dedb4e",
+                "CpG_OB_SRR389222_sub2_bismark_bt2.txt.gz:md5,887ce918c095bf35c31e1668dd54472d",
+                "CpG_OB_SRR389222_sub3_bismark_bt2.txt.gz:md5,0892e2fc97607fd2456343ff6b11fa4b",
                 "CpG_OT_Ecoli_10K_methylated_R1_bismark_bt2_pe.txt.gz:md5,9712eef973883f44dcc0a307af28ba70",
-                "CpG_OT_SRR389222.merged_bismark_bt2.txt.gz:md5,9e517e44422a8bb22de1281ff2cd34d1"
+                "CpG_OT_SRR389222_sub1_bismark_bt2.txt.gz:md5,a96288b9ecdacbfe82c8e5ae99580a41",
+                "CpG_OT_SRR389222_sub2_bismark_bt2.txt.gz:md5,373632783251041aa761ad655bc177b6",
+                "CpG_OT_SRR389222_sub3_bismark_bt2.txt.gz:md5,3ae5766509809de3f8d411ad61cd1afa"
             ],
             "Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt:md5,fa089f6146df9667862970b6ddc998b0",
-            "SRR389222.merged_bismark_bt2_splitting_report.txt:md5,0ece57f8fc3aa659d2f0b7a09cf48398",
+            "SRR389222_sub1_bismark_bt2_splitting_report.txt:md5,f59eac7a30ec7f1f690aac921a5591c0",
+            "SRR389222_sub2_bismark_bt2_splitting_report.txt:md5,e4050820625d7d5b3ce82cb2dccc30ea",
+            "SRR389222_sub3_bismark_bt2_splitting_report.txt:md5,44122ee8a6a465c2714f28a38a97b5d0",
             [
                 [
                     [
@@ -163,40 +260,73 @@
                 "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
             ],
             "genome_results.txt:md5,97dc2b4df61a46ccd2714903186ecaf0",
-            "genome_results.txt:md5,f0d293867800a75becf2583c23729083"
+            "genome_results.txt:md5,7a86634fd1c768d8302e071088641815",
+            "genome_results.txt:md5,b430f7924a342f3b4f6b9d71174943c0",
+            "genome_results.txt:md5,3610180287e00094e5399a5a13bda7ea"
         ],
-        "timestamp": "2023-12-22T22:52:42.829793102"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-20T21:22:37.920449641"
     },
     "clip_r1": {
         "content": [
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bam:md5,b19bc9b84dd8d8000c05b04234689aca",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bam:md5,1bfe463dabf8727992e3ff6c19d8e7c1",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bam:md5,a247e14e142b818bad48322854802396",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bam:md5,c0c7051ac9f63d6662b63d3b3cc44a2e",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bam:md5,80e2dd817c0a04d060c92ab556865b3e",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,e8b3933de21d7618cdaab650fe544b17",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,bddc7c560a902b842b72e20a21274cba",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,f662ef520f5e483cd6f2a4925afe2283",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,330d25130120699a9ca4cf7152f9ac18",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,9cd7348188fb06c7648b1453db5270c9",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.M-bias.txt:md5,83a004a3d957cf95f25933bcd828a8d4",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,90a6b76d41112c6de391d3a017638d95",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,aab193316d15edf54271f7d3270ae963",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,81a0d0749e3df600572188afec21a9e3",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.M-bias.txt:md5,818aaadc83209032dc234717455ae91d",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz:md5,34aa02c199f1496df0704dd239373ebe",
-            "SRR389222_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,03178f50ae4bf04a7b78d8bbdb8a77af",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,51f024d22277e740f07b6fca27b2b159",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,beb2a4e9ef24ad73aa6807ddd17899d7",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bismark.cov.gz:md5,167ae8eabdeb46a3322f549f3b7c1285",
             [
                 "CHG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,3856b07ea51dea59b444a7483ca3db75",
-                "CHG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e70e8a2ace2e602a967de256d299fb0d",
+                "CHG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,31b39e298bf795c789e3d89bb709bb98",
+                "CHG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,34a16beb7ac6d65d6709414cbff27498",
+                "CHG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,f42600e91af5f41713c9a55f13450829",
                 "CHG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,c1ba1891636a6b99f4d1495b3ddf1a59",
-                "CHG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,f8867c4ee03fba6be823b7287cacfea3",
+                "CHG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,5124d5b168179d99ff67b8d4c100360b",
+                "CHG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e2f22012541680a83548def74eaba514",
+                "CHG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,6d5d16424d66321e50529648d5116a16",
                 "CHH_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,4e9a0e61d47eefb64876431b3640ee95",
-                "CHH_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,32728cf447a470681f4e608008d514ae",
+                "CHH_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,f5864218b65b694a408532a644b38a07",
+                "CHH_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,2ec16daaf1b54339fe8ea9ce82894a37",
+                "CHH_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,8b9b10e41f0fea4e520f4aef9386c035",
                 "CHH_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,10cd51608191667e027a9867dd84ab3f",
-                "CHH_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,2ec291cbfc4d64dbcd50603839129de1",
+                "CHH_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,309c4e519af35883e079c4edc2de9362",
+                "CHH_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,80781dcc708f5f4d6db10ec32c2a6235",
+                "CHH_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,aa21ac514f3959b20fc1e2f684b86df6",
                 "CpG_OB_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,423aa4faf47d176a6b6cce134e1a9212",
-                "CpG_OB_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,873612f00ee6ef44e8bc0dcb9f4a35f6",
+                "CpG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,e9359f258720294c9048c1fb411c884e",
+                "CpG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,85e322f6f76e9b5bcba21e6cec5250fb",
+                "CpG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,7b688d69cf15f16e1b7a84dad0e79b90",
                 "CpG_OT_Ecoli_1_val_1_bismark_bt2_pe.deduplicated.txt.gz:md5,1e243313554fce1b06aba217c7123cae",
-                "CpG_OT_SRR389222_trimmed_bismark_bt2.deduplicated.txt.gz:md5,d86423a21b0d22188e188dc9f576135c"
+                "CpG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz:md5,9acb5d1553fa5fda822a34dc6e5a9b1c",
+                "CpG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz:md5,ec6963fc9e3fe3b98df339f0bd54c8db",
+                "CpG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz:md5,a68b0dd668b12759d18c8e0feda70bc7"
             ],
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt:md5,db55b5dbf35e78de9c1c6b2f2ed1e45b",
-            "SRR389222_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,9a1a5d1e6722dda9e8a1953a01c415d0",
-            "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
+            "SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,4d719525ed5b4ca933ff681b955a0e20",
+            "SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,545b7a29971239cdb3b4e620e8340640",
+            "SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt:md5,fd6258e8c9af3d598a3648af8bd3067e",
             "genome_results.txt:md5,2bbc428b0a5b9828df9fc4cd92806e12",
-            "genome_results.txt:md5,5631f1632df00985946641cfc1601633"
+            "genome_results.txt:md5,5262b7434c519952b44e00258798eb9d",
+            "genome_results.txt:md5,0d44b70d9120e8e50591901dccee2871",
+            "genome_results.txt:md5,5508ce90851b844946f4c1a5395c2b14"
         ],
-        "timestamp": "2023-12-22T22:57:38.05813974"
+        "meta": {
+            "nf-test": "0.8.4",
+            "nextflow": "23.10.1"
+        },
+        "timestamp": "2024-02-20T22:56:06.845565652"
     }
 }

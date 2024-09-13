@@ -43,7 +43,7 @@ jobs:
       - name: List nf-test
         id: list
         run: |
-          echo "tests=$(nf-test list --silent --format=json)" >> "$GITHUB_OUTPUT"
+          echo "tests=$(nf-test list --silent --format=json tests/pipeline/**/*.nf.test)" >> "$GITHUB_OUTPUT"
 
   test:
     name: ${{ matrix.tags }} (${{ matrix.profile }}-${{ matrix.NXF_VER }})
@@ -58,13 +58,9 @@ jobs:
           - "latest-everything"
         profile: ["docker"] # TODO , "singularity", "conda"]
         test: ["${{ fromJson(needs.list.outputs.tests) }}"]
-        exclude:
-          - test: "tests/subworkflows/local/grohmm/main.nf.test@3508b8c9"
-          - test: "tests/subworkflows/local/grohmm/main.nf.test@716555be"
-          - test: "tests/subworkflows/local/grohmm/main.nf.test@306b4b15"
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v4
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
 
       - name: Cache Nextflow installation
         id: cache-software
@@ -76,11 +72,14 @@ jobs:
           key: methylseq-${{ runner.os }}-${{ matrix.NXF_VER }}
 
       - name: Install Nextflow
-        uses: nf-core/setup-nextflow@v1
+        uses: nf-core/setup-nextflow@v2
         with:
           version: "${{ matrix.NXF_VER }}"
 
-      - name: Install nf-test
+      - name: Disk space cleanup
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Run pipeline with test data
         if: steps.cache-software.outputs.cache-hit != 'true'
         run: |
           wget -qO- https://code.askimed.com/install/nf-test | bash
