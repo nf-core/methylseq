@@ -255,6 +255,11 @@
                     "type": "integer",
                     "default": 0,
                     "description": "Trim bases below this quality value from the 3' end of the read, ignoring high-quality G bases"
+                },
+                "length_trim": {
+                    "type": "integer",
+                    "description": "Discard reads that become shorter than INT because of either quality or adapter trimming.",
+                    "fa_icon": "fas fa-trash-alt"
                 }
             },
             "fa_icon": "fas fa-cut",
@@ -669,13 +674,18 @@
             "$ref": "#/definitions/skip_pipeline_steps"
         },
         {
-            "$ref": "#/definitions/generic_options"
+            "$ref": "#/definitions/institutional_config_options"
         },
         {
             "$ref": "#/definitions/max_job_request_options"
         },
         {
-            "$ref": "#/definitions/institutional_config_options"
+            "$ref": "#/definitions/generic_options"
         }
-    ]
+    ],
+    "properties": {
+        "new_param_1": {
+            "type": "string"
+        }
+    }
 }
