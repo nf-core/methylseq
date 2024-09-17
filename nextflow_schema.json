@@ -683,9 +683,5 @@
             "$ref": "#/definitions/generic_options"
         }
     ],
-    "properties": {
-        "new_param_1": {
-            "type": "string"
-        }
-    }
+    "properties": {}
 }
