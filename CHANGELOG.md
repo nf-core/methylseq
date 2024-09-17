@@ -14,6 +14,7 @@
 ### Pipeline Updates
 
 - 🔧 Updated nf-core modules for preseq [#390](https://github.com/nf-core/methylseq/pull/390)
+- 🔧 Added new trimgalore length_trim param [#416](https://github.com/nf-core/methylseq/pull/416)
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
