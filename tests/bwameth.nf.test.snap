@@ -22,20 +22,20 @@
     "single_end": {
         "content": [
             "Ecoli.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-            "Ecoli.stats:md5,2522a6061d0cf2e064c88c929e5c6ee9",
+            "Ecoli.stats:md5,c1d93f418a498e9d88e13c5f2a7d7ed6",
             "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-            "SRR389222_sub1.stats:md5,00808cae1313adf973547ea00f311e92",
+            "SRR389222_sub1.stats:md5,0f660ccc767662d4bd8c5197f3d46a87",
             "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-            "SRR389222_sub2.stats:md5,ed3852b6d6dff68708a911da25c9f680",
+            "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
             "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-            "SRR389222_sub3.stats:md5,294e823e2fa62feb3b958a468cc05d5d",
-            "Ecoli.markdup.sorted.bam:md5,a3150388515b6e35d36ff993a7367e9f",
-            "Ecoli.markdup.sorted.bam.bai:md5,618938a6ad66dc2d937424b12e1ac903",
-            "SRR389222_sub1.markdup.sorted.bam:md5,d44d2716ae9c841733112dedafdb9e8d",
+            "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
+            "Ecoli.markdup.sorted.bam:md5,8c47ba72c47818e07eff9d876e9451b3",
+            "Ecoli.markdup.sorted.bam.bai:md5,86bf037e1cca4ac3935edd50548f35bb",
+            "SRR389222_sub1.markdup.sorted.bam:md5,f6a777120edeaadc496d78cbcff05c59",
             "SRR389222_sub1.markdup.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-            "SRR389222_sub2.markdup.sorted.bam:md5,8674f540111dae9b299d8516a449ad3e",
+            "SRR389222_sub2.markdup.sorted.bam:md5,da28d3f4bca3382af5aab41b4078ca39",
             "SRR389222_sub2.markdup.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-            "SRR389222_sub3.markdup.sorted.bam:md5,679a0e10df4608a30db3455fb2e4ec2b",
+            "SRR389222_sub3.markdup.sorted.bam:md5,00ef46fc1fff515a3a2cfc3af4b2d918",
             "SRR389222_sub3.markdup.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
             [
                 [
@@ -65,18 +65,18 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:16:15.566213973"
+        "timestamp": "2024-09-18T16:00:34.238599452"
     },
     "single_end_rrbs": {
         "content": [
             "Ecoli.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
-            "Ecoli.stats:md5,7b4e0210d62b81067c0cdf718647ed9e",
+            "Ecoli.stats:md5,5c824a4e0667dd48355ab5bd81ca7edb",
             "SRR389222_sub1.flagstat:md5,897d500a710a56a7098172167fa71108",
-            "SRR389222_sub1.stats:md5,328b06da41d778d9e863b2fbccb5ec70",
+            "SRR389222_sub1.stats:md5,6625430e604b48c41c3868e684083065",
             "SRR389222_sub2.flagstat:md5,37d33d68b31d4550620dc17582a3a750",
-            "SRR389222_sub2.stats:md5,4e5c1d84a43183bc308e9a2c5539ed6d",
+            "SRR389222_sub2.stats:md5,ce9216e71c0eb24371fb388429c59894",
             "SRR389222_sub3.flagstat:md5,e3e925a7b7356e93d14f5e9e102c55b7",
-            "SRR389222_sub3.stats:md5,681de955578ad9aafd908ec18e6ac3de",
+            "SRR389222_sub3.stats:md5,4f5336d853dfada24d9c34a754a7f0a8",
             [
                 [
                     "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
@@ -105,6 +105,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:21:17.693314645"
+        "timestamp": "2024-09-18T16:03:29.194127813"
     }
 }
