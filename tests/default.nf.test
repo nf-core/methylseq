@@ -1,0 +1,83 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf"
+    script "../main.nf"
+    config "./nextflow.config"
+
+    test("Bismark Single-End") {
+        when {
+            params {
+                aligner              = "bismark"
+                save_reference       = true
+                save_align_intermeds = true
+                outdir               = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    bam("$outputDir/bismark/alignments/Ecoli_1_val_1_bismark_bt2_pe.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/Ecoli.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub1.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub1_trimmed_bismark_bt2.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub2.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub2_trimmed_bismark_bt2.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub3.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/alignments/SRR389222_sub3_trimmed_bismark_bt2.bam").getReadsMD5(),
+
+                    path("$outputDir/bismark/deduplicated/Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bam"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bam"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bam"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bam"),
+                    path("$outputDir/bismark/methylation_calls/bedGraph/Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"),
+                    path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz"),
+                    path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz"),
+                    path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bedGraph.gz"),
+                    path("$outputDir/bismark/methylation_calls/mbias/Ecoli_1_val_1_bismark_bt2_pe.deduplicated.M-bias.txt"),
+                    path("$outputDir/bismark/methylation_calls/mbias/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.M-bias.txt"),
+                    path("$outputDir/bismark/methylation_calls/mbias/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.M-bias.txt"),
+                    path("$outputDir/bismark/methylation_calls/mbias/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.M-bias.txt"),
+                    path("$outputDir/bismark/methylation_calls/methylation_coverage/Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz"),
+                    path("$outputDir/bismark/methylation_calls/methylation_coverage/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bismark.cov.gz"),
+                    path("$outputDir/bismark/methylation_calls/methylation_coverage/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bismark.cov.gz"),
+                    path("$outputDir/bismark/methylation_calls/methylation_coverage/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bismark.cov.gz"),
+                    path("$outputDir/bismark/methylation_calls/methylation_calls/").list(),
+                    path("$outputDir/bismark/methylation_calls/splitting_report/Ecoli_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt"),
+                    path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
+                    path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
+                    path("$outputDir/bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt"),
+                    path("$outputDir/bismark/reference_genome/BismarkIndex/").list(),
+                    path("$outputDir/qualimap/Ecoli/genome_results.txt"),
+                    path("$outputDir/qualimap/SRR389222_sub1/genome_results.txt"),
+                    path("$outputDir/qualimap/SRR389222_sub2/genome_results.txt"),
+                    path("$outputDir/qualimap/SRR389222_sub3/genome_results.txt")
+                ).match("single_end") },
+                { assert snapshot(UTILS.removeNextflowVersion("$outputDir")).match("single_end_software_versions") },
+                { assert new File("$outputDir/bismark/alignments/logs/Ecoli_1_val_1_bismark_bt2_PE_report.txt").exists() },
+                { assert new File("$outputDir/bismark/alignments/logs/SRR389222_sub1_trimmed_bismark_bt2_SE_report.txt").exists() },
+                { assert new File("$outputDir/bismark/alignments/logs/SRR389222_sub2_trimmed_bismark_bt2_SE_report.txt").exists() },
+                { assert new File("$outputDir/bismark/alignments/logs/SRR389222_sub3_trimmed_bismark_bt2_SE_report.txt").exists() },
+                { assert new File("$outputDir/bismark/reports/Ecoli_1_val_1_bismark_bt2_PE_report.html").exists() },
+                { assert new File("$outputDir/bismark/reports/SRR389222_sub1_trimmed_bismark_bt2_SE_report.html").exists() },
+                { assert new File("$outputDir/bismark/reports/SRR389222_sub2_trimmed_bismark_bt2_SE_report.html").exists() },
+                { assert new File("$outputDir/bismark/reports/SRR389222_sub3_trimmed_bismark_bt2_SE_report.html").exists() },
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.html").exists() },
+                { assert new File("$outputDir/bismark/summary/bismark_summary_report.txt").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/Ecoli_2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_sub1_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_sub2_fastqc.html").exists() },
+                { assert new File("$outputDir/fastqc/SRR389222_sub3_fastqc.html").exists() },
+                { assert new File("$outputDir/multiqc/bismark/multiqc_report.html").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_1.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/Ecoli_2.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/SRR389222_sub1.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/SRR389222_sub2.fastq.gz_trimming_report.txt").exists() },
+                { assert new File("$outputDir/trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt").exists() }
+            )
+        }
+    }
+
+}
