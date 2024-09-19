@@ -1,33 +1,89 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T14:53:35.188010735"
+        "timestamp": "2024-09-19T15:39:11.28324788"
     },
     "single_end_nomeseq_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:03:48.61455784"
+        "timestamp": "2024-09-19T15:44:43.86432775"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T14:59:32.136322722"
+        "timestamp": "2024-09-19T15:41:56.443354006"
     },
     "single_end_nomeseq": {
         "content": [
@@ -98,13 +154,33 @@
     },
     "clip_r1_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:05:51.239531215"
+        "timestamp": "2024-09-19T15:46:03.239704169"
     },
     "single_end": {
         "content": [

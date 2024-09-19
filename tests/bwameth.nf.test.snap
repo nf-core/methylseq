@@ -1,23 +1,59 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.7}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.7"
+                },
+                "BWAMETH_INDEX": {
+                    "bwameth": "0.2.7"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:16:15.548457165"
+        "timestamp": "2024-09-19T15:57:11.613989545"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BWAMETH_ALIGN={bwameth=0.2.7}, BWAMETH_INDEX={bwameth=0.2.7}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.7"
+                },
+                "BWAMETH_INDEX": {
+                    "bwameth": "0.2.7"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:21:17.588280496"
+        "timestamp": "2024-09-19T15:59:48.086705086"
     },
     "single_end": {
         "content": [

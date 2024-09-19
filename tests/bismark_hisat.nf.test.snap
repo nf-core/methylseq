@@ -1,23 +1,59 @@
 {
     "single_end_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, TRIMGALORE={trimgalore=0.6.7, cutadapt=3.4}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.7",
+                    "cutadapt": 3.4
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:28:08.105757122"
+        "timestamp": "2024-09-19T15:49:36.540182814"
     },
     "single_end_rrbs_software_versions": {
         "content": [
-            "{BISMARK_ALIGN={bismark=0.24.0}, BISMARK_GENOMEPREPARATION={bismark=0.24.0}, FASTQC={fastqc=0.12.1}, QUALIMAP_BAMQC={qualimap=2.3}, Workflow={nf-core/methylseq=v2.7.0dev}}"
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "0.24.0"
+                },
+                "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v2.7.0dev"
+                }
+            }
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-09T15:32:23.722041013"
+        "timestamp": "2024-09-19T15:52:40.882004368"
     },
     "single_end": {
         "content": [
