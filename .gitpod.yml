@@ -1,9 +1,12 @@
-image: nfcore/gitpod:latest
+image: nfcore/gitpod:dev
 tasks:
   - name: Update Nextflow and setup pre-commit
     command: |
       pre-commit install --install-hooks
       nextflow self-update
+  - name: conda update
+    command: |
+      conda update --all --yes
   - name: unset JAVA_TOOL_OPTIONS
     command: |
       unset JAVA_TOOL_OPTIONS

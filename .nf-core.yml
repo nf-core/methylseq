@@ -4,3 +4,5 @@ lint:
   actions_ci: False
   files_exist:
     - lib/nfcore_external_java_deps.jar
+    - conf/modules.config
+  modules_config: false

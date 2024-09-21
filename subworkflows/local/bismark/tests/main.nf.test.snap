@@ -1,0 +1,26 @@
+{
+    "Bismark Single-End": {
+        "content": [
+            [
+                "d6951f6d3381e22becf62553a37c0f3f"
+            ],
+            [
+                "35d55bee1ca653931716e40dac4aba30"
+            ],
+            [
+                "versions.yml:md5,219ebb289593b15e26dde97517e773ee",
+                "versions.yml:md5,37c90312d5685ae87bcb080e0cab48de",
+                "versions.yml:md5,4ee3c1e7a77c7ae11955c0b62230d246",
+                "versions.yml:md5,66f7b51aeee12e293634cb74fea2f091",
+                "versions.yml:md5,701e44c4be43ad049c16c7fc8686a21d",
+                "versions.yml:md5,75082556508926250285e70e1932fa74",
+                "versions.yml:md5,bff10f08bf0238c3303ef33749b7a93c"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-09-08T17:24:48.19519912"
+    }
+}
