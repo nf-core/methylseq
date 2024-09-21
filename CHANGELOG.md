@@ -10,6 +10,7 @@
 - 🔄 Updated template to nf-core/tools v2.14.1 [#399](https://github.com/nf-core/methylseq/pull/399)
 - 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
 - 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
+- fix missing type field in nextflow_schema.json [#417](https://github.com/nf-core/methylseq/pull/417)
 
 ### Pipeline Updates
 
