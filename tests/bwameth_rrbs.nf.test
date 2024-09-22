@@ -4,11 +4,11 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("Bismark: em_seq | clip_r1") {
+    test("Bwameth: rrbs") {
         when {
             params {
-                em_seq  = true
-                clip_r1 = 2
+                aligner = "bwameth"
+                rrbs    = true
                 outdir  = "$outputDir"
             }
         }

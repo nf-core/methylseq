@@ -1,5 +1,5 @@
 {
-    "Bismark rrbs": {
+    "Bismark: rrbs": {
         "content": [
             43,
             {
@@ -538,38 +538,11 @@
                 "multiqc_bismark_methextract.txt:md5,b0265cff53ccc91da528d458a3a8ddc8",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
                 "multiqc_cutadapt.txt:md5,75a6c55468d07b9391a2f2f4ceeabd3e",
-                "multiqc_qualimap_bamqc_genome_results.txt:md5,df70c80d68701f6f3782318d2d1f6749",
                 "multiqc_software_versions.txt:md5,514aa3d6efcd5828b1e5e85b5c82f198",
                 "qualimap_coverage_histogram.txt:md5,270ed514982e0f986c484227eab03a16",
                 "qualimap_gc_content.txt:md5,df3d10836c4e0e11f6355a9e637f5985",
                 "qualimap_genome_fraction.txt:md5,2811e281f58d35fcde29054f7001c54a",
                 "qualimap_insert_size.txt:md5,f4304b6cd88219729b621fbbbcb88b78",
-                "bismark_alignment-cnt.png:md5,f309172c64aa869d9309868a872e839d",
-                "bismark_alignment-pct.png:md5,539763d8bcd84ac19895fed4b60bd399",
-                "bismark_mbias_CHG_R1.png:md5,50ba16cc5951dd8ef632d9d09bdc16b6",
-                "bismark_mbias_CHG_R2.png:md5,e7c0ed3d988c6562443ebbf27f072efe",
-                "bismark_mbias_CHH_R1.png:md5,a2faa6ec03c8207db831a17acb749dff",
-                "bismark_mbias_CHH_R2.png:md5,a7f1994cefa45554f6100992629e146d",
-                "bismark_mbias_CpG_R1.png:md5,3ac8c896f0082aad8944e28fa011d33e",
-                "bismark_mbias_CpG_R2.png:md5,c04f1ef61153b8831abcf7cf016f3f61",
-                "bismark_strand_alignment-cnt.png:md5,6703ea3354bade64b281a955321102c1",
-                "bismark_strand_alignment-pct.png:md5,870bf90faeadcd5aafcc4b7862cc72b4",
-                "cutadapt_filtered_reads_plot-cnt.png:md5,bf5eb3d1826f825d31c88e1fbe5f382e",
-                "cutadapt_filtered_reads_plot-pct.png:md5,ca40997a34626433391776c752615260",
-                "cutadapt_trimmed_sequences_plot_3_Counts.png:md5,1bda183b1f32de36fcbe80902e933c34",
-                "cutadapt_trimmed_sequences_plot_3_Obs_Exp.png:md5,a32d0104db25bf8334a5c7eaede56b43",
-                "fastqc-status-check-heatmap.png:md5,c6e43cfcde33a800f306da80af4f2355",
-                "fastqc_overrepresented_sequences_plot.png:md5,cb94fd31370bb7955b50fca93629f6ac",
-                "fastqc_per_sequence_gc_content_plot_Counts.png:md5,668e4554a2ff5fbddc249ce40765cb21",
-                "fastqc_per_sequence_gc_content_plot_Percentages.png:md5,e70f2b76b1512896082dcc21c432b6fb",
-                "fastqc_per_sequence_quality_scores_plot.png:md5,279236b1e93f7c17155e536ff2e2b879",
-                "fastqc_sequence_counts_plot-cnt.png:md5,39472a4554c2e22933e2477701c671c4",
-                "fastqc_sequence_counts_plot-pct.png:md5,877cdc8883685ce0b8aabf5c43b0475c",
-                "fastqc_sequence_duplication_levels_plot.png:md5,ee414de17fd8095735e34320244fd329",
-                "qualimap_coverage_histogram.png:md5,c62c0a90eec903bcea57b027b4261ef1",
-                "qualimap_gc_content.png:md5,a1ee6504124b0858458a4955fbe7523f",
-                "qualimap_genome_fraction.png:md5,5b51f66bd0ef9a1370ba4433ee71eb5d",
-                "qualimap_insert_size.png:md5,0917ccc28b9d2c0bfd101f7fd0df0fb4",
                 "bgfooter.png:md5,ed01bb040346e4623cc87de331ddb4e1",
                 "bgtop.png:md5,626a50532dc6e5adbdd968746ef318e8",
                 "comment-bright.png:md5,0c850bb4920b581bf5e5dba5fa493a64",
@@ -704,6 +677,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T12:11:20.133439826"
+        "timestamp": "2024-09-22T15:09:38.891879469"
     }
 }

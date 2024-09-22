@@ -4,12 +4,13 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("Bismark: em_seq | clip_r1") {
+    test("Bwameth: save_reference | save_align_intermeds") {
         when {
             params {
-                em_seq  = true
-                clip_r1 = 2
-                outdir  = "$outputDir"
+                aligner              = "bwameth"
+                save_reference       = true
+                save_align_intermeds = true
+                outdir               = "$outputDir"
             }
         }
 

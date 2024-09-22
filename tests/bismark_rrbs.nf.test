@@ -4,7 +4,7 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("Bismark rrbs") {
+    test("Bismark: rrbs") {
         when {
             params {
                 rrbs   = true

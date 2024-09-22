@@ -1,5 +1,5 @@
 {
-    "Bwameth": {
+    "Bwameth: save_reference | save_align_intermeds": {
         "content": [
             54,
             {
@@ -26,6 +26,18 @@
             [
                 "bwameth",
                 "alignments",
+                "Ecoli.bam",
+                "Ecoli.sorted.bam",
+                "Ecoli.sorted.bam.bai",
+                "SRR389222_sub1.bam",
+                "SRR389222_sub1.sorted.bam",
+                "SRR389222_sub1.sorted.bam.bai",
+                "SRR389222_sub2.bam",
+                "SRR389222_sub2.sorted.bam",
+                "SRR389222_sub2.sorted.bam.bai",
+                "SRR389222_sub3.bam",
+                "SRR389222_sub3.sorted.bam",
+                "SRR389222_sub3.sorted.bam.bai",
                 "samtools_stats",
                 "Ecoli.flagstat",
                 "Ecoli.stats",
@@ -49,6 +61,15 @@
                 "SRR389222_sub1.markdup.sorted.MarkDuplicates.metrics.txt",
                 "SRR389222_sub2.markdup.sorted.MarkDuplicates.metrics.txt",
                 "SRR389222_sub3.markdup.sorted.MarkDuplicates.metrics.txt",
+                "reference_genome",
+                "bwameth",
+                "genome.fa",
+                "genome.fa.bwameth.c2t",
+                "genome.fa.bwameth.c2t.amb",
+                "genome.fa.bwameth.c2t.ann",
+                "genome.fa.bwameth.c2t.bwt",
+                "genome.fa.bwameth.c2t.pac",
+                "genome.fa.bwameth.c2t.sa",
                 "fastqc",
                 "Ecoli_1_fastqc.html",
                 "Ecoli_2_fastqc.html",
@@ -363,6 +384,18 @@
                 "SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
+                "Ecoli.bam:md5,b33dd5e9904b44b2adb03c50d0081f1a",
+                "Ecoli.sorted.bam:md5,4dcf6fad8c1fc570af009b777d052acb",
+                "Ecoli.sorted.bam.bai:md5,c6a8c02d5cdf657a59b704f4bdb6fe22",
+                "SRR389222_sub1.bam:md5,13fa13a2d39fcc3740badd05f0f6f299",
+                "SRR389222_sub1.sorted.bam:md5,43abe8f3423f450b77462c6bd2476ef3",
+                "SRR389222_sub1.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
+                "SRR389222_sub2.bam:md5,10442be5d5f47833310f9dd055adbe5c",
+                "SRR389222_sub2.sorted.bam:md5,4dda9cfb349cf68ba441226d59e135e8",
+                "SRR389222_sub2.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
+                "SRR389222_sub3.bam:md5,a11eb7feb5f013cc2f489cb675cf182e",
+                "SRR389222_sub3.sorted.bam:md5,88de0af4481265cae2c574119e6400e5",
+                "SRR389222_sub3.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
                 "Ecoli.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
                 "Ecoli.stats:md5,c1d93f418a498e9d88e13c5f2a7d7ed6",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
@@ -371,6 +404,13 @@
                 "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
                 "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
+                "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
+                "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
+                "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
+                "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
+                "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
+                "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d",
                 "Ecoli.markdup.sorted_CpG.bedGraph:md5,00132adede8128b3a111136713a2a4ff",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -497,6 +537,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T15:19:08.319349073"
+        "timestamp": "2024-09-22T14:17:56.889974435"
     }
 }
