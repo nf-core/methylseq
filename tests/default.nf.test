@@ -15,6 +15,14 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
+                    bam("$outputDir/bismark/deduplicated/Ecoli.deduplicated.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/deduplicated/SRR389222_sub1.deduplicated.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/deduplicated/SRR389222_sub2.deduplicated.sorted.bam").getReadsMD5(),
+                    bam("$outputDir/bismark/deduplicated/SRR389222_sub3.deduplicated.sorted.bam").getReadsMD5(),
+                    path("$outputDir/bismark/deduplicated/Ecoli.deduplicated.sorted.bam.bai"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub1.deduplicated.sorted.bam.bai"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub2.deduplicated.sorted.bam.bai"),
+                    path("$outputDir/bismark/deduplicated/SRR389222_sub3.deduplicated.sorted.bam.bai"),
                     path("$outputDir/bismark/methylation_calls/bedGraph/Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"),
                     path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz"),
                     path("$outputDir/bismark/methylation_calls/bedGraph/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz"),

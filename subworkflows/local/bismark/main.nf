@@ -1,14 +1,15 @@
 /*
  * Bismark subworkflow
  */
-include { BISMARK_ALIGN                               } from '../../../modules/nf-core/bismark/align/main'
-include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED      } from '../../../modules/nf-core/samtools/sort/main'
-include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED } from '../../../modules/nf-core/samtools/sort/main'
-include { BISMARK_DEDUPLICATE                         } from '../../../modules/nf-core/bismark/deduplicate/main'
-include { BISMARK_METHYLATIONEXTRACTOR                } from '../../../modules/nf-core/bismark/methylationextractor/main'
-include { BISMARK_COVERAGE2CYTOSINE                   } from '../../../modules/nf-core/bismark/coverage2cytosine/main'
-include { BISMARK_REPORT                              } from '../../../modules/nf-core/bismark/report/main'
-include { BISMARK_SUMMARY                             } from '../../../modules/nf-core/bismark/summary/main'
+include { BISMARK_ALIGN                                 } from '../../../modules/nf-core/bismark/align/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_ALIGNED        } from '../../../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_DEDUPLICATED   } from '../../../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../../modules/nf-core/samtools/index/main'
+include { BISMARK_DEDUPLICATE                           } from '../../../modules/nf-core/bismark/deduplicate/main'
+include { BISMARK_METHYLATIONEXTRACTOR                  } from '../../../modules/nf-core/bismark/methylationextractor/main'
+include { BISMARK_COVERAGE2CYTOSINE                     } from '../../../modules/nf-core/bismark/coverage2cytosine/main'
+include { BISMARK_REPORT                                } from '../../../modules/nf-core/bismark/report/main'
+include { BISMARK_SUMMARY                               } from '../../../modules/nf-core/bismark/summary/main'
 
 workflow BISMARK {
     take:
@@ -59,8 +60,8 @@ workflow BISMARK {
         alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
         ch_versions       = ch_versions.mix(BISMARK_DEDUPLICATE.out.versions)
 
-        alignments.dump(tag: 'BISMARK/deduplication: alignments')
-        alignment_reports.dump(tag: 'BISMARK/deduplication: alignment_reports')
+        alignments.dump(tag: 'BISMARK_DEDUPLICATE: alignments')
+        alignment_reports.dump(tag: 'BISMARK_DEDUPLICATE: alignment_reports')
     }
 
     /*
@@ -74,7 +75,6 @@ workflow BISMARK {
     BISMARK_METHYLATIONEXTRACTOR.out.mbias.dump(tag: 'BISMARK_METHYLATIONEXTRACTOR: mbias')
 
     ch_versions = ch_versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
-
 
     /*
      * Run coverage2cytosine
@@ -127,6 +127,15 @@ workflow BISMARK {
     SAMTOOLS_SORT_DEDUPLICATED.out.bam.dump(tag: 'BISMARK/SAMTOOLS_SORT_DEDUPLICATED: bam')
 
     ch_versions = ch_versions.mix(SAMTOOLS_SORT_DEDUPLICATED.out.versions)
+
+    /*
+     * MODULE: Run samtools index on dedup bam
+     */
+    SAMTOOLS_INDEX_DEDUPLICATED(SAMTOOLS_SORT_DEDUPLICATED.out.bam)
+
+    SAMTOOLS_INDEX_DEDUPLICATED.out.bai.dump(tag: 'BISMARK/SAMTOOLS_INDEX_DEDUPLICATED: bai')
+
+    ch_versions = ch_versions.mix(SAMTOOLS_INDEX_DEDUPLICATED.out.versions)
 
     /*
      * Collect MultiQC inputs

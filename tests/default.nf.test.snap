@@ -31,6 +31,14 @@
     },
     "Default": {
         "content": [
+            "a54ab7c96f9523a4ccd25fd69f6905f8",
+            "3f11ef5fbbda3797fd6217728e4f00d3",
+            "b01f29fc1d8d46922a69df09c636b4c4",
+            "347195c04c9ffd2a2b10967a6682fc69",
+            "Ecoli.deduplicated.sorted.bam.bai:md5,26fc8064684ace3d1e1dc93436f7ccb2",
+            "SRR389222_sub1.deduplicated.sorted.bam.bai:md5,9c16bbc7317764c83d6b1a6c53a24e6e",
+            "SRR389222_sub2.deduplicated.sorted.bam.bai:md5,d6f8dd9bd45aa9374e432d1640fa5453",
+            "SRR389222_sub3.deduplicated.sorted.bam.bai:md5,8dda4abae921786e8b099b048121fc3d",
             "Ecoli_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
             "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,d31df76c1c9128299367ebfe740357b9",
             "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,010f32001bbc7805f8e041f3ef0d9ea9",
@@ -82,6 +90,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-21T13:00:27.850836484"
+        "timestamp": "2024-09-22T04:02:24.544843608"
     }
 }
