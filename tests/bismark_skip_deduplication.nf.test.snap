@@ -1,7 +1,7 @@
 {
     "Bismark: skip_deduplication": {
         "content": [
-            43,
+            39,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.0"
@@ -681,6 +681,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T14:47:37.939920553"
+        "timestamp": "2024-09-23T09:04:18.376004138"
     }
 }

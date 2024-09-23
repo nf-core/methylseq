@@ -1,7 +1,7 @@
 {
     "Bismark_Hisat: save_reference | save_align_intermeds": {
         "content": [
-            47,
+            43,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.0"
@@ -747,6 +747,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T14:31:06.989294046"
+        "timestamp": "2024-09-23T08:55:42.272400858"
     }
 }

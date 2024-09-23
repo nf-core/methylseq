@@ -1,7 +1,7 @@
 {
     "Bwameth: save_reference | save_align_intermeds": {
         "content": [
-            54,
+            50,
             {
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.7"
@@ -537,6 +537,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T14:17:56.889974435"
+        "timestamp": "2024-09-23T09:15:12.324738787"
     }
 }

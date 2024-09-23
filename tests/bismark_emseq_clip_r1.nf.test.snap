@@ -1,7 +1,7 @@
 {
     "Bismark: em_seq | clip_r1": {
         "content": [
-            47,
+            43,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.0"
@@ -684,6 +684,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T14:56:38.675271416"
+        "timestamp": "2024-09-23T08:46:23.814336332"
     }
 }

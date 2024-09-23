@@ -4,12 +4,12 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("Bwameth: rrbs") {
+    test("Bwameth: skip_deduplication") {
         when {
             params {
-                aligner = "bwameth"
-                rrbs    = true
-                outdir  = "$outputDir"
+                aligner            = "bwameth"
+                skip_deduplication = true
+                outdir             = "$outputDir"
             }
         }
 

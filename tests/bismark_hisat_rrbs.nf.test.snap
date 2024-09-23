@@ -1,7 +1,7 @@
 {
     "Bismark_Hisat: rrbs": {
         "content": [
-            43,
+            39,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.0"
@@ -677,6 +677,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-22T14:37:07.838774585"
+        "timestamp": "2024-09-23T08:53:32.590620765"
     }
 }
