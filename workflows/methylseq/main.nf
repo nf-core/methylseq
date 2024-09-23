@@ -23,7 +23,7 @@ if( params.aligner =~ /bismark/ ){
 }
 // Aligner: bwameth
 else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH } from '../../subworkflows/local/bwameth/'
+    include { BWAMETH } from '../../subworkflows/local/bwameth'
 }
 
 /*
