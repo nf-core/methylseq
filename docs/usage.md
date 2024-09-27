@@ -42,7 +42,7 @@ sample,fastq_1,fastq_2,genome
 SRR389222_sub1,SRR389222_sub1.fastq.gz,,
 SRR389222_sub2,SRR389222_sub2.fastq.gz,,
 SRR389222_sub3,SRR389222_sub3.fastq.gz,,
-Ecoli,Ecoli_10K_methylated_R1.fastq.gz,Ecoli_10K_methylated_R2.fastq.gz,
+Ecoli_10K_methylated,Ecoli_10K_methylated_R1.fastq.gz,Ecoli_10K_methylated_R2.fastq.gz,
 ```
 
 ### Full samplesheet
