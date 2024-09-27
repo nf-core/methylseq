@@ -10,9 +10,10 @@
 - 🔄 Updated template to nf-core/tools v2.14.1 [#399](https://github.com/nf-core/methylseq/pull/399)
 - 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
 - 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
-- 🐛 fix missing type field in nextflow_schema.json [#417](https://github.com/nf-core/methylseq/pull/417)
+- 🐛 fix missing type field in nextflow_schema.json #361 [#417](https://github.com/nf-core/methylseq/pull/417)
 - 🐛 fix samtools sort overwrites #328 [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🐛 fix bwameth pipeline skipping all bwameth steps when --fasta, --fasta_index, and --bwa_meth_index are provided. #396 [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🐛 fix typo in samplesheet in README and usage doc #391 [#414](https://github.com/nf-core/methylseq/pull/418)
 
 ### Pipeline Updates
 

@@ -20,7 +20,7 @@
                     "cutadapt": 3.4
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.7.0dev"
+                    "nf-core/methylseq": "v2.7.0"
                 }
             },
             [
