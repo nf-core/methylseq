@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5]
         NXF_VER: ["latest-stable"] # TODO Test minimum version on release
         profile: ["docker"]
     steps:
@@ -57,9 +57,8 @@ jobs:
           nf-test test \
               --ci \
               --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
-              --changed-until feat/workflow-updates \
-              --profile "+${{ matrix.profile }}" \
-              --filter pipeline
+              --changed-since HEAD^ \
+              --profile "+${{ matrix.profile }}"
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
