@@ -1,11 +1,11 @@
 {
-    "Bismark: save_reference": {
+    "Bismark_Hisat: save_reference": {
         "content": [
             [
-                "d6951f6d3381e22becf62553a37c0f3f"
+                "3a6485d719fcaf868c7f95c8f10a3f3c"
             ],
             [
-                "35d55bee1ca653931716e40dac4aba30"
+                "dae445da532c973dc9149f3ceba2d2c5"
             ],
             [
                 "versions.yml:md5,37c90312d5685ae87bcb080e0cab48de",
@@ -22,6 +22,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-29T13:55:29.087420554"
+        "timestamp": "2024-09-29T14:19:18.719515297"
     }
 }
