@@ -1,8 +1,8 @@
 nextflow_workflow {
 
-    name "Test Workflow BWAMETH"
+    name "Test Workflow BISMARK_Hisat"
     script "../main.nf"
-    workflow "BWAMETH"
+    workflow "BISMARK"
     config "../nextflow.config"
 
     setup {
@@ -12,39 +12,40 @@ nextflow_workflow {
                 """
                 input[0] = [
                     [:],
-                    file(params.pipelines_testdata_base_path + 'reference/Bwameth_Index.tar.gz', checkIfExists: true)
+                    file(params.pipelines_testdata_base_path + 'reference/Hisat2_Index.tar.gz', checkIfExists: true)
                 ]
                 """
             }
         }
     }
 
-    test("Bwameth: save_reference") {
+    test("Bismark_Hisat: save_reference") {
 
         when {
             params {
-                aligner              = "bwameth"
+                aligner              = "bismark_hisat"
                 publish_dir_mode     = 'copy'
-                outdir               = "results"
-                save_reference       = true
+                unmapped             = false
                 save_align_intermeds = false
-                min_depth            = 0
-                comprehensive        = false
-                ignore_flags         = false
-                methyl_kit           = false
                 skip_deduplication   = false
+                rrbs                 = false
+                nomeseq              = false
+                slamseq              = false
+                save_reference       = true
+                outdir               = "results"
             }
             workflow {
                 """
+                skip_deduplication = false
+                cytosine_report    = false
 
                 input[0] = Channel.of([
                             [ id:'test', single_end:true ],
                             file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
                 ])
-                input[1] = UNTAR.out.untar.map { it[1] } // bwameth_index
-                input[2] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true)) // fasta
-                input[3] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true)) //fasta_index
-                input[4] = params.skip_deduplication
+                input[1] = UNTAR.out.untar.map { it[1] }
+                input[2] = skip_deduplication
+                input[3] = cytosine_report
                 """
             }
         }

@@ -19,7 +19,7 @@ nextflow_workflow {
         }
     }
 
-    test("Bismark Single-End") {
+    test("Bismark: save_reference") {
 
         when {
             params {

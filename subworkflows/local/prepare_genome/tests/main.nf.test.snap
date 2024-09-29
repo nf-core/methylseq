@@ -1,34 +1,4 @@
 {
-    "BWAMETH - Generate Index": {
-        "content": [
-            [
-                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
-            ],
-            [
-                "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-            ],
-            [
-                [
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
-                    "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
-                    "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
-                    "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
-                    "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
-                    "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
-                    "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
-                ]
-            ],
-            [
-                "versions.yml:md5,67124f8c3356bccd688e07c65a52e48a",
-                "versions.yml:md5,cb3f3b6e54f9a7b3b6d4f5f875e89442"
-            ]
-        ],
-        "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
-        },
-        "timestamp": "2024-09-08T12:38:36.730702552"
-    },
     "BISMARK - Generate Index": {
         "content": [
             [
@@ -68,5 +38,35 @@
             "nextflow": "24.04.4"
         },
         "timestamp": "2024-09-08T12:38:22.021170374"
+    },
+    "BWAMETH - Generate Index": {
+        "content": [
+            [
+                "/nf-core/test-datasets/raw/methylseq/reference/genome.fa"
+            ],
+            [
+                "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
+            ],
+            [
+                [
+                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
+                    "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
+                    "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
+                    "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
+                    "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
+                    "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
+                    "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d"
+                ]
+            ],
+            [
+                "versions.yml:md5,7303f194674b485c6914e28422822a12",
+                "versions.yml:md5,cb3f3b6e54f9a7b3b6d4f5f875e89442"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-09-29T13:57:16.093473618"
     }
 }
