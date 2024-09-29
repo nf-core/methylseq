@@ -354,7 +354,7 @@
                 "multiqc_picard_dups.txt:md5,2dd92451825bab5f1d74bd96933756e6",
                 "multiqc_samtools_flagstat.txt:md5,707a91291107beffe14f9cc2d540f4a0",
                 "multiqc_samtools_stats.txt:md5,76db021090766f669ea1276dab863cfe",
-                "multiqc_software_versions.txt:md5,294edf0ca417348d4d08363c9e975ead",
+                "multiqc_software_versions.txt:md5,4093ad384ea6989abcc4c63029333abb",
                 "picard_deduplication.txt:md5,b86a20261610bdf7a2e63ff43e232c75",
                 "picard_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -454,6 +454,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-27T11:10:05.67005147"
+        "timestamp": "2024-09-29T13:27:41.32822303"
     }
 }

@@ -591,7 +591,7 @@
                 "multiqc_bismark_methextract.txt:md5,d957a3ec1f34348db8e52c51786b62c9",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
                 "multiqc_cutadapt.txt:md5,9423377cea77c773f2ef2be03e5d1e04",
-                "multiqc_software_versions.txt:md5,514aa3d6efcd5828b1e5e85b5c82f198",
+                "multiqc_software_versions.txt:md5,172e90a88c84c9b06d9dd00869b23100",
                 "qualimap_coverage_histogram.txt:md5,7cd194077fe839edf034b44cc73dd024",
                 "qualimap_gc_content.txt:md5,4f6ec70d9fb71ffe5f2f99f44fe5ef0c",
                 "qualimap_genome_fraction.txt:md5,3e528946a376ae752b57adaaa73f5cdf",
@@ -732,6 +732,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-27T10:46:43.810420207"
+        "timestamp": "2024-09-29T13:05:17.835510509"
     }
 }
