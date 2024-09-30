@@ -20,7 +20,7 @@
                     "cutadapt": 3.4
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.7.0dev"
+                    "nf-core/methylseq": "v2.7.0"
                 }
             },
             [
@@ -538,7 +538,7 @@
                 "multiqc_bismark_methextract.txt:md5,8afa13b3a683e7cc5f60d571787241d5",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
                 "multiqc_cutadapt.txt:md5,c2575e27f3839e30ceeff079ada3386b",
-                "multiqc_software_versions.txt:md5,514aa3d6efcd5828b1e5e85b5c82f198",
+                "multiqc_software_versions.txt:md5,172e90a88c84c9b06d9dd00869b23100",
                 "qualimap_coverage_histogram.txt:md5,22c70e761489597e34a3d71d036ff190",
                 "qualimap_gc_content.txt:md5,c872803a08b92b36c136e2ba3bee96d4",
                 "qualimap_genome_fraction.txt:md5,393f86423cc89983ab66fa29f93dd710",
@@ -677,6 +677,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-27T10:49:48.40724686"
+        "timestamp": "2024-09-29T13:07:31.991883925"
     }
 }

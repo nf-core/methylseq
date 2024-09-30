@@ -20,7 +20,7 @@
                     "cutadapt": 3.4
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.7.0dev"
+                    "nf-core/methylseq": "v2.7.0"
                 }
             },
             [
@@ -437,7 +437,7 @@
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,e24271a8111b06c1f545b6b1a077a4a7",
-                "multiqc_software_versions.txt:md5,ea71cd4a77f55cd04ddf0c7e4ef02cb1",
+                "multiqc_software_versions.txt:md5,22402363b9a63ac8fc420053b0455ec3",
                 "picard_deduplication.txt:md5,7dacf4d4e0d7d2d9a7205beecfa7125c",
                 "picard_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -537,6 +537,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-27T11:06:05.893597622"
+        "timestamp": "2024-09-29T13:24:31.638890825"
     }
 }
