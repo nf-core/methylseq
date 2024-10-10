@@ -7,6 +7,7 @@ on:
   pull_request:
   release:
     types: [published]
+  workflow_dispatch:
 
 env:
   NXF_ANSI_LOG: false
@@ -25,9 +26,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5]
         NXF_VER: ["latest-stable"] # TODO Test minimum version on release
-        profile: ["docker"]
+        shard: [1, 2, 3, 4, 5]
+        profile: ["docker", "singularity", "conda"]
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
