@@ -5,7 +5,7 @@ lint:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
   modules_config: false
-nf_core_version: 3.0.1
+nf_core_version: 3.0.2
 org_path: null
 repository_type: pipeline
 template:
