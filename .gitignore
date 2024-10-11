@@ -10,3 +10,4 @@ testing*
 .nf-test
 .nf-test.log
 test-datasets/
+null/
