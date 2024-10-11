@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## v2.7.0dev - [2024-10-01]
+## v2.7.0dev - [2024-10-11]
 
 ### Bug fixes & refactoring
 
@@ -8,6 +8,7 @@
 - 🔄 Updated template to nf-core/tools v2.13 [#380](https://github.com/nf-core/methylseq/pull/380)
 - 🔄 Updated template to nf-core/tools v2.13.1 [#384](https://github.com/nf-core/methylseq/pull/384)
 - 🔄 Updated template to nf-core/tools v2.14.1 [#399](https://github.com/nf-core/methylseq/pull/399)
+- 🔄 Updated template to nf-core/tools v3.0.2 [#426](https://github.com/nf-core/methylseq/pull/426)
 - 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
 - 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
 - 🐛 fix missing type field in nextflow_schema.json #361 [#417](https://github.com/nf-core/methylseq/pull/417)
