@@ -47,7 +47,7 @@ workflow METHYLSEQ {
     ch_multiqc_files = Channel.empty()
 
     //
-    // Create channel from input file provided through params.input
+    // Branch channels from input samplesheet channel
     //
     samplesheet
         .branch { meta, fastqs ->
