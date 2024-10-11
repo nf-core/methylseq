@@ -26,12 +26,9 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_meth
     GENOME PARAMETER VALUES
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
 params.fasta         = getGenomeAttribute('fasta')
 params.bismark_index = getGenomeAttribute('bismark')
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOWS FOR PIPELINE
@@ -66,7 +63,12 @@ workflow NFCORE_METHYLSEQ {
     //
 
     METHYLSEQ (
-        samplesheet
+        samplesheet,
+        ch_versions,
+        PREPARE_GENOME.out.fasta,
+        PREPARE_GENOME.out.fasta_index,
+        PREPARE_GENOME.out.bismark_index,
+        PREPARE_GENOME.out.bwameth_index,
     )
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
@@ -90,8 +92,7 @@ workflow {
         params.validate_params,
         params.monochrome_logs,
         args,
-        params.outdir,
-        params.input
+        params.outdir
     )
 
     //
@@ -112,18 +113,6 @@ workflow {
         params.hook_url,
         NFCORE_METHYLSEQ.out.multiqc_report
     )
-}
-
-//
-// Get attribute from genome config file e.g. fasta
-//
-def getGenomeAttribute(attribute) {
-    if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
-        if (params.genomes[ params.genome ].containsKey(attribute)) {
-            return params.genomes[ params.genome ][ attribute ]
-        }
-    }
-    return null
 }
 
 /*
