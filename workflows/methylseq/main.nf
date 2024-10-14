@@ -11,7 +11,7 @@ include { QUALIMAP_BAMQC           } from '../../modules/nf-core/qualimap/bamqc/
 include { PRESEQ_LCEXTRAP          } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                  } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                } from '../../modules/nf-core/cat/fastq/main'
-include { paramsSummaryMap         } from 'plugin/nf-validation'
+include { paramsSummaryMap         } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML   } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
@@ -35,7 +35,7 @@ else if ( params.aligner == 'bwameth' ){
 workflow METHYLSEQ {
 
     take:
-    ch_samplesheet     // channel: samplesheet read in from --input
+    samplesheet        // channel: samplesheet read in from --input
     ch_versions        // channel: [ path(versions.yml) ]
     ch_fasta           // channel: path(genome.fasta)
     ch_fasta_index     // channel: path(star/index/)
@@ -47,42 +47,30 @@ workflow METHYLSEQ {
     ch_multiqc_files = Channel.empty()
 
     //
-    // Create channel from input file provided through params.input
+    // Branch channels from input samplesheet channel
     //
-    Channel
-        .fromSamplesheet("input")
-        .map { meta, fastq_1, fastq_2 ->
-            if (!fastq_2) {
-                return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-            } else {
-                return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-            }
-        }
-        .groupTuple()
-        .map {
-            validateInputSamplesheet(it)
-        }
+    samplesheet
         .branch { meta, fastqs ->
             single  : fastqs.size() == 1
                 return [ meta, fastqs.flatten() ]
             multiple: fastqs.size() > 1
                 return [ meta, fastqs.flatten() ]
         }
-        .set { ch_fastq }
+        .set { ch_samplesheet }
 
     //
     // MODULE: Concatenate FastQ files from same sample if required
     //
-    CAT_FASTQ (ch_fastq.multiple)
+    CAT_FASTQ (ch_samplesheet.multiple)
         .reads
-        .mix(ch_fastq.single)
-        .set {ch_samplesheet}
+        .mix(ch_samplesheet.single)
+        .set {ch_fastq}
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (ch_samplesheet)
+    FASTQC (ch_fastq)
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
@@ -90,11 +78,11 @@ workflow METHYLSEQ {
     // MODULE: Run TrimGalore!
     //
     if (!params.skip_trimming) {
-        TRIMGALORE(ch_samplesheet)
+        TRIMGALORE(ch_fastq)
         reads = TRIMGALORE.out.reads
         ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
     } else {
-        reads = ch_samplesheet
+        reads = ch_fastq
     }
 
     //

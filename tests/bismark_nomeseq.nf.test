@@ -4,7 +4,7 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("Bismark: nomeseq") {
+    test("Params: bismark | nomeseq") {
         when {
             params {
                 nomeseq = true
@@ -14,28 +14,22 @@ nextflow_pipeline {
 
         then {
             // stable_name: All files + folders in ${params.outdir}/ with a stable name
-            def stable_name = UTILS.getAllFilesFromDir(params.outdir, true, UTILS.exclusionRegexesForUnstableFileNames)
-
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
             // stable_path: All files in ${params.outdir}/ with stable content
-            def stable_path = UTILS.getAllFilesFromDir(params.outdir, false, UTILS.exclusionRegexesForUnstableFileNames + UTILS_PIPELINE.exclusionRegexesForUnstableFileContents)
-
+            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             assertAll(
                 { assert workflow.success},
                 { assert snapshot(
                     // Number of tasks
                     workflow.trace.succeeded().size(),
-
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we tests pipelines on multiple Nextflow versions
-                    UTILS.removeNextflowVersion("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml"),
-
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml"),
                     // All stable path name
-                    stable_name*.name,
-
+                    stable_name,
                     // All files with stable contents
                     stable_path
                 ).match() }
             )
-
         }
     }
 
