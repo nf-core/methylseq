@@ -88,7 +88,7 @@ workflow PREPARE_GENOME {
             ch_fasta_index.dump(tag: 'PREPARE_GENOME: ch_fasta_index')
         } else {
             SAMTOOLS_FAIDX(
-                ch_fasta.map{ fasta -> [[:], fasta]},
+                ch_fasta,
                 [[:], []]
             )
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai.map{ return(it[1])}
