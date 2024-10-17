@@ -6,7 +6,6 @@ results/
 testing/
 testing*
 *.pyc
-.vscode
-.nf-test
+null/
 .nf-test.log
-test-datasets/
+.nf-test/

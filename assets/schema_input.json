@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/methylseq/master/assets/schema_input.json",
     "title": "nf-core/methylseq pipeline - params.input schema",
     "description": "Schema for the file provided with params.input",
@@ -21,20 +21,18 @@
                 "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
             },
             "fastq_2": {
-                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'",
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "anyOf": [
-                    {
-                        "type": "string",
-                        "pattern": "^\\S+\\.f(ast)?q\\.gz$"
-                    },
-                    {
-                        "type": "string",
-                        "maxLength": 0
-                    }
-                ]
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "genome": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^[a-zA-Z0-9._-]+$",
+                "errorMessage": "Invalid reference genome name"
             }
         },
         "required": ["sample", "fastq_1"]
