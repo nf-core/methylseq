@@ -383,18 +383,6 @@
                 "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
-                "Ecoli_10K_methylated.bam:md5,9e4e350f994975f7afc4048b9473cb02",
-                "Ecoli_10K_methylated.sorted.bam:md5,0c5e4d099f1b3825edc30926e604eb93",
-                "Ecoli_10K_methylated.sorted.bam.bai:md5,e5620bf7bb9142b02e792ee7ef09b61a",
-                "SRR389222_sub1.bam:md5,3620f7c13b0757672afd595da91a9432",
-                "SRR389222_sub1.sorted.bam:md5,2547fbfa4deb8e1ab8f3b8e36eda97a1",
-                "SRR389222_sub1.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-                "SRR389222_sub2.bam:md5,df97f06ef2edb81611d72fdea2dcfbf0",
-                "SRR389222_sub2.sorted.bam:md5,74d3c17e1e6ab41e22e44cf2ad602499",
-                "SRR389222_sub2.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-                "SRR389222_sub3.bam:md5,00cef7d7bf9bbd2be9f60aee60c0d3bb",
-                "SRR389222_sub3.sorted.bam:md5,50dc6519ae76f3ad4c3e01df091bc355",
-                "SRR389222_sub3.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
                 "Ecoli_10K_methylated.stats:md5,2df1b94e099f2948ad990224f7cf07a4",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
@@ -403,14 +391,6 @@
                 "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
                 "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
-                "Ecoli_10K_methylated.markdup.sorted.bam:md5,616c282fb1eb763eddf1e5adf7d117c6",
-                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,277a8b084025e5f0dd5eecafbc11bf38",
-                "SRR389222_sub1.markdup.sorted.bam:md5,21c9c590c70393a142c2c148a9b9aa07",
-                "SRR389222_sub1.markdup.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-                "SRR389222_sub2.markdup.sorted.bam:md5,574040d14830925aaa6e67f9b0e7ead4",
-                "SRR389222_sub2.markdup.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-                "SRR389222_sub3.markdup.sorted.bam:md5,caf031e76aff4f85d8ae652cb8285af5",
-                "SRR389222_sub3.markdup.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
                 "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
                 "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
                 "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
@@ -460,12 +440,62 @@
                 "genome_results.txt:md5,2c755b15ae5ad4a1d29395320a6264ca",
                 "genome_results.txt:md5,2294badeccd2e8870fd6c60d115687b0",
                 "genome_results.txt:md5,4da1144933d094185d02f7482c120804"
+            ],
+            [
+                [
+                    "Ecoli_10K_methylated.bam",
+                    "4a9ba2169facef4ed3d92d539c8c78af"
+                ],
+                [
+                    "Ecoli_10K_methylated.sorted.bam",
+                    "a2921f761f431ede522016f83f75c12d"
+                ],
+                [
+                    "SRR389222_sub1.bam",
+                    "e50275d6d44138f19d65ee479444d5ce"
+                ],
+                [
+                    "SRR389222_sub1.sorted.bam",
+                    "e50275d6d44138f19d65ee479444d5ce"
+                ],
+                [
+                    "SRR389222_sub2.bam",
+                    "d365b8b2662b2abffb51dd67a1f463b4"
+                ],
+                [
+                    "SRR389222_sub2.sorted.bam",
+                    "d365b8b2662b2abffb51dd67a1f463b4"
+                ],
+                [
+                    "SRR389222_sub3.bam",
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                ],
+                [
+                    "SRR389222_sub3.sorted.bam",
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                ],
+                [
+                    "Ecoli_10K_methylated.markdup.sorted.bam",
+                    "a2921f761f431ede522016f83f75c12d"
+                ],
+                [
+                    "SRR389222_sub1.markdup.sorted.bam",
+                    "e50275d6d44138f19d65ee479444d5ce"
+                ],
+                [
+                    "SRR389222_sub2.markdup.sorted.bam",
+                    "d365b8b2662b2abffb51dd67a1f463b4"
+                ],
+                [
+                    "SRR389222_sub3.markdup.sorted.bam",
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-17T08:49:30.627054377"
+        "timestamp": "2024-10-17T11:16:48.40025727"
     }
 }

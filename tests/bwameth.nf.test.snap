@@ -371,14 +371,6 @@
                 "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
                 "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
-                "Ecoli_10K_methylated.markdup.sorted.bam:md5,616c282fb1eb763eddf1e5adf7d117c6",
-                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,277a8b084025e5f0dd5eecafbc11bf38",
-                "SRR389222_sub1.markdup.sorted.bam:md5,21c9c590c70393a142c2c148a9b9aa07",
-                "SRR389222_sub1.markdup.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-                "SRR389222_sub2.markdup.sorted.bam:md5,574040d14830925aaa6e67f9b0e7ead4",
-                "SRR389222_sub2.markdup.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-                "SRR389222_sub3.markdup.sorted.bam:md5,caf031e76aff4f85d8ae652cb8285af5",
-                "SRR389222_sub3.markdup.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -422,13 +414,31 @@
                 "genome_results.txt:md5,2c755b15ae5ad4a1d29395320a6264ca",
                 "genome_results.txt:md5,2294badeccd2e8870fd6c60d115687b0",
                 "genome_results.txt:md5,4da1144933d094185d02f7482c120804"
+            ],
+            [
+                [
+                    "Ecoli_10K_methylated.markdup.sorted.bam",
+                    "a2921f761f431ede522016f83f75c12d"
+                ],
+                [
+                    "SRR389222_sub1.markdup.sorted.bam",
+                    "e50275d6d44138f19d65ee479444d5ce"
+                ],
+                [
+                    "SRR389222_sub2.markdup.sorted.bam",
+                    "d365b8b2662b2abffb51dd67a1f463b4"
+                ],
+                [
+                    "SRR389222_sub3.markdup.sorted.bam",
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-17T08:44:01.365191889"
+        "timestamp": "2024-10-17T11:11:30.194587369"
     },
     "Params: bwameth with bwameth-index": {
         "content": [

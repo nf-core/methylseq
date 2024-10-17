@@ -485,14 +485,6 @@
                 "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
-                "Ecoli_10K_methylated.deduplicated.sorted.bam:md5,562674180cb1099e2d8a2b896daacbae",
-                "Ecoli_10K_methylated.deduplicated.sorted.bam.bai:md5,615d26acaf4b2ae561985d6e56366144",
-                "SRR389222_sub1.deduplicated.sorted.bam:md5,39c472367d8e0ede054147a768ae741c",
-                "SRR389222_sub1.deduplicated.sorted.bam.bai:md5,f3694fe1404e5684070210b70b185236",
-                "SRR389222_sub2.deduplicated.sorted.bam:md5,6475537c5abc08a4dd9dfb3cb354072e",
-                "SRR389222_sub2.deduplicated.sorted.bam.bai:md5,584af5fb0115097426dbb5befc0876e7",
-                "SRR389222_sub3.deduplicated.sorted.bam:md5,45df9ff1fce172e37ea2c33878bdf395",
-                "SRR389222_sub3.deduplicated.sorted.bam.bai:md5,f7c7c672d41f0b6428809f59254868d0",
                 "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.deduplicated.bedGraph.gz:md5,357196071c54757566cdd0bb7ab79fa8",
                 "SRR389222_sub1_trimmed_bismark_hisat2.deduplicated.bedGraph.gz:md5,47f60a641b8564c14a0f08599215944b",
                 "SRR389222_sub2_trimmed_bismark_hisat2.deduplicated.bedGraph.gz:md5,2b5a22fd9d8bf25b993a8c0ad7beb13d",
@@ -570,12 +562,30 @@
                 "genome_results.txt:md5,e808a20446012ad2643385cf316605c0",
                 "genome_results.txt:md5,41833cb9a1cfb8945c0fd6711981e58e",
                 "genome_results.txt:md5,10636e2fb7eb1ac2cf246483405ae973"
+            ],
+            [
+                [
+                    "Ecoli_10K_methylated.deduplicated.sorted.bam",
+                    "a1bd6455ebe3ecb43fe55e02d149d98"
+                ],
+                [
+                    "SRR389222_sub1.deduplicated.sorted.bam",
+                    "8d735d1f6337b2cf2fa720773ce34b60"
+                ],
+                [
+                    "SRR389222_sub2.deduplicated.sorted.bam",
+                    "45d53a598b4e59d173e32ea1f0558083"
+                ],
+                [
+                    "SRR389222_sub3.deduplicated.sorted.bam",
+                    "ddb15c5ef0686837616d73f45c154b8d"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-17T08:25:40.077838336"
+        "timestamp": "2024-10-17T10:53:17.891178066"
     }
 }

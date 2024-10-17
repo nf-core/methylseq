@@ -436,14 +436,6 @@
                 "qualimap/SRR389222_sub3/raw_data_qualimapReport/mapping_quality_histogram.txt"
             ],
             [
-                "Ecoli_10K_methylated.deduplicated.sorted.bam:md5,a8e454517e9eb397552c3c340263e4cf",
-                "Ecoli_10K_methylated.deduplicated.sorted.bam.bai:md5,d0b36c2a1b75af6a46330f9848f8aab2",
-                "SRR389222_sub1.deduplicated.sorted.bam:md5,70090046e2f066708d749bfe55a7cdee",
-                "SRR389222_sub1.deduplicated.sorted.bam.bai:md5,d7dd06deaf1f60ac1ae70f6ea6ab5c73",
-                "SRR389222_sub2.deduplicated.sorted.bam:md5,a3eaf63352cc3484e4c2964a864c8662",
-                "SRR389222_sub2.deduplicated.sorted.bam.bai:md5,d17befc869b562298c47eeefa0364d1a",
-                "SRR389222_sub3.deduplicated.sorted.bam:md5,0852eaab1fddd7fac1d41dcb37981a60",
-                "SRR389222_sub3.deduplicated.sorted.bam.bai:md5,536341b1c88a5a50c5c63e87b7b5f6f4",
                 "Ecoli_10K_methylated_R1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
                 "SRR389222_sub1_bismark_bt2.deduplicated.bedGraph.gz:md5,5d7312489e51ca88e1ce1f689db93a64",
                 "SRR389222_sub2_bismark_bt2.deduplicated.bedGraph.gz:md5,010f32001bbc7805f8e041f3ef0d9ea9",
@@ -517,12 +509,30 @@
                 "genome_results.txt:md5,445e1cd701e53837e7747383264f0b15",
                 "genome_results.txt:md5,cb7e3c8a8097ffd58fc9d4b0f293cf64",
                 "genome_results.txt:md5,56b2c5bc4772ef6439af3a3b8c97cfaa"
+            ],
+            [
+                [
+                    "Ecoli_10K_methylated.deduplicated.sorted.bam",
+                    "b49754b06cf7a7fc8d31b973e5ee9cc3"
+                ],
+                [
+                    "SRR389222_sub1.deduplicated.sorted.bam",
+                    "35d55bee1ca653931716e40dac4aba30"
+                ],
+                [
+                    "SRR389222_sub2.deduplicated.sorted.bam",
+                    "563d9803a88c3ccc7c97b09cb7c7757c"
+                ],
+                [
+                    "SRR389222_sub3.deduplicated.sorted.bam",
+                    "6d92c014b65f85fbdfa1abeca8a5f47f"
+                ]
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-17T08:42:00.270240781"
+        "timestamp": "2024-10-17T11:09:41.623493366"
     }
 }

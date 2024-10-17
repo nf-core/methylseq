@@ -1,4 +1,5 @@
 {bismark,bismark_hisat}/alignments/logs/*.txt
+{bismark,bismark_hisat,bwameth}/{alignments,deduplicated}/*.{bam,bam.bai}
 {bismark,bismark_hisat}/deduplicated/logs/*.txt
 {bismark,bismark_hisat}/{reports,summary}/*.{html,txt}
 bwameth/deduplicated/picard_metrics/*.txt

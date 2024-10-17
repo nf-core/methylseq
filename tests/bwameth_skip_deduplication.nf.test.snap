@@ -384,12 +384,15 @@
                 "genome_results.txt:md5,ed81b2fd10b2c548610d546b4e4d3b76",
                 "genome_results.txt:md5,92485f8ac205d7fa1140cdc293f07560",
                 "genome_results.txt:md5,478f711b8ef22e094e4d0ff7fa0dfda0"
+            ],
+            [
+                
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.2"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-12T07:46:17.32019848"
+        "timestamp": "2024-10-17T11:18:18.444989125"
     }
 }
