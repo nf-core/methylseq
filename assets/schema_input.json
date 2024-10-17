@@ -26,6 +26,13 @@
                 "exists": true,
                 "pattern": "^\\S+\\.f(ast)?q\\.gz$",
                 "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "genome": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^[a-zA-Z0-9._-]+$",
+                "errorMessage": "Invalid reference genome name"
             }
         },
         "required": ["sample", "fastq_1"]

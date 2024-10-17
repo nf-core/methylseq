@@ -72,7 +72,7 @@ workflow NFCORE_METHYLSEQ {
     )
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions               // channel: [version1, version2, ...]
+    versions       = ch_versions                  // channel: [version1, version2, ...]
 
 }
 /*
