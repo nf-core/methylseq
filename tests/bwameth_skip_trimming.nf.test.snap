@@ -332,18 +332,14 @@
                 "SRR389222_sub2.stats:md5,ce9216e71c0eb24371fb388429c59894",
                 "SRR389222_sub3.flagstat:md5,e3e925a7b7356e93d14f5e9e102c55b7",
                 "SRR389222_sub3.stats:md5,4f5336d853dfada24d9c34a754a7f0a8",
-                "Ecoli_10K_methylated.markdup.sorted.bam:md5,c772c00466c1362181943671072d30f7",
-                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,9dcd2985d535529572fccac8e3e2a4c3",
-                "SRR389222_sub1.markdup.sorted.bam:md5,95d0473e913215bf046229d67cf0f483",
+                "Ecoli_10K_methylated.markdup.sorted.bam:md5,564b1df5d417a8ff6a527493a947232e",
+                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,d70b93ed92a8d6b6e94e94da7f94a2b5",
+                "SRR389222_sub1.markdup.sorted.bam:md5,7dda5636eb9f958968084586c615350c",
                 "SRR389222_sub1.markdup.sorted.bam.bai:md5,9ec20dda17ee0441fee0598ec0e2152c",
-                "SRR389222_sub2.markdup.sorted.bam:md5,8ff3a44154163b532bf5bdd3db23d7ea",
+                "SRR389222_sub2.markdup.sorted.bam:md5,4defc9bec8f448bae317886c46e9b20f",
                 "SRR389222_sub2.markdup.sorted.bam.bai:md5,a28bf10da81b2c60b1c1e3442f7c4f91",
-                "SRR389222_sub3.markdup.sorted.bam:md5,2238f907ebd4e256ed24dc256537e7ff",
+                "SRR389222_sub3.markdup.sorted.bam:md5,232ae07541e5a56d67d8f5d7f957838d",
                 "SRR389222_sub3.markdup.sorted.bam.bai:md5,d0d753e223ea150d65cc3db9d1e8a001",
-                "Ecoli_10K_methylated.markdup.sorted.MarkDuplicates.metrics.txt:md5,e66fe9ff7e9d732714dfcb948f72f96b",
-                "SRR389222_sub1.markdup.sorted.MarkDuplicates.metrics.txt:md5,6371802e66ce16a4e9971d7e87568dda",
-                "SRR389222_sub2.markdup.sorted.MarkDuplicates.metrics.txt:md5,13886ef55e2ec63fb3f8831a1af569f9",
-                "SRR389222_sub3.markdup.sorted.MarkDuplicates.metrics.txt:md5,4f6bc3ffde6f362745db2f2cede0970e",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,b43c4c8ff346ae865b2b5db996650942",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -387,8 +383,8 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.2"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-12T07:47:59.144934043"
+        "timestamp": "2024-10-17T08:52:30.330060358"
     }
 }

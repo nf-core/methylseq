@@ -27,8 +27,11 @@ workflow BWAMETH {
      */
     BWAMETH_ALIGN (
         reads,
+        fasta,
         bwameth_index
     )
+    BWAMETH_ALIGN.out.bam.dump(tag: 'BWAMETH_ALIGN: bam')
+
     ch_versions = ch_versions.mix(BWAMETH_ALIGN.out.versions)
 
     /*
@@ -38,23 +41,29 @@ workflow BWAMETH {
         BWAMETH_ALIGN.out.bam,
         [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
+    SAMTOOLS_SORT.out.bam.dump(tag: 'BWAMETH/SAMTOOLS_SORT: bam')
+
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
      * Run samtools index on alignment
      */
     SAMTOOLS_INDEX_ALIGNMENTS (SAMTOOLS_SORT.out.bam)
+    SAMTOOLS_INDEX_ALIGNMENTS.out.bai.dump(tag: 'BWAMETH/SAMTOOLS_INDEX_ALIGNMENTS: bai')
+
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.versions)
 
     /*
      * Run samtools flagstat and samtools stats
      */
     SAMTOOLS_FLAGSTAT(BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai))
+    SAMTOOLS_FLAGSTAT.out.flagstat.dump(tag: 'BWAMETH/SAMTOOLS_FLAGSTAT: flagstat')
 
     SAMTOOLS_STATS(
         BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai),
         [[:],[]]
     )
+    SAMTOOLS_STATS.out.stats.dump(tag: 'BWAMETH/SAMTOOLS_STATS: flagstat')
 
     ch_versions = ch_versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
     ch_versions = ch_versions.mix(SAMTOOLS_STATS.out.versions)
@@ -70,9 +79,10 @@ workflow BWAMETH {
         */
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
-            fasta.map{ fasta -> [[:], fasta]},
+            fasta,
             fasta_index.map{ fasta_index -> [[:], fasta_index]},
         )
+        PICARD_MARKDUPLICATES.out.bam.dump(tag: 'BWAMETH/PICARD_MARKDUPLICATES: bam')
         /*
          * Run samtools index on deduplicated alignment
         */
@@ -92,15 +102,19 @@ workflow BWAMETH {
 
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
-        fasta,
+        fasta.map{ meta, fasta -> [fasta]},
         fasta_index
     )
+    METHYLDACKEL_EXTRACT.out.bedgraph.dump(tag: 'BWAMETH/METHYLDACKEL_EXTRACT: bedgraph')
+    METHYLDACKEL_EXTRACT.out.methylkit.dump(tag: 'BWAMETH/METHYLDACKEL_EXTRACT: methylkit')
 
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
-        fasta,
+        fasta.map{ meta, fasta -> [fasta]},
         fasta_index
     )
+    METHYLDACKEL_MBIAS.out.txt.dump(tag: 'BWAMETH/METHYLDACKEL_MBIAS: txt')
+
     ch_versions = ch_versions.mix(METHYLDACKEL_EXTRACT.out.versions)
     ch_versions = ch_versions.mix(METHYLDACKEL_MBIAS.out.versions)
 

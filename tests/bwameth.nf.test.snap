@@ -371,13 +371,13 @@
                 "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
                 "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
-                "Ecoli_10K_methylated.markdup.sorted.bam:md5,c95bdac2ba2f637a296af19f6dc6c68f",
-                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,516fdd85927d683abe432009d6444fb9",
-                "SRR389222_sub1.markdup.sorted.bam:md5,f6a777120edeaadc496d78cbcff05c59",
+                "Ecoli_10K_methylated.markdup.sorted.bam:md5,616c282fb1eb763eddf1e5adf7d117c6",
+                "Ecoli_10K_methylated.markdup.sorted.bam.bai:md5,277a8b084025e5f0dd5eecafbc11bf38",
+                "SRR389222_sub1.markdup.sorted.bam:md5,21c9c590c70393a142c2c148a9b9aa07",
                 "SRR389222_sub1.markdup.sorted.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-                "SRR389222_sub2.markdup.sorted.bam:md5,da28d3f4bca3382af5aab41b4078ca39",
+                "SRR389222_sub2.markdup.sorted.bam:md5,574040d14830925aaa6e67f9b0e7ead4",
                 "SRR389222_sub2.markdup.sorted.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-                "SRR389222_sub3.markdup.sorted.bam:md5,00ef46fc1fff515a3a2cfc3af4b2d918",
+                "SRR389222_sub3.markdup.sorted.bam:md5,caf031e76aff4f85d8ae652cb8285af5",
                 "SRR389222_sub3.markdup.sorted.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
@@ -426,9 +426,9 @@
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.04.2"
+            "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-12T07:38:43.774446002"
+        "timestamp": "2024-10-17T08:44:01.365191889"
     },
     "Params: bwameth with bwameth-index": {
         "content": [

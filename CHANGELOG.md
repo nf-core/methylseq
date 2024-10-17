@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## v2.7.0dev - [2024-10-11]
+## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-18]
 
 ### Bug fixes & refactoring
 
@@ -11,10 +11,11 @@
 - 🔄 Updated template to nf-core/tools v3.0.2 [#426](https://github.com/nf-core/methylseq/pull/426)
 - 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
 - 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
-- 🐛 fix missing type field in nextflow_schema.json #361 [#417](https://github.com/nf-core/methylseq/pull/417)
-- 🐛 fix samtools sort overwrites #328 [#414](https://github.com/nf-core/methylseq/pull/414)
-- 🐛 fix bwameth pipeline skipping all bwameth steps when --fasta, --fasta_index, and --bwa_meth_index are provided. #396 [#414](https://github.com/nf-core/methylseq/pull/414)
-- 🐛 fix typo in samplesheet in README and usage doc #391 [#414](https://github.com/nf-core/methylseq/pull/418)
+- 🐛 fix missing type field in nextflow_schema.json (issue-#361) [#417](https://github.com/nf-core/methylseq/pull/417)
+- 🐛 fix samtools sort overwrites (issue-#328) [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🐛 fix bwameth pipeline skipping all bwameth steps when --fasta, --fasta_index, and --bwa_meth_index are provided. (issue-#396) [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🐛 fix typo in samplesheet in README and usage doc (issue-#391) [#414](https://github.com/nf-core/methylseq/pull/418)
+- 🐛 stage fasta separately from the index folders for bismark & bwameth. Fixes issue with using a local copy of fasta (issue-#305) [#428](https://github.com/nf-core/methylseq/pull/428)
 
 ### Pipeline Updates
 
