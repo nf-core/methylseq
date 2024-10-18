@@ -28,6 +28,7 @@ include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_meth
 */
 params.fasta         = getGenomeAttribute('fasta')
 params.bismark_index = getGenomeAttribute('bismark')
+params.bwameth_index = getGenomeAttribute('bwameth')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

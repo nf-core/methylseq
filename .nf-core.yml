@@ -9,7 +9,7 @@ nf_core_version: 3.0.2
 org_path: null
 repository_type: pipeline
 template:
-  author: Phil Ewels
+  author: Phil Ewels, Sateesh Peri
   description: Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline,
     part of the nf-core community.
   force: false

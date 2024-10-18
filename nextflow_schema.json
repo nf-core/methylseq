@@ -614,11 +614,10 @@
             "$ref": "#/$defs/skip_pipeline_steps"
         },
         {
-            "$ref": "#/$defs/institutional_config_options"
+            "$ref": "#/$defs/generic_options"
         },
         {
-            "$ref": "#/$defs/generic_options"
+            "$ref": "#/$defs/institutional_config_options"
         }
-    ],
-    "properties": {}
+    ]
 }
