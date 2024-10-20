@@ -40,12 +40,12 @@ nextflow_workflow {
                             [ id:'test', single_end:true ],
                             file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
                 ])
-                input[1] = Channel.of([
+                input[1] = UNTAR.out.untar
+                input[2] = Channel.of([
                             [:],
                             file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true)
                 ])
-                input[2] = UNTAR.out.untar // bwameth_index
-                input[3] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true)) //fasta_index
+                input[3] = Channel.of(file(params.pipelines_testdata_base_path + 'reference/genome.fa.fai', checkIfExists: true))
                 input[4] = params.skip_deduplication
                 """
             }
