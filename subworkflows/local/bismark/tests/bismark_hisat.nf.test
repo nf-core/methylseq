@@ -1,6 +1,6 @@
 nextflow_workflow {
 
-    name "Test Workflow BISMARK_Hisat"
+    name "Test Workflow BISMARK_HISAT"
     script "../main.nf"
     workflow "BISMARK"
     config "../nextflow.config"
@@ -19,7 +19,7 @@ nextflow_workflow {
         }
     }
 
-    test("Bismark_Hisat: save_reference") {
+    test("Bismark_Hisat | save_reference") {
 
         when {
             params {
@@ -28,6 +28,7 @@ nextflow_workflow {
                 unmapped             = false
                 save_align_intermeds = false
                 skip_deduplication   = false
+                cytosine_report      = false
                 rrbs                 = false
                 nomeseq              = false
                 slamseq              = false
@@ -36,16 +37,18 @@ nextflow_workflow {
             }
             workflow {
                 """
-                skip_deduplication = false
-                cytosine_report    = false
 
                 input[0] = Channel.of([
                             [ id:'test', single_end:true ],
                             file(params.pipelines_testdata_base_path + 'testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
                 ])
-                input[1] = UNTAR.out.untar.map { it[1] }
-                input[2] = skip_deduplication
-                input[3] = cytosine_report
+                input[1] = Channel.of([
+                            [:],
+                            file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true)
+                ])
+                input[2] = UNTAR.out.untar
+                input[3] = params.skip_deduplication
+                input[4] = params.cytosine_report
                 """
             }
         }

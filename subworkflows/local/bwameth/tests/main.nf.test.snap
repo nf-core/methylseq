@@ -1,5 +1,5 @@
 {
-    "Bwameth: save_reference": {
+    "Bwameth | save_reference": {
         "content": [
             [
                 "37ec1c6338cc3fee7ab1cb2d48dba38"
@@ -22,6 +22,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-29T13:56:40.754742484"
+        "timestamp": "2024-10-20T11:20:46.384351185"
     }
 }
