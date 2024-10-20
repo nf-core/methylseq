@@ -14,8 +14,8 @@ include { METHYLDACKEL_MBIAS                            } from '../../../modules
 workflow BWAMETH {
     take:
     reads               // channel: [ val(meta), [ reads ] ]
-    bwameth_index       // channel: /path/to/bwa_index/
     fasta               // channel: /path/to/genome.fa
+    bwameth_index       // channel: /path/to/bwa_index/
     fasta_index         // channel: /path/to/genome.fa.fai
     skip_deduplication  // boolean: whether to deduplicate alignments
 

@@ -41,7 +41,7 @@ nextflow_workflow {
 
         when {
             params {
-                aligner          = "bismark_hisat2"
+                aligner          = "bismark_hisat"
                 publish_dir_mode = copy
                 save_reference   = false
                 slamseq          = false
