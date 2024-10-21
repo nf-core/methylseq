@@ -1,5 +1,5 @@
 {
-    "Bismark_Hisat: save_reference": {
+    "Bismark_Hisat | save_reference": {
         "content": [
             [
                 "3a6485d719fcaf868c7f95c8f10a3f3c"
@@ -8,20 +8,20 @@
                 "dae445da532c973dc9149f3ceba2d2c5"
             ],
             [
-                "versions.yml:md5,37c90312d5685ae87bcb080e0cab48de",
-                "versions.yml:md5,66f7b51aeee12e293634cb74fea2f091",
-                "versions.yml:md5,701e44c4be43ad049c16c7fc8686a21d",
-                "versions.yml:md5,75082556508926250285e70e1932fa74",
-                "versions.yml:md5,bff10f08bf0238c3303ef33749b7a93c",
+                "versions.yml:md5,2273d537ccb64f2260adeb6844523d73",
+                "versions.yml:md5,6a04613f312dd68246d992a7f6fa03a5",
                 "versions.yml:md5,c06f3e25000330e948f7a35708270f3f",
                 "versions.yml:md5,c2ad6c469b4d15c963f03b2228376a80",
-                "versions.yml:md5,cb4a7015750ef1e0e504c56acb72a799"
+                "versions.yml:md5,cb4a7015750ef1e0e504c56acb72a799",
+                "versions.yml:md5,cb8dda62996be2045f2ad33831c6b74c",
+                "versions.yml:md5,cd3f634936e8c40265e766e5f5d07f15",
+                "versions.yml:md5,cfb4c81c53e84715cbf50b702a84e457"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-29T14:19:18.719515297"
+        "timestamp": "2024-10-20T11:17:46.351442694"
     }
 }

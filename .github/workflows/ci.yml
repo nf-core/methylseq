@@ -104,7 +104,7 @@ jobs:
               --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
               --changed-since HEAD^ \
               --profile "+${{ matrix.profile }}" \
-              --filter pipeline
+              --filter pipeline,workflow
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3

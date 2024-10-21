@@ -1,5 +1,5 @@
 {
-    "Bwameth: save_reference": {
+    "Bwameth | save_reference": {
         "content": [
             [
                 "37ec1c6338cc3fee7ab1cb2d48dba38"
@@ -13,15 +13,15 @@
                 "versions.yml:md5,2b54b53cdedbbd547bc6bc3623dcc622",
                 "versions.yml:md5,38a8061118fdcb6215a31e60419df107",
                 "versions.yml:md5,5e8c932b160898dbcf29469f4ea6c978",
-                "versions.yml:md5,68051491abbd025bd108d86911c5bf00",
                 "versions.yml:md5,88592f164662fc6e5389899dbf472f53",
-                "versions.yml:md5,b935a799534fa7094fe81a723df04ecf"
+                "versions.yml:md5,b935a799534fa7094fe81a723df04ecf",
+                "versions.yml:md5,c3658cdda0f57c6d7f0c57e820921eb4"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-09-29T13:56:40.754742484"
+        "timestamp": "2024-10-21T18:23:18.006459111"
     }
 }

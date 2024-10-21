@@ -7,12 +7,12 @@
                 "nf-core": {
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "0755c617637d21b2c290b26d225debe3070aa109",
+                        "git_sha": "9c4438173b1fcbf3f9004080e3af74af19d5f56e",
                         "installed_by": ["modules"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "0755c617637d21b2c290b26d225debe3070aa109",
+                        "git_sha": "430bcb24e43dabcafb5174c955300730e5ad23f7",
                         "installed_by": ["modules"]
                     },
                     "bismark/deduplicate": {
@@ -22,7 +22,7 @@
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "0755c617637d21b2c290b26d225debe3070aa109",
+                        "git_sha": "3ab4739901f600a16ede0f491abfb6bf5d993cb2",
                         "installed_by": ["modules"]
                     },
                     "bismark/methylationextractor": {
@@ -42,17 +42,17 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "aa2f43221437b20cd204fb7ddbc7302fe859780f",
+                        "git_sha": "9c4438173b1fcbf3f9004080e3af74af19d5f56e",
                         "installed_by": ["modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "aa2f43221437b20cd204fb7ddbc7302fe859780f",
+                        "git_sha": "a716d10039f9728f2674f45c33a95b605851ea50",
                         "installed_by": ["modules"]
                     },
                     "cat/fastq": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "a1abf90966a2a4016d3c3e41e228bfcbd4811ccc",
                         "installed_by": ["modules"]
                     },
                     "fastqc": {
@@ -82,12 +82,12 @@
                     },
                     "picard/markduplicates": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "49f4e50534fe4b64101e62ea41d5dc43b1324358",
                         "installed_by": ["modules"]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "a1abf90966a2a4016d3c3e41e228bfcbd4811ccc",
                         "installed_by": ["modules"]
                     },
                     "qualimap/bamqc": {
@@ -127,7 +127,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "49f4e50534fe4b64101e62ea41d5dc43b1324358",
                         "installed_by": ["modules"]
                     },
                     "untar": {

@@ -5,7 +5,7 @@ nextflow_workflow {
     workflow "PREPARE_GENOME"
     config "../nextflow.config"
 
-    test("BISMARK - Generate Index") {
+    test("Generate Bismark Index (bowtie2)") {
 
         when {
             params {
@@ -37,7 +37,39 @@ nextflow_workflow {
 
     }
 
-    test("BWAMETH - Generate Index") {
+    test("Generate Bismark Index (hisat2)") {
+
+        when {
+            params {
+                aligner          = "bismark_hisat"
+                publish_dir_mode = copy
+                save_reference   = false
+                slamseq          = false
+            }
+            workflow {
+                """
+                input[0] = file(params.pipelines_testdata_base_path + 'reference/genome.fa', checkIfExists: true) // fasta
+                input[1] = [] // fasta_index
+                input[2] = [] // bismark_index
+                input[3] = [] // bwameth_index
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.out.fasta,
+                    workflow.out.bismark_index,
+                    workflow.out.versions
+                    ).match() }
+            )
+        }
+
+    }
+
+    test("Generate Bwameth Index") {
 
         when {
             params {
