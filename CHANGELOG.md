@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-18]
+## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-22]
 
 ### Bug fixes & refactoring
 
@@ -16,6 +16,7 @@
 - 🐛 fix bwameth pipeline skipping all bwameth steps when --fasta, --fasta_index, and --bwa_meth_index are provided. (issue-#396) [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🐛 fix typo in samplesheet in README and usage doc (issue-#391) [#414](https://github.com/nf-core/methylseq/pull/418)
 - 🐛 stage fasta separately from the index folders for bismark & bwameth. Fixes issue with using a local copy of fasta (issue-#305) [#428](https://github.com/nf-core/methylseq/pull/428)
+- 🐛 fix bismark, bwameth align modules + other module updates + update snaps [#432](https://github.com/nf-core/methylseq/pull/432)
 
 ### Pipeline Updates
 
