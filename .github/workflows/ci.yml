@@ -14,7 +14,7 @@ env:
   NFT_VER: "0.9.0"
   NFT_WORKDIR: "~"
   NFT_DIFF: "pdiff"
-  NFT_DIFF_ARGS: "--line-numbers --expand-tabs=2"
+  NFT_DIFF_ARGS: "--line-numbers --width 120 --expand-tabs=2"
   NXF_SINGULARITY_CACHEDIR: ${{ github.workspace }}/.singularity
   NXF_SINGULARITY_LIBRARYDIR: ${{ github.workspace }}/.singularity
 
@@ -35,6 +35,7 @@ jobs:
           - "24.04.2"
           - "latest-everything"
         shard: [1, 2, 3, 4, 5]
+        filter: [pipeline, workflow]
         profile:
           - "conda"
           - "docker"
@@ -49,6 +50,12 @@ jobs:
             profile: "conda"
           - isMaster: false
             profile: "singularity"
+          - profile: "conda"
+            nf_test_files: "tests/bwameth_save_reference_save_align_intermeds.nf.test"
+          - profile: "conda"
+            nf_test_files: "tests/bwameth_skip_trimming.nf.test"
+          - profile: "conda"
+            nf_test_files: "tests/bwameth_skip_deduplication.nf.test"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -104,7 +111,13 @@ jobs:
               --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
               --changed-since HEAD^ \
               --profile "+${{ matrix.profile }}" \
-              --filter pipeline,workflow
+              --filter ${{ matrix.filter }}
+
+      - name: Output log on failure
+        if: failure()
+        run: |
+          sudo apt install bat > /dev/null
+          batcat --decorations=always --color=always ${{ github.workspace }}/.nf-test/tests/*/meta/nextflow.log
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
