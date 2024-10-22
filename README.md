@@ -30,20 +30,20 @@ On release, automated continuous integration tests run the pipeline on a full-si
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
-| Step                                         | Bismark workflow | bwa-meth workflow     |
-| -------------------------------------------- | ---------------- | --------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
-| Merge re-sequenced FastQ files               | cat              | cat                   |
-| Raw data QC                                  | FastQC           | FastQC                |
-| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
-| Align Reads                                  | Bismark          | bwa-meth              |
-| Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
-| Extract methylation calls                    | Bismark          | MethylDackel          |
-| Sample report                                | Bismark          | -                     |
-| Summary Report                               | Bismark          | -                     |
-| Alignment QC                                 | Qualimap         | Qualimap              |
-| Sample complexity                            | Preseq           | Preseq                |
-| Project Report                               | MultiQC          | MultiQC               |
+| Step                                         | Bismark workflow         | bwa-meth workflow     |
+| -------------------------------------------- | ------------------------ | --------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              |
+| Merge re-sequenced FastQ files               | cat                      | cat                   |
+| Raw data QC                                  | FastQC                   | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          |
+| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              |
+| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates |
+| Extract methylation calls                    | Bismark                  | MethylDackel          |
+| Sample report                                | Bismark                  | -                     |
+| Summary Report                               | Bismark                  | -                     |
+| Alignment QC                                 | Qualimap                 | Qualimap              |
+| Sample complexity                            | Preseq                   | Preseq                |
+| Project Report                               | MultiQC                  | MultiQC               |
 
 ## Usage
 
