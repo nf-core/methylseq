@@ -35,7 +35,7 @@ jobs:
           - "24.04.2"
           - "latest-everything"
         shard: [1, 2, 3, 4, 5]
-        filter: [process, workflow]
+        filter: [pipeline, workflow]
         profile:
           - "conda"
           - "docker"
