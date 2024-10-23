@@ -27,6 +27,7 @@
 - 🔧 Removed `conf/modules.config` and introduce separate `nextflow.config` [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🔧 Added sub-workflow & pipeline level nf-tests [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🔧 Pipeline metro map added by @Shaun-Regenbaum , @FelixKrueger , @ewels [#438](https://github.com/nf-core/methylseq/pull/438)
+- 🔧 Add Bismark HISAT2 index to igenomes [#444](https://github.com/nf-core/methylseq/pull/444)
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
