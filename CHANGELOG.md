@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-22]
+## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-23]
 
 ### Bug fixes & refactoring
 
@@ -26,6 +26,7 @@
 - 🔧 Updated nf-core sub-workflows [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🔧 Removed `conf/modules.config` and introduce separate `nextflow.config` [#414](https://github.com/nf-core/methylseq/pull/414)
 - 🔧 Added sub-workflow & pipeline level nf-tests [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🔧 Pipeline metro map added by @Shaun-Regenbaum , @FelixKrueger , @ewels [#438](https://github.com/nf-core/methylseq/pull/438)
 
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
