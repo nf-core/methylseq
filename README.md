@@ -1,20 +1,27 @@
-# ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_light.png#gh-light-mode-only) ![nf-core/methylseq](docs/images/nf-core-methylseq_logo_dark.png#gh-dark-mode-only)
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/nf-core-methylseq_logo_dark.png">
+    <img alt="nf-core/methylseq" src="docs/images/nf-core-methylseq_logo_light.png">
+  </picture>
+</h1>
 
-[![GitHub Actions CI Status](https://github.com/nf-core/methylseq/workflows/nf-core%20CI/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+CI%22)
-[![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/workflows/nf-core%20linting/badge.svg)](https://github.com/nf-core/methylseq/actions?query=workflow%3A%22nf-core+linting%22)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/methylseq/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.1343417-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.1343417)
+[![GitHub Actions CI Status](https://github.com/nf-core/methylseq/actions/workflows/ci.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/ci.yml)
+[![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/methylseq/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.1343417-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.1343417)
+[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)
 
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.04.2-23aa62.svg)](https://www.nextflow.io/)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
-[![Launch on Nextflow Tower](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Nextflow%20Tower-%234256e7)](https://tower.nf/launch?pipeline=https://github.com/nf-core/methylseq)
-[![nf-test](https://img.shields.io/badge/tested_with-nf--test-337ab7.svg)](https://github.com/askimed/nf-test)
+[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/methylseq)
 
 [![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23methylseq-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/methylseq)[![Follow on Twitter](http://img.shields.io/badge/twitter-%40nf__core-1DA1F2?labelColor=000000&logo=twitter)](https://twitter.com/nf_core)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)
 
 ## Introduction
 
 **nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.
+
+![nf-core/methylseq metro map](docs/images/metromap.png)
 
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity containers making installation trivial and results highly reproducible.
 
@@ -23,22 +30,23 @@ On release, automated continuous integration tests run the pipeline on a full-si
 ## Pipeline Summary
 
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
+
 Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`.
 
-| Step                                         | Bismark workflow | bwa-meth workflow     |
-| -------------------------------------------- | ---------------- | --------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark          | bwa-meth              |
-| Merge re-sequenced FastQ files               | cat              | cat                   |
-| Raw data QC                                  | FastQC           | FastQC                |
-| Adapter sequence trimming                    | Trim Galore!     | Trim Galore!          |
-| Align Reads                                  | Bismark          | bwa-meth              |
-| Deduplicate Alignments                       | Bismark          | Picard MarkDuplicates |
-| Extract methylation calls                    | Bismark          | MethylDackel          |
-| Sample report                                | Bismark          | -                     |
-| Summary Report                               | Bismark          | -                     |
-| Alignment QC                                 | Qualimap         | Qualimap              |
-| Sample complexity                            | Preseq           | Preseq                |
-| Project Report                               | MultiQC          | MultiQC               |
+| Step                                         | Bismark workflow         | bwa-meth workflow     |
+| -------------------------------------------- | ------------------------ | --------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              |
+| Merge re-sequenced FastQ files               | cat                      | cat                   |
+| Raw data QC                                  | FastQC                   | FastQC                |
+| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          |
+| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              |
+| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates |
+| Extract methylation calls                    | Bismark                  | MethylDackel          |
+| Sample report                                | Bismark                  | -                     |
+| Summary Report                               | Bismark                  | -                     |
+| Alignment QC                                 | Qualimap                 | Qualimap              |
+| Sample complexity                            | Preseq                   | Preseq                |
+| Project Report                               | MultiQC                  | MultiQC               |
 
 ## Usage
 
@@ -50,11 +58,11 @@ First, prepare a samplesheet with your input data that looks as follows:
 `samplesheet.csv`:
 
 ```csv
-sample,fastq_1,fastq_2
-SRR389222_sub1,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz
-SRR389222_sub2,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub2.fastq.gz
-SRR389222_sub2,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub3.fastq.gz
-Ecoli_10K_methylated,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R1.fastq.gz,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R2.fastq.gz
+sample,fastq_1,fastq_2,genome
+SRR389222_sub1,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz,,
+SRR389222_sub2,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub2.fastq.gz,,
+SRR389222_sub3,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub3.fastq.gz,,
+Ecoli_10K_methylated,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R1.fastq.gz,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R2.fastq.gz,
 ```
 
 Each row represents a fastq file (single-end) or a pair of fastq files (paired end).
@@ -66,8 +74,7 @@ nextflow run nf-core/methylseq --input samplesheet.csv --outdir <OUTDIR> --genom
 ```
 
 > [!WARNING]
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
-> see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).
 
 For more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/usage) and the [parameter documentation](https://nf-co.re/methylseq/parameters).
 
@@ -91,6 +98,7 @@ These scripts were originally written for use at the [National Genomics Infrastr
   - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
   - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
   - Patrick Hüther ([@phue](https://github.com/phue/))
+  - Maxime U Garcia ([@maxulysse](https://github.com/maxulysse/))
 
 ## Contributions and Support
 
