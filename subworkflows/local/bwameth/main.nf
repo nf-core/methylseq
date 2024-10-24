@@ -102,7 +102,7 @@ workflow BWAMETH {
 
     METHYLDACKEL_EXTRACT(
         alignments.join(bam_index),
-        fasta.map{ meta, fasta -> [fasta]},
+        fasta.map{ meta, fasta_file -> [fasta_file]},
         fasta_index
     )
     METHYLDACKEL_EXTRACT.out.bedgraph.dump(tag: 'BWAMETH/METHYLDACKEL_EXTRACT: bedgraph')
@@ -110,7 +110,7 @@ workflow BWAMETH {
 
     METHYLDACKEL_MBIAS(
         alignments.join(bam_index),
-        fasta.map{ meta, fasta -> [fasta]},
+        fasta.map{ meta, fasta_file -> [fasta_file]},
         fasta_index
     )
     METHYLDACKEL_MBIAS.out.txt.dump(tag: 'BWAMETH/METHYLDACKEL_MBIAS: txt')

@@ -16,15 +16,8 @@ include { paramsSummaryMultiqc     } from '../../subworkflows/nf-core/utils_nfco
 include { softwareVersionsToYAML   } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-
-// Aligner: bismark or bismark_hisat
-if( params.aligner =~ /bismark/ ){
-    include { BISMARK } from '../../subworkflows/local/bismark/'
-}
-// Aligner: bwameth
-else if ( params.aligner == 'bwameth' ){
-    include { BWAMETH } from '../../subworkflows/local/bwameth'
-}
+include { BISMARK                  } from '../../subworkflows/local/bismark/'
+include { BWAMETH                  } from '../../subworkflows/local/bwameth'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
