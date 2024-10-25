@@ -17,5 +17,5 @@ template:
   org: nf-core
   outdir: .
   skip_features:
-  version: 2.8.0dev
+  version: 2.7.1
 update:
