@@ -1,4 +1,3 @@
-bump_version:
 lint:
   actions_ci: false
   files_exist:
