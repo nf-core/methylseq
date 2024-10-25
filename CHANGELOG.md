@@ -1,5 +1,34 @@
 # nf-core/methylseq
 
+## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-25]
+
+### Bug fixes & refactoring
+
+- 🔄 Updated template to nf-core/tools v2.12 [#377](https://github.com/nf-core/methylseq/pull/377)
+- 🔄 Updated template to nf-core/tools v2.13 [#380](https://github.com/nf-core/methylseq/pull/380)
+- 🔄 Updated template to nf-core/tools v2.13.1 [#384](https://github.com/nf-core/methylseq/pull/384)
+- 🔄 Updated template to nf-core/tools v2.14.1 [#399](https://github.com/nf-core/methylseq/pull/399)
+- 🔄 Updated template to nf-core/tools v3.0.2 [#426](https://github.com/nf-core/methylseq/pull/426)
+- 🐛 fix sample/replicate merge [#401](https://github.com/nf-core/methylseq/pull/401)
+- 🐛 fix fasta reference usage [#403](https://github.com/nf-core/methylseq/pull/403)
+- 🐛 fix missing type field in nextflow_schema.json (issue-#361) [#417](https://github.com/nf-core/methylseq/pull/417)
+- 🐛 fix samtools sort overwrites (issue-#328) [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🐛 fix bwameth pipeline skipping all bwameth steps when --fasta, --fasta_index, and --bwa_meth_index are provided. (issue-#396) [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🐛 fix typo in samplesheet in README and usage doc (issue-#391) [#414](https://github.com/nf-core/methylseq/pull/418)
+- 🐛 stage fasta separately from the index folders for bismark & bwameth. Fixes issue with using a local copy of fasta (issue-#305) [#428](https://github.com/nf-core/methylseq/pull/428)
+- 🐛 fix bismark, bwameth align modules + other module updates + update snaps [#432](https://github.com/nf-core/methylseq/pull/432)
+
+### Pipeline Updates
+
+- 🔧 Updated nf-core modules for preseq [#390](https://github.com/nf-core/methylseq/pull/390)
+- 🔧 Added new trimgalore length_trim param [#416](https://github.com/nf-core/methylseq/pull/416)
+- 🔧 Updated nf-core modules [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🔧 Updated nf-core sub-workflows [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🔧 Removed `conf/modules.config` and introduce separate `nextflow.config` [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🔧 Added sub-workflow & pipeline level nf-tests [#414](https://github.com/nf-core/methylseq/pull/414)
+- 🔧 Pipeline metro map added by @Shaun-Regenbaum , @FelixKrueger , @ewels [#438](https://github.com/nf-core/methylseq/pull/438)
+- 🔧 Add Bismark HISAT2 index to igenomes [#444](https://github.com/nf-core/methylseq/pull/444)
+
 ## [v2.6.0](https://github.com/nf-core/methylseq/releases/tag/2.6.0) - 2024-01-05
 
 ### Bug fixes & refactoring

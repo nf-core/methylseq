@@ -1,0 +1,27 @@
+{
+    "Bismark | save_reference": {
+        "content": [
+            [
+                "d6951f6d3381e22becf62553a37c0f3f"
+            ],
+            [
+                "35d55bee1ca653931716e40dac4aba30"
+            ],
+            [
+                "versions.yml:md5,2273d537ccb64f2260adeb6844523d73",
+                "versions.yml:md5,6a04613f312dd68246d992a7f6fa03a5",
+                "versions.yml:md5,c06f3e25000330e948f7a35708270f3f",
+                "versions.yml:md5,c2ad6c469b4d15c963f03b2228376a80",
+                "versions.yml:md5,cb4a7015750ef1e0e504c56acb72a799",
+                "versions.yml:md5,cb8dda62996be2045f2ad33831c6b74c",
+                "versions.yml:md5,cd3f634936e8c40265e766e5f5d07f15",
+                "versions.yml:md5,cfb4c81c53e84715cbf50b702a84e457"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.04.4"
+        },
+        "timestamp": "2024-10-20T11:14:29.732866935"
+    }
+}
