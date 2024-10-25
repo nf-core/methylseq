@@ -1,4 +1,4 @@
-bump_version: null
+bump_version:
 lint:
   actions_ci: false
   files_exist:
@@ -6,7 +6,7 @@ lint:
     - conf/modules.config
   modules_config: false
 nf_core_version: 3.0.2
-org_path: null
+org_path:
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
@@ -17,6 +17,6 @@ template:
   name: methylseq
   org: nf-core
   outdir: .
-  skip_features: null
-  version: 2.7.0
-update: null
+  skip_features:
+  version: 2.8.0dev
+update:

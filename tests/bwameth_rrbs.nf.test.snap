@@ -20,7 +20,7 @@
                     "cutadapt": 4.2
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.7.0"
+                    "nf-core/methylseq": "v2.8.0dev"
                 }
             },
             [
@@ -386,7 +386,7 @@
                 "genome_results.txt:md5,58d212848ac7b7650e3bd6812a4064af"
             ],
             [
-                
+
             ]
         ],
         "meta": {
