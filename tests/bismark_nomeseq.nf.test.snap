@@ -17,10 +17,10 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
-                    "cutadapt": 4.2
+                    "cutadapt": 4.9
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.8.0dev"
+                    "nf-core/methylseq": "v2.7.1"
                 }
             },
             [
@@ -41,20 +41,6 @@
                 "bismark/coverage2cytosine/coverage/SRR389222_sub2.NOMe.GpC.cov.gz",
                 "bismark/coverage2cytosine/coverage/SRR389222_sub3.NOMe.CpG.cov.gz",
                 "bismark/coverage2cytosine/coverage/SRR389222_sub3.NOMe.GpC.cov.gz",
-                "bismark/coverage2cytosine/reports",
-                "bismark/coverage2cytosine/reports/Ecoli_10K_methylated.NOMe.CpG_report.txt.gz",
-                "bismark/coverage2cytosine/reports/Ecoli_10K_methylated.NOMe.GpC_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub1.NOMe.CpG_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub1.NOMe.GpC_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub2.NOMe.CpG_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub2.NOMe.GpC_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub3.NOMe.CpG_report.txt.gz",
-                "bismark/coverage2cytosine/reports/SRR389222_sub3.NOMe.GpC_report.txt.gz",
-                "bismark/coverage2cytosine/summaries",
-                "bismark/coverage2cytosine/summaries/Ecoli_10K_methylated.cytosine_context_summary.txt",
-                "bismark/coverage2cytosine/summaries/SRR389222_sub1.cytosine_context_summary.txt",
-                "bismark/coverage2cytosine/summaries/SRR389222_sub2.cytosine_context_summary.txt",
-                "bismark/coverage2cytosine/summaries/SRR389222_sub3.cytosine_context_summary.txt",
                 "bismark/deduplicated",
                 "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam",
                 "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam.bai",
@@ -507,18 +493,6 @@
                 "SRR389222_sub2.NOMe.GpC.cov.gz:md5,10837f6099f63dc4aae2895d821a582e",
                 "SRR389222_sub3.NOMe.CpG.cov.gz:md5,85098361910f7398528dcbb0e46a7561",
                 "SRR389222_sub3.NOMe.GpC.cov.gz:md5,8005a9dad4d0f5562a3c7cf215a18908",
-                "Ecoli_10K_methylated.NOMe.CpG_report.txt.gz:md5,f766e73a44789a40dffce322ec599007",
-                "Ecoli_10K_methylated.NOMe.GpC_report.txt.gz:md5,a8126d4d596cfb6e696cdb808451840c",
-                "SRR389222_sub1.NOMe.CpG_report.txt.gz:md5,731e940264ca803ca48842a1fc9402ad",
-                "SRR389222_sub1.NOMe.GpC_report.txt.gz:md5,96c3f1c2f3d334baafb55f0805eaf52c",
-                "SRR389222_sub2.NOMe.CpG_report.txt.gz:md5,2ec3a32d0e8239ba50c079e1519aaf00",
-                "SRR389222_sub2.NOMe.GpC_report.txt.gz:md5,bcde6f7e90831604368ae6430e5695f0",
-                "SRR389222_sub3.NOMe.CpG_report.txt.gz:md5,f9793efc46ecdf413a84338e9f9f42dd",
-                "SRR389222_sub3.NOMe.GpC_report.txt.gz:md5,e4ab9e9c4d4ea2fe3ca2378f3802f6f6",
-                "Ecoli_10K_methylated.cytosine_context_summary.txt:md5,482eac2bc68ca28545bab71c0c414c3a",
-                "SRR389222_sub1.cytosine_context_summary.txt:md5,1d4c33ccf5e249907ca2ba50a37c7697",
-                "SRR389222_sub2.cytosine_context_summary.txt:md5,8f7684582aa75b24197866138e6d1a4c",
-                "SRR389222_sub3.cytosine_context_summary.txt:md5,7ba71718c6556e8b3019e1704948d562",
                 "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,88e599178b08907aab7d248302b7d37e",
                 "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,ccf9537924fa4aa1db2f4462d2b9bc8e",
                 "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,c352886f5d59592bc679843548ca5eef",
@@ -587,7 +561,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,825f57cdf45203406e583beb495afccc",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
-                "multiqc_cutadapt.txt:md5,f7a61369244b1e040d264e6913b8a839",
+                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "qualimap_coverage_histogram.txt:md5,7cd194077fe839edf034b44cc73dd024",
                 "qualimap_gc_content.txt:md5,4f6ec70d9fb71ffe5f2f99f44fe5ef0c",
                 "qualimap_genome_fraction.txt:md5,3e528946a376ae752b57adaaa73f5cdf",
@@ -617,9 +591,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
+            "nf-test": "0.9.1",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-21T17:50:56.499718354"
+        "timestamp": "2024-10-25T14:33:03.212223004"
     }
 }

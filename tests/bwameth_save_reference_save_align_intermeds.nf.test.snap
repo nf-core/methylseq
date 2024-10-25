@@ -17,10 +17,10 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
-                    "cutadapt": 4.2
+                    "cutadapt": 4.9
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.8.0dev"
+                    "nf-core/methylseq": "v2.7.1"
                 }
             },
             [
@@ -420,7 +420,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,581df5b266851d0244e7cfb213351ffb",
-                "multiqc_cutadapt.txt:md5,f7a61369244b1e040d264e6913b8a839",
+                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,e24271a8111b06c1f545b6b1a077a4a7",
@@ -493,9 +493,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
+            "nf-test": "0.9.1",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-21T18:01:53.259560408"
+        "timestamp": "2024-10-25T14:44:54.756005023"
     }
 }
