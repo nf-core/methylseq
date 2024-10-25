@@ -1,5 +1,11 @@
 # nf-core/methylseq
 
+## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
+
+### Bug fixes & refactoring
+
+### Pipeline Updates
+
 ## [v2.7.0](https://github.com/nf-core/methylseq/releases/tag/2.7.0) - [2024-10-25]
 
 ### Bug fixes & refactoring
