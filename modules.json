@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "9c4438173b1fcbf3f9004080e3af74af19d5f56e",
+                        "git_sha": "dfd89399e3c6e2422c4cdcf0aaa8cf2393dc51c9",
                         "installed_by": ["modules"]
                     },
                     "bismark/coverage2cytosine": {
@@ -37,12 +37,12 @@
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "0755c617637d21b2c290b26d225debe3070aa109",
+                        "git_sha": "dfd89399e3c6e2422c4cdcf0aaa8cf2393dc51c9",
                         "installed_by": ["modules"]
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "9c4438173b1fcbf3f9004080e3af74af19d5f56e",
+                        "git_sha": "dfd89399e3c6e2422c4cdcf0aaa8cf2393dc51c9",
                         "installed_by": ["modules"]
                     },
                     "bwameth/index": {
@@ -127,7 +127,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "49f4e50534fe4b64101e62ea41d5dc43b1324358",
+                        "git_sha": "8c5eeedd45e295fc9a4f164631da6a8b37e6b9c6",
                         "installed_by": ["modules"]
                     },
                     "untar": {

@@ -17,10 +17,10 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
-                    "cutadapt": 4.2
+                    "cutadapt": 4.9
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.8.0dev"
+                    "nf-core/methylseq": "v2.7.1"
                 }
             },
             [
@@ -541,7 +541,7 @@
                 "multiqc_bismark_dedup.txt:md5,16e464f5bf2f1851a571ec87cbc1a0d9",
                 "multiqc_bismark_methextract.txt:md5,ef3c68247a6254ae5e11e26052e3229e",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
-                "multiqc_cutadapt.txt:md5,f7a61369244b1e040d264e6913b8a839",
+                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "qualimap_coverage_histogram.txt:md5,7d321d1eb204be4c3661364cf928c3e3",
                 "qualimap_gc_content.txt:md5,d914dc3ae413deb1db307910d9907ea9",
                 "qualimap_genome_fraction.txt:md5,2f6d7ae8cfdafc69358ce6a6800bef54",
@@ -571,9 +571,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
+            "nf-test": "0.9.1",
             "nextflow": "24.04.4"
         },
-        "timestamp": "2024-10-21T17:43:14.505236122"
+        "timestamp": "2024-10-25T14:26:16.42655233"
     }
 }

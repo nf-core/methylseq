@@ -1,8 +1,11 @@
 # nf-core/methylseq
 
-## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
+## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
 ### Bug fixes & refactoring
+
+- 🐛 fix fasta symlink in bismark & bwameth align modules [#448](https://github.com/nf-core/methylseq/pull/448)
+- 🐛 apply few new vscode nextflow extension [#448](https://github.com/nf-core/methylseq/pull/448)
 
 ### Pipeline Updates
 
