@@ -5,7 +5,6 @@
 ### Bug fixes & refactoring
 
 - 🐛 fix fasta symlink in bismark & bwameth align modules [#448](https://github.com/nf-core/methylseq/pull/448)
-- 🐛 apply few new vscode nextflow extension [#448](https://github.com/nf-core/methylseq/pull/448)
 
 ### Pipeline Updates
 
