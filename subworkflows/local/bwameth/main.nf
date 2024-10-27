@@ -2,6 +2,7 @@
  * bwameth subworkflow
  */
 include { BWAMETH_ALIGN                                 } from '../../../modules/nf-core/bwameth/align/main'
+include { PARABRICKS_FQ2BAMMETH                         } from '../../../modules/nf-core/parabricks/fq2bammeth/main'
 include { SAMTOOLS_SORT                                 } from '../../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../../modules/nf-core/samtools/index/main'
 include { SAMTOOLS_FLAGSTAT                             } from '../../../modules/nf-core/samtools/flagstat/main'
@@ -25,14 +26,25 @@ workflow BWAMETH {
     /*
      * Align with bwameth
      */
-    BWAMETH_ALIGN (
-        reads,
-        fasta,
-        bwameth_index
-    )
-    BWAMETH_ALIGN.out.bam.dump(tag: 'BWAMETH_ALIGN: bam')
+    if (params.use_gpu) {
+        FQ2BAMMETH (
+            reads,
+            fasta,
+            bwameth_index
+        )
+        FQ2BAMMETH.out.bam.dump(tag: 'PARABRICKS_FQ2BAMMETH: bam')
 
-    ch_versions = ch_versions.mix(BWAMETH_ALIGN.out.versions)
+        ch_versions = ch_versions.mix(FQ2BAMMETH.out.versions)
+    } else {
+        BWAMETH_ALIGN (
+            reads,
+            fasta,
+            bwameth_index
+        )
+        BWAMETH_ALIGN.out.bam.dump(tag: 'BWAMETH_ALIGN: bam')
+
+        ch_versions = ch_versions.mix(BWAMETH_ALIGN.out.versions)
+    }
 
     /*
      * Sort raw output BAM
