@@ -16,7 +16,7 @@
                     "qualimap": 2.3
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.7.0"
+                    "nf-core/methylseq": "v2.7.1"
                 }
             },
             [

@@ -80,7 +80,7 @@ workflow BWAMETH {
         PICARD_MARKDUPLICATES (
             SAMTOOLS_SORT.out.bam,
             fasta,
-            fasta_index.map{ fasta_index -> [[:], fasta_index]},
+            fasta_index.map{ index -> [[:], index]},
         )
         PICARD_MARKDUPLICATES.out.bam.dump(tag: 'BWAMETH/PICARD_MARKDUPLICATES: bam')
         /*
