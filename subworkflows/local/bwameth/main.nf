@@ -33,6 +33,7 @@ workflow BWAMETH {
             bwameth_index,
             []
         )
+        ch_align = PARABRICKS_FQ2BAMMETH.out.bam
         PARABRICKS_FQ2BAMMETH.out.bam.dump(tag: 'PARABRICKS_FQ2BAMMETH: bam')
 
         ch_versions = ch_versions.mix(PARABRICKS_FQ2BAMMETH.out.versions)
@@ -42,6 +43,7 @@ workflow BWAMETH {
             fasta,
             bwameth_index
         )
+        ch_align = BWAMETH_ALIGN.out.bam
         BWAMETH_ALIGN.out.bam.dump(tag: 'BWAMETH_ALIGN: bam')
 
         ch_versions = ch_versions.mix(BWAMETH_ALIGN.out.versions)
@@ -51,7 +53,7 @@ workflow BWAMETH {
      * Sort raw output BAM
      */
     SAMTOOLS_SORT (
-        BWAMETH_ALIGN.out.bam,
+        ch_align,
         [[:],[]] // Empty map and list as is optional input but required for nextflow
     )
     SAMTOOLS_SORT.out.bam.dump(tag: 'BWAMETH/SAMTOOLS_SORT: bam')
@@ -69,11 +71,11 @@ workflow BWAMETH {
     /*
      * Run samtools flagstat and samtools stats
      */
-    SAMTOOLS_FLAGSTAT(BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai))
+    SAMTOOLS_FLAGSTAT(ch_align.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai))
     SAMTOOLS_FLAGSTAT.out.flagstat.dump(tag: 'BWAMETH/SAMTOOLS_FLAGSTAT: flagstat')
 
     SAMTOOLS_STATS(
-        BWAMETH_ALIGN.out.bam.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai),
+        ch_align.join(SAMTOOLS_INDEX_ALIGNMENTS.out.bai),
         [[:],[]]
     )
     SAMTOOLS_STATS.out.stats.dump(tag: 'BWAMETH/SAMTOOLS_STATS: flagstat')

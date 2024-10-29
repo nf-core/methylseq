@@ -397,6 +397,12 @@
                     "description": "Save files for use with methylKit",
                     "help_text": "Run MethylDackel with the `--methyl_kit` option, to produce files suitable for use with the methylKit R package.",
                     "fa_icon": "fas fa-ellipsis-h"
+                },
+                "use_gpu": {
+                    "type": "boolean",
+                    "description": "Use parabricks fq2bammeth GPU module for alignment",
+                    "help_text": "Run bwa-meth with the `--use_gpu` option, to use the parabricks fq2bammeth module for alignment",
+                    "fa_icon": "fas fa-eye-slash"
                 }
             },
             "fa_icon": "far fa-circle"
