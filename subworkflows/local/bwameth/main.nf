@@ -27,14 +27,15 @@ workflow BWAMETH {
      * Align with bwameth
      */
     if (params.use_gpu) {
-        FQ2BAMMETH (
+        PARABRICKS_FQ2BAMMETH (
             reads,
             fasta,
-            bwameth_index
+            bwameth_index,
+            []
         )
-        FQ2BAMMETH.out.bam.dump(tag: 'PARABRICKS_FQ2BAMMETH: bam')
+        PARABRICKS_FQ2BAMMETH.out.bam.dump(tag: 'PARABRICKS_FQ2BAMMETH: bam')
 
-        ch_versions = ch_versions.mix(FQ2BAMMETH.out.versions)
+        ch_versions = ch_versions.mix(PARABRICKS_FQ2BAMMETH.out.versions)
     } else {
         BWAMETH_ALIGN (
             reads,
