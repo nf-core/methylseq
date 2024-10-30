@@ -82,7 +82,7 @@
                     },
                     "parabricks/fq2bammeth": {
                         "branch": "master",
-                        "git_sha": "567c24fe09b5b8c89c6c2602cf87cc712451cec3",
+                        "git_sha": "21a84fbbaa559b64892b7cff687139effffa8222",
                         "installed_by": ["modules"]
                     },
                     "picard/markduplicates": {

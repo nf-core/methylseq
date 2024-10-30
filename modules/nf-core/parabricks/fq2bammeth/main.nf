@@ -35,7 +35,6 @@ process PARABRICKS_FQ2BAMMETH {
     def num_gpus = task.accelerator ? "--num-gpus $task.accelerator.request" : ''
     """
     ln -sf \$(readlink $fasta) $index/$fasta
-
     pbrun \\
         fq2bam_meth \\
         --ref $index/$fasta \\
@@ -45,7 +44,6 @@ process PARABRICKS_FQ2BAMMETH {
         $known_sites_output \\
         $num_gpus \\
         $args
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         pbrun: \$(echo \$(pbrun version 2>&1) | sed 's/^Please.* //' )
@@ -62,7 +60,6 @@ process PARABRICKS_FQ2BAMMETH {
     """
     touch ${prefix}.bam
     touch ${prefix}.bam.bai
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         pbrun: \$(echo \$(pbrun version 2>&1) | sed 's/^Please.* //' )
