@@ -4,7 +4,7 @@
 
 ### Bug fixes & refactoring
 
-- 🐛 fix fasta gunzip output [](https://github.com/nf-core/methylseq/pull/)
+- 🐛 fix fasta gunzip output [#457](https://github.com/nf-core/methylseq/pull/457)
 
 ### Pipeline Updates
 
