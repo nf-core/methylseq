@@ -1,5 +1,13 @@
 # nf-core/methylseq
 
+## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
+
+### Bug fixes & refactoring
+
+- 🐛 fix fasta gunzip output [](https://github.com/nf-core/methylseq/pull/)
+
+### Pipeline Updates
+
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
 ### Bug fixes & refactoring
