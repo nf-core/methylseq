@@ -24,7 +24,10 @@ workflow PREPARE_GENOME {
 
     // FASTA, if supplied
     if (fasta.endsWith('.gz')) {
-        ch_fasta    = GUNZIP ([ [:], file(fasta, checkIfExists: true) ]).gunzip.map { it[1] }
+        GUNZIP (
+            [ [:], file(fasta, checkIfExists: true) ]
+        )
+        ch_fasta    = GUNZIP.out.gunzip
         ch_versions = ch_versions.mix(GUNZIP.out.versions)
     } else {
         ch_fasta    = Channel.value([[:], file(fasta, checkIfExists: true)])
