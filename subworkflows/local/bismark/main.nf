@@ -14,7 +14,6 @@ include { BISMARK_SUMMARY                               } from '../../../modules
 workflow BISMARK {
     take:
     reads              // channel: [ val(meta), [ reads ] ]
-    fasta              // channel: /path/to/genome.fasta
     bismark_index      // channel: /path/to/BismarkIndex/
     skip_deduplication // boolean: whether to deduplicate alignments
     cytosine_report    // boolean: whether the run coverage2cytosine
@@ -27,7 +26,6 @@ workflow BISMARK {
      */
     BISMARK_ALIGN (
         reads,
-        fasta,
         bismark_index
     )
     BISMARK_ALIGN.out.bam.dump(tag: 'BISMARK_ALIGN: bam')
@@ -84,7 +82,6 @@ workflow BISMARK {
     if (cytosine_report) {
         BISMARK_COVERAGE2CYTOSINE (
             BISMARK_METHYLATIONEXTRACTOR.out.coverage,
-            fasta,
             bismark_index
         )
         BISMARK_COVERAGE2CYTOSINE.out.report.dump(tag: 'BISMARK_COVERAGE2CYTOSINE: report')

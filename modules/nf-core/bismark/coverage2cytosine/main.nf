@@ -9,7 +9,6 @@ process BISMARK_COVERAGE2CYTOSINE {
 
     input:
     tuple val(meta), path(coverage_file)
-    tuple val(meta2), path(fasta)
     tuple val(meta3), path(index)
 
     output:
@@ -25,10 +24,6 @@ process BISMARK_COVERAGE2CYTOSINE {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    if [ ! -f $index/$fasta ]; then
-        ln -s \$(readlink $fasta) $index/$fasta;
-    fi
-
     coverage2cytosine \\
         $coverage_file \\
         --genome $index \\

@@ -9,7 +9,6 @@ process BISMARK_ALIGN {
 
     input:
     tuple val(meta), path(reads)
-    tuple val(meta2), path(fasta)
     tuple val(meta3), path(index)
 
     output:
@@ -56,7 +55,6 @@ process BISMARK_ALIGN {
         }
     }
     """
-    ln -sf \$(readlink $fasta) $index/$fasta
 
     bismark \\
         $fastq \\
