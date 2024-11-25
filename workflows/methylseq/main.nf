@@ -89,6 +89,7 @@ workflow METHYLSEQ {
         //
         BISMARK (
             reads,
+            ch_fasta,
             ch_bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq

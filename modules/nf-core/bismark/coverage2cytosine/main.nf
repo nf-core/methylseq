@@ -9,6 +9,7 @@ process BISMARK_COVERAGE2CYTOSINE {
 
     input:
     tuple val(meta), path(coverage_file)
+    tuple val(meta2), path(fasta, stageAs:'tmp/*')
     tuple val(meta3), path(index)
 
     output:
