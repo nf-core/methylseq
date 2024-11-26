@@ -1,7 +1,7 @@
 {
     "Params: bismark | skip_trimming": {
         "content": [
-            39,
+            40,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -11,6 +11,9 @@
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.1
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
@@ -107,6 +110,8 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
+                "gunzip",
+                "gunzip/genome.fa",
                 "multiqc",
                 "multiqc/bismark",
                 "multiqc/bismark/multiqc_data",
@@ -476,6 +481,7 @@
                 "SRR389222_sub1_bismark_bt2.deduplicated_splitting_report.txt:md5,ec268cc572b8bcfea0959b47c7510f05",
                 "SRR389222_sub2_bismark_bt2.deduplicated_splitting_report.txt:md5,ac550001718e22218294a6c16fa3cec4",
                 "SRR389222_sub3_bismark_bt2.deduplicated_splitting_report.txt:md5,c015374e9b11c9eb7cb1359cb437f7be",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "bismark-methylation-dp.txt:md5,475ce6b3c6f53158847d554ef22993db",
                 "bismark_alignment.txt:md5,7d00ed2e752ebf0ee7baedc206c6572b",
                 "bismark_deduplication.txt:md5,e319d929f7d2e163bafba0a48dda554e",
@@ -530,9 +536,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.1"
         },
-        "timestamp": "2024-10-17T11:09:41.623493366"
+        "timestamp": "2024-11-26T05:37:44.553089799"
     }
 }
