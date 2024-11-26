@@ -1,5 +1,14 @@
 # nf-core/methylseq
 
+## [v2.7.2](https://github.com/nf-core/methylseq/releases/tag/2.7.2) - []
+
+### Bug fixes & refactoring
+
+- 🐛 fix fasta gunzip output [#457](https://github.com/nf-core/methylseq/pull/457)
+- 🐛 fix bismark/align not resuming from cache [#461](https://github.com/nf-core/methylseq/pull/457)
+
+### Pipeline Updates
+
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
 ### Bug fixes & refactoring

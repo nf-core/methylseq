@@ -1,7 +1,7 @@
 {
     "Params: bismark | save_reference | save_align_intermeds": {
         "content": [
-            43,
+            44,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -11,6 +11,9 @@
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.1
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
@@ -118,6 +121,7 @@
                 "bismark/reference_genome/BismarkIndex/Bisulfite_Genome/GA_conversion/BS_GA.rev.1.bt2",
                 "bismark/reference_genome/BismarkIndex/Bisulfite_Genome/GA_conversion/BS_GA.rev.2.bt2",
                 "bismark/reference_genome/BismarkIndex/Bisulfite_Genome/GA_conversion/genome_mfa.GA_conversion.fa",
+                "bismark/reference_genome/BismarkIndex/genome.fa",
                 "bismark/reports",
                 "bismark/reports/Ecoli_10K_methylated_1_val_1_bismark_bt2_PE_report.html",
                 "bismark/reports/SRR389222_sub1_trimmed_bismark_bt2_SE_report.html",
@@ -138,6 +142,8 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
+                "gunzip",
+                "gunzip/genome.fa",
                 "multiqc",
                 "multiqc/bismark",
                 "multiqc/bismark/multiqc_data",
@@ -556,6 +562,8 @@
                 "BS_GA.rev.1.bt2:md5,dabf2d6f80ba7e8fc96dfdc203f6bbfd",
                 "BS_GA.rev.2.bt2:md5,fac2f8b39b0e15dec7aa79a0ecf12b49",
                 "genome_mfa.GA_conversion.fa:md5,3dee732bc344fd620c3a7322f52c6a5f",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "bismark-methylation-dp.txt:md5,dcbe642c42e31d8e480a2e46b97bbd45",
                 "bismark_alignment.txt:md5,544a74ea0f32005b0c886af79a6fad5b",
                 "bismark_deduplication.txt:md5,db387240d46c09b0b952ed8b54855e76",
@@ -646,9 +654,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.1",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.1"
         },
-        "timestamp": "2024-10-25T14:35:51.348052183"
+        "timestamp": "2024-11-26T05:31:07.656922689"
     }
 }

@@ -1,7 +1,7 @@
 {
     "Params: bwameth | save_reference | save_align_intermeds": {
         "content": [
-            50,
+            51,
             {
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.7"
@@ -11,6 +11,9 @@
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.1
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
@@ -81,6 +84,8 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
+                "gunzip",
+                "gunzip/genome.fa",
                 "methyldackel",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
                 "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
@@ -397,6 +402,7 @@
                 "genome.fa.bwameth.c2t.bwt:md5,4646f8ae6bd523b7f4106bbd32eff95e",
                 "genome.fa.bwameth.c2t.pac:md5,a662d7add09698e25c8152fd2306ec66",
                 "genome.fa.bwameth.c2t.sa:md5,4a1e905b828396a1909669bc9c573d8d",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -493,9 +499,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.1",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.1"
         },
-        "timestamp": "2024-10-25T14:44:54.756005023"
+        "timestamp": "2024-11-26T05:48:36.54774249"
     }
 }

@@ -1,17 +1,17 @@
 {
     "Params: bismark_hisat with hisat2-index": {
         "content": [
-            43
+            44
         ],
         "meta": {
-            "nf-test": "0.9.0",
-            "nextflow": "24.04.2"
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.1"
         },
-        "timestamp": "2024-10-12T07:21:45.007688275"
+        "timestamp": "2024-11-26T05:19:59.406677987"
     },
     "Params: bismark_hisat": {
         "content": [
-            43,
+            44,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -21,6 +21,9 @@
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.1
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
@@ -121,6 +124,8 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
+                "gunzip",
+                "gunzip/genome.fa",
                 "multiqc",
                 "multiqc/bismark_hisat",
                 "multiqc/bismark_hisat/multiqc_data",
@@ -525,6 +530,7 @@
                 "SRR389222_sub1_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,30d4e3aec9220b886a6ac17630f48ef3",
                 "SRR389222_sub2_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,8519a3e58f6047f71e8cf09991482332",
                 "SRR389222_sub3_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,e6144ca656936c6ee6e7281a1192fa78",
+                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "bismark-methylation-dp.txt:md5,233409b9665cb851aca3b6b4511ff757",
                 "bismark_alignment.txt:md5,3acfd1a751bef6696b6fa095d0631bb6",
                 "bismark_deduplication.txt:md5,c025b4368b08f9e623624908632e44a1",
@@ -583,9 +589,9 @@
             ]
         ],
         "meta": {
-            "nf-test": "0.9.1",
-            "nextflow": "24.04.4"
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.1"
         },
-        "timestamp": "2024-10-25T14:27:35.247058389"
+        "timestamp": "2024-11-26T05:18:01.013706514"
     }
 }
