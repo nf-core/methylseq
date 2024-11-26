@@ -1,7 +1,7 @@
 {
     "Params: bismark | save_reference | save_align_intermeds": {
         "content": [
-            44,
+            40,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -29,13 +29,13 @@
             [
                 "bismark",
                 "bismark/alignments",
-                "bismark/alignments/Ecoli_10K_methylated.sorted.bam",
+                "bismark/alignments/Ecoli_10K_methylated.deduplicated.sorted.bam",
                 "bismark/alignments/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.bam",
-                "bismark/alignments/SRR389222_sub1.sorted.bam",
+                "bismark/alignments/SRR389222_sub1.deduplicated.sorted.bam",
                 "bismark/alignments/SRR389222_sub1_trimmed_bismark_bt2.bam",
-                "bismark/alignments/SRR389222_sub2.sorted.bam",
+                "bismark/alignments/SRR389222_sub2.deduplicated.sorted.bam",
                 "bismark/alignments/SRR389222_sub2_trimmed_bismark_bt2.bam",
-                "bismark/alignments/SRR389222_sub3.sorted.bam",
+                "bismark/alignments/SRR389222_sub3.deduplicated.sorted.bam",
                 "bismark/alignments/SRR389222_sub3_trimmed_bismark_bt2.bam",
                 "bismark/alignments/logs",
                 "bismark/alignments/logs/Ecoli_10K_methylated_1_val_1_bismark_bt2_PE_report.txt",
@@ -604,7 +604,7 @@
             ],
             [
                 [
-                    "Ecoli_10K_methylated.sorted.bam",
+                    "Ecoli_10K_methylated.deduplicated.sorted.bam",
                     "a54ab7c96f9523a4ccd25fd69f6905f8"
                 ],
                 [
@@ -612,24 +612,24 @@
                     "fad4414ebdaafdb15e0584b393400b27"
                 ],
                 [
-                    "SRR389222_sub1.sorted.bam",
-                    "fa0f34c0d0d4d321b89973f23e033aa1"
+                    "SRR389222_sub1.deduplicated.sorted.bam",
+                    "3f11ef5fbbda3797fd6217728e4f00d3"
                 ],
                 [
                     "SRR389222_sub1_trimmed_bismark_bt2.bam",
                     "934288bfc59d40ff7e73706d07815fb"
                 ],
                 [
-                    "SRR389222_sub2.sorted.bam",
-                    "d347232a4fc5b1e02e98254b6ce97ae6"
+                    "SRR389222_sub2.deduplicated.sorted.bam",
+                    "b01f29fc1d8d46922a69df09c636b4c4"
                 ],
                 [
                     "SRR389222_sub2_trimmed_bismark_bt2.bam",
                     "a94aeadc2acebd0a46647bb95acf2d55"
                 ],
                 [
-                    "SRR389222_sub3.sorted.bam",
-                    "29648af285a183ae2194790b5a325186"
+                    "SRR389222_sub3.deduplicated.sorted.bam",
+                    "347195c04c9ffd2a2b10967a6682fc69"
                 ],
                 [
                     "SRR389222_sub3_trimmed_bismark_bt2.bam",
@@ -657,6 +657,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-26T05:31:07.656922689"
+        "timestamp": "2024-11-26T09:07:38.571423231"
     }
 }

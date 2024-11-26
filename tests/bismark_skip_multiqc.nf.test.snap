@@ -1,7 +1,7 @@
 {
     "Params: bismark | skip_multiqc": {
         "content": [
-            44,
+            40,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -582,6 +582,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-26T05:35:27.933113343"
+        "timestamp": "2024-11-26T09:12:08.282174331"
     }
 }

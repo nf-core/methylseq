@@ -1,7 +1,7 @@
 {
     "Params: bismark_hisat | save_reference | save_align_intermeds": {
         "content": [
-            44,
+            40,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
@@ -29,13 +29,13 @@
             [
                 "bismark_hisat",
                 "bismark_hisat/alignments",
-                "bismark_hisat/alignments/Ecoli_10K_methylated.sorted.bam",
+                "bismark_hisat/alignments/Ecoli_10K_methylated.deduplicated.sorted.bam",
                 "bismark_hisat/alignments/Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.bam",
-                "bismark_hisat/alignments/SRR389222_sub1.sorted.bam",
+                "bismark_hisat/alignments/SRR389222_sub1.deduplicated.sorted.bam",
                 "bismark_hisat/alignments/SRR389222_sub1_trimmed_bismark_hisat2.bam",
-                "bismark_hisat/alignments/SRR389222_sub2.sorted.bam",
+                "bismark_hisat/alignments/SRR389222_sub2.deduplicated.sorted.bam",
                 "bismark_hisat/alignments/SRR389222_sub2_trimmed_bismark_hisat2.bam",
-                "bismark_hisat/alignments/SRR389222_sub3.sorted.bam",
+                "bismark_hisat/alignments/SRR389222_sub3.deduplicated.sorted.bam",
                 "bismark_hisat/alignments/SRR389222_sub3_trimmed_bismark_hisat2.bam",
                 "bismark_hisat/alignments/logs",
                 "bismark_hisat/alignments/logs/Ecoli_10K_methylated_1_val_1_bismark_hisat2_PE_report.txt",
@@ -612,7 +612,7 @@
             ],
             [
                 [
-                    "Ecoli_10K_methylated.sorted.bam",
+                    "Ecoli_10K_methylated.deduplicated.sorted.bam",
                     "a1bd6455ebe3ecb43fe55e02d149d98"
                 ],
                 [
@@ -620,24 +620,24 @@
                     "534293d598c34366bcde057d3972b60"
                 ],
                 [
-                    "SRR389222_sub1.sorted.bam",
-                    "b203a3936158c51706e56c3a4e16191e"
+                    "SRR389222_sub1.deduplicated.sorted.bam",
+                    "8d735d1f6337b2cf2fa720773ce34b60"
                 ],
                 [
                     "SRR389222_sub1_trimmed_bismark_hisat2.bam",
                     "4ee84a71b73e58161226cc4d8ca1f9b9"
                 ],
                 [
-                    "SRR389222_sub2.sorted.bam",
-                    "6f8b0d6f085cc6a3d597b8839ba94b8b"
+                    "SRR389222_sub2.deduplicated.sorted.bam",
+                    "45d53a598b4e59d173e32ea1f0558083"
                 ],
                 [
                     "SRR389222_sub2_trimmed_bismark_hisat2.bam",
                     "3e3ccc351ed92abdced1edb24fbb94ed"
                 ],
                 [
-                    "SRR389222_sub3.sorted.bam",
-                    "c03e8e797936ca18a7e286977c7cf16"
+                    "SRR389222_sub3.deduplicated.sorted.bam",
+                    "ddb15c5ef0686837616d73f45c154b8d"
                 ],
                 [
                     "SRR389222_sub3_trimmed_bismark_hisat2.bam",
@@ -665,6 +665,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-26T05:24:34.153448411"
+        "timestamp": "2024-11-26T08:59:39.226471235"
     }
 }

@@ -35,12 +35,16 @@
                 "bwameth/alignments/samtools_stats/SRR389222_sub3.flagstat",
                 "bwameth/alignments/samtools_stats/SRR389222_sub3.stats",
                 "bwameth/deduplicated",
+                "bwameth/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam",
                 "bwameth/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam",
                 "bwameth/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub1.deduplicated.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub2.deduplicated.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub2.markdup.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub2.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub3.deduplicated.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam.bai",
                 "bwameth/deduplicated/picard_metrics",
@@ -373,23 +377,39 @@
                 "samtools-flagstat-dp_Read_counts.txt:md5,2d5434b646dac99397d86bd31731df01",
                 "samtools-stats-dp.txt:md5,e1290c4b0ad11142147f69f4256c4524",
                 "samtools_alignment_plot.txt:md5,fe4c9af19d69c3982b75ad458a1a9148",
-                "genome_results.txt:md5,2a1a374d5b1e3884c57d2d5333db54a6",
-                "genome_results.txt:md5,c4a9a1a76ba36cf770bf8be9a7fe5b55",
-                "genome_results.txt:md5,ac65d95bd5c7fd40b90d53d233c7b511",
-                "genome_results.txt:md5,b7376228bb23c9133fed45b95c60d082"
+                "genome_results.txt:md5,f85cc6e4d1935710e7cc7471afafe58b",
+                "genome_results.txt:md5,20dba8ac3965d75c244c24a3ab1f23f3",
+                "genome_results.txt:md5,6662db015b4c3565ec0738fba4af5e62",
+                "genome_results.txt:md5,a6c5e3d933b8b63d524bc7ec375251fa"
             ],
             [
                 [
+                    "Ecoli_10K_methylated.deduplicated.sorted.bam",
+                    "5b485bcabdb1ad5955cfa061741fad31"
+                ],
+                [
                     "Ecoli_10K_methylated.markdup.sorted.bam",
                     "5b485bcabdb1ad5955cfa061741fad31"
+                ],
+                [
+                    "SRR389222_sub1.deduplicated.sorted.bam",
+                    "37ec1c6338cc3fee7ab1cb2d48dba38"
                 ],
                 [
                     "SRR389222_sub1.markdup.sorted.bam",
                     "37ec1c6338cc3fee7ab1cb2d48dba38"
                 ],
                 [
+                    "SRR389222_sub2.deduplicated.sorted.bam",
+                    "783d3be6b5bfa58142c3dbe864f6d8c5"
+                ],
+                [
                     "SRR389222_sub2.markdup.sorted.bam",
                     "783d3be6b5bfa58142c3dbe864f6d8c5"
+                ],
+                [
+                    "SRR389222_sub3.deduplicated.sorted.bam",
+                    "4bbaef9917f4ff0248d1f5853f583fd0"
                 ],
                 [
                     "SRR389222_sub3.markdup.sorted.bam",
@@ -401,6 +421,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-26T05:52:01.995851054"
+        "timestamp": "2024-11-26T09:24:32.999255506"
     }
 }
