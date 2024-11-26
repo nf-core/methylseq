@@ -1,6 +1,6 @@
 # nf-core/methylseq
 
-## [v2.7.2](https://github.com/nf-core/methylseq/releases/tag/2.7.2) - []
+## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
 
 ### Bug fixes & refactoring
 
@@ -8,6 +8,8 @@
 - 🐛 fix bismark/align not resuming from cache [#461](https://github.com/nf-core/methylseq/pull/457)
 
 ### Pipeline Updates
+
+- 🔧 Install `fastq_align_dedup_bismark` subworkflow from nf-core/subworkflows [#453](https://github.com/nf-core/methylseq/pull/457)
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
