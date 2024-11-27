@@ -442,6 +442,20 @@
             },
             "fa_icon": "fas fa-fast-forward"
         },
+        "run_pipeline_steps": {
+            "title": "Run pipeline steps",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "run_preseq": {
+                    "type": "boolean",
+                    "description": "Run preseq/lcextrap tool",
+                    "fa_icon": "fas fa-fast-forward"
+                }
+            },
+            "fa_icon": "fas fa-fast-forward"
+        },
         "institutional_config_options": {
             "title": "Institutional config options",
             "type": "object",
@@ -612,6 +626,9 @@
         },
         {
             "$ref": "#/$defs/skip_pipeline_steps"
+        },
+        {
+            "$ref": "#/$defs/run_pipeline_steps"
         },
         {
             "$ref": "#/$defs/generic_options"
