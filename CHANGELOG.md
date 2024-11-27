@@ -10,7 +10,7 @@
 ### Pipeline Updates
 
 - 🔧 Install `fastq_align_dedup_bismark` subworkflow from nf-core/subworkflows [#453](https://github.com/nf-core/methylseq/pull/457)
-- 🔧 Install `fasta_index_bismark_bwameth` subworkflow from nf-core/subworkflows [#466](https://github.com/nf-core/methylseq/pull/)
+- 🔧 Install `fasta_index_bismark_bwameth` subworkflow from nf-core/subworkflows [#466](https://github.com/nf-core/methylseq/pull/468)
 - 🔧 Install `fastq_align_dedup_bwameth` subworkflow from nf-core/subworkflows [#467](https://github.com/nf-core/methylseq/pull/)
 - 🔧 reorg individual configs to `conf/modules/` named configs [#459](https://github.com/nf-core/methylseq/pull/469)
 - 🔧 `run_preseq` param + skip preseq/lcextrap module by default [#458](https://github.com/nf-core/methylseq/pull/470)
