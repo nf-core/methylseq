@@ -15,11 +15,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { METHYLSEQ               } from './workflows/methylseq/'
-include { PREPARE_GENOME          } from './subworkflows/local/prepare_genome/'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { FASTA_INDEX_BISMARK_BWAMETH } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
+include { METHYLSEQ                   } from './workflows/methylseq/'
+include { PIPELINE_INITIALISATION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { PIPELINE_COMPLETION         } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute          } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,13 +52,13 @@ workflow NFCORE_METHYLSEQ {
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
-    PREPARE_GENOME(
+    FASTA_INDEX_BISMARK_BWAMETH(
         params.fasta,
         params.fasta_index,
         params.bismark_index,
         params.bwameth_index,
     )
-    ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
+    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
 
     //
     // WORKFLOW: Run pipeline
@@ -67,10 +67,10 @@ workflow NFCORE_METHYLSEQ {
     METHYLSEQ (
         samplesheet,
         ch_versions,
-        PREPARE_GENOME.out.fasta,
-        PREPARE_GENOME.out.fasta_index,
-        PREPARE_GENOME.out.bismark_index,
-        PREPARE_GENOME.out.bwameth_index,
+        FASTA_INDEX_BISMARK_BWAMETH.out.fasta,
+        FASTA_INDEX_BISMARK_BWAMETH.out.fasta_index,
+        FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
+        FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
     )
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html

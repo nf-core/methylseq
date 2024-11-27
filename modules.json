@@ -23,7 +23,7 @@
                     "bismark/genomepreparation": {
                         "branch": "master",
                         "git_sha": "79922141f1033bc3b56dabef0f0eff68b2b0fb03",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
@@ -48,7 +48,7 @@
                     "bwameth/index": {
                         "branch": "master",
                         "git_sha": "a716d10039f9728f2674f45c33a95b605851ea50",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     },
                     "cat/fastq": {
                         "branch": "master",
@@ -63,7 +63,7 @@
                     "gunzip": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     },
                     "methyldackel/extract": {
                         "branch": "master",
@@ -103,7 +103,7 @@
                     "samtools/faidx": {
                         "branch": "master",
                         "git_sha": "b13f07be4c508d6ff6312d354d09f2493243e208",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     },
                     "samtools/flagstat": {
                         "branch": "master",
@@ -133,12 +133,17 @@
                     "untar": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     }
                 }
             },
             "subworkflows": {
                 "nf-core": {
+                    "fasta_index_bismark_bwameth": {
+                        "branch": "master",
+                        "git_sha": "e24c9731daae27a4cd0b072f2e50cc8401a492db",
+                        "installed_by": ["subworkflows"]
+                    },
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
                         "git_sha": "af84433c2e619cf28e026d4140b1b8763ae3690b",
