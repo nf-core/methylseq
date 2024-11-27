@@ -126,8 +126,10 @@ workflow METHYLSEQ {
     //
     // MODULE: Run Preseq
     //
-    PRESEQ_LCEXTRAP (ch_bam)
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    if(params.run_preseq) {
+        PRESEQ_LCEXTRAP (ch_bam)
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    }
 
     //
     // Collate and save software versions
@@ -169,7 +171,9 @@ workflow METHYLSEQ {
     )
 
     ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+    if (params.run_preseq) {
+        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+    }
     ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
     if (!params.skip_trimming) {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
