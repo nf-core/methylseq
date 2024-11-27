@@ -558,7 +558,7 @@
                 "genome_mapping_quality_histogram.png:md5,74776b1e7e8c8876af1cf89d9dbb5f31",
                 "genome_reads_content_per_read_position.png:md5,c6920dc357411880132c207c7d0aa68d",
                 "genome_uniq_read_starts_histogram.png:md5,8f7549a63eee3d3f022699aaa5bb858d",
-                "qualimapReport.html:md5,c5a76c76951754a6556b10c81dc99e8f",
+                "qualimapReport.html:md5,2c25df556c43190d52453e76de692a13",
                 "coverage_across_reference.txt:md5,2bb9eb828acfd71ace8f1e6a2ca124b4",
                 "coverage_histogram.txt:md5,6ee761660a6072e5b6b75b7fe8d2c69e",
                 "duplication_rate_histogram.txt:md5,d5f25ad3572b98880b6904dcf4b3ed25",
@@ -603,7 +603,7 @@
                 "genome_mapping_quality_histogram.png:md5,7ba0db9375d09fd49946b9bca4ba92b4",
                 "genome_reads_content_per_read_position.png:md5,1a6a7717ea948d2518808f72f58ffdef",
                 "genome_uniq_read_starts_histogram.png:md5,395413ab1d0e10af72b116fd8cb12685",
-                "qualimapReport.html:md5,ce75000ccfc3c59ba69f74dfbe747f66",
+                "qualimapReport.html:md5,e87a83d69a3d001db49d57a92a7cf25e",
                 "coverage_across_reference.txt:md5,081ddc3be3349b0c57d9676c03d84803",
                 "coverage_histogram.txt:md5,47b75803a6925e883e254bb91d6220d2",
                 "duplication_rate_histogram.txt:md5,3d06b34e40d1fdeb55c4ad19dc6ddad1",
@@ -645,7 +645,7 @@
                 "genome_mapping_quality_histogram.png:md5,017451f46bc875ac58e7906bf7979956",
                 "genome_reads_content_per_read_position.png:md5,fd94ec5bfe5ca4adfa6ebdeaebe25157",
                 "genome_uniq_read_starts_histogram.png:md5,2f2555ef88c3bda05315469e684f5b19",
-                "qualimapReport.html:md5,fe3b25bff69d4aab44a414e99584e0ea",
+                "qualimapReport.html:md5,91384759d5b7229060c7eea058f74fa1",
                 "coverage_across_reference.txt:md5,a76b3da0ebb2f8bd6c36ec1902cf13f2",
                 "coverage_histogram.txt:md5,ca854c05e9619233b7d95d44051cab80",
                 "duplication_rate_histogram.txt:md5,530bb05c648d610227e121e1e74f41f8",
@@ -687,7 +687,7 @@
                 "genome_mapping_quality_histogram.png:md5,a22ee10fcb9e34a84f607b089855fb92",
                 "genome_reads_content_per_read_position.png:md5,9fa406f353148448f6b9ac11880bc6de",
                 "genome_uniq_read_starts_histogram.png:md5,cf2fe3e30e11e7d6eb2db679cd12dc03",
-                "qualimapReport.html:md5,3e87bde8eee0a2bd763497087c90706e",
+                "qualimapReport.html:md5,8753fb47fa86ef92999a0e6ed8b02fd6",
                 "coverage_across_reference.txt:md5,fb9c989fc6c15d0a8fd0a58b8d3c20ce",
                 "coverage_histogram.txt:md5,8a3f45461442657433914c6a5ecb1301",
                 "duplication_rate_histogram.txt:md5,ec9a705fd3a300b126d556afa14c326b",
@@ -755,7 +755,7 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-27T16:03:12.125540724"
+        "timestamp": "2024-11-27T17:08:57.318132441"
     },
     "Params: bismark | run_preseq with bowtie2-index": {
         "content": [
@@ -765,6 +765,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.1"
         },
-        "timestamp": "2024-11-27T16:05:14.797489463"
+        "timestamp": "2024-11-27T17:10:56.214178009"
     }
 }

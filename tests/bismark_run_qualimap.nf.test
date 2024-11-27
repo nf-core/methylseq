@@ -37,23 +37,4 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bismark | run_preseq with bowtie2-index") {
-        when {
-            params {
-                bismark_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
-                outdir        = "$outputDir"
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.success },
-                { assert snapshot(
-                    // Number of tasks
-                    workflow.trace.succeeded().size()
-                ).match() }
-            )
-        }
-    }
-
 }
