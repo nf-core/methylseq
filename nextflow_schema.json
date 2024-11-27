@@ -452,6 +452,11 @@
                     "type": "boolean",
                     "description": "Run preseq/lcextrap tool",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "run_qualimap": {
+                    "type": "boolean",
+                    "description": "Run qualimap/bamqc tool",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"

@@ -117,11 +117,13 @@ workflow METHYLSEQ {
     //
     // MODULE: Qualimap BamQC
     //
-    QUALIMAP_BAMQC (
-        ch_bam,
-        params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
-    )
-    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    if(params.run_qualimap) {
+        QUALIMAP_BAMQC (
+            ch_bam,
+            params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
+        )
+        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    }
 
     //
     // MODULE: Run Preseq
@@ -170,7 +172,9 @@ workflow METHYLSEQ {
         )
     )
 
-    ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
+    if(params.run_qualimap) {
+        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
+    }
     if (params.run_preseq) {
         ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
     }
