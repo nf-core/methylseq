@@ -28,12 +28,12 @@ include { BWAMETH                   } from '../../subworkflows/local/bwameth'
 workflow METHYLSEQ {
 
     take:
-    samplesheet        // channel: samplesheet read in from --input
-    ch_versions        // channel: [ path(versions.yml) ]
-    ch_fasta           // channel: path(genome.fasta)
-    ch_fasta_index     // channel: path(star/index/)
-    ch_bismark_index   // channel: path(star/index/)
-    ch_bwameth_index   // channel: path(star/index/)
+    samplesheet        // channel: [ path(samplesheet.csv) ]
+    ch_versions        // channel: [ path(versions.yml)    ]
+    ch_fasta           // channel: [ path(fasta)           ]
+    ch_fasta_index     // channel: [ path(fasta index)     ]
+    ch_bismark_index   // channel: [ path(bismark index)   ]
+    ch_bwameth_index   // channel: [ path(bwameth index)   ]
 
     main:
 
@@ -42,40 +42,43 @@ workflow METHYLSEQ {
     //
     // Branch channels from input samplesheet channel
     //
-    samplesheet
-        .branch { meta, fastqs ->
-            single  : fastqs.size() == 1
-                return [ meta, fastqs.flatten() ]
-            multiple: fastqs.size() > 1
-                return [ meta, fastqs.flatten() ]
-        }
-        .set { ch_samplesheet }
+    ch_samplesheet = samplesheet
+                        .branch { meta, fastqs ->
+                            single  : fastqs.size() == 1
+                                return [ meta, fastqs.flatten() ]
+                            multiple: fastqs.size() > 1
+                                return [ meta, fastqs.flatten() ]
+                        }
 
     //
     // MODULE: Concatenate FastQ files from same sample if required
     //
-    CAT_FASTQ (ch_samplesheet.multiple)
-        .reads
-        .mix(ch_samplesheet.single)
-        .set {ch_fastq}
+    CAT_FASTQ (
+        ch_samplesheet.multiple
+    )
+    ch_fastq    = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (ch_fastq)
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]})
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    FASTQC (
+        ch_fastq
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
+    ch_versions      = ch_versions.mix(FASTQC.out.versions.first())
 
     //
     // MODULE: Run TrimGalore!
     //
     if (!params.skip_trimming) {
-        TRIMGALORE(ch_fastq)
-        reads = TRIMGALORE.out.reads
+        TRIMGALORE(
+            ch_fastq
+        )
+        reads       = TRIMGALORE.out.reads
         ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
     } else {
-        reads = ch_fastq
+        reads       = ch_fastq
     }
 
     //
@@ -83,7 +86,7 @@ workflow METHYLSEQ {
     //
 
     // Aligner: bismark or bismark_hisat
-    if( params.aligner =~ /bismark/ ){
+    if ( params.aligner =~ /bismark/ ) {
         //
         // Run Bismark alignment + downstream processing
         //
@@ -116,6 +119,7 @@ workflow METHYLSEQ {
 
     //
     // MODULE: Qualimap BamQC
+    // skipped by default. to use run with `--run_qualimap` param.
     //
     if(params.run_qualimap) {
         QUALIMAP_BAMQC (
@@ -126,23 +130,26 @@ workflow METHYLSEQ {
     }
 
     //
-    // MODULE: Run Preseq
+    // MODULE: Preseq LCEXTRAP
+    // skipped by default. to use run with `--run_preseq` param.
     //
     if(params.run_preseq) {
-        PRESEQ_LCEXTRAP (ch_bam)
+        PRESEQ_LCEXTRAP (
+            ch_bam
+        )
         ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
     }
 
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_pipeline_software_mqc_versions.yml',
-            sort: true,
-            newLine: true
-        ).set { ch_collated_versions }
+    ch_collated_versions = softwareVersionsToYAML(ch_versions)
+                                .collectFile(
+                                    storeDir: "${params.outdir}/pipeline_info",
+                                    name: 'nf_core_pipeline_software_mqc_versions.yml',
+                                    sort: true,
+                                    newLine: true
+                                )
 
     //
     // MODULE: MultiQC
@@ -194,7 +201,7 @@ workflow METHYLSEQ {
     )
 
     emit:
-    multiqc_report = MULTIQC.out.report.toList() // channel: /path/to/multiqc_report.html
+    multiqc_report = MULTIQC.out.report.toList() // channel: [ path(multiqc_report.html )  ]
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
