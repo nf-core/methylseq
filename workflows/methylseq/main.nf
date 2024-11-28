@@ -5,19 +5,19 @@
 */
 
 
-include { FASTQC                   } from '../../modules/nf-core/fastqc/main'
-include { TRIMGALORE               } from '../../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC           } from '../../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP          } from '../../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                  } from '../../modules/nf-core/multiqc/main'
-include { CAT_FASTQ                } from '../../modules/nf-core/cat/fastq/main'
-include { paramsSummaryMap         } from 'plugin/nf-schema'
-include { paramsSummaryMultiqc     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML   } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { BISMARK                  } from '../../subworkflows/local/bismark/'
-include { BWAMETH                  } from '../../subworkflows/local/bwameth'
+include { FASTQC                    } from '../../modules/nf-core/fastqc/main'
+include { TRIMGALORE                } from '../../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
+include { paramsSummaryMap          } from 'plugin/nf-schema'
+include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
+include { BWAMETH                   } from '../../subworkflows/local/bwameth'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -87,17 +87,16 @@ workflow METHYLSEQ {
         //
         // Run Bismark alignment + downstream processing
         //
-        BISMARK (
+        FASTQ_ALIGN_DEDUP_BISMARK (
             reads,
             ch_fasta,
             ch_bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
-        ch_versions    = ch_versions.mix(BISMARK.out.versions.unique{ it.baseName })
-        ch_bam         = BISMARK.out.bam
-        ch_dedup       = BISMARK.out.dedup
-        ch_aligner_mqc = BISMARK.out.mqc
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions.unique{ it.baseName })
+        ch_bam         = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
+        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
     }
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
@@ -118,17 +117,21 @@ workflow METHYLSEQ {
     //
     // MODULE: Qualimap BamQC
     //
-    QUALIMAP_BAMQC (
-        ch_dedup,
-        params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
-    )
-    ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    if(params.run_qualimap) {
+        QUALIMAP_BAMQC (
+            ch_bam,
+            params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
+        )
+        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    }
 
     //
     // MODULE: Run Preseq
     //
-    PRESEQ_LCEXTRAP (ch_bam)
-    ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    if(params.run_preseq) {
+        PRESEQ_LCEXTRAP (ch_bam)
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+    }
 
     //
     // Collate and save software versions
@@ -169,8 +172,12 @@ workflow METHYLSEQ {
         )
     )
 
-    ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+    if(params.run_qualimap) {
+        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
+    }
+    if (params.run_preseq) {
+        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+    }
     ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
     if (!params.skip_trimming) {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
