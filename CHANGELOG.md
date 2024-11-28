@@ -6,6 +6,7 @@
 
 - 🐛 fix fasta gunzip output [#462](https://github.com/nf-core/methylseq/pull/457)
 - 🐛 fix bismark/align not resuming from cache [#461](https://github.com/nf-core/methylseq/pull/457)
+- 🐛 disable gunzip publish by default (https://github.com/nf-core/methylseq/pull/474)
 
 ### Pipeline Updates
 

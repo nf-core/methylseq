@@ -72,9 +72,11 @@ workflow NFCORE_METHYLSEQ {
         FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
         FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
     )
+    ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
+
     emit:
-    multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                  // channel: [version1, version2, ...]
+    multiqc_report = METHYLSEQ.out.multiqc_report // channel: [ path(multiqc_report.html )  ]
+    versions       = ch_versions                  // channel: [ path(versions.yml) ]
 
 }
 /*

@@ -110,8 +110,6 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
-                "gunzip",
-                "gunzip/genome.fa",
                 "multiqc",
                 "multiqc/bismark_hisat",
                 "multiqc/bismark_hisat/multiqc_data",
@@ -300,7 +298,6 @@
                 "SRR389222_sub1_trimmed_bismark_hisat2_splitting_report.txt:md5,a3ea9994f88802972e25836058ea2b40",
                 "SRR389222_sub2_trimmed_bismark_hisat2_splitting_report.txt:md5,4afad1d4dbe350b2d691561260018247",
                 "SRR389222_sub3_trimmed_bismark_hisat2_splitting_report.txt:md5,bd4b6b3718a4270fc6844862da5c31a7",
-                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "bismark-methylation-dp.txt:md5,2ed19dff17c089738a62de166f44cf97",
                 "bismark_alignment.txt:md5,0e1ef7bfb853be4fe2471ee1082865c0",
                 "bismark_mbias_CHG_R1.txt:md5,cc89b38a24adcd51363a934964b03892",
@@ -366,8 +363,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.1"
+            "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-27T16:54:45.712638793"
+        "timestamp": "2024-11-28T09:35:49.452970243"
     }
 }

@@ -52,8 +52,6 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
-                "gunzip",
-                "gunzip/genome.fa",
                 "methyldackel",
                 "methyldackel/Ecoli_10K_methylated.deduplicated.sorted_CpG.bedGraph",
                 "methyldackel/SRR389222_sub1.deduplicated.sorted_CpG.bedGraph",
@@ -197,7 +195,6 @@
                 "SRR389222_sub2.stats:md5,2fa170e542d799b47717984dc7c0a4a4",
                 "SRR389222_sub3.flagstat:md5,73a5cb246f6388d5d449775d6e35f5fa",
                 "SRR389222_sub3.stats:md5,89ccd73e9ed78f5102c5736f255e034a",
-                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "Ecoli_10K_methylated.deduplicated.sorted_CpG.bedGraph:md5,aa55074c144aa6eaa184480038c75932",
                 "SRR389222_sub1.deduplicated.sorted_CpG.bedGraph:md5,9e9e6922a8d99881874d299bfd7af5de",
                 "SRR389222_sub2.deduplicated.sorted_CpG.bedGraph:md5,d6c973d9fa7c6bc5f47141d14c18a105",
@@ -250,8 +247,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.1"
+            "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-27T17:26:51.658375122"
+        "timestamp": "2024-11-28T11:03:39.089301861"
     }
 }

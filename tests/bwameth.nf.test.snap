@@ -65,8 +65,6 @@
                 "fastqc/zips/SRR389222_sub1_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_fastqc.zip",
-                "gunzip",
-                "gunzip/genome.fa",
                 "methyldackel",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
                 "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
@@ -221,7 +219,6 @@
                 "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
                 "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
-                "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -295,9 +292,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.1"
+            "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-27T17:22:51.548341521"
+        "timestamp": "2024-11-28T10:50:52.356626917"
     },
     "Params: bwameth with bwameth-index": {
         "content": [
