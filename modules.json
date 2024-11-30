@@ -43,7 +43,7 @@
                     "bwameth/align": {
                         "branch": "master",
                         "git_sha": "dfd89399e3c6e2422c4cdcf0aaa8cf2393dc51c9",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
@@ -68,22 +68,27 @@
                     "methyldackel/extract": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "cf17ca47590cc578dfb47db1c2a44ef86f89976d",
                         "installed_by": ["modules"]
                     },
+                    "parabricks/fq2bammeth": {
+                        "branch": "master",
+                        "git_sha": "3a897454edabb27d21debfec644e40f7bcfa4c43",
+                        "installed_by": ["fastq_align_dedup_bwameth"]
+                    },
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "49f4e50534fe4b64101e62ea41d5dc43b1324358",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
@@ -108,22 +113,22 @@
                     "samtools/flagstat": {
                         "branch": "master",
                         "git_sha": "2d20463181b1c38981a02e90d3084b5f9fa8d540",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "samtools/index": {
                         "branch": "master",
                         "git_sha": "b13f07be4c508d6ff6312d354d09f2493243e208",
-                        "installed_by": ["fastq_align_dedup_bismark", "modules"]
+                        "installed_by": ["fastq_align_dedup_bismark", "fastq_align_dedup_bwameth", "modules"]
                     },
                     "samtools/sort": {
                         "branch": "master",
                         "git_sha": "b7800db9b069ed505db3f9d91b8c72faea9be17b",
-                        "installed_by": ["fastq_align_dedup_bismark", "modules"]
+                        "installed_by": ["fastq_align_dedup_bismark", "fastq_align_dedup_bwameth", "modules"]
                     },
                     "samtools/stats": {
                         "branch": "master",
                         "git_sha": "2d20463181b1c38981a02e90d3084b5f9fa8d540",
-                        "installed_by": ["modules"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "trimgalore": {
                         "branch": "master",
@@ -147,6 +152,11 @@
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
                         "git_sha": "af84433c2e619cf28e026d4140b1b8763ae3690b",
+                        "installed_by": ["subworkflows"]
+                    },
+                    "fastq_align_dedup_bwameth": {
+                        "branch": "master",
+                        "git_sha": "bd5f75ccaf2345269810e66e85de8a70e4de8764",
                         "installed_by": ["subworkflows"]
                     },
                     "utils_nextflow_pipeline": {
