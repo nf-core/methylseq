@@ -188,13 +188,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,c6a9a8b50c5e1d239071a8b75bc63b4f",
-                "Ecoli_10K_methylated.stats:md5,d9690e16a7995c35de2397e9800a1fd0",
+                "Ecoli_10K_methylated.stats:md5,cf163b532094830a574ccb005bcd5131",
                 "SRR389222_sub1.flagstat:md5,cccae088e2f8686b890d019b60f63065",
-                "SRR389222_sub1.stats:md5,138223a2070c2c68fd8867ad731b31b0",
+                "SRR389222_sub1.stats:md5,9ab407ef500cbf2f065892fe4ebc31bd",
                 "SRR389222_sub2.flagstat:md5,403af1bed1e3e96f5e04d65e96728828",
-                "SRR389222_sub2.stats:md5,2fa170e542d799b47717984dc7c0a4a4",
+                "SRR389222_sub2.stats:md5,41544bc1bedf31c7e1fa97487eb9ca2d",
                 "SRR389222_sub3.flagstat:md5,73a5cb246f6388d5d449775d6e35f5fa",
-                "SRR389222_sub3.stats:md5,89ccd73e9ed78f5102c5736f255e034a",
+                "SRR389222_sub3.stats:md5,69b8a554734f573ca931e6aa4ae8f4f3",
                 "Ecoli_10K_methylated.deduplicated.sorted_CpG.bedGraph:md5,aa55074c144aa6eaa184480038c75932",
                 "SRR389222_sub1.deduplicated.sorted_CpG.bedGraph:md5,9e9e6922a8d99881874d299bfd7af5de",
                 "SRR389222_sub2.deduplicated.sorted_CpG.bedGraph:md5,d6c973d9fa7c6bc5f47141d14c18a105",
@@ -220,7 +220,7 @@
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
                 "multiqc_cutadapt.txt:md5,8752cce2e7320f49516e897c60487831",
                 "multiqc_samtools_flagstat.txt:md5,4389e377eb1db8dde26b0e8db6589c2d",
-                "multiqc_samtools_stats.txt:md5,3843eed6fb6ec8d27729a8b901ada0cf",
+                "multiqc_samtools_stats.txt:md5,d55db7d43ccd18c327449e853455bcab",
                 "samtools-flagstat-dp_Percentage_of_total.txt:md5,6b61188e70378467e23174bd12b1aaaa",
                 "samtools-flagstat-dp_Read_counts.txt:md5,1491440de94dc58b28ca8f61d893a710",
                 "samtools-stats-dp.txt:md5,deab74e7245766aab6b2284492959fed",
@@ -249,6 +249,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-28T11:03:39.089301861"
+        "timestamp": "2024-11-30T08:28:38.388886798"
     }
 }

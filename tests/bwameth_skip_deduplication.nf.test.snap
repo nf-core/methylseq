@@ -188,13 +188,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,2df1b94e099f2948ad990224f7cf07a4",
+                "Ecoli_10K_methylated.stats:md5,bed52531fe0a73a798d381dccbe2a248",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,0f660ccc767662d4bd8c5197f3d46a87",
+                "SRR389222_sub1.stats:md5,7e2b586e29251d4c53442882598b7299",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,9343b74f4d825bfb2a554be3d8bed432",
+                "SRR389222_sub2.stats:md5,d49b348483aba5d7f80215458f8b830c",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,f41e135f71893e2a8b589c4a66cbfeec",
+                "SRR389222_sub3.stats:md5,db87ee5d3eb2d84b846929edb51fbaba",
                 "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,aa88f19284e63097e9abccac4d7c6669",
                 "SRR389222_sub1.sorted_CpG.bedGraph:md5,4475a9462ce86a019015b69b82a9d5a2",
                 "SRR389222_sub2.sorted_CpG.bedGraph:md5,18b8845d9d985d3c203ca6c9c40aab1b",
@@ -220,7 +220,7 @@
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
                 "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
-                "multiqc_samtools_stats.txt:md5,e24271a8111b06c1f545b6b1a077a4a7",
+                "multiqc_samtools_stats.txt:md5,bfcab6a9bd26872ecd2ec469d222c70b",
                 "samtools-flagstat-dp_Percentage_of_total.txt:md5,ff5d65a480449ba98587c43f3a2bd33e",
                 "samtools-flagstat-dp_Read_counts.txt:md5,6a5332e2ad59f7da00b5a9a1a25fd2f8",
                 "samtools-stats-dp.txt:md5,52021b9a9455b39b39dd357bc2e8d346",
@@ -249,6 +249,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-28T10:56:17.383748035"
+        "timestamp": "2024-11-30T08:31:33.308611147"
     }
 }
