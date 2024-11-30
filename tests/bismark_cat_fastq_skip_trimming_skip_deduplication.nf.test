@@ -4,7 +4,7 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
 
-    test("CAT_FASTQ | skip_trimming | skip_deduplication") {
+    test("Params: bismark | CAT_FASTQ | skip_trimming | skip_deduplication") {
         when {
             params {
                 input              = "${projectDir}/assets/samplesheet_replicates.csv"

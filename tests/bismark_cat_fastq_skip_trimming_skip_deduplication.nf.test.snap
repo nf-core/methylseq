@@ -1,5 +1,5 @@
 {
-    "CAT_FASTQ | skip_trimming | skip_deduplication": {
+    "Params: bismark | CAT_FASTQ | skip_trimming | skip_deduplication": {
         "content": [
             17,
             {
