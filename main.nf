@@ -16,10 +16,10 @@
 */
 
 include { FASTA_INDEX_BISMARK_BWAMETH } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
-include { METHYLSEQ                   } from './workflows/methylseq/'
 include { PIPELINE_INITIALISATION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION         } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { getGenomeAttribute          } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { METHYLSEQ                   } from './workflows/methylseq/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
