@@ -53,9 +53,13 @@ jobs:
         id: list
         run: |
           COMPONENTS=$(nf-test list --tags | grep gpu)
-          echo "paths=$paths" >> $GITHUB_ENV
+          echo "paths=$COMPONENTS" >> $GITHUB_ENV
         env:
           paths: ${{ steps.list.outputs.paths }}
+
+      - name: debug
+        run: |
+          echo ${{ steps.list.outputs.paths }}
 
   nf-test-gpu:
     runs-on: "gpu"
