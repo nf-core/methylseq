@@ -106,6 +106,17 @@ jobs:
               --profile "+${{ matrix.profile }}" \
               --filter ${{ matrix.filter }}
 
+      - name: Run GPU Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
+        if: matrix.profile == 'docker' || matrix.profile == 'singularity'
+        run: |
+          nf-test test \
+              --ci \
+              --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
+              --changed-since HEAD^ \
+              --profile "+${{ matrix.profile }}" \
+              --filter ${{ matrix.filter }} \
+              --tag "gpu"
+
       - name: Output log on failure
         if: failure()
         run: |
