@@ -23,54 +23,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  nf-test-changes:
-    name: nf-test-changes
-    runs-on: ubuntu-latest
-    outputs:
-      paths: ${{ steps.list.outputs.paths }}
-    steps:
-      - name: Clean Workspace # Purge the workspace in case it's running on a self-hosted runner
-        run: |
-          ls -la ./
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install pdiff to see diff between nf-test snapshots
-        run: |
-          python -m pip install --upgrade pip
-          pip install pdiff
-
-      - uses: nf-core/setup-nf-test@v1
-        with:
-          version: ${{ env.NFT_VER }}
-
-      - name: List nf-test files
-        id: list
-        run: |
-          COMPONENTS=$(nf-test list --tags | grep gpu)
-          echo "paths=$COMPONENTS" >> $GITHUB_OUTPUT
-
-      - name: debug
-        run: |
-          echo ${{ steps.list.outputs.paths }}
-
   nf-test-gpu:
-    runs-on: "gpu"
-    name: "GPU | ${{ matrix.profile }} | ${{ matrix.shard }}"
-    needs: nf-test-changes
-    if: ${{ needs.nf-test-changes.outputs.paths != '[]' }}
+    name: "Run pipeline with test data (${{ matrix.NXF_VER }} | ${{ matrix.profile }})"
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         NXF_VER:
           - "24.04.2"
           - "latest-everything"
-        shard: [1, 2]
+        shard: [1, 2, 3, 4, 5]
         filter: [pipeline, workflow]
         profile:
           - "docker"
@@ -117,14 +81,23 @@ jobs:
           mkdir -p $NXF_SINGULARITY_CACHEDIR
           mkdir -p $NXF_SINGULARITY_LIBRARYDIR
 
+      - name: Set up Miniconda
+        if: matrix.profile == 'conda'
+        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3
+        with:
+          miniconda-version: "latest"
+          auto-update-conda: true
+          conda-solver: libmamba
+          channels: conda-forge,bioconda
+
       - name: Clean up Disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
-      - name: Run GPU Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
+      - name: Run GPU Tests (Shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }})
         run: |
           nf-test test \
               --ci \
-              --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
+              --shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }} \
               --changed-since HEAD^ \
               --profile "+${{ matrix.profile }}" \
               --filter ${{ matrix.filter }} \
@@ -156,7 +129,6 @@ jobs:
         shard: [1, 2, 3, 4, 5]
         filter: [pipeline, workflow]
         profile:
-          - "conda"
           - "docker"
           - "singularity"
         isMaster:
@@ -167,6 +139,10 @@ jobs:
             profile: "conda"
           - isMaster: false
             profile: "singularity"
+    env:
+      NXF_ANSI_LOG: false
+      TOTAL_SHARDS: 5
+
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -215,11 +191,11 @@ jobs:
       - name: Clean up Disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
-      - name: Run Tests (Shard ${{ matrix.shard }}/${{ strategy.job-total }})
+      - name: Run Tests (Shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }})
         run: |
           nf-test test \
               --ci \
-              --shard ${{ matrix.shard }}/${{ strategy.job-total }} \
+              --shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }} \
               --changed-since HEAD^ \
               --profile "+${{ matrix.profile }}" \
               --filter ${{ matrix.filter }}
