@@ -43,8 +43,6 @@ jobs:
         # Exclude conda and singularity on dev
         exclude:
           - isMaster: false
-            profile: "conda"
-          - isMaster: false
             profile: "singularity"
     env:
       NXF_ANSI_LOG: false
@@ -79,15 +77,6 @@ jobs:
         run: |
           mkdir -p $NXF_SINGULARITY_CACHEDIR
           mkdir -p $NXF_SINGULARITY_LIBRARYDIR
-
-      - name: Set up Miniconda
-        if: matrix.profile == 'conda'
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3
-        with:
-          miniconda-version: "latest"
-          auto-update-conda: true
-          conda-solver: libmamba
-          channels: conda-forge,bioconda
 
       - name: Clean up Disk space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
