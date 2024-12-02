@@ -186,7 +186,8 @@ jobs:
               --shard ${{ matrix.shard }}/${{ env.TOTAL_SHARDS }} \
               --changed-since HEAD^ \
               --profile "+${{ matrix.profile }}" \
-              --filter ${{ matrix.filter }}
+              --filter ${{ matrix.filter }} \
+              --tag "cpu"
 
       - name: Output log on failure
         if: failure()
