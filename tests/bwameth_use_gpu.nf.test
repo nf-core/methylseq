@@ -44,9 +44,9 @@ nextflow_pipeline {
     test("Params: bwameth | use_gpu | with bwameth-index") {
         when {
             params {
-                aligner        = "bwameth"
+                aligner       = "bwameth"
                 bwameth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
-                outdir         = "$outputDir"
+                outdir        = "$outputDir"
             }
         }
 

@@ -18,7 +18,7 @@ nextflow_pipeline {
             // stable_path: All files in ${params.outdir}/ with stable content
             def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             // bam_files: All bam files
-            def bam_files  = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
                 { assert workflow.success},
                 { assert snapshot(
