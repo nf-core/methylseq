@@ -8,8 +8,8 @@ nextflow_pipeline {
     test("Params: bismark_hisat") {
         when {
             params {
-                aligner        = "bismark_hisat"
-                outdir         = "$outputDir"
+                aligner = "bismark_hisat"
+                outdir  = "$outputDir"
             }
         }
 

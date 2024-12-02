@@ -1,14 +1,4 @@
 {
-    "Params: bwameth | use_gpu |with bwameth-index": {
-        "content": [
-            47
-        ],
-        "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.0"
-        },
-        "timestamp": "2024-12-02T11:56:58.163433"
-    },
     "Params: bwameth | use_gpu": {
         "content": [
             36,
