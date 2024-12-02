@@ -7,8 +7,8 @@ nextflow_pipeline {
     test("Params: bwameth") {
         when {
             params {
-                aligner        = "bwameth"
-                outdir         = "$outputDir"
+                aligner = "bwameth"
+                outdir  = "$outputDir"
             }
         }
 
