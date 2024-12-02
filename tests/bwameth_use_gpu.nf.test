@@ -41,7 +41,7 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bwameth with bwameth-index") {
+    test("Params: bwameth | use_gpu | with bwameth-index") {
         when {
             params {
                 aligner        = "bwameth"

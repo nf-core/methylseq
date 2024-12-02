@@ -276,7 +276,7 @@
         },
         "timestamp": "2024-12-02T08:58:09.474824"
     },
-    "Params: bwameth with bwameth-index": {
+    "Params: bwameth | use_gpu | with bwameth-index": {
         "content": [
             47
         ],
