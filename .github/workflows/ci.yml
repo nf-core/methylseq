@@ -63,7 +63,7 @@ jobs:
     runs-on: "gpu"
     name: "GPU | ${{ matrix.profile }} | ${{ matrix.shard }}"
     needs: nf-test-changes
-    if: ${{ needs.nf-test-changes.outputs.components != '[]' }}
+    if: ${{ needs.nf-test-changes.outputs.paths != '[]' }}
     strategy:
       fail-fast: false
       matrix:
