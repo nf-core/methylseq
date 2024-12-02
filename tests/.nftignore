@@ -14,7 +14,7 @@ multiqc/{bismark,bismark_hisat,bwameth}/multiqc_data/multiqc_sources.txt
 multiqc/{bismark,bismark_hisat,bwameth}/multiqc_report.html
 multiqc/{bismark,bismark_hisat,bwameth}/multiqc_plots/{pdf,png,svg}/*.{pdf,png,svg}
 pipeline_info/*.{html,json,txt,yml}
-qualimap/**/qualimapReport.html
+{bismark,bismark_hisat,bwameth}/qualimap/bamqc/*/qualimapReport.html
 qualimap/**/css/*
 qualimap/**/images_qualimapReport/*
 qualimap/**/raw_data_qualimapReport/*
