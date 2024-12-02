@@ -27,11 +27,7 @@ jobs:
     name: nf-test-changes
     runs-on: ubuntu-latest
     outputs:
-      # Expose detected tags as 'modules' and 'workflows' output variables
-      paths: ${{ steps.list.outputs.components }}
-      modules: ${{ steps.outputs.outputs.modules }}
-      subworkflows: ${{ steps.outputs.outputs.subworkflows}}
-      # Prod for version bumping
+      paths: ${{ steps.list.outputs.paths }}
     steps:
       - name: Clean Workspace # Purge the workspace in case it's running on a self-hosted runner
         run: |
@@ -39,17 +35,27 @@ jobs:
           rm -rf ./* || true
           rm -rf ./.??* || true
           ls -la ./
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install pdiff to see diff between nf-test snapshots
+        run: |
+          python -m pip install --upgrade pip
+          pip install pdiff
+
+      - uses: nf-core/setup-nf-test@v1
+        with:
+          version: ${{ env.NFT_VER }}
 
       - name: List nf-test files
         id: list
         run: |
           COMPONENTS=$(nf-test list --tags | grep gpu)
-          echo "components=$COMPONENTS" >> $GITHUB_ENV
+          echo "paths=$paths" >> $GITHUB_ENV
         env:
-          components: ${{ steps.list.outputs.components }}
+          paths: ${{ steps.list.outputs.paths }}
 
   nf-test-gpu:
     runs-on: "gpu"
