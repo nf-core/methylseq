@@ -3,7 +3,6 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "../main.nf"
     config "./nextflow.config"
-
     tag "gpu"
 
     test("Params: bwameth | use_gpu") {
@@ -41,12 +40,12 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bwameth | use_gpu | with bwameth-index") {
+    test("Params: bwameth | use_gpu |with bwameth-index") {
         when {
             params {
-                aligner       = "bwameth"
+                aligner        = "bwameth"
                 bwameth_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
-                outdir        = "$outputDir"
+                outdir         = "$outputDir"
             }
         }
 

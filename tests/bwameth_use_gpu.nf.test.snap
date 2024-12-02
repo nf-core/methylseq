@@ -1,4 +1,14 @@
 {
+    "Params: bwameth | use_gpu |with bwameth-index": {
+        "content": [
+            47
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "24.10.0"
+        },
+        "timestamp": "2024-12-02T11:56:58.163433"
+    },
     "Params: bwameth | use_gpu": {
         "content": [
             36,
@@ -164,13 +174,6 @@
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-cnt.svg",
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-pct.svg",
                 "multiqc/bwameth/multiqc_report.html",
-                "parabricks",
-                "parabricks/SRR389222_sub1.bam",
-                "parabricks/SRR389222_sub1.bam.bai",
-                "parabricks/SRR389222_sub2.bam",
-                "parabricks/SRR389222_sub2.bam.bai",
-                "parabricks/SRR389222_sub3.bam",
-                "parabricks/SRR389222_sub3.bam.bai",
                 "pipeline_info",
                 "pipeline_info/nf_core_pipeline_software_mqc_versions.yml",
                 "trimgalore",
@@ -223,13 +226,7 @@
                 "samtools-flagstat-dp_Percentage_of_total.txt:md5,921b0c969e7c154c0cd18b331e2a6c1c",
                 "samtools-flagstat-dp_Read_counts.txt:md5,c0764320e38e62b48d59f608094804b8",
                 "samtools-stats-dp.txt:md5,99418ae30d5855a3d8cd9cfdf21dd14d",
-                "samtools_alignment_plot.txt:md5,34b8fa8a88b6f5ef00153b07aabc028d",
-                "SRR389222_sub1.bam:md5,a5d5600e09697b1d9a31b0547ab7edcf",
-                "SRR389222_sub1.bam.bai:md5,c95cb45c3f0a9a82bf78a7914b38ebaf",
-                "SRR389222_sub2.bam:md5,bb04f6c07f75892530c7d960997ac9a7",
-                "SRR389222_sub2.bam.bai:md5,fbe5ef44841a8b6028bdb7c14ae67e59",
-                "SRR389222_sub3.bam:md5,2c1cca453526e1672e87bb07e30af30a",
-                "SRR389222_sub3.bam.bai:md5,d7d62a85aac95328011ba48c37f3cf1c"
+                "samtools_alignment_plot.txt:md5,34b8fa8a88b6f5ef00153b07aabc028d"
             ],
             [
                 [
@@ -255,18 +252,6 @@
                 [
                     "SRR389222_sub3.markdup.sorted.bam",
                     "9eaa07df5ad58a78ab57ee55f948a044"
-                ],
-                [
-                    "SRR389222_sub1.bam",
-                    "97e6767c5ddea54cb2a6498192a09c68"
-                ],
-                [
-                    "SRR389222_sub2.bam",
-                    "313ae71af4023059a295ed8a132fd9ad"
-                ],
-                [
-                    "SRR389222_sub3.bam",
-                    "9eaa07df5ad58a78ab57ee55f948a044"
                 ]
             ]
         ],
@@ -274,16 +259,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-12-02T08:58:09.474824"
-    },
-    "Params: bwameth | use_gpu | with bwameth-index": {
-        "content": [
-            47
-        ],
-        "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.0"
-        },
-        "timestamp": "2024-12-02T08:59:21.276625"
+        "timestamp": "2024-12-02T11:55:47.061799"
     }
 }
