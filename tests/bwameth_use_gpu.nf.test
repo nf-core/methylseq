@@ -6,12 +6,13 @@ nextflow_pipeline {
 
     tag "gpu"
 
-    test("Params: bwameth") {
+    test("Params: bwameth | use_gpu") {
         when {
             params {
-                aligner        = "bwameth"
-                use_gpu        = true
-                outdir         = "$outputDir"
+                input   = "${projectDir}/assets/samplesheet_gpu.csv"
+                aligner = "bwameth"
+                use_gpu = true
+                outdir  = "$outputDir"
             }
         }
 
