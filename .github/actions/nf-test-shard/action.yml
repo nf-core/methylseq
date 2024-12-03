@@ -1,7 +1,7 @@
 name: "Get number of shards"
 description: "Get the number of nf-test shards for the current CI job"
 outputs:
-  shards:
+  shard:
     description: "Array of shard numbers"
     value: ${{ steps.shards.outputs.shards }}
   total_shards:

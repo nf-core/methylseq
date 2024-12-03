@@ -4,7 +4,7 @@ inputs:
   profile:
     description: "Profile to use"
     required: true
-  shards:
+  shard:
     description: "Shard number for this CI job"
     required: true
   total_shards:
@@ -60,24 +60,11 @@ runs:
         conda-solver: libmamba
         conda-remove-defaults: true
 
-    # Set up secrets
-    - name: Set up nextflow secrets
-      if: env.SENTIEON_ENCRYPTION_KEY != '' && env.SENTIEON_LICENSE_MESSAGE != ''
-      shell: bash
-      run: |
-        python -m pip install cryptography
-        nextflow secrets set SENTIEON_AUTH_DATA $(python3 tests/modules/nf-core/sentieon/license_message.py encrypt --key "$SENTIEON_ENCRYPTION_KEY" --message "$SENTIEON_LICENSE_MESSAGE")
-
-      # TODO Skip failing conda tests and document their failures
-      # https://github.com/nf-core/modules/issues/7017
     - name: Clean up Disk space
       uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
     - name: Run nf-test
       shell: bash
-      env:
-        SENTIEON_LICSRVR_IP: ${{ env.SENTIEON_LICSRVR_IP }}
-        SENTIEON_AUTH_MECH: "GitHub Actions - token"
       run: |
         NFT_WORKDIR=~ \
         nf-test test \

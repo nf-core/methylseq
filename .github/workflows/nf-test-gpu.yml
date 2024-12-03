@@ -31,15 +31,10 @@ env:
 jobs:
   get-shards:
     runs-on: ubuntu-latest
-    name: "Get shards and total number of shards"
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    name: "Get Shards"
     outputs:
-      shards: ${{ steps.list-shards.outputs.shards }}
-      total_shards: ${{ steps.list-shards.outputs.total_shards }}
-    strategy:
-      fail-fast: true
-
+      shard: ${{ steps.set-shards.outputs.shards }}
+      total_shards: ${{ steps.set-shards.outputs.total_shards }}
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -47,14 +42,21 @@ jobs:
           fetch-depth: 0
 
       - name: run nf-test-shard action
-        id: list-shards
+        id: set-shards
         uses: ./.github/actions/nf-test-shard
         env:
           NFT_VER: ${{ env.NFT_VER }}
 
+      - name: Set outputs
+        id: set-outputs
+        run: |
+          echo "shard=${{ steps.set-shards.outputs.shard }}" >> $GITHUB_ENV
+          echo "total_shards=${{ steps.set-shards.outputs.total_shards }}" >> $GITHUB_ENV
+
   nf-test-gpu:
     runs-on: "gpu"
     name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }}"
+    needs: [get-shards]
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     strategy:
@@ -77,14 +79,9 @@ jobs:
 
       - name: Run nf-test Action
         uses: ./.github/actions/nf-test
-        env:
-          SENTIEON_ENCRYPTION_KEY: ${{ secrets.SENTIEON_ENCRYPTION_KEY }}
-          SENTIEON_LICENSE_MESSAGE: ${{ secrets.SENTIEON_LICENSE_MESSAGE }}
-          SENTIEON_LICSRVR_IP: ${{ secrets.SENTIEON_LICSRVR_IP }}
-          SENTIEON_AUTH_MECH: "GitHub Actions - token"
         with:
           profile: ${{ matrix.profile }},gpu
-          shards: ${{ needs.get-shards.outputs.shards }}
+          shard: ${{ needs.get-shards.outputs.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filter }}
           tags: "--tag gpu"
