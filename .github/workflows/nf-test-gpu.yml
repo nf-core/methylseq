@@ -64,12 +64,9 @@ jobs:
       matrix:
         NXF_VER:
           - "24.04.2"
-        shard: [1, 2]
+        shard: ${{ needs.get-shards.outputs.shard }}
         filters: [pipeline]
         profile: [docker, singularity]
-    env:
-      NXF_ANSI_LOG: false
-      TOTAL_SHARDS: 2
 
     steps:
       - name: Check out pipeline code

@@ -67,12 +67,9 @@ jobs:
       matrix:
         NXF_VER:
           - "24.04.2"
-        shard: [1, 2]
+        shard: ${{ needs.get-shards.outputs.shard }}
         filters: [pipeline]
         profile: [conda, docker_self_hosted, singularity]
-    env:
-      NXF_ANSI_LOG: false
-      TOTAL_SHARDS: 2
 
     steps:
       - name: Check out pipeline code
@@ -84,7 +81,7 @@ jobs:
         uses: ./.github/actions/nf-test
         with:
           profile: ${{ matrix.profile }}
-          shard: ${{ needs.get-shards.outputs.shard }}
+          shard: ${{ matrix.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filters }}
 
