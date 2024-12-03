@@ -46,6 +46,9 @@ jobs:
         uses: ./.github/actions/nf-test-shard
         env:
           NFT_VER: ${{ env.NFT_VER }}
+        with:
+          tags: "cpu"
+          max_shards: 2
 
       - name: Set outputs
         id: set-outputs
@@ -81,7 +84,7 @@ jobs:
           shard: ${{ matrix.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filters }}
-          tags: "--tag gpu"
+          tags: "gpu"
 
   confirm-pass:
     runs-on: ubuntu-latest
