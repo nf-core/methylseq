@@ -67,7 +67,7 @@ jobs:
       matrix:
         NXF_VER:
           - "24.04.2"
-        shard: ${{ needs.get-shards.outputs.shard }}
+        shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         filters: [pipeline]
         profile: [conda, docker_self_hosted, singularity]
 
