@@ -37,11 +37,15 @@ jobs:
     name: "Get shards and total number of shards"
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    outputs:
+      shards: ${{ steps.list.outputs.shards }}
+      total_shards: ${{ steps.outputs.outputs.total_shards }}
     strategy:
       fail-fast: true
 
     steps:
-      - uses: ./.github/actions/nf-test-shard
+      - name: list
+        uses: ./.github/actions/nf-test-shard
         env:
           NFT_VER: ${{ env.NFT_VER }}
 
