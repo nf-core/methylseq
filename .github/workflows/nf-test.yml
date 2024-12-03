@@ -72,7 +72,7 @@ jobs:
           profile: ${{ matrix.profile }}
           shards: ${{ steps.get-shards.outputs.shards }}
           total_shards: ${{ steps.get-shards.outputs.total_shards }}
-          filters: pipeline
+          filters: ${{ matrix.filter }}
 
   confirm-pass:
     runs-on: ubuntu-latest
