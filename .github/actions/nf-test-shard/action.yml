@@ -27,7 +27,7 @@ runs:
           total_shards=0
         else
           number_of_shards=$(echo "$nftest_output" | grep -o 'Found [0-9]* related test' | tail -1 | awk '{print $2}')
-          shards=$(seq 1 "$number_of_shards" | jq -R . | jq -s .)
+          shards=$(seq 1 "$number_of_shards" | jq -R . | jq  -c -s .)
           total_shards="$number_of_shards"
         fi
         echo "shards=${shards}" >> $GITHUB_OUTPUT
