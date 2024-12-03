@@ -40,7 +40,7 @@ jobs:
           - "singularity"
         isMaster:
           - ${{ github.base_ref == 'master' }}
-        # Exclude conda and singularity on dev
+        # Exclude singularity on dev
         exclude:
           - isMaster: false
             profile: "singularity"
@@ -127,9 +127,10 @@ jobs:
         NXF_VER:
           - "24.04.2"
           - "latest-everything"
-        shard: [1, 2, 3, 4, 5]
+        shard: [1, 2]
         filter: [pipeline, workflow]
         profile:
+          - "conda"
           - "docker"
           - "singularity"
         isMaster:
@@ -142,7 +143,7 @@ jobs:
             profile: "singularity"
     env:
       NXF_ANSI_LOG: false
-      TOTAL_SHARDS: 5
+      TOTAL_SHARDS: 2
 
     steps:
       - name: Check out pipeline code
