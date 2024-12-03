@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Get Shards"
     outputs:
-      shard: ${{ steps.set-shards.outputs.shards }}
+      shard: ${{ steps.set-shards.outputs.shard }}
       total_shards: ${{ steps.set-shards.outputs.total_shards }}
     steps:
       - name: Check out pipeline code
