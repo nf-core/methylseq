@@ -31,7 +31,7 @@ runs:
           shards=$(seq 1 "$number_of_shards" | jq -R . | jq  -c -s .)
           total_shards="$number_of_shards"
         fi
-        echo "shards=${shards}" >> $GITHUB_OUTPUT
+        echo "shard=${shard}" >> $GITHUB_OUTPUT
         echo "total_shards=${total_shards}" >> $GITHUB_OUTPUT
         # Debugging output
         echo "nftest_output: $nftest_output"

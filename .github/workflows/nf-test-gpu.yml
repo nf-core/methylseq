@@ -65,7 +65,7 @@ jobs:
         NXF_VER:
           - "24.04.2"
         shard: [1, 2]
-        filter: [pipeline]
+        filters: [pipeline]
         profile: [docker, singularity]
     env:
       NXF_ANSI_LOG: false
@@ -83,7 +83,7 @@ jobs:
           profile: ${{ matrix.profile }},gpu
           shard: ${{ needs.get-shards.outputs.shard }}
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
-          filters: ${{ matrix.filter }}
+          filters: ${{ matrix.filters }}
           tags: "--tag gpu"
 
   confirm-pass:

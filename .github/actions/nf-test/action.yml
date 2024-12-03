@@ -72,7 +72,7 @@ runs:
           --shard ${{ inputs.shard }}/${{ inputs.total_shards }} \
           --changed-since HEAD^ \
           --profile=${{ inputs.profile }} \
-          --filter ${{ inputs.filter }} \
+          --filter ${{ inputs.filters }} \
           --tap=test.tap \
           --verbose \
           ${{ inputs.tags }}
