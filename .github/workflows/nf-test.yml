@@ -82,7 +82,7 @@ jobs:
         with:
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
-          total_shards: ${{ needs.get-shards.outputs.total_shards }}
+          total_shards: 2
           filters: ${{ matrix.filters }}
 
   confirm-pass:
