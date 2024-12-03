@@ -32,6 +32,19 @@ env:
   NXF_VER: "24.10.2"
 
 jobs:
+  get-shards:
+    runs-on: ubuntu-latest
+    name: "Get shards and total number of shards"
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    strategy:
+      fail-fast: true
+
+    steps:
+      - uses: ./.github/actions/nf-test-shard
+        env:
+          NFT_VER: ${{ env.NFT_VER }}
+
   nf-test:
     runs-on: ${{ github.event.inputs.runners || 'self-hosted' }}
     name: "Test | ${{ matrix.profile }} | ${{ matrix.shard }}"
@@ -55,12 +68,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get number of shards
-        id: get-shards
-        uses: ./.github/actions/nf-test-shard
-        env:
-          NFT_VER: ${{ env.NFT_VER }}
-
       - name: Run nf-test Action
         uses: ./.github/actions/nf-test
         env:
@@ -70,8 +77,8 @@ jobs:
           SENTIEON_AUTH_MECH: "GitHub Actions - token"
         with:
           profile: ${{ matrix.profile }}
-          shards: ${{ steps.get-shards.outputs.shards }}
-          total_shards: ${{ steps.get-shards.outputs.total_shards }}
+          shards: ${{ job.get-shards.outputs.shards }}
+          total_shards: ${{ job.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filter }}
           tags:
 
