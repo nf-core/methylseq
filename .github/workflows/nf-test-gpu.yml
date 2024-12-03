@@ -35,13 +35,20 @@ jobs:
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     outputs:
-      shards: ${{ steps.list.outputs.shards }}
-      total_shards: ${{ steps.outputs.outputs.total_shards }}
+      shards: ${{ steps.list-shards.outputs.shards }}
+      total_shards: ${{ steps.list-shards.outputs.total_shards }}
     strategy:
       fail-fast: true
 
     steps:
-      - uses: ./.github/actions/nf-test-shard
+      - name: Check out pipeline code
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        with:
+          fetch-depth: 0
+
+      - name: run nf-test-shard action
+        id: list-shards
+        uses: ./.github/actions/nf-test-shard
         env:
           NFT_VER: ${{ env.NFT_VER }}
 
@@ -77,8 +84,8 @@ jobs:
           SENTIEON_AUTH_MECH: "GitHub Actions - token"
         with:
           profile: ${{ matrix.profile }},gpu
-          shards: ${{ job.get-shards.outputs.shards }}
-          total_shards: ${{ job.get-shards.outputs.total_shards }}
+          shards: ${{ needs.get-shards.outputs.shards }}
+          total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filter }}
           tags: "--tag gpu"
 
