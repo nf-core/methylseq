@@ -13,6 +13,9 @@ inputs:
   filters:
     description: "Filter test cases by specified types (e.g., module, pipeline, workflow or function)"
     required: true
+  tags:
+    description: "Test tags to be run"
+    required: true
 
 runs:
   using: "composite"
@@ -83,9 +86,9 @@ runs:
           --changed-since HEAD^ \
           --profile=${{ inputs.profile }} \
           --filter ${{ inputs.filter }} \
-          --tag ${{ inputs.tags }}
           --tap=test.tap \
           --verbose \
+          ${{ inputs.tags }}
 
       # TODO If no test.tap, then make one to spoof?
     - uses: pcolby/tap-summary@0959cbe1d4422e62afc65778cdaea6716c41d936 # v1

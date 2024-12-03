@@ -70,6 +70,7 @@ jobs:
           shards: ${{ steps.get-shards.outputs.shards }}
           total_shards: ${{ steps.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filter }}
+          tags: "--tag gpu"
 
   confirm-pass:
     runs-on: ubuntu-latest
