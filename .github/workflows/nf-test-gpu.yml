@@ -1,0 +1,93 @@
+name: Run GPU nf-tests
+on:
+  push:
+    branches:
+      # https://docs.renovatebot.com/key-concepts/automerge/#branch-vs-pr-automerging
+      - "renovate/**" # branches Renovate creates
+  pull_request:
+    branches: [master]
+  merge_group:
+    types: [checks_requested]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      runners:
+        description: "Runners to test on"
+        type: string
+        default: "gpu"
+
+# Cancel if a newer run is started
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # renovate: datasource=github-releases depName=askimed/nf-test versioning=semver
+  NFT_VER: "0.9.2"
+  NXF_ANSI_LOG: false
+  NXF_SINGULARITY_CACHEDIR: ${{ github.workspace }}/.singularity
+  NXF_SINGULARITY_LIBRARYDIR: ${{ github.workspace }}/.singularity
+  # renovate: datasource=github-releases depName=nextflow-io/nextflow versioning=semver
+  NXF_VER: "24.10.2"
+
+jobs:
+  nf-test-gpu:
+    runs-on: "gpu"
+    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }}"
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        NXF_VER:
+          - "24.04.2"
+        shard: [1, 2]
+        filter: [pipeline]
+        profile: [docker, singularity]
+    env:
+      NXF_ANSI_LOG: false
+      TOTAL_SHARDS: 2
+
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+        with:
+          fetch-depth: 0
+
+      - name: Get number of shards
+        id: get-shards
+        uses: ./.github/actions/nf-test-shard
+        env:
+          NFT_VER: ${{ env.NFT_VER }}
+
+      - name: Run nf-test Action
+        uses: ./.github/actions/nf-test
+        env:
+          SENTIEON_ENCRYPTION_KEY: ${{ secrets.SENTIEON_ENCRYPTION_KEY }}
+          SENTIEON_LICENSE_MESSAGE: ${{ secrets.SENTIEON_LICENSE_MESSAGE }}
+          SENTIEON_LICSRVR_IP: ${{ secrets.SENTIEON_LICSRVR_IP }}
+          SENTIEON_AUTH_MECH: "GitHub Actions - token"
+        with:
+          profile: ${{ matrix.profile }},gpu
+          shards: ${{ steps.get-shards.outputs.shards }}
+          total_shards: ${{ steps.get-shards.outputs.total_shards }}
+          filters: pipeline
+
+  confirm-pass:
+    runs-on: ubuntu-latest
+    needs: [nf-test-gpu]
+    if: always()
+    steps:
+      - name: All tests ok
+        if: ${{ success() || !contains(needs.*.result, 'failure') }}
+        run: exit 0
+      - name: One or more tests failed
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+
+      - name: debug-print
+        if: always()
+        run: |
+          echo "toJSON(needs) = ${{ toJSON(needs) }}"
+          echo "toJSON(needs.*.result) = ${{ toJSON(needs.*.result) }}"
