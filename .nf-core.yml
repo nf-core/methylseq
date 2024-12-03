@@ -3,6 +3,7 @@ lint:
   files_exist:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
+    - .github/workflows/ci.yml
   modules_config: false
 nf_core_version: 3.0.2
 repository_type: pipeline
