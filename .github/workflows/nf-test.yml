@@ -72,7 +72,7 @@ jobs:
           - "24.04.2"
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         filters: [pipeline]
-        profile: [conda, docker, singularity]
+        profile: [conda, docker_self_hosted, singularity]
 
     steps:
       - name: Check out pipeline code
