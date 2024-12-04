@@ -188,13 +188,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,bed52531fe0a73a798d381dccbe2a248",
+                "Ecoli_10K_methylated.stats:md5,48d2b9fa62581706d67b027138cff41e",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,7e2b586e29251d4c53442882598b7299",
+                "SRR389222_sub1.stats:md5,a578019df62d8ae1e4976f20ac1c7993",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,d49b348483aba5d7f80215458f8b830c",
+                "SRR389222_sub2.stats:md5,b60c66a26f2c346cbb85fb59c8de392b",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,db87ee5d3eb2d84b846929edb51fbaba",
+                "SRR389222_sub3.stats:md5,cf3e88bd028b048c6f6a416eacef6a1b",
                 "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,aa88f19284e63097e9abccac4d7c6669",
                 "SRR389222_sub1.sorted_CpG.bedGraph:md5,4475a9462ce86a019015b69b82a9d5a2",
                 "SRR389222_sub2.sorted_CpG.bedGraph:md5,18b8845d9d985d3c203ca6c9c40aab1b",
@@ -249,6 +249,6 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-11-30T08:31:33.308611147"
+        "timestamp": "2024-12-04T04:42:38.088671477"
     }
 }
