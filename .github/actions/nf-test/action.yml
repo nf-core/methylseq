@@ -26,7 +26,7 @@ runs:
         java-version: "17"
 
     - name: Setup Nextflow
-      uses: nf-core/setup-nextflow@v2.1.3
+      uses: nf-core/setup-nextflow@v2.1.4
       with:
         version: "${{ env.NXF_VERSION }}"
 
