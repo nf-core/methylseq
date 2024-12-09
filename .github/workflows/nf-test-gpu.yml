@@ -25,8 +25,6 @@ env:
   NXF_ANSI_LOG: false
   NXF_SINGULARITY_CACHEDIR: ${{ github.workspace }}/.singularity
   NXF_SINGULARITY_LIBRARYDIR: ${{ github.workspace }}/.singularity
-  # renovate: datasource=github-releases depName=nextflow-io/nextflow versioning=semver
-  NXF_VER: "24.10.2"
 
 jobs:
   get-shards:
@@ -57,19 +55,23 @@ jobs:
           echo "total_shards=${{ steps.set-shards.outputs.total_shards }}" >> $GITHUB_ENV
 
   nf-test-gpu:
-    runs-on: "gpu"
-    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }}"
     needs: [get-shards]
+    runs-on: "gpu"
+    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
+    env:
+      NXF_VER: ${{ matrix.NXF_VER }}
+
     # Only run on push if this is the nf-core dev branch (merged PRs)
     if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/methylseq') }}"
     strategy:
       fail-fast: false
       matrix:
+        profile: [docker_self_hosted, singularity]
+        shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "24.04.2"
-        shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
+          - "latest-everything"
         filters: [pipeline]
-        profile: [docker_self_hosted, singularity]
 
     steps:
       - name: Check out pipeline code
@@ -92,7 +94,7 @@ jobs:
     if: always()
     steps:
       - name: All tests ok
-        if: ${{ success() || !contains(needs.*.result, 'failure') }}
+        if: ${{ ( success() || !contains(needs.*.result, 'failure') ) && !cancelled() }}
         run: exit 0
       - name: One or more tests failed
         if: ${{ contains(needs.*.result, 'failure') }}

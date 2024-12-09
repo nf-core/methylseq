@@ -28,7 +28,7 @@ runs:
     - name: Setup Nextflow
       uses: nf-core/setup-nextflow@v2
       with:
-        version: "${{ env.NXF_VERSION }}"
+        version: "${{ env.NXF_VER }}"
 
     - name: Set up Python
       uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
