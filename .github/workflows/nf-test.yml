@@ -70,7 +70,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [conda, docker_self_hosted, singularity]
+        profile: [conda, docker, singularity]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "24.10.2"
