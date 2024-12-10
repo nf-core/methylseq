@@ -75,7 +75,7 @@ jobs:
         profile: [conda, docker, singularity]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
-          - "24.04.2"
+          - "24.10.2"
           - "latest-everything"
         filters: [pipeline]
 
