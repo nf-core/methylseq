@@ -14,7 +14,7 @@ on:
         options:
           - "ubuntu-latest"
           - "self-hosted"
-        default: "self-hosted"
+        default: "ubuntu-latest"
 
 # Cancel if a newer run is started
 concurrency:
