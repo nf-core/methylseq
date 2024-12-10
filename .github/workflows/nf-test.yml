@@ -76,7 +76,6 @@ jobs:
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "24.10.2"
-          - "latest-everything"
         filters: [pipeline]
 
     steps:
