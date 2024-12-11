@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [docker_self_hosted, singularity]
+        profile: [gpu]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "24.10.2"
