@@ -59,7 +59,7 @@ jobs:
   nf-test-gpu:
     needs: [get-shards]
     runs-on: "gpu"
-    name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
+    name: "Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
     env:
       NXF_VER: ${{ matrix.NXF_VER }}
 
@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [gpu]
+        profile: [singularity_gpu, docker_gpu]
         shard: ${{ fromJson(needs.get-shards.outputs.shard) }}
         NXF_VER:
           - "24.10.2"
