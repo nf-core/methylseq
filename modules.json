@@ -42,7 +42,7 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "dfd89399e3c6e2422c4cdcf0aaa8cf2393dc51c9",
+                        "git_sha": "2edb63067971fb906749e96bf22b23a4ec892a62",
                         "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "bwameth/index": {
@@ -82,7 +82,7 @@
                     },
                     "parabricks/fq2bammeth": {
                         "branch": "master",
-                        "git_sha": "3a897454edabb27d21debfec644e40f7bcfa4c43",
+                        "git_sha": "2edb63067971fb906749e96bf22b23a4ec892a62",
                         "installed_by": ["fastq_align_dedup_bwameth"]
                     },
                     "picard/markduplicates": {
@@ -132,7 +132,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "8c5eeedd45e295fc9a4f164631da6a8b37e6b9c6",
+                        "git_sha": "4c2d06a5e79abf08ba7f04c58e39c7dad75f094d",
                         "installed_by": ["modules"]
                     },
                     "untar": {
@@ -166,7 +166,7 @@
                     },
                     "utils_nfcore_pipeline": {
                         "branch": "master",
-                        "git_sha": "9a1e8bb6a5d205cf7807dcefca872a3314b2f3e6",
+                        "git_sha": "51ae5406a030d4da1e49e4dab49756844fdd6c7a",
                         "installed_by": ["subworkflows"]
                     },
                     "utils_nfschema_plugin": {
