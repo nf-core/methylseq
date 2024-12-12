@@ -5,12 +5,12 @@ nextflow_pipeline {
     config "./nextflow.config"
     tag "cpu"
 
-    test("Params: bismark | em_seq | clip_r1") {
+    test("Params: bwameth | run_qualimap") {
         when {
             params {
-                em_seq  = true
-                clip_r1 = 2
-                outdir  = "$outputDir"
+                aligner       = "bwameth"
+                outdir       = "$outputDir"
+                run_qualimap = true
             }
         }
 

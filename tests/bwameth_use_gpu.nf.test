@@ -3,13 +3,14 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "../main.nf"
     config "./nextflow.config"
-    tag "cpu"
+    tag "gpu"
 
-    test("Params: bismark | em_seq | clip_r1") {
+    test("Params: bwameth | use_gpu") {
         when {
             params {
-                em_seq  = true
-                clip_r1 = 2
+                input   = "${projectDir}/assets/samplesheet_gpu.csv"
+                aligner = "bwameth" // uses parabricks/fq2bammeth
+                use_gpu = true
                 outdir  = "$outputDir"
             }
         }
