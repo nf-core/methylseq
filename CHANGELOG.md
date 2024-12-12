@@ -18,7 +18,7 @@
 - 🔧 `run_qualimap` param + skip qualimap module by default [#367](https://github.com/nf-core/methylseq/pull/471)
 - 🔧 Raised Nextflow version requirement to `24.10.2` in CI
 - 🔧 Update the CI for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
-- 🔧 Update the CI for pipeline-level bwameth GPU Tests [#477](https://github.com/nf-core/methylseq/pull/)
+- 🔧 Update the CI for pipeline-level bwameth GPU Tests [#477](https://github.com/nf-core/methylseq/pull/486)
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
