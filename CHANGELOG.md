@@ -12,10 +12,12 @@
 
 - 🔧 Install `fastq_align_dedup_bismark` subworkflow from nf-core/subworkflows [#453](https://github.com/nf-core/methylseq/pull/457)
 - 🔧 Install `fasta_index_bismark_bwameth` subworkflow from nf-core/subworkflows [#466](https://github.com/nf-core/methylseq/pull/468)
-- 🔧 Install `fastq_align_dedup_bwameth` subworkflow from nf-core/subworkflows [#467](https://github.com/nf-core/methylseq/pull/)
+- 🔧 Install `fastq_align_dedup_bwameth` subworkflow from nf-core/subworkflows & introduce `use_gpu` param [#467](https://github.com/nf-core/methylseq/pull/475)
 - 🔧 reorg individual configs to `conf/modules/` named configs [#459](https://github.com/nf-core/methylseq/pull/469)
 - 🔧 `run_preseq` param + skip preseq/lcextrap module by default [#458](https://github.com/nf-core/methylseq/pull/470)
 - 🔧 `run_qualimap` param + skip qualimap module by default [#367](https://github.com/nf-core/methylseq/pull/471)
+- 🔧 Raised Nextflow version requirement to `24.10.2`
+- 🔧 Update the CI for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 

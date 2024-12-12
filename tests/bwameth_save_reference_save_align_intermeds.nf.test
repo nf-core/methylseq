@@ -3,6 +3,7 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "../main.nf"
     config "./nextflow.config"
+    tag "cpu"
 
     test("Params: bwameth | save_reference | save_align_intermeds") {
         when {

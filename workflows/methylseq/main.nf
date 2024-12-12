@@ -4,20 +4,19 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
+include { paramsSummaryMap          } from 'plugin/nf-schema'
 include { FASTQC                    } from '../../modules/nf-core/fastqc/main'
 include { TRIMGALORE                } from '../../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
-include { paramsSummaryMap          } from 'plugin/nf-schema'
+include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
+include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
-include { BWAMETH                   } from '../../subworkflows/local/bwameth'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,17 +103,16 @@ workflow METHYLSEQ {
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
-        BWAMETH (
+        FASTQ_ALIGN_DEDUP_BWAMETH (
             reads,
-            ch_bwameth_index,
             ch_fasta,
-            ch_fasta_index,
+            ch_fasta_index.map{ index -> [ [:], index ]},
+            ch_bwameth_index,
             params.skip_deduplication || params.rrbs,
         )
-        ch_versions    = ch_versions.mix(BWAMETH.out.versions.unique{ it.baseName })
-        ch_bam         = BWAMETH.out.bam
-        ch_dedup       = BWAMETH.out.dedup
-        ch_aligner_mqc = BWAMETH.out.mqc
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
+        ch_bam         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
+        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
     }
 
     //
