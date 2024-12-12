@@ -2,9 +2,11 @@
 
 ## Introduction
 
-This document describes the output produced by the pipeline. Most of the plots are taken from the MultiQC report, which summarises results at the end of the pipeline.
+This document describes the output produced by the methylseq pipeline.
 
-Note that nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
+Most of the plots are taken from the MultiQC report, which summarizes results at the end of the pipeline.
+
+> NOTE: nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
 
 The output directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
@@ -18,8 +20,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Deduplication](#deduplication) - Deduplicating reads
 - [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
-- [Qualimap](#qualimap) - Tool for genome alignments QC
-- [Preseq](#preseq) - Tool for estimating sample complexity
+- [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
+- [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
