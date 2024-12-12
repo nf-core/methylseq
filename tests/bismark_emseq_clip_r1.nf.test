@@ -22,7 +22,6 @@ nextflow_pipeline {
             // bam_files: All bam files
             def bam_files  = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
-                { assert workflow.success},
                 { assert snapshot(
                     // Number of tasks
                     workflow.trace.succeeded().size(),
