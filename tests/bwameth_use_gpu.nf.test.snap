@@ -166,7 +166,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-pct.svg",
                 "multiqc/bwameth/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_pipeline_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
                 "trimgalore",
                 "trimgalore/fastqc",
                 "trimgalore/fastqc/SRR389222_sub1_trimmed_fastqc.html",

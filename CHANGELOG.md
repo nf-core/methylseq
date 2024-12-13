@@ -1,5 +1,8 @@
 # nf-core/methylseq
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
 
 ### Bug fixes & refactoring
@@ -7,6 +10,7 @@
 - 🐛 fix fasta gunzip output [#462](https://github.com/nf-core/methylseq/pull/457)
 - 🐛 fix bismark/align not resuming from cache [#461](https://github.com/nf-core/methylseq/pull/457)
 - 🐛 disable gunzip publish by default (https://github.com/nf-core/methylseq/pull/474)
+- 🔄 Updated template to nf-core/tools v3.1.0 [#490](https://github.com/nf-core/methylseq/pull/490)
 
 ### Pipeline Updates
 

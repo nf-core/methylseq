@@ -47,7 +47,7 @@ bismark/
 │   ├── execution_report_2024-12-13_05-38-05.html
 │   ├── execution_timeline_2024-12-13_05-38-05.html
 │   ├── execution_trace_2024-12-13_05-38-05.txt
-│   ├── nf_core_pipeline_software_mqc_versions.yml
+│   ├── nf_core_methylseq_software_mqc_versions.yml
 │   ├── params_2024-12-13_05-38-14.json
 │   └── pipeline_dag_2024-12-13_05-38-05.html
 └── trimgalore
@@ -75,7 +75,7 @@ bwameth/
 │   ├── execution_report_2024-12-13_05-36-34.html
 │   ├── execution_timeline_2024-12-13_05-36-34.html
 │   ├── execution_trace_2024-12-13_05-36-34.txt
-│   ├── nf_core_pipeline_software_mqc_versions.yml
+│   ├── nf_core_methylseq_software_mqc_versions.yml
 │   ├── params_2024-12-13_05-36-43.json
 │   └── pipeline_dag_2024-12-13_05-36-34.html
 └── trimgalore

@@ -85,19 +85,16 @@ For more details about the output files and reports, please refer to the [output
 
 ## Credits
 
-These scripts were originally written for use at the [National Genomics Infrastructure](https://portal.scilifelab.se/genomics/) at [SciLifeLab](http://www.scilifelab.se/) in Stockholm, Sweden.
+nf-core/methylseq was originally written by Phil Ewels ([@ewels](https://github.com/ewels)), and Sateesh Peri ([@sateeshperi](https://github.com/sateeshperi)) is its active maintainer.
 
-- Main author:
-  - Phil Ewels ([@ewels](https://github.com/ewels/))
-- Maintainers:
-  - Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))
-  - Sateesh Peri ([@Sateesh_Peri](https://github.com/sateeshperi))
-  - Edmund Miller ([@EMiller88](https://github.com/emiller88))
-- Contributors:
-  - Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
-  - Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
-  - Patrick Hüther ([@phue](https://github.com/phue/))
-  - Maxime U Garcia ([@maxulysse](https://github.com/maxulysse/))
+We thank the following people for their extensive assistance in the development of this pipeline:
+
+- Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))
+- Edmund Miller ([@EMiller88](https://github.com/emiller88))
+- Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))
+- Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))
+- Patrick Hüther ([@phue](https://github.com/phue/))
+- Maxime U Garcia ([@maxulysse](https://github.com/maxulysse/))
 
 ## Contributions and Support
 

@@ -210,7 +210,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-pct.svg",
                 "multiqc/bwameth/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_pipeline_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
                 "trimgalore",
                 "trimgalore/fastqc",
                 "trimgalore/fastqc/Ecoli_10K_methylated_1_val_1_fastqc.html",
