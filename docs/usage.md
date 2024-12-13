@@ -28,9 +28,11 @@ Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb
 
 The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) as the alignment tool and [MethylDackel](https://github.com/dpryan79/methyldackel) for post-processing.
 
-Aligner Options
-• Standard BWA-Meth (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors.
-• Parabricks/FQ2BAMMETH (GPU-based): For higher performance, the pipeline can leverage the Parabricks implementation of BWA-Meth (fq2bammeth), which utilizes GPU processors. To use this option, include the `--use_gpu` flag along with `--aligner bwameth`.
+bwa-meth aligner options:
+
+- Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors.
+
+- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `--use_gpu` flag along with `--aligner bwameth`.
 
 ## Samplesheet input
 
@@ -129,6 +131,28 @@ genome: 'GRCh37'
 ```
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
+
+### Providing `ext.args` to Tools
+
+Additional arguments can be appended to a command in a module by specifying them within the module’s custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module’s publishDir path can also be customized in these configurations.
+
+For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files. These errors are typically caused by the operating system’s limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+
+To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`. This prevents methylation calls from being pre-sorted into individual chromosome files. Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+
+> For a detailed list of different options available, please refer to the official [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/) and [bwa-meth](https://github.com/brentp/bwa-meth) documentation.
+
+### Running the `test` profile
+
+Every nf-core pipeline comes with test data than can be run using `-profile test`. This test profile is useful for testing whether a user's environment is properly setup.
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --outdir <OUTDIR> \
+  --genome GRCh38 \
+  -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
 
 ### Updating the pipeline
 
@@ -299,7 +323,9 @@ The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementatio
 If for some reason you need to use a different version of a particular tool with the pipeline then you just need to identify the `process` name and override the Nextflow `container` definition for that process using the `withName` declaration. For example, in the [nf-core/viralrecon](https://nf-co.re/viralrecon) pipeline a tool called [Pangolin](https://github.com/cov-lineages/pangolin) has been used during the COVID-19 pandemic to assign lineages to SARS-CoV-2 genome sequenced samples. Given that the lineage assignments change quite frequently it doesn't make sense to re-release the nf-core/viralrecon every time a new version of Pangolin has been released. However, you can override the default container used by the pipeline by creating a custom config file and passing it as a command-line argument via `-c custom.config`.
 
 1. Check the default version used by the pipeline in the module file for [Pangolin](https://github.com/nf-core/viralrecon/blob/a85d5969f9025409e3618d6c280ef15ce417df65/modules/nf-core/software/pangolin/main.nf#L14-L19)
+
 2. Find the latest version of the Biocontainer available on [Quay.io](https://quay.io/repository/biocontainers/pangolin?tag=latest&tab=tags)
+
 3. Create the custom config accordingly:
 
 - For Docker:

@@ -25,6 +25,64 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
+### Output Directories
+
+#### Bismark
+
+```
+bismark/
+├── bismark
+│   ├── alignments
+│   ├── deduplicated
+│   ├── methylation_calls
+│   ├── reports
+│   └── summary
+├── fastqc
+│   ├── Ecoli_10K_methylated_1_fastqc.html
+│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   └── zips
+├── multiqc
+│   └── bismark
+├── pipeline_info
+│   ├── execution_report_2024-12-13_05-38-05.html
+│   ├── execution_timeline_2024-12-13_05-38-05.html
+│   ├── execution_trace_2024-12-13_05-38-05.txt
+│   ├── nf_core_pipeline_software_mqc_versions.yml
+│   ├── params_2024-12-13_05-38-14.json
+│   └── pipeline_dag_2024-12-13_05-38-05.html
+└── trimgalore
+    ├── fastqc
+    └── logs
+```
+
+#### bwa-meth
+
+```
+bwameth/
+├── bwameth
+│   ├── alignments
+│   └── deduplicated
+├── fastqc
+│   ├── Ecoli_10K_methylated_1_fastqc.html
+│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   └── zips
+├── methyldackel
+│   ├── Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph
+│   └── mbias
+├── multiqc
+│   └── bwameth
+├── pipeline_info
+│   ├── execution_report_2024-12-13_05-36-34.html
+│   ├── execution_timeline_2024-12-13_05-36-34.html
+│   ├── execution_trace_2024-12-13_05-36-34.txt
+│   ├── nf_core_pipeline_software_mqc_versions.yml
+│   ├── params_2024-12-13_05-36-43.json
+│   └── pipeline_dag_2024-12-13_05-36-34.html
+└── trimgalore
+    ├── fastqc
+    └── logs
+```
+
 ### FastQC
 
 <details markdown="1">
@@ -56,7 +114,7 @@ The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babr
 
 MultiQC reports the percentage of bases removed by Cutadapt in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
 
-**Output directory: `results/trim_galore`**
+**Output directory: `results/trimgalore`**
 
 Contains FastQ files with quality and adapter trimmed reads for each sample, along with a log file describing the trimming.
 
@@ -65,7 +123,7 @@ Contains FastQ files with quality and adapter trimmed reads for each sample, alo
   - **NB:** Only saved if `--save_trimmed` has been specified.
 - `logs/sample_val_1.fq.gz_trimming_report.txt`
   - Trimming report (describes which parameters that were used)
-- `FastQC/sample_val_1_fastqc.zip`
+- `fastQC/sample_val_1_fastqc.zip`
   - FastQC report for trimmed reads
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
@@ -74,7 +132,7 @@ Single-end data will have slightly different file names and only one FastQ file 
 
 Bismark and bwa-meth convert all Cytosines contained within the sequenced reads to Thymine _in-silico_ and then align against a three-letter reference genome. This method avoids methylation-specific alignment bias. The alignment produces a BAM file of genomic alignments.
 
-**Bismark output directory: `results/bismark_alignments/`**
+**Bismark output directory: `results/bismark/alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
 
 - `sample.bam`
@@ -86,7 +144,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
   - Unmapped reads in FastQ format.
   - Only saved if `--unmapped` specified when running the pipeline.
 
-**bwa-meth output directory: `results/bwa-mem_alignments/`**
+**bwa-meth output directory: `results/bwameth/alignments/`**
 
 - `sample.bam`
   - Aligned reads in BAM format.
@@ -97,23 +155,23 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `sample.sorted.bam.bai`
   - Index of sorted BAM file
   - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
-- `logs/sample_flagstat.txt`
+- `logs/samtools_stats/sample_flagstat.txt`
   - Summary file describing the number of reads which aligned in different ways.
-- `logs/sample_stats.txt`
+- `logs/samtools_stats/sample_stats.txt`
   - Summary file giving lots of metrics about the aligned BAM file.
 
 ### Deduplication
 
 This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
 
-**Bismark output directory: `results/bismark_deduplicated/`**
+**Bismark output directory: `results/bismark/deduplicated/`**
 
 - `deduplicated.bam`
   - BAM file with only unique alignments.
 - `logs/deduplication_report.txt`
   - Log file giving summary statistics about deduplication.
 
-**bwa-meth output directory: `results/bwa-mem_markDuplicates/`**
+**bwa-meth output directory: `results/bwameth/deduplicated/`**
 
 > **NB:** The bwa-meth step doesn't remove duplicate reads from the BAM file, it just labels them.
 
@@ -137,7 +195,7 @@ Filename abbreviations stand for the following reference alignment strands:
 - `CTOT` - complementary to original top strand
 - `CTOB` - complementary to original bottom strand
 
-**Bismark output directory: `results/bismark_methylation_calls/`**
+**Bismark output directory: `results/bismark/methylation_calls/`**
 
 > **NB:** `CTOT` and `CTOB` are not aligned unless `--non_directional` specified.
 
@@ -152,7 +210,7 @@ Filename abbreviations stand for the following reference alignment strands:
 - `logs/sample_splitting_report.txt`
   - Log file giving summary statistics about methylation extraction.
 
-**bwa-meth workflow output directory: `results/MethylDackel/`**
+**bwa-meth workflow output directory: `results/methyldackel/`**
 
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
