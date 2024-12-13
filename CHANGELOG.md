@@ -19,7 +19,7 @@
 - 🔧 Raised Nextflow version requirement to `24.10.2`
 - 🔧 Update the CI for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
 - 🔧 create a test for samplesheet with technical replicates [#477](https://github.com/nf-core/methylseq/pull/486)
-- 🔧 Update usage and output docs [#487](https://github.com/nf-core/methylseq/pull/)
+- 🔧 Update usage and output docs [#487](https://github.com/nf-core/methylseq/pull/489)
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
