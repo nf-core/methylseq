@@ -16,7 +16,7 @@
                     "gunzip": 1.1
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v2.8.0dev"
+                    "nf-core/methylseq": "v2.8.0"
                 }
             },
             [

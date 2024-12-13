@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - []
+## [v2.8.0](https://github.com/nf-core/methylseq/releases/tag/2.8.0) - [2024-12-15]
 
 ### Bug fixes & refactoring
 
@@ -17,13 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Install `fastq_align_dedup_bismark` subworkflow from nf-core/subworkflows [#453](https://github.com/nf-core/methylseq/pull/457)
 - 🔧 Install `fasta_index_bismark_bwameth` subworkflow from nf-core/subworkflows [#466](https://github.com/nf-core/methylseq/pull/468)
 - 🔧 Install `fastq_align_dedup_bwameth` subworkflow from nf-core/subworkflows & introduce `use_gpu` param [#467](https://github.com/nf-core/methylseq/pull/475)
-- 🔧 reorg individual configs to `conf/modules/` named configs [#459](https://github.com/nf-core/methylseq/pull/469)
+- 🔧 Re-organise & split `conf/modules.config` to `conf/modules/` & `conf/subworkflows/` individual named configs [#459](https://github.com/nf-core/methylseq/pull/469)
 - 🔧 `run_preseq` param + skip preseq/lcextrap module by default [#458](https://github.com/nf-core/methylseq/pull/470)
 - 🔧 `run_qualimap` param + skip qualimap module by default [#367](https://github.com/nf-core/methylseq/pull/471)
 - 🔧 Raised Nextflow version requirement to `24.10.2`
-- 🔧 Update the CI for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
+- 🔧 Add CI support for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
 - 🔧 create a test for samplesheet with technical replicates [#477](https://github.com/nf-core/methylseq/pull/486)
-- 🔧 Update usage and output docs [#487](https://github.com/nf-core/methylseq/pull/489)
+- 🔧 Update README, docs/usage and docs/output docs [#487](https://github.com/nf-core/methylseq/pull/489)
 
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
