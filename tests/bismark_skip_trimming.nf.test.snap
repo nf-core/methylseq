@@ -225,7 +225,7 @@
                 "multiqc/bismark/multiqc_plots/svg/general_stats_table.svg",
                 "multiqc/bismark/multiqc_report.html",
                 "pipeline_info",
-                "pipeline_info/nf_core_pipeline_software_mqc_versions.yml"
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml"
             ],
             [
                 "Ecoli_10K_methylated_R1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
