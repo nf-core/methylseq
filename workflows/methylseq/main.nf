@@ -213,10 +213,10 @@ workflow METHYLSEQ {
     )
 
     emit:
-    bam            = ch_bam                      // channel: [ path(bam) ]
-    bai            = ch_bai                      // channel: [ path(bai) ]
-    qualimap       = ch_qualimap                 // channel: [ path(qualimap) ]
-    preseq         = ch_preseq                   // channel: [ path(preseq) ]
+    bam            = ch_bam                      // channel: [ val(meta), path(bam) ]
+    bai            = ch_bai                      // channel: [ val(meta), path(bai) ]
+    qualimap       = ch_qualimap                 // channel: [ val(meta), path(qualimap) ]
+    preseq         = ch_preseq                   // channel: [ val(meta), path(preseq) ]
     multiqc_report = MULTIQC.out.report.toList() // channel: [ path(multiqc_report.html )  ]
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
