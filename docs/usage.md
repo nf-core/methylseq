@@ -88,6 +88,24 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+## Parameters
+
+Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/2.8.0/parameters/).
+
+- [Input/output options](https://nf-co.re/methylseq/2.8.0/parameters/#input-output-options)
+- [Save intermediate files](https://nf-co.re/methylseq/2.8.0/parameters/#save-intermediate-files)
+- [Reference genome options](https://nf-co.re/methylseq/2.8.0/parameters/#reference-genome-options)
+- [Alignment options](https://nf-co.re/methylseq/2.8.0/parameters/#alignment-options)
+- [Special library types](https://nf-co.re/methylseq/2.8.0/parameters/#special-library-types)
+- [Adapter Trimming](https://nf-co.re/methylseq/2.8.0/parameters/#adapter-trimming)
+- [Bismark options](https://nf-co.re/methylseq/2.8.0/parameters/#bismark-options)
+- [bwa-meth options](https://nf-co.re/methylseq/2.8.0/parameters/#bwa-meth-options)
+- [Qualimap Options](https://nf-co.re/methylseq/2.8.0/parameters/#bwa-meth-options)
+- [Skip pipeline steps](https://nf-co.re/methylseq/2.8.0/parameters/#skip-pipeline-steps)
+- [Run pipeline steps](https://nf-co.re/methylseq/2.8.0/parameters/#Run-pipeline-steps)
+
+> It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
+
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
@@ -139,7 +157,10 @@ For example, users working with unfinished genomes containing tens or even hundr
 
 To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`. This prevents methylation calls from being pre-sorted into individual chromosome files. Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
 
-> For a detailed list of different options available, please refer to the official [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/) and [bwa-meth](https://github.com/brentp/bwa-meth) documentation.
+For a detailed list of different options available, please refer to the official docs of:
+
+- [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
+- [bwa-meth](https://github.com/brentp/bwa-meth)
 
 ### Running the `test` profile
 
