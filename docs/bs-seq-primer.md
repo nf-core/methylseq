@@ -28,13 +28,9 @@
 Mapping bisulfite-treated sequences to a reference genome presents several computational challenges:
 
 1. **Reduced DNA Complexity**:
-
    - Due to the conversion of cytosines to thymines, the DNA code becomes less diverse, increasing the likelihood of ambiguous alignments
-
 2. **Multiple DNA Strands**:
-
    - The presence of four possible DNA strands (and their combinations) for each genomic locus increases the alignment search space
-
 3. **Variable Methylation States**:
    - Each read can theoretically represent any possible methylation state for a locus, further complicating the alignment process
 
@@ -54,16 +50,13 @@ Bisulfite sequencing converts unmethylated cytosines into uracils (later read as
 
 Aligning these three-base reads against a standard reference genome is non-trivial, as the original strand identity and methylation state are obscured by the conversion.
 
-To address these challenges, specialized “three-base aligners” have been developed to accurately map bisulfite-treated reads and infer their original strand context and methylation status. Here, we primarily highlight the aligners used in the nf-core/methylseq pipeline.
+To address these challenges, specialized “three-base aligners” have been developed to accurately map bisulfite-treated reads and infer their original strand context and methylation status. Here, we primarily summarise the aligners used in the nf-core/methylseq pipeline.
 
 ### Bismark ([docs](https://felixkrueger.github.io/Bismark/); [publication](https://pmc.ncbi.nlm.nih.gov/articles/PMC3102221/))
 
 - Bismark resolves strand ambiguity by performing up to four parallel alignments
-
-- First, sequencing reads are converted _in-silico_ to represent both forward and reverse strand conversions (C-to-T and G-to-A), mirroring fully bisulfite-converted versions of the reference genome
-
+- First, sequencing reads are converted _in silico_ to represent both forward and reverse strand conversions (C-to-T and G-to-A), mirroring fully bisulfite-converted versions of the reference genome
 - Each read set is then aligned using Bowtie2 (alternatively HISAT2 or minimap2) against equally converted references; this enables support for indels, local alignments, and bisulfite converted RNA-seq-type or long reads (e.g. EM-seq using Nanopore or Pac Bio reads)
-
 - By comparing these (up-to) four alignments, Bismark identifies each read’s correct strand origin
 
 This approach allows Bismark to handle directional, PBAT, amplicon, and non-directional libraries robustly and to accurately align reads that represent partially methylated cytosines.
@@ -71,8 +64,7 @@ This approach allows Bismark to handle directional, PBAT, amplicon, and non-dire
 ### BWA-Meth ([docs](https://github.com/brentp/bwa-meth); [publication](https://arxiv.org/abs/1401.1129))
 
 - BWA-Meth adapts the BWA-MEM algorithm for bisulfite data, providing efficient, flexible alignments with support for indels, local alignments, and streaming-based workflows
-
-- By converting reads _in-silico_ on the fly, BWA-Meth eliminates the need for intermediate files, reducing temporary storage requirements and simplifying the overall process
+- By converting reads _in silico_ on the fly, BWA-Meth eliminates the need for intermediate files, reducing temporary storage requirements and simplifying the overall process
 
 The result is a fast, resource-efficient aligner that integrates smoothly with downstream analysis tools.
 
@@ -89,8 +81,8 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 **References**:
 
 - **Bismark [paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC3102221/) and [official docs](https://felixkrueger.github.io/Bismark/)**
-- **BWA-Meth [paper](https://arxiv.org/abs/1401.1129) and [github](https://github.com/brentp/bwa-meth)**
-- **[NVIDIA Parabricks fq2bam_meth](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html)**
+- **BWA-Meth [paper](https://arxiv.org/abs/1401.1129) and [GitHub](https://github.com/brentp/bwa-meth)**
+- **[NVIDIA Parabricks `fq2bam_meth`](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html)**
 
 ## Additional Considerations for BS-seq:
 
@@ -102,7 +94,7 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 #### Quality Control (QC) Metrics:
 
 - **M-bias Plots**: Analysis tools can generate M-bias plots to visualize methylation bias across read positions. This helps identify technical artefacts, or non-uniform conversion at biased positiones at the ends of reads
-- **Adapter- and quality trimming**: Even more than standard sequencing data, bisulfite reads benefit from adapter removal and quality filtering. Tools like Trim Galore (often bundled with Bismark) ensure higher-quality alignments and more accurate methylation calls
+- **Adapter- and quality-trimming**: Even more than standard sequencing data, bisulfite reads benefit from adapter removal and quality filtering. Tools like Trim Galore (often bundled with Bismark) ensure higher-quality alignments and more accurate methylation calls
 
 #### Post-alignment deduplication and bias correction:
 
@@ -119,7 +111,7 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 
 #### Long-read bisulfite sequencing:
 
-- Although short-read Illumina sequencing predominates, emerging methods such as enzymaticallly converted methylation sequencing (EM-seq) are possible using long-read platforms (e.g., PacBio or Oxford Nanopore)
+- Although short-read Illumina sequencing predominates, emerging methods such as enzymatically converted methylation sequencing (EM-seq) are possible using long-read platforms (e.g., PacBio or Oxford Nanopore)
 - Aligning and calling methylation from longer reads introduces different challenges and opportunities, including better resolution of repetitive regions and phasing of haplotypes
 
 #### Experimental Design and Biological Replicates:
