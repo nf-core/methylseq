@@ -23,6 +23,14 @@
      - Reverse complement of OB (CTOB)
    - Depending on library type all four strands may end up in a sequencing library, adding to the complexity of analysis
 
+## **Applications of Bisulfite Sequencing**
+
+Bisulfite sequencing is employed to study:
+
+- **Genome-wide DNA methylation patterns**: Understanding epigenetic regulation of genes
+- **Differential methylation**: Investigating differences between different samples (e.g. healthy versus diseased states)
+- **Epigenetic inheritance**: Studying methylation changes across generations
+
 ## **Challenges in Mapping Bisulfite-Sequenced Reads**
 
 Mapping bisulfite-treated sequences to a reference genome presents several computational challenges:
@@ -33,16 +41,6 @@ Mapping bisulfite-treated sequences to a reference genome presents several compu
    - The presence of four possible DNA strands (and their combinations) for each genomic locus increases the alignment search space
 3. **Variable Methylation States**:
    - Each read can theoretically represent any possible methylation state for a locus, further complicating the alignment process
-
-## **Applications of Bisulfite Sequencing**
-
-Bisulfite sequencing is employed to study:
-
-- **Genome-wide DNA methylation patterns**: Understanding epigenetic regulation of genes
-- **Differential methylation**: Investigating differences between different samples (e.g. healthy versus diseased states)
-- **Epigenetic inheritance**: Studying methylation changes across generations
-
----
 
 ## Three-Base Aligners: Bismark and BWA-Meth
 
@@ -63,12 +61,25 @@ This approach allows Bismark to handle directional, PBAT, amplicon, and non-dire
 
 ### BWA-Meth ([docs](https://github.com/brentp/bwa-meth); [publication](https://arxiv.org/abs/1401.1129))
 
-- BWA-Meth adapts the BWA-MEM algorithm for bisulfite data, providing efficient, flexible alignments with support for indels, local alignments, and streaming-based workflows
-- By converting reads _in silico_ on the fly, BWA-Meth eliminates the need for intermediate files, reducing temporary storage requirements and simplifying the overall process
+- BWA-Meth adapts the BWA-MEM algorithm for bisulfite data, providing efficient, flexible alignments with support for indels, local alignments, and streaming-based workflows.
+- By converting reads _in silico_ on the fly, BWA-Meth eliminates the need for intermediate files, reducing temporary storage requirements and simplifying the overall process.
+- [Under the hood](https://github.com/brentp/bwa-meth/blob/master/bwameth.py), BWA-Meth maps bisulfite-converted reads to an _in silico_ converted reference. A typical command:
 
-The result is a fast, resource-efficient aligner that integrates smoothly with downstream analysis tools.
+```bash
+python bwameth.py --reference ref.fa A.fq B.fq
+```
 
-## At a glance
+is transparently translated into a command that pipes converted reads directly to bwa mem (or bwa-mem2) without creating temporary files:
+
+```bash
+bwa mem -pCMR ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
+# or, if using BWA-MEM2 indexing:
+bwa-mem2 mem -pCMR ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
+```
+
+Here, **`A.fq`** is converted **`C-to-T`** and **`B.fq`** is converted **`G-to-A`** on the fly, and both are streamed into the aligner. The output is the standard `SAM` alignment file.
+
+## Aligner Feature/Attribute Table
 
 | Feature/Attribute                     | **Bismark**                                                                                                                                              | **BWA-Meth**                                                                                                                           |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -102,7 +113,9 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 
 #### Context-specific methylation:
 
-- While the focus often lies on CpG methylation (the most studied context in mammals), accurate mapping and downstream tools can also call methylation in CHG and CHH contexts. This is particularly relevant for plant genomes where non-CpG methylation is biologically significant
+- While the focus often lies on CpG methylation (the most studied context in mammals), accurate mapping and downstream tools can also call methylation in CHG and CHH contexts, which are different sequence environments in which cytosine nucleotides can be found (e.g., “CpG” means a cytosine next to a guanine, while “CHG” and “CHH” indicate cytosines followed by different non-guanine nucleotides), and methylation patterns can vary depending on these contexts. This is particularly relevant for plant genomes where non-CpG methylation is biologically significant.
+
+Note: CpG, CHG, and CHH contexts .
 
 #### Large-scale analysis and cloud computing:
 
