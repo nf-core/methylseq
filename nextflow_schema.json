@@ -374,12 +374,18 @@
                 }
             }
         },
-        "bwa_meth_options": {
+        "bwameth_options": {
             "title": "bwa-meth options",
             "type": "object",
             "description": "",
             "default": "",
             "properties": {
+                "use_gpu": {
+                    "type": "boolean",
+                    "description": "Run Parabricks GPU-accelerated fq2bammeth module for alignment",
+                    "default": false,
+                    "fa_icon": "fas fa-dot-circle"
+                },
                 "min_depth": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
@@ -438,6 +444,25 @@
                 "skip_multiqc": {
                     "type": "boolean",
                     "description": "Skip MultiQC"
+                }
+            },
+            "fa_icon": "fas fa-fast-forward"
+        },
+        "run_pipeline_steps": {
+            "title": "Run pipeline steps",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "run_preseq": {
+                    "type": "boolean",
+                    "description": "Run preseq/lcextrap tool",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_qualimap": {
+                    "type": "boolean",
+                    "description": "Run qualimap/bamqc tool",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -576,7 +601,13 @@
                     "type": "string",
                     "fa_icon": "far fa-check-circle",
                     "description": "Base URL or local path to location of pipeline test dataset files",
-                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/",
+                    "hidden": true
+                },
+                "trace_report_suffix": {
+                    "type": "string",
+                    "fa_icon": "far calendar",
+                    "description": "Suffix to add to the trace report filename. Default is the date and time in the format yyyy-MM-dd_HH-mm-ss.",
                     "hidden": true
                 }
             }
@@ -605,13 +636,16 @@
             "$ref": "#/$defs/bismark_options"
         },
         {
-            "$ref": "#/$defs/bwa_meth_options"
+            "$ref": "#/$defs/bwameth_options"
         },
         {
             "$ref": "#/$defs/qualimap_options"
         },
         {
             "$ref": "#/$defs/skip_pipeline_steps"
+        },
+        {
+            "$ref": "#/$defs/run_pipeline_steps"
         },
         {
             "$ref": "#/$defs/generic_options"

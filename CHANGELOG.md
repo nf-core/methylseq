@@ -1,5 +1,34 @@
 # nf-core/methylseq
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
+
+### Bug fixes & refactoring
+
+- 🐛 fix fasta gunzip output [#462](https://github.com/nf-core/methylseq/pull/457)
+- 🐛 fix `bismark/align` not resuming from cache [#461](https://github.com/nf-core/methylseq/pull/457)
+- 🐛 uncompressed files won't be saved (https://github.com/nf-core/methylseq/pull/474)
+- Updated `conf/modules/samtools_index.config` publishDir configuration to dynamically enable `.bai` file publishing based on whether deduplication is skipped (`--skip_dedup` parameter). This publishing of index files now happens by default as compared to previous, when with `--save_align_intermeds` param.
+- 🔄 Updated template to nf-core/tools v3.1.0 [#490](https://github.com/nf-core/methylseq/pull/490)
+
+> Note: `bwameth/align` module still needs fixing for not resuming from cache. So, its cache has been made **`lenient`** (Minimal input file metadata (name and size only) are included in the cache keys) in its [config](./conf/modules/bwameth_align.config). This strategy provides a workaround for caching invalidation by current `bwameth/align` module requirement to touch the index files before alignment. An issue we hope to have fixed in a release soon.
+
+### Pipeline Updates
+
+- 🔧 Install `fastq_align_dedup_bismark` subworkflow from nf-core/subworkflows [#453](https://github.com/nf-core/methylseq/pull/457)
+- 🔧 Install `fasta_index_bismark_bwameth` subworkflow from nf-core/subworkflows [#466](https://github.com/nf-core/methylseq/pull/468)
+- 🔧 Install `fastq_align_dedup_bwameth` subworkflow from nf-core/subworkflows & introduce `use_gpu` param [#467](https://github.com/nf-core/methylseq/pull/475)
+- 🔧 Re-organise & split `conf/modules.config` to `conf/modules/` & `conf/subworkflows/` individual named configs [#459](https://github.com/nf-core/methylseq/pull/469)
+- 🔧 `run_preseq` param + skip preseq/lcextrap module by default [#458](https://github.com/nf-core/methylseq/pull/470)
+- 🔧 `run_qualimap` param + skip qualimap module by default [#367](https://github.com/nf-core/methylseq/pull/471)
+- 🔧 Raised Nextflow version requirement to `24.10.2`
+- 🔧 Add CI support for pipeline-level bwameth GPU Tests [#481](https://github.com/nf-core/methylseq/pull/478)
+- 🔧 create a test for samplesheet with technical replicates [#477](https://github.com/nf-core/methylseq/pull/486)
+- 🔧 Update README, docs/usage and docs/output docs [#487](https://github.com/nf-core/methylseq/pull/489)
+- 🔧 Add Bisulfite Sequencing & Three-Base Aligners primer doc [#405](https://github.com/nf-core/methylseq/pull/494)
+
 ## [v2.7.1](https://github.com/nf-core/methylseq/releases/tag/2.7.1) - [2024-10-27]
 
 ### Bug fixes & refactoring

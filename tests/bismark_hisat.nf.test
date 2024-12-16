@@ -3,12 +3,13 @@ nextflow_pipeline {
     name "Test Workflow main.nf"
     script "../main.nf"
     config "./nextflow.config"
+    tag "cpu"
 
     test("Params: bismark_hisat") {
         when {
             params {
-                aligner        = "bismark_hisat"
-                outdir         = "$outputDir"
+                aligner = "bismark_hisat"
+                outdir  = "$outputDir"
             }
         }
 
@@ -25,7 +26,7 @@ nextflow_pipeline {
                     // Number of tasks
                     workflow.trace.succeeded().size(),
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we tests pipelines on multiple Nextflow versions
-                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_pipeline_software_mqc_versions.yml"),
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     // All stable path name
                     stable_name,
                     // All files with stable contents

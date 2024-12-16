@@ -3,9 +3,9 @@ lint:
   files_exist:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
+    - .github/workflows/ci.yml
   modules_config: false
-nf_core_version: 3.0.2
-org_path:
+nf_core_version: 3.1.0
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
@@ -16,6 +16,4 @@ template:
   name: methylseq
   org: nf-core
   outdir: .
-  skip_features:
-  version: 2.7.1
-update:
+  version: 3.0.0
