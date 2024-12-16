@@ -155,9 +155,15 @@ You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-c
 
 Additional arguments can be appended to a command in a module by specifying them within the module’s custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module’s publishDir path can also be customized in these configurations.
 
-For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files. These errors are typically caused by the operating system’s limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files.
 
-To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`. This prevents methylation calls from being pre-sorted into individual chromosome files. Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+These errors are typically caused by the operating system’s limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+
+To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`.
+
+This prevents methylation calls from being pre-sorted into individual chromosome files.
+
+Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
 
 For a detailed list of different options available, please refer to the official docs of:
 
