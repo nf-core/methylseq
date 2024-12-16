@@ -16,6 +16,8 @@
 
 The nf-core/methylseq pipeline provides two distinct workflows for DNA methylation analysis. These workflows support different aligners and cater to a range of computational requirements.
 
+> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](./docs/bs-seq-primer.md)
+
 ### Workflow: Bismark
 
 By default, the nf-core/methylseq pipeline uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as the alignment tool. This configuration is optimized for most DNA methylation workflows and will run unless an alternative aligner is specified.

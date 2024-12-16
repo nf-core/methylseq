@@ -1,6 +1,6 @@
 # Bisulfite Sequencing & Three-Base Aligners Primer
 
-[Bisulfite sequencing](git@github.com:nf-core/methylseq.git) (**BS-seq**) is a widely-used technique to investigate **DNA methylation**, a crucial epigenetic modification that regulates gene expression without altering the DNA sequence.
+[Bisulfite sequencing](https://github.com/nf-core/methylseq) (**BS-seq**) is a widely-used technique to investigate **DNA methylation**, a crucial epigenetic modification that regulates gene expression without altering the DNA sequence.
 
 ## **Principle of Bisulfite Sequencing**
 
@@ -78,15 +78,13 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 
 ## At a glance
 
-| Feature/Attribute                     | **Bismark**                                                                                                 | **BWA-Meth**                                                                                                                           |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Core algorithm & approach**         | Uses Bowtie2/HISAT2/minimap2 for 3-letter alignments      | Uses BWA-MEM for 3-letter alignments |
-| **Computational efficiency**          | More computationally intensive                     | Generally faster and more efficient due to single alignment step|
-| **Output format & methylation calls** | Produces SAM/BAM, deduplication, direct methylation calls (CpG, CHG, CHH), bedGraph/coverage and cytosine context files with integrated QC and reporting              | Produces standard SAM/BAM; requires external tools (e.g., MethylDackel) for methylation calling and QC                                 |
-| **Complexity handling**               | (Up to) four-strand handling and different aligner options, enabling directional, PBAT, non-directional, amplicon, NOMe/NMT-seq, RNA-seq type, long-read (ONT/PacBio) EM-seq, etc.          | less complexity in handling multiple strands [fact check]                                    |
-| **Error tolerance & sensitivity**     | High sensitivity to bisulfite-induced mismatches, potentially more accurate for diverse states [really? fact check. Maybe remove from table]             | Good sensitivity, though slightly less tolerant to certain bisulfite mismatches compared to Bismark            [fact check]                        |
-| **Downstream analysis**               | Built-in methylation calling, filtering and (context-) reporting options                                | Requires external tools for methylation calling, offering more customization but added complexity                                      |
-| **Recommended when**                  | Accuracy and detailed methylation context are top priority, and ample computational resources are available | Speed (including GPU support), scalability, and modular workflows are essential, or when integrating with existing BWA-based pipelines |
+| Feature/Attribute                     | **Bismark**                                                                                                                                              | **BWA-Meth**                                                                                                                           |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Core algorithm & approach**         | Uses Bowtie2/HISAT2/minimap2 for 3-letter alignments                                                                                                     | Uses BWA-MEM for 3-letter alignments                                                                                                   |
+| **Computational efficiency**          | More computationally intensive                                                                                                                           | Generally faster and more efficient due to single alignment step                                                                       |
+| **Output format & methylation calls** | Produces SAM/BAM, deduplication, direct methylation calls (CpG, CHG, CHH), bedGraph/coverage and cytosine context files with integrated QC and reporting | Produces standard SAM/BAM; requires external tools (e.g., MethylDackel) for methylation calling and QC                                 |
+| **Downstream analysis**               | Built-in methylation calling, filtering and (context-) reporting options                                                                                 | Requires external tools for methylation calling, offering more customization but added complexity                                      |
+| **Recommended when**                  | Accuracy and detailed methylation context are top priority, and ample computational resources are available                                              | Speed (including GPU support), scalability, and modular workflows are essential, or when integrating with existing BWA-based pipelines |
 
 **References**:
 
@@ -96,35 +94,34 @@ The result is a fast, resource-efficient aligner that integrates smoothly with d
 
 ## Additional Considerations for BS-seq:
 
-1. Incomplete conversion and controls:
+#### Incomplete conversion and controls:
 
-- *Incomplete bisulfite conversion*: Not all cytosines may be converted to uracil (and eventually to thymine) during the bisulfite treatment step. This partial conversion can lead to overestimation of methylation levels
-- *Spike-In controls*: Often, fully unmethylated lambda DNA or other known-conversion controls are included to estimate and correct for the efficiency of the bisulfite reaction
+- **Incomplete bisulfite conversion**: Not all cytosines may be converted to uracil (and eventually to thymine) during the bisulfite treatment step. This partial conversion can lead to overestimation of methylation levels
+- **Spike-In controls**: Often, fully unmethylated lambda DNA or other known-conversion controls are included to estimate and correct for the efficiency of the bisulfite reaction
 
-2. Quality Control (QC) Metrics:
+#### Quality Control (QC) Metrics:
 
-- *M-bias Plots*: Analysis tools can generate M-bias plots to visualize methylation bias across read positions. This helps identify technical artefacts, or non-uniform conversion at biased positiones at the ends of reads
-- *Adapter- and quality trimming*: Even more than standard sequencing data, bisulfite reads benefit from adapter removal and quality filtering. Tools like Trim Galore (often bundled with Bismark) ensure higher-quality alignments and more accurate methylation calls
+- **M-bias Plots**: Analysis tools can generate M-bias plots to visualize methylation bias across read positions. This helps identify technical artefacts, or non-uniform conversion at biased positiones at the ends of reads
+- **Adapter- and quality trimming**: Even more than standard sequencing data, bisulfite reads benefit from adapter removal and quality filtering. Tools like Trim Galore (often bundled with Bismark) ensure higher-quality alignments and more accurate methylation calls
 
-3. Post-alignment deduplication and bias correction:
+#### Post-alignment deduplication and bias correction:
 
-- *PCR duplication removal*: Bisulfite sequencing libraries often contain PCR duplicates. Removing these duplicates is crucial to avoid artificially inflated methylation signals (relevant for statistics in downstream analysis)
+- **PCR duplication removal**: Bisulfite sequencing libraries often contain PCR duplicates. Removing these duplicates is crucial to avoid artificially inflated methylation signals (relevant for statistics in downstream analysis)
 
-
-4. *Context-specific methylation*:
+#### Context-specific methylation:
 
 - While the focus often lies on CpG methylation (the most studied context in mammals), accurate mapping and downstream tools can also call methylation in CHG and CHH contexts. This is particularly relevant for plant genomes where non-CpG methylation is biologically significant
 
-5. *Large-scale analysis and cloud computing*:
+#### Large-scale analysis and cloud computing:
 
 - As whole-genome bisulfite sequencing (WGBS) datasets grow larger, computational efficiency, scalability, and memory usage become critical factors
-- *Cloud-based computing*: Tools that integrate into cloud-based workflows (e.g., AWS, GCP) and employ parallelization or GPU-acceleration (e.g., NVIDIA Parabricks for `fq2bam_meth`) can significantly reduce runtime for large projects
+- **Cloud-based computing**: Tools that integrate into cloud-based workflows (e.g., AWS, GCP) and employ parallelization or GPU-acceleration (e.g., NVIDIA Parabricks for `fq2bam_meth`) can significantly reduce runtime for large projects
 
-6. *Long-read bisulfite sequencing*:
+#### Long-read bisulfite sequencing:
 
 - Although short-read Illumina sequencing predominates, emerging methods such as enzymaticallly converted methylation sequencing (EM-seq) are possible using long-read platforms (e.g., PacBio or Oxford Nanopore)
 - Aligning and calling methylation from longer reads introduces different challenges and opportunities, including better resolution of repetitive regions and phasing of haplotypes
 
-7. Experimental Design and Biological Replicates:
+#### Experimental Design and Biological Replicates:
 
 - Careful experimental design, including replicates and controls, is essential. BS-seq can be influenced by technical variability, and replication ensures statistical robustness in methylation calling and differential methylation analyses
