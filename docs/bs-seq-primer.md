@@ -115,7 +115,7 @@ Here, **`A.fq`** is converted **`C-to-T`** and **`B.fq`** is converted **`G-to-A
 
 - While the focus often lies on CpG methylation (the most studied context in mammals), accurate mapping and downstream tools can also call methylation in CHG and CHH contexts, which are different sequence environments in which cytosine nucleotides can be found (e.g., “CpG” means a cytosine next to a guanine, while “CHG” and “CHH” indicate cytosines followed by different non-guanine nucleotides), and methylation patterns can vary depending on these contexts. This is particularly relevant for plant genomes where non-CpG methylation is biologically significant.
 
-Note: CpG, CHG, and CHH contexts .
+Note: CpG, CHG, and CHH contexts.
 
 #### Large-scale analysis and cloud computing:
 
