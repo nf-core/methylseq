@@ -92,19 +92,19 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Parameters
 
-Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/2.8.0/parameters/).
+Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/3.0.0/parameters/).
 
-- [Input/output options](https://nf-co.re/methylseq/2.8.0/parameters/#input-output-options)
-- [Save intermediate files](https://nf-co.re/methylseq/2.8.0/parameters/#save-intermediate-files)
-- [Reference genome options](https://nf-co.re/methylseq/2.8.0/parameters/#reference-genome-options)
-- [Alignment options](https://nf-co.re/methylseq/2.8.0/parameters/#alignment-options)
-- [Special library types](https://nf-co.re/methylseq/2.8.0/parameters/#special-library-types)
-- [Adapter Trimming](https://nf-co.re/methylseq/2.8.0/parameters/#adapter-trimming)
-- [Bismark options](https://nf-co.re/methylseq/2.8.0/parameters/#bismark-options)
-- [bwa-meth options](https://nf-co.re/methylseq/2.8.0/parameters/#bwa-meth-options)
-- [Qualimap Options](https://nf-co.re/methylseq/2.8.0/parameters/#bwa-meth-options)
-- [Skip pipeline steps](https://nf-co.re/methylseq/2.8.0/parameters/#skip-pipeline-steps)
-- [Run pipeline steps](https://nf-co.re/methylseq/2.8.0/parameters/#Run-pipeline-steps)
+- [Input/output options](https://nf-co.re/methylseq/3.0.0/parameters/#input-output-options)
+- [Save intermediate files](https://nf-co.re/methylseq/3.0.0/parameters/#save-intermediate-files)
+- [Reference genome options](https://nf-co.re/methylseq/3.0.0/parameters/#reference-genome-options)
+- [Alignment options](https://nf-co.re/methylseq/3.0.0/parameters/#alignment-options)
+- [Special library types](https://nf-co.re/methylseq/3.0.0/parameters/#special-library-types)
+- [Adapter Trimming](https://nf-co.re/methylseq/3.0.0/parameters/#adapter-trimming)
+- [Bismark options](https://nf-co.re/methylseq/3.0.0/parameters/#bismark-options)
+- [bwa-meth options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
+- [Qualimap Options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
+- [Skip pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#skip-pipeline-steps)
+- [Run pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#Run-pipeline-steps)
 
 > It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
 

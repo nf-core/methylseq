@@ -16,4 +16,4 @@ template:
   name: methylseq
   org: nf-core
   outdir: .
-  version: 2.8.0
+  version: 3.0.0
