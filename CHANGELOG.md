@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
--
+- 🔧 Add `--mergeContext` ext.arg to `methyldackel/extract` when running with `--comprehensive` param to merge metrics from individual Cytosines in a CpG, producing per-CpG metrics rather than per-Cytosine metrics [#460](https://github.com/nf-core/methylseq/pull/)
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
