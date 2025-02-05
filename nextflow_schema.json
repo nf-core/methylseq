@@ -169,7 +169,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-outdent",
                     "description": "Preset for working with PBAT libraries.",
-                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 6` `--clip_r2 9` `--three_prime_clip_r1 6` `--three_prime_clip_r2 9`"
+                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`, unless `--skip_trimming_presets` is set to `true`"
                 },
                 "rrbs": {
                     "type": "boolean",
@@ -200,18 +200,6 @@
                     "fa_icon": "fas fa-cut",
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`",
                     "description": "Trimming preset for the Accel kit."
-                },
-                "cegx": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the CEGX bisulfite kit.",
-                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
-                },
-                "epignome": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the Epignome kit.",
-                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`"
                 },
                 "zymo": {
                     "type": "boolean",

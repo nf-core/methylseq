@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
--
+- 🔧 added new flag `skip_trimming_presets` to overwrite any preset trimming options
+- 🔧 update `pbat` trimming options to 8|8|8|8
+- 🔄 removed `cegx` and `epignome` preset trimming options (kits discontinued) 
+
+
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
