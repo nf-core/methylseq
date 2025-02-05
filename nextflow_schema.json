@@ -258,7 +258,7 @@
                 }
             },
             "fa_icon": "fas fa-cut",
-            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |\n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 6          | 9          | 6          | 9          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n| `--epignome`    | 8          | 8          | 8          | 8          |\n| `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         |\n| `--cegx`        | 6          | 6          | 2          | 2          |\n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
+            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter  | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim | \n|-----------------|------------|------------|------------|------------|\n | `--pbat`        | 8          | 8          | 8          | 8          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n|  `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         | \n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
         },
         "bismark_options": {
             "title": "Bismark options",
