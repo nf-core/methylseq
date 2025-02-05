@@ -261,6 +261,12 @@
                     "type": "integer",
                     "description": "Discard reads that become shorter than INT because of either quality or adapter trimming.",
                     "fa_icon": "fas fa-trash-alt"
+                },
+                "skip_trimming_presets": {
+                    "type": "boolean",
+                    "description": "Skip presetting trimming parameters entirely",
+                    "default": false,
+                    "fa_icon": "fas fa-dot-circle"
                 }
             },
             "fa_icon": "fas fa-cut",
