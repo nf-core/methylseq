@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
-- 🔧 added new flag `skip_trimming_presets` to overwrite any preset trimming options
-- 🔧 update `pbat` trimming options to 8|8|8|8
-- 🔄 removed `cegx` and `epignome` preset trimming options (kits discontinued) 
+- 🔧 Added new flag `skip_trimming_presets` to overwrite any preset trimming options
+- 🔧 Update `--pbat` trimming options to 8|8|8|8
+- 🔄 Removed `--cegx` and `--epignome` preset trimming options (kits discontinued) 
 
 
 
