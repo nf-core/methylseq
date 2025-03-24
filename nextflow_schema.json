@@ -424,6 +424,23 @@
                 }
             }
         },
+        "picard_options": {
+            "title": "Picard Options",
+            "type": "object",
+            "description": "Picard configurations",
+            "default": "",
+            "properties": {
+                "picard_regions_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+|\\.bed(\\.gz)?$",
+                    "description": "A BED file containing the target regions which will be passed to Picard.",
+                    "help_text": "This bed will be used to generate the intervals file needed by Picard to get metrics about ontarget/offtarget and coverage."
+                }
+            }
+        },
         "skip_pipeline_steps": {
             "title": "Skip pipeline steps",
             "type": "object",
@@ -462,6 +479,11 @@
                 "run_qualimap": {
                     "type": "boolean",
                     "description": "Run qualimap/bamqc tool",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_picardhsmetrics": {
+                    "type": "boolean",
+                    "description": "Run Picard Hs Metrics analysis",
                     "fa_icon": "fas fa-fast-forward"
                 }
             },
