@@ -62,7 +62,7 @@
                     },
                     "gunzip": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "81880787133db07d9b4c1febd152c090eb8325dc",
                         "installed_by": ["fasta_index_bismark_bwameth", "modules"]
                     },
                     "methyldackel/extract": {
