@@ -383,7 +383,6 @@
                 "use_gpu": {
                     "type": "boolean",
                     "description": "Run Parabricks GPU-accelerated fq2bammeth module for alignment",
-                    "default": false,
                     "fa_icon": "fas fa-dot-circle"
                 },
                 "min_depth": {
@@ -424,20 +423,20 @@
                 }
             }
         },
-        "picard_options": {
-            "title": "Picard Options",
+        "targeted_sequencing_analysis_options": {
+            "title": "Targeted Analysis Options",
             "type": "object",
-            "description": "Picard configurations",
+            "description": "All options related to the targeted analysis and the Picard CollectHsMetrics analysis.",
             "default": "",
             "properties": {
-                "picard_regions_file": {
+                "target_regions_file": {
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/plain",
                     "pattern": "^\\S+|\\.bed(\\.gz)?$",
-                    "description": "A BED file containing the target regions which will be passed to Picard.",
-                    "help_text": "This bed will be used to generate the intervals file needed by Picard to get metrics about ontarget/offtarget and coverage."
+                    "description": "A BED file containing the target regions which will be passed to Picard and for filtering the methylation results.",
+                    "help_text": "This bed will be used to generate the intervals file needed by Picard to get metrics about ontarget/offtarget and coverage and to filter the methylation results."
                 }
             }
         },
@@ -481,9 +480,9 @@
                     "description": "Run qualimap/bamqc tool",
                     "fa_icon": "fas fa-fast-forward"
                 },
-                "run_picardhsmetrics": {
+                "run_targeted_sequencing": {
                     "type": "boolean",
-                    "description": "Run Picard Hs Metrics analysis",
+                    "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions.",
                     "fa_icon": "fas fa-fast-forward"
                 }
             },
@@ -662,6 +661,9 @@
         },
         {
             "$ref": "#/$defs/qualimap_options"
+        },
+        {
+            "$ref": "#/$defs/targeted_sequencing_analysis_options"
         },
         {
             "$ref": "#/$defs/skip_pipeline_steps"

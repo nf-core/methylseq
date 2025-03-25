@@ -4,22 +4,20 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryMap                } from 'plugin/nf-schema'
-include { FASTQC                          } from '../../modules/nf-core/fastqc/main'
-include { TRIMGALORE                      } from '../../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC                  } from '../../modules/nf-core/qualimap/bamqc/main'
-include { PICARD_CREATESEQUENCEDICTIONARY } from '../../modules/nf-core/picard/createsequencedictionary/main'
-include { PICARD_BEDTOINTERVALLIST        } from '../../modules/nf-core/picard/bedtointervallist/main'
-include { PICARD_COLLECTHSMETRICS         } from '../../modules/nf-core/picard/collecthsmetrics/main'
-include { PRESEQ_LCEXTRAP                 } from '../../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                         } from '../../modules/nf-core/multiqc/main'
-include { CAT_FASTQ                       } from '../../modules/nf-core/cat/fastq/main'
-include { FASTQ_ALIGN_DEDUP_BISMARK       } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
-include { FASTQ_ALIGN_DEDUP_BWAMETH       } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
-include { paramsSummaryMultiqc            } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML          } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText          } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { paramsSummaryMap           } from 'plugin/nf-schema'
+include { FASTQC                     } from '../../modules/nf-core/fastqc/main'
+include { TRIMGALORE                 } from '../../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC             } from '../../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP            } from '../../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                    } from '../../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                  } from '../../modules/nf-core/cat/fastq/main'
+include { FASTQ_ALIGN_DEDUP_BISMARK  } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
+include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
+include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { PICARD_TARGETED_SEQUENCING } from '../../subworkflows/local/targeted_analysis'
+include { methodsDescriptionText     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -144,31 +142,35 @@ workflow METHYLSEQ {
     }
 
     //
-    // MODULE: Picard HsMetrics
-    // skipped by default. to use run with `--run_picardhsmetrics` param.
+    // MODULE: Targeted sequencing analysis
+    // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
-    if(params.run_picardhsmetrics){
+    if (params.run_targeted_sequencing){
         
-        PICARD_CREATESEQUENCEDICTIONARY(
-            ch_fasta
-        )
-        ch_fasta_dict = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
-        
-        PICARD_BEDTOINTERVALLIST(
-            params.picard_regions_file ? Channel.fromPath( params.picard_regions_file, checkIfExists: true ).toList() : [],
-            ch_fasta_dict,
-            Channel.empty()
-        )
-        ch_interval_list = PICARD_BEDTOINTERVALLIST.out.interval_list
-        
-        ch_bam_with_baits = ch_bam
-            .combine(ch_interval_list)
-        PICARD_COLLECTHSMETRICS(
-            ch_bam_with_baits,
-            ch_fasta,
-            ch_fasta_index,
-            ch_fasta_dict
-        )
+        // for the targeted analysis, the --target_regions_file must be defines
+        if (params.target_regions_file == null){
+            error "Error: --target_regions_file is required when --run_targeted_sequencing is set to true."
+        }
+        else {
+            
+            // check if the --target_regions_file exist
+            if (!file(params.target_regions_file).exists()) {
+                error "Error: The specified region bed file '${params.target_regions_file}' does not exist."
+            }
+        }
+
+        // Run Picard CollectHsMetrics
+        if (params.run_targeted_sequencing){
+            
+            PICARD_TARGETED_SEQUENCING (
+                ch_fasta,
+                ch_fasta_index,
+                params.target_regions_file,
+                ch_bam,
+                ch_bai
+            )
+            ch_versions = ch_versions.mix(PICARD_TARGETED_SEQUENCING.out.versions.unique{ it.baseName })
+        }
     }
 
     //
