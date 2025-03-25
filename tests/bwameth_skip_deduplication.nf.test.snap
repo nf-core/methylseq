@@ -13,7 +13,7 @@
                     "fastqc": "0.12.1"
                 },
                 "GUNZIP": {
-                    "gunzip": 1.1
+                    "gunzip": 1.13
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -248,8 +248,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.4"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-02-04T12:09:07.140301186"
+        "timestamp": "2025-03-25T05:29:02.645861824"
     }
 }
