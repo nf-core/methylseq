@@ -14,44 +14,56 @@ include { SAMTOOLS_INDEX                  } from '../../../modules/nf-core/samto
 workflow PICARD_TARGETED_SEQUENCING {
     
     take:
-    ch_fasta               // channel: /path/to/genome.fa
+    ch_fasta               // channel: [ [:], /path/to/genome.fa]
     ch_fasta_index         // channel: /path/to/genome.fa.fai
     target_regions         // channel: /path/to/target_regions.bed ## BED file with the covered targets
     ch_bam                 // channel: [ val(meta), [ bam ] ] ## BAM from alignment 
     ch_bai                 // channel: [ val(meta), [ bai ] ] ## BAI from alignment
 
     main:
-    versions = Channel.empty()
 
-    targets_with_meta = tuple(["id": file(target_regions).name.replaceFirst(~/\.[^\.]+$/, '')], target_regions)
+    // setup channels for versions, fasta, fasta_index and target regions
+    versions = Channel.empty()
+    ch_fasta_with_meta = ch_fasta
+      .map{meta, fasta -> tuple(meta + ["id": file(fasta).name.replaceFirst(~/\.[^\.]+$/, '')], fasta)}
+    ch_fasta_index_with_meta = ch_fasta_index.map{fasta_index -> 
+      tuple(
+        ["id": file(fasta_index).name.replaceFirst(~/\.[^\.]+$/, '')],
+        fasta_index
+        )
+      }
+    //fasta_index_with_meta = tuple(["id": file(fasta_index).BaseName], fasta_index)
+    target_regions_with_meta = tuple(["id": file(target_regions).BaseName], target_regions)
 
     /*
      * Creation of a dictionary for the reference genome
      */
-    PICARD_CREATESEQUENCEDICTIONARY(ch_fasta)
-    versions = versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
+    PICARD_CREATESEQUENCEDICTIONARY(ch_fasta_with_meta)
+    ch_sequence_dictionary = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
 
     /*
      * Conversion of the covered targets BED file to an interval list
      */
     PICARD_BEDTOINTERVALLIST (
-        targets_with_meta,
+        target_regions_with_meta,
         PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict,
         []
     )
-    versions = versions.mix(PICARD_BEDTOINTERVALLIST.out.versions)
-    interval_file = PICARD_BEDTOINTERVALLIST.out.interval_list.map{ it[1] }
+    ch_intervals = PICARD_BEDTOINTERVALLIST.out.interval_list.map{ it[1] }
     
     /*
      * Generation of the metrics
      */
-    PICARD_COLLECTHSMETRICS (
-       ch_bam.join(ch_bai),
-       ch_fasta,
-       ch_fasta_index,
-       interval_file
+    PICARD_COLLECTHSMETRICS(
+       ch_bam.join(ch_bai).combine(ch_intervals).combine(ch_intervals),
+       ch_fasta_with_meta,
+       ch_fasta_index_with_meta,
+       ch_sequence_dictionary
     )
-    versions = versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
+    versions = versions
+      .mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
+      .mix(PICARD_BEDTOINTERVALLIST.out.versions)
+      .mix(PICARD_COLLECTHSMETRICS.out.versions)
 
     emit:
     metrics  = PICARD_COLLECTHSMETRICS.out.metrics    // tuple val(meta), path("*_metrics")

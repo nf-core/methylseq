@@ -443,6 +443,11 @@
                     "pattern": "^\\S+|\\.bed(\\.gz)?$",
                     "description": "A BED file containing the target regions which will be passed to Picard and for filtering the methylation results.",
                     "help_text": "This bed will be used to generate the intervals file needed by Picard to get metrics about ontarget/offtarget and coverage and to filter the methylation results."
+                },
+                "run_picard_collecthsmetrics": {
+                    "type": "boolean",
+                    "description": "Run Picard CollectHsMetrics in the targeted analysis. If the param --run_targeted_sequencing if not specified or false, this will be ignored",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },

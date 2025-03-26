@@ -76,10 +76,14 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
             ch_bwameth_index = BWAMETH_INDEX.out.index
             ch_versions      = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
+    }
 
-        /*
-         * Generate fasta index if not supplied
-         */
+    /*
+    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
+    */
+    if (params.aligner == 'bwameth' | params.run_picard_collecthsmetrics){
+        
+        // already exising fasta indes
         if (fasta_index) {
             ch_fasta_index = Channel.value(file(fasta_index, checkIfExists: true))
         } else {

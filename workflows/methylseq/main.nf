@@ -160,7 +160,7 @@ workflow METHYLSEQ {
         }
 
         // Run Picard CollectHsMetrics
-        if (params.run_targeted_sequencing){
+        if (params.run_picard_collecthsmetrics){
             
             PICARD_TARGETED_SEQUENCING (
                 ch_fasta,
@@ -233,6 +233,11 @@ workflow METHYLSEQ {
     ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
     if (!params.skip_trimming) {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+    }
+    if (params.run_targeted_sequencing) {
+        if (params.run_picard_collecthsmetrics) {
+            ch_multiqc_files = ch_multiqc_files.mix(PICARD_TARGETED_SEQUENCING.out.metrics.collect{ it[1] }.ifEmpty([]))
+        }
     }
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 
