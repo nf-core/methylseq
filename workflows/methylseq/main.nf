@@ -16,6 +16,7 @@ include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_al
 include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { PICARD_TARGETED_SEQUENCING } from '../../subworkflows/local/targeted_analysis'
+include { BEDTOOLS_INTERSECT         } from '../../modules/nf-core/bedtools/intersect/main'
 include { methodsDescriptionText     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
@@ -109,6 +110,7 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
+        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions.unique{ it.baseName })
     }
@@ -124,6 +126,7 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
+        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
     }
@@ -170,6 +173,20 @@ workflow METHYLSEQ {
                 ch_bai
             )
             ch_versions = ch_versions.mix(PICARD_TARGETED_SEQUENCING.out.versions.unique{ it.baseName })
+        }
+
+        /*
+        * Intersect the output bedgraph with the targeted region intervals
+        */
+        if ( params.intersect_target ){
+            ch_covered_targets = Channel.fromPath(params.target_regions_file)
+            ch_bedgraph
+                .flatMap { meta, bedgraphs -> bedgraphs.collect{ bedgraph -> [meta, bedgraph] }}
+            // BEDTOOLS_INTERSECT(
+            //     ch_bedgraph.combine(ch_covered_targets),
+            //     "filtered.bedGraph"
+            // )
+            // versions = versions.mix(BEDTOOLS_INTERSECT.out.versions)
         }
     }
 
