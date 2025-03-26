@@ -11,6 +11,7 @@ include { QUALIMAP_BAMQC             } from '../../modules/nf-core/qualimap/bamq
 include { PRESEQ_LCEXTRAP            } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                    } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                  } from '../../modules/nf-core/cat/fastq/main'
+include { BEDTOOLS_INTERSECT         } from '../../modules/nf-core/bedtools/intersect/main'
 include { FASTQ_ALIGN_DEDUP_BISMARK  } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
