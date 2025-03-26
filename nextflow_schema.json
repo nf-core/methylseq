@@ -391,6 +391,12 @@
                     "help_text": "By default MethylDackel calls methylation just in the CpG context. The `--all_contexts` parameter sets MethylDackel to run with options `--CHH` and `--CHG` to call methylation in all three contexts.",
                     "fa_icon": "fas fa-ellipsis-h"
                 },
+                "merge_context": {
+                    "type": "boolean",
+                    "description": "Merges methylation results of the two Cytosines of a site.",
+                    "help_text": "By default methylation results are provided at the Cytosine level. This parameter specifies MethylDackel to run with the `--mergeContext` option, which will merge the metrics from the two Cytosines of a site into a single entry.",
+                    "fa_icon": "fas fa-ellipsis-h"
+                },
                 "min_depth": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
