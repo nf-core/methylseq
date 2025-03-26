@@ -13,7 +13,7 @@
                     "fastqc": "0.12.1"
                 },
                 "GUNZIP": {
-                    "gunzip": 1.1
+                    "gunzip": 1.13
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
@@ -249,10 +249,10 @@
                 "multiqc/bwameth/multiqc_data/multiqc_samtools_stats.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_sources.txt",
+                "multiqc/bwameth/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
+                "multiqc/bwameth/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
+                "multiqc/bwameth/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
                 "multiqc/bwameth/multiqc_data/picard_deduplication.txt",
-                "multiqc/bwameth/multiqc_data/picard_histogram.txt",
-                "multiqc/bwameth/multiqc_data/picard_histogram_1.txt",
-                "multiqc/bwameth/multiqc_data/picard_histogram_2.txt",
                 "multiqc/bwameth/multiqc_data/qualimap_coverage_histogram.txt",
                 "multiqc/bwameth/multiqc_data/qualimap_gc_content.txt",
                 "multiqc/bwameth/multiqc_data/qualimap_genome_fraction.txt",
@@ -424,11 +424,11 @@
                 "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
-                "multiqc_samtools_stats.txt:md5,bfcab6a9bd26872ecd2ec469d222c70b",
+                "multiqc_samtools_stats.txt:md5,f02f83f3df9208d616fda7a8609b2853",
+                "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_deduplication.txt:md5,7dacf4d4e0d7d2d9a7205beecfa7125c",
-                "picard_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "picard_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "picard_histogram_2.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "qualimap_coverage_histogram.txt:md5,c7c932e4d84b735bd434c1aaa713b6e6",
                 "qualimap_gc_content.txt:md5,893d1acba7a6675ff9e2eff2985fa4e3",
                 "qualimap_genome_fraction.txt:md5,ef5b6010b52a03f6e58356db7128d0dc",
@@ -475,8 +475,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.2"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2024-12-12T06:46:41.632218793"
+        "timestamp": "2025-03-25T05:25:20.481925379"
     }
 }
