@@ -15,8 +15,7 @@ include { FASTQ_ALIGN_DEDUP_BISMARK  } from '../../subworkflows/nf-core/fastq_al
 include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { PICARD_TARGETED_SEQUENCING } from '../../subworkflows/local/targeted_analysis'
-include { BEDTOOLS_INTERSECT         } from '../../modules/nf-core/bedtools/intersect/main'
+include { TARGETED_SEQUENCING        } from '../../subworkflows/local/targeted_sequencing'
 include { methodsDescriptionText     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
@@ -149,46 +148,17 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
     if (params.run_targeted_sequencing){
-        
-        // for the targeted analysis, the --target_regions_file must be defines
-        if (params.target_regions_file == null){
-            error "Error: --target_regions_file is required when --run_targeted_sequencing is set to true."
-        }
-        else {
-            
-            // check if the --target_regions_file exist
-            if (!file(params.target_regions_file).exists()) {
-                error "Error: The specified region bed file '${params.target_regions_file}' does not exist."
-            }
-        }
-
-        // Run Picard CollectHsMetrics
-        if (params.run_picard_collecthsmetrics){
-            
-            PICARD_TARGETED_SEQUENCING (
-                ch_fasta,
-                ch_fasta_index,
-                params.target_regions_file,
-                ch_bam,
-                ch_bai
-            )
-            ch_versions = ch_versions.mix(PICARD_TARGETED_SEQUENCING.out.versions.unique{ it.baseName })
-        }
-
-        /*
-        * Intersect the output bedgraph with the targeted region intervals
-        */
-        if ( params.intersect_target ){
-            ch_covered_targets = Channel.fromPath(params.target_regions_file)
-            ch_bedgraph
-                .flatMap { meta, bedgraphs -> bedgraphs.collect{ bedgraph -> [meta, bedgraph] }}
-            // BEDTOOLS_INTERSECT(
-            //     ch_bedgraph.combine(ch_covered_targets),
-            //     "filtered.bedGraph"
-            // )
-            // versions = versions.mix(BEDTOOLS_INTERSECT.out.versions)
-        }
+        TARGETED_SEQUENCING (
+            ch_bedgraph,
+            params.target_regions_file,
+            ch_fasta,
+            ch_fasta_index,
+            ch_bam,
+            ch_bai
+        )
+        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions.first())
     }
+  
 
     //
     // MODULE: Preseq LCEXTRAP
@@ -253,7 +223,7 @@ workflow METHYLSEQ {
     }
     if (params.run_targeted_sequencing) {
         if (params.run_picard_collecthsmetrics) {
-            ch_multiqc_files = ch_multiqc_files.mix(PICARD_TARGETED_SEQUENCING.out.metrics.collect{ it[1] }.ifEmpty([]))
+            ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
         }
     }
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
