@@ -131,7 +131,7 @@
                     "description": "The base path to the igenomes reference files",
                     "fa_icon": "fas fa-ban",
                     "hidden": true,
-                    "default": "s3://ngi-igenomes/igenomes/"
+                    "default": "s3://ngi-igenomes/igenomes"
                 }
             }
         },
