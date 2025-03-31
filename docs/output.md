@@ -22,6 +22,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
+- [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
@@ -188,7 +189,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
-Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` when running the pipeline.
+Note that the output may vary a little depending on whether you specify `--comprehensive`, `--non_directional`, `--all_contexts` or `--run_targeted_sequencing` when running the pipeline.
 
 Filename abbreviations stand for the following reference alignment strands:
 
@@ -204,9 +205,9 @@ Filename abbreviations stand for the following reference alignment strands:
 - `methylation_calls/XXX_context_sample.txt.gz`
   - Individual methylation calls, sorted into files according to cytosine context.
 - `methylation_coverage/sample.bismark.cov.gz`
-  - Coverage text file summarising cytosine methylation values.
+  - Coverage text file summarising cytosine methylation values. Available only for CpG context.
 - `bedGraph/sample.bedGraph.gz`
-  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates.
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates. Available only for CpG context.
 - `m-bias/sample.M-bias.txt`
   - QC data showing methylation bias across read lengths. See the [bismark documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#m-bias-plot) for more information.
 - `logs/sample_splitting_report.txt`
@@ -214,8 +215,17 @@ Filename abbreviations stand for the following reference alignment strands:
 
 **bwa-meth workflow output directory: `results/methyldackel/`**
 
+> **NB:** `CHG` and `CHH` contexts are not provided unless `--all_contexts` specified.
+
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
+
+### Targeted methylation
+
+If `--run_targeted_sequencing` is set to `true`, bedGraph files are filtered using the BED file passed to `--target_regions_file`. 
+
+- `sample.targeted.bedGraph`
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
 
 ### Bismark Reports
 
@@ -246,6 +256,15 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 
 - `sample_ccurve.txt`
   - This file contains plot values for the complexity curve, plotted in the MultiQC report.
+
+## HS Metrics
+
+[Picard CollecHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
+
+**Output directory: `results/enrichment_metrics`**
+
+- `sample.CollectHsMetrics.coverage_metrics`
+  - Text-based statistics showed also in the MultiQC report.
 
 ### MultiQC
 

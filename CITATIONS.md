@@ -49,6 +49,14 @@
 
   > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
 
+- [Samtools](https://doi.org/10.1093/gigascience/giab008)
+
+  > Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li, Twelve years of SAMtools and BCFtools, GigaScience, Volume 10, Issue 2, February 2021, giab008, doi: [10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
+
+- [Bedtools](https://doi.org/10.1093/bioinformatics/btq033)
+
+  > Aaron R. Quinlan, Ira M. Hall, BEDTools: a flexible suite of utilities for comparing genomic features, Bioinformatics, Volume 26, Issue 6, March 2010, Pages 841–842, doi: [10.1093/bioinformatics/btq03](https://doi.org/10.1093/bioinformatics/btq033)
+
 ## Software packaging/containerisation tools
 
 - [Anaconda](https://anaconda.com)

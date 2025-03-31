@@ -11,7 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
--
+- ✨ Add `--run_targeted_sequencing` to enable further analysis of targeted methylation experiments [#511](https://github.com/nf-core/methylseq/issues/511)
+- 🔧 Add `--all_contexts` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
+- 🔧 Add `--merge_context` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
+- 🔧 Decouple `--merge_non_CpG` from `--comprehensive` in Bismark's workflow [#388](https://github.com/nf-core/methylseq/issues/388)
+- 🔧 Install `bedtools/intersect` module from nf-core/modules
+- 🔧 Install `picard/collecthsmetrics` module from nf-core/modules
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
