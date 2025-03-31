@@ -393,9 +393,9 @@
                 },
                 "merge_context": {
                     "type": "boolean",
-                    "description": "Merges methylation results of the two Cytosines of a site.",
-                    "help_text": "By default methylation results are provided at the Cytosine level. This parameter specifies MethylDackel to run with the `--mergeContext` option, which will merge the metrics from the two Cytosines of a site into a single entry.",
-                    "fa_icon": "fas fa-ellipsis-h"
+                    "description": "Merges methylation metrics of the Cytosines in a given context.",
+                    "help_text": "By default methylation results are provided at the Cytosine level. This parameter specifies MethylDackel to run with the `--mergeContext` option, which will merge the metrics of the Cytosines in contexts CpG and CHG.",
+                    "fa_icon": "fa fa-magnet"
                 },
                 "min_depth": {
                     "type": "integer",
@@ -423,6 +423,7 @@
             "type": "object",
             "description": "Qualimap configurations",
             "default": "",
+            "fa_icon": "fas fa-chart-pie",
             "properties": {
                 "bamqc_regions_file": {
                     "type": "string",
@@ -431,15 +432,17 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.gff|\\.bed(\\.gz)?$",
                     "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
-                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data.",
+                    "fa_icon": "fas fa-file"
                 }
             }
         },
         "targeted_sequencing_analysis_options": {
             "title": "Targeted Sequencing Analysis Options",
             "type": "object",
-            "description": "All options related to the targeted analysis and the Picard CollectHsMetrics analysis.",
+            "description": "Targeted sequencing analysis configurations. They need `--run_targeted_sequencing` to have an effect",
             "default": "",
+            "fa_icon": "fas fa-bullseye",
             "properties": {
                 "target_regions_file": {
                     "type": "string",
@@ -447,12 +450,14 @@
                     "exists": true,
                     "mimetype": "text/plain",
                     "pattern": "^\\S+|\\.bed(\\.gz)?$",
-                    "description": "A BED file containing the target regions which will be passed to Picard and for filtering the methylation results.",
-                    "help_text": "This bed will be used to generate the intervals file needed by Picard to get metrics about ontarget/offtarget and coverage and to filter the methylation results."
+                    "description": "A BED file containing the target regions",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
+                    "fa_icon": "fas fa-file"
                 },
                 "run_picard_collecthsmetrics": {
                     "type": "boolean",
-                    "description": "Run Picard CollectHsMetrics in the targeted analysis. If the param --run_targeted_sequencing if not specified or false, this will be ignored",
+                    "description": "Run Picard CollectHsMetrics in the targeted analysis",
+                    "help_text": "Instructs the pipeline to run `picard CollectHsMetrics` with the target regions BED on the BAM files to estimate several enrichment metrics",
                     "fa_icon": "fas fa-fast-forward"
                 }
             }
@@ -476,7 +481,8 @@
                 },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip MultiQC"
+                    "description": "Skip MultiQC",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -499,7 +505,7 @@
                 },
                 "run_targeted_sequencing": {
                     "type": "boolean",
-                    "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions.",
+                    "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions",
                     "fa_icon": "fas fa-fast-forward"
                 }
             },
