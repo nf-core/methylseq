@@ -74,6 +74,7 @@ jobs:
         with:
           tags: "gpu"
           max_shards: 2
+          filters: "pipeline"
 
       - name: debug
         run: |
@@ -128,7 +129,9 @@ jobs:
           profile: ${{ matrix.profile }},gpu
           shard: ${{ matrix.shard }}
           total_shards: ${{ env.TOTAL_SHARDS }}
+          filters: "pipeline"
           tags: "gpu"
+          path: "test.tap"
 
   confirm-pass:
     runs-on:

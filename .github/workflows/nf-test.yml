@@ -73,6 +73,7 @@ jobs:
         with:
           max_shards: 15
           tags: "cpu"
+          filters: "pipeline"
 
       - name: debug
         run: |
@@ -126,7 +127,9 @@ jobs:
           profile: ${{ matrix.profile }}
           shard: ${{ matrix.shard }}
           total_shards: ${{ env.TOTAL_SHARDS }}
+          filters: "pipeline"
           tags: "cpu"
+          path: "test.tap"
 
   confirm-pass:
     runs-on: ${{ github.event.inputs.runners || github.run_number > 1 && 'ubuntu-latest' || 'self-hosted' }}
