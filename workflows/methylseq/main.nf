@@ -158,7 +158,6 @@ workflow METHYLSEQ {
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions.first())
     }
-  
 
     //
     // MODULE: Preseq LCEXTRAP

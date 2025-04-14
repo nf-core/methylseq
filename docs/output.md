@@ -222,7 +222,7 @@ Filename abbreviations stand for the following reference alignment strands:
 
 ### Targeted methylation
 
-If `--run_targeted_sequencing` is set to `true`, bedGraph files are filtered using the BED file passed to `--target_regions_file`. 
+If `--run_targeted_sequencing` is set to `true`, bedGraph files are filtered using the BED file passed to `--target_regions_file`.
 
 - `sample.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
