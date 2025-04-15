@@ -30,7 +30,7 @@ env:
 
 jobs:
   get-shards:
-    runs-on: ${{ github.event.inputs.runners || github.run_number > 1 && 'ubuntu-latest' || 'self-hosted' }}
+    runs-on: "runs-on=${{ github.run_id }}/family=g4dn.xlarge/image=ubuntu24-gpu-x64"
     name: "Get Shards"
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
@@ -95,8 +95,10 @@ jobs:
           filters: ${{ matrix.filters }}
           tags: "gpu"
 
-  confirm-pass:
-    runs-on: ${{ github.event.inputs.runners || github.run_number > 1 && 'ubuntu-latest' || 'self-hosted' }}
+  confirm-pass-gpu:
+    runs-on:
+      - runs-on=${{ github.run_id }}-confirm-pass
+      - runner=2cpu-linux-x64
     needs: [nf-test-gpu]
     if: always()
     steps:
