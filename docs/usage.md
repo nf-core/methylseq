@@ -176,7 +176,6 @@ Every nf-core pipeline comes with test data than can be run using `-profile test
 
 ```bash
 nextflow run nf-core/methylseq \
-  --input samplesheet.csv \
   --outdir <OUTDIR> \
   --genome GRCh38 \
   -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>

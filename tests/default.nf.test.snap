@@ -23,7 +23,7 @@
                     "fastqc": "0.12.1"
                 },
                 "GUNZIP": {
-                    "gunzip": 1.1
+                    "gunzip": 1.13
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -31,7 +31,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v3.0.0"
+                    "nf-core/methylseq": "v3.1.0dev"
                 }
             },
             [
@@ -369,8 +369,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.2"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2024-12-12T06:55:35.766947967"
+        "timestamp": "2025-03-25T05:34:50.680481536"
     }
 }
