@@ -69,13 +69,15 @@ workflow METHYLSEQ {
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_fastq
-    )
-    ch_fastqc_html   = FASTQC.out.html
-    ch_fastqc_zip    = FASTQC.out.zip
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
-    ch_versions      = ch_versions.mix(FASTQC.out.versions.first())
+    if (!params.skip_fastqc) {
+        FASTQC (
+            ch_fastq
+        )
+        ch_fastqc_html   = FASTQC.out.html
+        ch_fastqc_zip    = FASTQC.out.zip
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
+        ch_versions      = ch_versions.mix(FASTQC.out.versions.first())
+    }
 
     //
     // MODULE: Run TrimGalore!
@@ -201,7 +203,9 @@ workflow METHYLSEQ {
     if (!params.skip_trimming) {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
     }
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+    if (!params.skip_fastqc) {
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+    }
 
     MULTIQC (
         ch_multiqc_files.collect(),
