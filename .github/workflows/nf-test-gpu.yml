@@ -30,7 +30,10 @@ env:
 
 jobs:
   get-shards:
-    runs-on: "runs-on=${{ github.run_id }}/family=g4dn.xlarge/image=ubuntu24-gpu-x64"
+    runs-on:
+      - runs-on=${{ github.run_id }}-nf-test-changes-gpu
+      - runner=4cpu-linux-x64
+      - image=ubuntu22-full-x64
     name: "Get Shards"
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
