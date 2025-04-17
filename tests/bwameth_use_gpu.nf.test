@@ -4,6 +4,7 @@ nextflow_pipeline {
     script "../main.nf"
     config "./nextflow.config"
     tag "gpu"
+    // FIXME triggering gpu tests
 
     test("Params: bwameth | use_gpu") {
         when {
