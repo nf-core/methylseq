@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
-- 🔧 Removed parameter `use_gpu`. Added the `gpu` profile with `--profile gpu` is adequate to activate the GPU-based pathways [#520](https://github.com/nf-core/methylseq/pull/520)
+- 🔧 Removed parameter `use_gpu`. Adding the `gpu` profile with `--profile gpu` is adequate to activate the GPU-based pathways [#520](https://github.com/nf-core/methylseq/pull/520)
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
