@@ -10,7 +10,6 @@ nextflow_pipeline {
             params {
                 input   = "${projectDir}/assets/samplesheet_gpu.csv"
                 aligner = "bwameth" // uses parabricks/fq2bammeth
-                use_gpu = true
                 outdir  = "$outputDir"
             }
         }
