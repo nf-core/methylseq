@@ -156,7 +156,7 @@
                     },
                     "fastq_align_dedup_bwameth": {
                         "branch": "master",
-                        "git_sha": "bd5f75ccaf2345269810e66e85de8a70e4de8764",
+                        "git_sha": "e55eae4a09b659522cf1b7898b5644fe06f66198",
                         "installed_by": ["subworkflows"]
                     },
                     "utils_nextflow_pipeline": {
