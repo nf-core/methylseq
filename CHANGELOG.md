@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🔙 Reverted PR #523 which changes subworkflows directly in the pipeline.
 - 🔄 Updated template to nf-core/tools v3.2.0 [#](https://github.com/nf-core/methylseq/pull/)
 
 ### Pipeline Updates
