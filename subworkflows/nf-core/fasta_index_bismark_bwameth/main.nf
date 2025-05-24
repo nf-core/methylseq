@@ -81,7 +81,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
          * Generate fasta index if not supplied
          */
         if (fasta_index) {
-            ch_fasta_index = Channel.value(file(fasta_index, checkIfExists: true)).map{ index -> [ [:], index ]}
+            ch_fasta_index = Channel.value(file(fasta_index, checkIfExists: true))
         } else {
             SAMTOOLS_FAIDX(
                 ch_fasta,
@@ -91,7 +91,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
             ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
-    ch_fasta_index.view()
 
     emit:
     fasta         = ch_fasta         // channel: [ val(meta), [ fasta ] ]
