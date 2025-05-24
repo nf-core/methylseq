@@ -6,6 +6,7 @@ nextflow_pipeline {
     tag "gpu"
 
     test("Params: bwameth | use_gpu") {
+
         when {
             params {
                 input   = "${projectDir}/assets/samplesheet_gpu.csv"
