@@ -35,7 +35,7 @@ jobs:
   get-shards:
     runs-on:
       - runs-on=${{ github.run_id }}-nf-test-get-shards
-      - runner=4cpu-linux-x64
+      - runner=2cpu-linux-x64
     name: "Get Shards"
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
