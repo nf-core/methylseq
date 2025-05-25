@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
-- 🐛 fix when fasta idx is not provided and bwameth is on. The error is: `Not a valid path value type: java.util.LinkedHashMap ([:])`. To replicate this you can comment the `fasta_index` in the test data.
+- 🔙 Reverted PR #523 which changes subworkflows directly in the pipeline.
 - 🔄 Updated template to nf-core/tools v3.2.0 [#](https://github.com/nf-core/methylseq/pull/)
 - 🐛 bumped the minimum for `PARABRICKS_FQ2BAMMETH` to 100.GB as suggested by the docs [#528](https://github.com/nf-core/methylseq/issues/528)
 
