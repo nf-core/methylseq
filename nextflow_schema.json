@@ -373,12 +373,6 @@
             "description": "",
             "default": "",
             "properties": {
-                "use_gpu": {
-                    "type": "boolean",
-                    "description": "Run Parabricks GPU-accelerated fq2bammeth module for alignment",
-                    "default": false,
-                    "fa_icon": "fas fa-dot-circle"
-                },
                 "min_depth": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
