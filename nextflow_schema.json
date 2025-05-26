@@ -169,7 +169,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-outdent",
                     "description": "Preset for working with PBAT libraries.",
-                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 6` `--clip_r2 9` `--three_prime_clip_r1 6` `--three_prime_clip_r2 9`"
+                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`, unless `--skip_trimming_presets` is set to `true`"
                 },
                 "rrbs": {
                     "type": "boolean",
@@ -201,18 +201,6 @@
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`",
                     "description": "Trimming preset for the Accel kit."
                 },
-                "cegx": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the CEGX bisulfite kit.",
-                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
-                },
-                "epignome": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the Epignome kit.",
-                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`"
-                },
                 "zymo": {
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
@@ -225,7 +213,7 @@
         "adapter_trimming": {
             "title": "Adapter Trimming",
             "type": "object",
-            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.",
+            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.\n\nIn addition to manually specifying bases to be hard-clipped, the workflow has a number of parameter presets:\n\n| Parameter  | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim | \n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 8          | 8          | 8          | 8          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n|  `--accel`      | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         | \n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely.\nFurther, `--skip_trimming_presets` disables setting any presets for hard-clipping, thereby uncoupling trimming from specific alignment modes entirely",
             "default": "",
             "properties": {
                 "clip_r1": {
@@ -261,10 +249,15 @@
                     "type": "integer",
                     "description": "Discard reads that become shorter than INT because of either quality or adapter trimming.",
                     "fa_icon": "fas fa-trash-alt"
+                },
+                "skip_trimming_presets": {
+                    "type": "boolean",
+                    "description": "Skip presetting trimming parameters entirely",
+                    "default": false,
+                    "fa_icon": "fas fa-dot-circle"
                 }
             },
-            "fa_icon": "fas fa-cut",
-            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |\n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 6          | 9          | 6          | 9          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n| `--epignome`    | 8          | 8          | 8          | 8          |\n| `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         |\n| `--cegx`        | 6          | 6          | 2          | 2          |\n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
+            "fa_icon": "fas fa-cut"
         },
         "bismark_options": {
             "title": "Bismark options",
