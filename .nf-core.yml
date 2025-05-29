@@ -5,7 +5,7 @@ lint:
     - conf/modules.config
     - .github/workflows/ci.yml
   modules_config: false
-nf_core_version: 3.2.0
+nf_core_version: 3.2.1
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
