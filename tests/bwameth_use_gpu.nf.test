@@ -6,11 +6,11 @@ nextflow_pipeline {
     tag "gpu"
 
     test("Params: bwameth | use_gpu") {
+
         when {
             params {
                 input   = "${projectDir}/assets/samplesheet_gpu.csv"
                 aligner = "bwameth" // uses parabricks/fq2bammeth
-                use_gpu = true
                 outdir  = "$outputDir"
             }
         }

@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🔙 Reverted PR #523 which changes subworkflows directly in the pipeline.
 - 🔄 Updated template to nf-core/tools v3.2.0 [#](https://github.com/nf-core/methylseq/pull/)
+- 🐛 bumped the minimum for `PARABRICKS_FQ2BAMMETH` to 100.GB as suggested by the docs [#528](https://github.com/nf-core/methylseq/issues/528)
+- 🐛 fix parabricks/fq2bammeth failure on AWS Batch like executors where symlinks don't exist [#536](https://github.com/nf-core/methylseq/issues/536)
 
 ### Pipeline Updates
 
@@ -17,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Decouple `--merge_non_CpG` from `--comprehensive` in Bismark's workflow [#388](https://github.com/nf-core/methylseq/issues/388)
 - 🔧 Install `bedtools/intersect` module from nf-core/modules
 - 🔧 Install `picard/collecthsmetrics` module from nf-core/modules
+- 🔧 Added new flag `skip_trimming_presets` to overwrite any preset trimming options [#560](https://github.com/nf-core/methylseq/pull/506)
+- 🔧 Update `--pbat` trimming options to 8|8|8|8 [#560](https://github.com/nf-core/methylseq/pull/506)
+- 🔄 Removed `--cegx` and `--epignome` preset trimming options (kits discontinued) [#560](https://github.com/nf-core/methylseq/pull/506)
+- 🔧 Removed parameter `use_gpu`. Adding the `gpu` profile with `--profile gpu` is adequate to activate the GPU-based pathways [#520](https://github.com/nf-core/methylseq/pull/520)
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
