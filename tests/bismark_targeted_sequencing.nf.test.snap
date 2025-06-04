@@ -3,6 +3,9 @@
         "content": [
             46,
             {
+                "BEDTOOLS_INTERSECT": {
+                    "bedtools": "2.31.1"
+                },
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
                 },
@@ -14,6 +17,12 @@
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.3.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.3.0"
                 },
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.3.0"
@@ -396,7 +405,7 @@
             "nf-test": "0.9.2",
             "nextflow": "24.10.4"
         },
-        "timestamp": "2025-04-14T13:28:48.426231"
+        "timestamp": "2025-06-04T19:09:36.196939812"
     },
     "Params: bismark | run_targeted_sequencing": {
         "content": [
