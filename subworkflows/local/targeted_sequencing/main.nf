@@ -39,7 +39,7 @@ workflow TARGETED_SEQUENCING {
             error "Error: The specified region bed file '${target_regions}' does not exist."
         }
     }
-    versions = Channel.empty()
+    ch_versions = Channel.empty()
 
     /*
     * Intersect bedGraph files with target regions
@@ -53,15 +53,14 @@ workflow TARGETED_SEQUENCING {
         .combine(Channel.fromPath(params.target_regions_file))
 
     BEDTOOLS_INTERSECT(ch_bedgraphs_target, [[:], []])
-    versions = versions.mix(BEDTOOLS_INTERSECT.out.versions)
+    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 
     /*
     * Run Picard CollectHSMetrics
     */
-    picard_metrics = Channel.empty()
+    ch_picard_metrics = Channel.empty()
     if (params.run_picard_collecthsmetrics){
-        // setup channels for versions, fasta, fasta_index and target regions
-        versions = Channel.empty()
+        // setup channels fasta, fasta_index and target regions
         ch_fasta_with_meta = ch_fasta
             .map { meta, fasta -> tuple(meta + ["id": file(fasta).name.replaceFirst(~/\.[^\.]+$/, '')], fasta)}
         ch_fasta_index_with_meta = ch_fasta_index.map{fasta_index ->
@@ -77,6 +76,7 @@ workflow TARGETED_SEQUENCING {
         */
         PICARD_CREATESEQUENCEDICTIONARY(ch_fasta_with_meta)
         ch_sequence_dictionary = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
+        ch_versions = ch_versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
 
         /*
         * Conversion of the covered targets BED file to an interval list
@@ -87,6 +87,7 @@ workflow TARGETED_SEQUENCING {
             []
         )
         ch_intervals = PICARD_BEDTOINTERVALLIST.out.interval_list.map{ it[1] }
+        ch_versions = ch_versions.mix(PICARD_BEDTOINTERVALLIST.out.versions)
 
         /*
         * Generation of the metrics
@@ -97,15 +98,11 @@ workflow TARGETED_SEQUENCING {
             ch_fasta_index_with_meta,
             ch_sequence_dictionary
         )
-        picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics
-
-        versions = versions
-            .mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
-            .mix(PICARD_BEDTOINTERVALLIST.out.versions)
-            .mix(PICARD_COLLECTHSMETRICS.out.versions)
+        ch_picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics
+        ch_versions = ch_versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
     }
 
     emit:
-    picard_metrics        // tuple val(meta), path("*_metrics")
-    versions              // path: *.version.txt
+    picard_metrics  = ch_picard_metrics    // tuple val(meta), path("*_metrics")
+    versions        = ch_versions          // path: *.version.txt
 }

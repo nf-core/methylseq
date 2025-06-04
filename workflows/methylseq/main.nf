@@ -157,7 +157,7 @@ workflow METHYLSEQ {
             ch_bam,
             ch_bai
         )
-        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions.first())
+        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }
 
     //
