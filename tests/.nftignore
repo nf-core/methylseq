@@ -1,3 +1,4 @@
+.DS_Store
 */alignments/logs/*.txt
 */{alignments,deduplicated}/*.{bam,bam.bai}
 */deduplicated/logs/*.txt

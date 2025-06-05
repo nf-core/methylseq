@@ -1,9 +1,21 @@
 name: Run nf-tests
 on:
   push:
+    paths-ignore:
+      - "docs/**"
+      - "**/meta.yml"
+      - "**/*.md"
+      - "**/*.png"
+      - "**/*.svg"
     branches:
       - dev
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/meta.yml"
+      - "**/*.md"
+      - "**/*.png"
+      - "**/*.svg"
   release:
     types: [published]
   workflow_dispatch:
