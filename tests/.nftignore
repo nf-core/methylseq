@@ -23,3 +23,4 @@ qualimap/**/raw_data_qualimapReport/*
 trimgalore/fastqc/*.html
 trimgalore/fastqc/zips/*.zip
 trimgalore/logs/*.txt
+enrichment_metrics/*

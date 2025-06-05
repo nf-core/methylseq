@@ -148,12 +148,6 @@
                     "fa_icon": "fas fa-dot-circle",
                     "enum": ["bismark", "bismark_hisat", "bwameth"],
                     "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
-                },
-                "comprehensive": {
-                    "type": "boolean",
-                    "description": "Output information for all cytosine contexts.",
-                    "fa_icon": "fas fa-arrows-alt",
-                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
                 }
             },
             "required": ["aligner"],
@@ -364,6 +358,12 @@
                     "fa_icon": "fas fa-dna",
                     "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
                     "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
+                },
+                "comprehensive": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Merges methylation calls for every strand into a single, context dependent file.",
+                    "help_text": "By default `bismark_methylation_extractor` will produce a strand-specific output named as OT, OB, CTOT or CTOB. This flag will merge all strands into a single, context dependent file."
                 }
             }
         },
@@ -373,6 +373,18 @@
             "description": "",
             "default": "",
             "properties": {
+                "all_contexts": {
+                    "type": "boolean",
+                    "description": "Call methylation in all three CpG, CHG and CHH contexts.",
+                    "help_text": "By default MethylDackel calls methylation just in the CpG context. The `--all_contexts` parameter sets MethylDackel to run with options `--CHH` and `--CHG` to call methylation in all three contexts.",
+                    "fa_icon": "fas fa-ellipsis-h"
+                },
+                "merge_context": {
+                    "type": "boolean",
+                    "description": "Merges methylation metrics of the Cytosines in a given context.",
+                    "help_text": "By default methylation results are provided at the Cytosine level. This parameter specifies MethylDackel to run with the `--mergeContext` option, which will merge the metrics of the Cytosines in contexts CpG and CHG.",
+                    "fa_icon": "fa fa-magnet"
+                },
                 "min_depth": {
                     "type": "integer",
                     "description": "Specify a minimum read coverage for MethylDackel to report a methylation call.",
@@ -399,6 +411,7 @@
             "type": "object",
             "description": "Qualimap configurations",
             "default": "",
+            "fa_icon": "fas fa-chart-pie",
             "properties": {
                 "bamqc_regions_file": {
                     "type": "string",
@@ -407,7 +420,33 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.gff|\\.bed(\\.gz)?$",
                     "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
-                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data.",
+                    "fa_icon": "fas fa-file"
+                }
+            }
+        },
+        "targeted_sequencing_analysis_options": {
+            "title": "Targeted Sequencing Analysis Options",
+            "type": "object",
+            "description": "Targeted sequencing analysis configurations. They need `--run_targeted_sequencing` to have an effect",
+            "default": "",
+            "fa_icon": "fas fa-bullseye",
+            "properties": {
+                "target_regions_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+|\\.bed(\\.gz)?$",
+                    "description": "A BED file containing the target regions",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
+                    "fa_icon": "fas fa-file"
+                },
+                "run_picard_collecthsmetrics": {
+                    "type": "boolean",
+                    "description": "Run Picard CollectHsMetrics in the targeted analysis",
+                    "help_text": "Instructs the pipeline to run `picard CollectHsMetrics` with the target regions BED on the BAM files to estimate several enrichment metrics",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },
@@ -430,7 +469,8 @@
                 },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip MultiQC"
+                    "description": "Skip MultiQC",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -449,6 +489,11 @@
                 "run_qualimap": {
                     "type": "boolean",
                     "description": "Run qualimap/bamqc tool",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_targeted_sequencing": {
+                    "type": "boolean",
+                    "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions",
                     "fa_icon": "fas fa-fast-forward"
                 }
             },
@@ -627,6 +672,9 @@
         },
         {
             "$ref": "#/$defs/qualimap_options"
+        },
+        {
+            "$ref": "#/$defs/targeted_sequencing_analysis_options"
         },
         {
             "$ref": "#/$defs/skip_pipeline_steps"

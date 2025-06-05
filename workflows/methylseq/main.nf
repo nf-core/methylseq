@@ -4,19 +4,20 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { FASTQC                    } from '../../modules/nf-core/fastqc/main'
-include { TRIMGALORE                } from '../../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
-include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
-include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
-include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
-include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { paramsSummaryMap           } from 'plugin/nf-schema'
+include { FASTQC                     } from '../../modules/nf-core/fastqc/main'
+include { TRIMGALORE                 } from '../../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC             } from '../../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP            } from '../../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                    } from '../../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                  } from '../../modules/nf-core/cat/fastq/main'
+include { FASTQ_ALIGN_DEDUP_BISMARK  } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
+include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
+include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { TARGETED_SEQUENCING        } from '../../subworkflows/local/targeted_sequencing'
+include { methodsDescriptionText     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,6 +109,7 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
+        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions.unique{ it.baseName })
     }
@@ -124,6 +126,7 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
+        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
     }
@@ -139,6 +142,22 @@ workflow METHYLSEQ {
         )
         ch_qualimap = QUALIMAP_BAMQC.out.results
         ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+    }
+
+    //
+    // MODULE: Targeted sequencing analysis
+    // skipped by default. to use run with `--run_targeted_sequencing` param.
+    //
+    if (params.run_targeted_sequencing){
+        TARGETED_SEQUENCING (
+            ch_bedgraph,
+            params.target_regions_file,
+            ch_fasta,
+            ch_fasta_index,
+            ch_bam,
+            ch_bai
+        )
+        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }
 
     //
@@ -201,6 +220,11 @@ workflow METHYLSEQ {
     ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
     if (!params.skip_trimming) {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+    }
+    if (params.run_targeted_sequencing) {
+        if (params.run_picard_collecthsmetrics) {
+            ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
+        }
     }
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
 

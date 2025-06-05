@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
+- ✨ Add `--run_targeted_sequencing` to enable further analysis of targeted methylation experiments [#511](https://github.com/nf-core/methylseq/issues/511)
+- 🔧 Add `--all_contexts` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
+- 🔧 Add `--merge_context` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
+- 🔧 Decouple `--merge_non_CpG` from `--comprehensive` in Bismark's workflow [#388](https://github.com/nf-core/methylseq/issues/388)
+- 🔧 Install `bedtools/intersect` module from nf-core/modules
+- 🔧 Install `picard/collecthsmetrics` module from nf-core/modules
 - 🔧 Added new flag `skip_trimming_presets` to overwrite any preset trimming options [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔧 Update `--pbat` trimming options to 8|8|8|8 [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔄 Removed `--cegx` and `--epignome` preset trimming options (kits discontinued) [#560](https://github.com/nf-core/methylseq/pull/506)
