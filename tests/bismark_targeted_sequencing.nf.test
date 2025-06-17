@@ -39,13 +39,12 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bismark | run_targeted_sequencing | run_picard_collecthsmetrics") {
+    test("Params: bismark | run_targeted_sequencing | collecthsmetrics") {
         when {
             params {
                 outdir                      = "$outputDir"
-                run_targeted_sequencing     = true
+                collecthsmetrics            = true
                 target_regions_file         = "https://raw.githubusercontent.com/dcarrillox/test-datasets/refs/heads/targeted_methylseq/reference/genome_target_regions.bed"
-                run_picard_collecthsmetrics = true
             }
         }
 
