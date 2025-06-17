@@ -50,13 +50,23 @@ workflow NFCORE_METHYLSEQ {
     ch_versions = Channel.empty()
 
     //
+    // Initialize file channels based on params
+    //
+    ch_fasta         = params.fasta         ? Channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] }.collect() : Channel.empty()
+    ch_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
+    ch_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
+    ch_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
+
+    //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
     FASTA_INDEX_BISMARK_BWAMETH(
-        params.fasta,
-        params.fasta_index,
-        params.bismark_index,
-        params.bwameth_index,
+        ch_fasta,
+        ch_fasta_index,
+        ch_bismark_index,
+        ch_bwameth_index,
+        params.aligner,
+        params.run_picard_collecthsmetrics
     )
     ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
 
