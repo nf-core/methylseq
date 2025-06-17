@@ -86,7 +86,7 @@ workflow TARGETED_SEQUENCING {
             PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict,
             []
         )
-        ch_intervals = PICARD_BEDTOINTERVALLIST.out.interval_list.map{ it[1] }
+        ch_intervals = PICARD_BEDTOINTERVALLIST.out.intervallist.map{ it[1] }
         ch_versions = ch_versions.mix(PICARD_BEDTOINTERVALLIST.out.versions)
 
         /*
