@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
+name: "targeted_sequencing"
+description: Filter bedGraph files with target regions and optionally generate performance metrics with Picard CollectHsMetrics for targeted methylome sequencing experiments
+keywords:
+  - targeted sequencing
+  - bedgraph
+  - picard
+  - collecthsmetrics
+  - bedtools
+  - intersect
+components:
+  - bedtools/intersect
+  - picard/createsequencedictionary
+  - picard/bedtointervallist
+  - picard/collecthsmetrics
+  - samtools/index
+input:
+  - ch_bedgraph:
+      type: file
+      description: |
+        bedGraph file(s) from methylation calling
+        Structure: [ val(meta), [ bedGraph(s) ]] when bwameth, [ val(meta), bedGraph ] when bismark
+      pattern: "*.bedGraph"
+  - target_regions:
+      type: file
+      description: |
+        BED file containing target regions for filtering
+      pattern: "*.bed"
+  - ch_fasta:
+      type: file
+      description: |
+        Reference genome fasta file
+        Structure: [ [:], path(fasta) ]
+      pattern: "*.{fa,fasta}"
+  - ch_fasta_index:
+      type: file
+      description: |
+        Reference genome index file
+        Structure: [ path(fai) ]
+      pattern: "*.fai"
+  - ch_bam:
+      type: file
+      description: |
+        BAM alignment files
+        Structure: [ val(meta), path(bam) ]
+      pattern: "*.bam"
+  - ch_bai:
+      type: file
+      description: |
+        BAM index files
+        Structure: [ val(meta), path(bai) ]
+      pattern: "*.bai"
+output:
+  - picard_metrics:
+      type: file
+      description: |
+        Picard CollectHsMetrics output files
+        Structure: [ val(meta), path(metrics) ]
+      pattern: "*_metrics"
+  - versions:
+      type: file
+      description: |
+        File containing software versions
+        Structure: [ path(versions.yml) ]
+      pattern: "versions.yml"
+authors:
+  - "@dcarillo"
+maintainers:
+  - "@dcarillo" 
+  - "@sateeshperi"
