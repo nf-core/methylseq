@@ -442,7 +442,7 @@
                     "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
                     "fa_icon": "fas fa-file"
                 },
-                "run_picard_collecthsmetrics": {
+                "collecthsmetrics": {
                     "type": "boolean",
                     "description": "Run Picard CollectHsMetrics in the targeted analysis",
                     "help_text": "Instructs the pipeline to run `picard CollectHsMetrics` with the target regions BED on the BAM files to estimate several enrichment metrics",

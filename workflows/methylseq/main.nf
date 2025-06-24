@@ -102,8 +102,8 @@ workflow METHYLSEQ {
         //
         FASTQ_ALIGN_DEDUP_BISMARK (
             ch_reads,
-            ch_fasta,
-            ch_bismark_index,
+            ch_fasta.first(),
+            ch_bismark_index.first(),
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
@@ -118,9 +118,9 @@ workflow METHYLSEQ {
 
         FASTQ_ALIGN_DEDUP_BWAMETH (
             ch_reads,
-            ch_fasta,
-            ch_fasta_index,
-            ch_bwameth_index,
+            ch_fasta.first(),
+            ch_fasta_index.first(),
+            ch_bwameth_index.first(),
             params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
         )
@@ -149,13 +149,17 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
     if (params.run_targeted_sequencing){
+        if (!params.target_regions_file) {
+            error "ERROR: --target_regions_file must be specified when using --run_targeted_sequencing"
+        }
         TARGETED_SEQUENCING (
             ch_bedgraph,
-            params.target_regions_file,
+            Channel.fromPath(params.target_regions_file, checkIfExists: true),
             ch_fasta,
             ch_fasta_index,
             ch_bam,
-            ch_bai
+            ch_bai,
+            params.collecthsmetrics
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }

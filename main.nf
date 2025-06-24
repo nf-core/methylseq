@@ -52,10 +52,10 @@ workflow NFCORE_METHYLSEQ {
     //
     // Initialize file channels based on params
     //
-    ch_fasta         = params.fasta         ? Channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] }.collect() : Channel.empty()
-    ch_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
-    ch_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
-    ch_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] }.collect() : []
+    ch_fasta         = params.fasta         ? Channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] }.first() : Channel.empty()
+    ch_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] }.first() : []
+    ch_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] }.first() : []
+    ch_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] }.first() : []
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
