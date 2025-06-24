@@ -66,7 +66,7 @@ workflow NFCORE_METHYLSEQ {
         ch_bismark_index,
         ch_bwameth_index,
         params.aligner,
-        params.run_picard_collecthsmetrics
+        params.collecthsmetrics
     )
     ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
 

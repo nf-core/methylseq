@@ -222,7 +222,7 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
     }
     if (params.run_targeted_sequencing) {
-        if (params.run_picard_collecthsmetrics) {
+        if (params.collecthsmetrics) {
             ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
         }
     }

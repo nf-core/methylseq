@@ -47,7 +47,7 @@ nextflow_pipeline {
                 aligner                 = "bwameth"
                 all_contexts            = true
                 run_targeted_sequencing = true
-                target_regions_file     = "https://raw.githubusercontent.com/dcarrillox/test-datasets/refs/heads/targeted_methylseq/reference/genome_target_regions.bed"
+                target_regions_file     = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_target_regions.bed"
             }
         }
 
@@ -79,14 +79,14 @@ nextflow_pipeline {
 
 
 
-    test("Params: bwameth | run_targeted_sequencing | run_picard_collecthsmetrics") {
+    test("Params: bwameth | run_targeted_sequencing | collecthsmetrics") {
         when {
             params {
                 outdir                      = "$outputDir"
                 aligner                     = "bwameth"
                 run_targeted_sequencing     = true
-                target_regions_file         = "https://raw.githubusercontent.com/dcarrillox/test-datasets/refs/heads/targeted_methylseq/reference/genome_target_regions.bed"
-                run_picard_collecthsmetrics = true
+                target_regions_file         = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_target_regions.bed"
+                collecthsmetrics            = true
             }
         }
 

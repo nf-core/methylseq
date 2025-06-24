@@ -59,7 +59,7 @@ workflow TARGETED_SEQUENCING {
     * Run Picard CollectHSMetrics
     */
     ch_picard_metrics = Channel.empty()
-    if (params.run_picard_collecthsmetrics){
+    if (params.collecthsmetrics){
         // setup channels fasta, fasta_index and target regions
         ch_fasta_with_meta = ch_fasta
             .map { meta, fasta -> tuple(meta + ["id": file(fasta).name.replaceFirst(~/\.[^\.]+$/, '')], fasta)}
