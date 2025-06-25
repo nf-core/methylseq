@@ -92,7 +92,7 @@ workflow TARGETED_SEQUENCING {
         PICARD_COLLECTHSMETRICS(
             ch_bam.join(ch_bai).combine(ch_intervals).combine(ch_intervals),
             ch_fasta_with_meta.first(),
-            ch_fasta_index_with_meta.first(),
+            ch_fasta_index_with_meta,
             ch_sequence_dictionary.first()
         )
         ch_picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics

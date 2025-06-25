@@ -119,7 +119,7 @@ workflow METHYLSEQ {
         FASTQ_ALIGN_DEDUP_BWAMETH (
             ch_reads,
             ch_fasta.first(),
-            ch_fasta_index.first(),
+            ch_fasta_index,
             ch_bwameth_index.first(),
             params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
