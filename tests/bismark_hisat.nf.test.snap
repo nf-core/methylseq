@@ -316,7 +316,6 @@
                 "SRR389222_sub1_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,30d4e3aec9220b886a6ac17630f48ef3",
                 "SRR389222_sub2_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,8519a3e58f6047f71e8cf09991482332",
                 "SRR389222_sub3_trimmed_bismark_hisat2.deduplicated_splitting_report.txt:md5,e6144ca656936c6ee6e7281a1192fa78",
-                "BETA-multiqc.parquet:md5,58e64ab7dc5f18b639bfa4b9fa77896f",
                 "bismark-methylation-dp.txt:md5,233409b9665cb851aca3b6b4511ff757",
                 "bismark_alignment.txt:md5,3acfd1a751bef6696b6fa095d0631bb6",
                 "bismark_deduplication.txt:md5,c025b4368b08f9e623624908632e44a1",

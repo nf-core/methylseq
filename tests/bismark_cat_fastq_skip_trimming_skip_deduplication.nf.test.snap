@@ -209,7 +209,6 @@
                 "Ecoli_10K_methylated_R1_bismark_bt2_pe_splitting_report.txt:md5,6edef2a79671737a0323f7f489c686ba",
                 "SRR389222.merged_bismark_bt2_splitting_report.txt:md5,25991c114ca31738066cb14ea2cc99c5",
                 "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
-                "BETA-multiqc.parquet:md5,c7e7a96143130064517dc2699c4d6354",
                 "bismark-methylation-dp.txt:md5,1d5b57d31fb3a134c9a40eefc9fe2142",
                 "bismark_alignment.txt:md5,9dc6eaf56031244edd224a9e0bb406ec",
                 "bismark_mbias_CHG_R1.txt:md5,3ef0c38b32c2a01e79a7d2b89b057c75",

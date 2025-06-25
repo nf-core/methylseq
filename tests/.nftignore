@@ -14,6 +14,7 @@ multiqc/*/multiqc_data/multiqc_software_versions.txt
 multiqc/*/multiqc_data/multiqc_sources.txt
 multiqc/*/multiqc_report.html
 multiqc/*/multiqc_plots/{pdf,png,svg}/*.{pdf,png,svg}
+multiqc/*/multiqc_data/BETA-multiqc.parquet
 pipeline_info/*.{html,json,txt,yml}
 */qualimap/bamqc/*/qualimapReport.html
 */qualimap/bamqc/**/*.{pdf,png,svg}

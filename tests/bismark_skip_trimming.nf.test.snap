@@ -266,7 +266,6 @@
                 "SRR389222_sub1_bismark_bt2.deduplicated_splitting_report.txt:md5,ec268cc572b8bcfea0959b47c7510f05",
                 "SRR389222_sub2_bismark_bt2.deduplicated_splitting_report.txt:md5,ac550001718e22218294a6c16fa3cec4",
                 "SRR389222_sub3_bismark_bt2.deduplicated_splitting_report.txt:md5,c015374e9b11c9eb7cb1359cb437f7be",
-                "BETA-multiqc.parquet:md5,cce490bccdf45aa50366e67cded546e0",
                 "bismark-methylation-dp.txt:md5,475ce6b3c6f53158847d554ef22993db",
                 "bismark_alignment.txt:md5,7d00ed2e752ebf0ee7baedc206c6572b",
                 "bismark_deduplication.txt:md5,e319d929f7d2e163bafba0a48dda554e",

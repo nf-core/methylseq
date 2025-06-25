@@ -252,7 +252,6 @@
                 "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "BETA-multiqc.parquet:md5,1f53326195238849b6725de1d2635c19",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",

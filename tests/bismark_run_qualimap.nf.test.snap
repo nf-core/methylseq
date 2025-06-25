@@ -559,7 +559,6 @@
                 "mapping_quality_across_reference.txt:md5,d9bafb5cc106bbd1dc7e31439c618f19",
                 "mapping_quality_histogram.txt:md5,560e85b88f5f90e9ad7ad93ffef42d6f",
                 "versions.yml:md5,bb8bc6f11e6ca441cdb653f077b870c2",
-                "BETA-multiqc.parquet:md5,a3db4f0417835c36924d6bfa2ee3c093",
                 "bismark-methylation-dp.txt:md5,dcbe642c42e31d8e480a2e46b97bbd45",
                 "bismark_alignment.txt:md5,544a74ea0f32005b0c886af79a6fad5b",
                 "bismark_deduplication.txt:md5,db387240d46c09b0b952ed8b54855e76",

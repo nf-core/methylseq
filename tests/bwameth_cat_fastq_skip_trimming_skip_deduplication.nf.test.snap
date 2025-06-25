@@ -146,7 +146,6 @@
                 "SRR389222.sorted_CpG.bedGraph:md5,a754358e8b95db30602aa29835a896bd",
                 "Ecoli_10K_methylated.mbias.txt:md5,ec13da6deba1ce147624bce065ec5df6",
                 "SRR389222.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "BETA-multiqc.parquet:md5,6d53d556c5888fcd5859f2822f8adb2c",
                 "fastqc-status-check-heatmap.txt:md5,04ba1bfaa7df8fb71d5a058e2463029f",
                 "fastqc_adapter_content_plot.txt:md5,48d8bd5ece984a74972ce0a0e814dd07",
                 "fastqc_overrepresented_sequences_plot.txt:md5,a94413e4d294e8161658bb5593387edb",
