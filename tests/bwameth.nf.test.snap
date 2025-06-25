@@ -79,6 +79,7 @@
                 "multiqc",
                 "multiqc/bwameth",
                 "multiqc/bwameth/multiqc_data",
+                "multiqc/bwameth/multiqc_data/BETA-multiqc.parquet",
                 "multiqc/bwameth/multiqc_data/cutadapt_filtered_reads_plot.txt",
                 "multiqc/bwameth/multiqc_data/cutadapt_trimmed_sequences_plot_3_Counts.txt",
                 "multiqc/bwameth/multiqc_data/cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt",
@@ -108,8 +109,8 @@
                 "multiqc/bwameth/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
                 "multiqc/bwameth/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
                 "multiqc/bwameth/multiqc_data/picard_deduplication.txt",
-                "multiqc/bwameth/multiqc_data/samtools-flagstat-dp_Percentage_of_total.txt",
-                "multiqc/bwameth/multiqc_data/samtools-flagstat-dp_Read_counts.txt",
+                "multiqc/bwameth/multiqc_data/samtools-flagstat-pct-table.txt",
+                "multiqc/bwameth/multiqc_data/samtools-flagstat-table.txt",
                 "multiqc/bwameth/multiqc_data/samtools-stats-dp.txt",
                 "multiqc/bwameth/multiqc_data/samtools_alignment_plot.txt",
                 "multiqc/bwameth/multiqc_plots",
@@ -130,11 +131,10 @@
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_sequence_counts_plot-pct.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_sequence_duplication_levels_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_top_overrepresented_sequences_table.pdf",
-                "multiqc/bwameth/multiqc_plots/pdf/general_stats_table.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/picard_deduplication-cnt.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/picard_deduplication-pct.pdf",
-                "multiqc/bwameth/multiqc_plots/pdf/samtools-flagstat-dp_Percentage_of_total.pdf",
-                "multiqc/bwameth/multiqc_plots/pdf/samtools-flagstat-dp_Read_counts.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/samtools-flagstat-pct-table.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/samtools-flagstat-table.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/samtools-stats-dp.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/samtools_alignment_plot-cnt.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/samtools_alignment_plot-pct.pdf",
@@ -155,11 +155,10 @@
                 "multiqc/bwameth/multiqc_plots/png/fastqc_sequence_counts_plot-pct.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_sequence_duplication_levels_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_top_overrepresented_sequences_table.png",
-                "multiqc/bwameth/multiqc_plots/png/general_stats_table.png",
                 "multiqc/bwameth/multiqc_plots/png/picard_deduplication-cnt.png",
                 "multiqc/bwameth/multiqc_plots/png/picard_deduplication-pct.png",
-                "multiqc/bwameth/multiqc_plots/png/samtools-flagstat-dp_Percentage_of_total.png",
-                "multiqc/bwameth/multiqc_plots/png/samtools-flagstat-dp_Read_counts.png",
+                "multiqc/bwameth/multiqc_plots/png/samtools-flagstat-pct-table.png",
+                "multiqc/bwameth/multiqc_plots/png/samtools-flagstat-table.png",
                 "multiqc/bwameth/multiqc_plots/png/samtools-stats-dp.png",
                 "multiqc/bwameth/multiqc_plots/png/samtools_alignment_plot-cnt.png",
                 "multiqc/bwameth/multiqc_plots/png/samtools_alignment_plot-pct.png",
@@ -180,11 +179,10 @@
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_sequence_counts_plot-pct.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_sequence_duplication_levels_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_top_overrepresented_sequences_table.svg",
-                "multiqc/bwameth/multiqc_plots/svg/general_stats_table.svg",
                 "multiqc/bwameth/multiqc_plots/svg/picard_deduplication-cnt.svg",
                 "multiqc/bwameth/multiqc_plots/svg/picard_deduplication-pct.svg",
-                "multiqc/bwameth/multiqc_plots/svg/samtools-flagstat-dp_Percentage_of_total.svg",
-                "multiqc/bwameth/multiqc_plots/svg/samtools-flagstat-dp_Read_counts.svg",
+                "multiqc/bwameth/multiqc_plots/svg/samtools-flagstat-pct-table.svg",
+                "multiqc/bwameth/multiqc_plots/svg/samtools-flagstat-table.svg",
                 "multiqc/bwameth/multiqc_plots/svg/samtools-stats-dp.svg",
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-cnt.svg",
                 "multiqc/bwameth/multiqc_plots/svg/samtools_alignment_plot-pct.svg",
@@ -228,6 +226,7 @@
                 "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
+                "BETA-multiqc.parquet:md5,5f62ad1469d811bcd7d26e666014ef75",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -251,8 +250,8 @@
                 "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_deduplication.txt:md5,7dacf4d4e0d7d2d9a7205beecfa7125c",
-                "samtools-flagstat-dp_Percentage_of_total.txt:md5,ff5d65a480449ba98587c43f3a2bd33e",
-                "samtools-flagstat-dp_Read_counts.txt:md5,6a5332e2ad59f7da00b5a9a1a25fd2f8",
+                "samtools-flagstat-pct-table.txt:md5,ff5d65a480449ba98587c43f3a2bd33e",
+                "samtools-flagstat-table.txt:md5,6a5332e2ad59f7da00b5a9a1a25fd2f8",
                 "samtools-stats-dp.txt:md5,52021b9a9455b39b39dd357bc2e8d346",
                 "samtools_alignment_plot.txt:md5,39f42e039f96cc2b17248b44ccaf425b"
             ],
@@ -293,9 +292,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "25.04.4"
         },
-        "timestamp": "2025-03-25T05:18:21.711026367"
+        "timestamp": "2025-06-25T06:19:20.938870919"
     },
     "Params: bwameth with bwameth-index": {
         "content": [
@@ -303,8 +302,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.2"
+            "nextflow": "25.04.4"
         },
-        "timestamp": "2024-11-27T17:25:00.644734614"
+        "timestamp": "2025-06-25T06:21:22.267440619"
     }
 }
