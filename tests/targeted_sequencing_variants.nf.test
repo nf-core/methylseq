@@ -51,14 +51,13 @@ nextflow_pipeline {
         ]
     ]
 
-    // Common assertion function
-    def runStandardAssertions = { outputDir ->
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
         def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
         def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
         def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
         
         return [
-            workflow.trace.succeeded().size(),
             removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
             stable_name,
             stable_path,
@@ -82,7 +81,10 @@ nextflow_pipeline {
             then {
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(runStandardAssertions(params.outdir)).match() }
+                    { assert snapshot(
+                        workflow.trace.succeeded().size(),
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
                 )
             }
         }
