@@ -11,7 +11,6 @@ nextflow_pipeline {
                 outdir                  = "$outputDir"
                 aligner                 = "bismark"
                 run_targeted_sequencing = true
-                target_regions_file     = "${projectDir}/assets/target_regions.bed"
             }
         }
 
@@ -39,14 +38,13 @@ nextflow_pipeline {
             )
         }
     }
-    
+
     test("Params: bwameth | run_targeted_sequencing") {
         when {
             params {
                 outdir                  = "$outputDir"
                 aligner                 = "bwameth"
                 run_targeted_sequencing = true
-                target_regions_file     = "${projectDir}/assets/target_regions.bed"
             }
         }
 
@@ -82,7 +80,6 @@ nextflow_pipeline {
                 aligner                 = "bwameth"
                 all_contexts            = true
                 run_targeted_sequencing = true
-                target_regions_file     = "${projectDir}/assets/target_regions.bed"
             }
         }
 
@@ -117,7 +114,6 @@ nextflow_pipeline {
                 outdir                      = "$outputDir"
                 aligner                     = "bwameth"
                 run_targeted_sequencing     = true
-                target_regions_file         = "${projectDir}/assets/target_regions.bed"
                 collecthsmetrics            = true
             }
         }
@@ -153,7 +149,6 @@ nextflow_pipeline {
                 outdir                      = "$outputDir"
                 aligner                     = "bismark"
                 run_targeted_sequencing     = true
-                target_regions_file         = "${projectDir}/assets/target_regions.bed"
                 collecthsmetrics            = true
             }
         }
