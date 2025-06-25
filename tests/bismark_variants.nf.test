@@ -1,0 +1,124 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bismark Variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Define bismark test scenarios
+    def testScenarios = [
+        [
+            name: "bismark_default",
+            description: "Params: bismark (default)",
+            params: [:]
+        ],
+        [
+            name: "bismark_skip_trimming",
+            description: "Params: bismark | skip_trimming",
+            params: [
+                skip_trimming: true
+            ]
+        ],
+        [
+            name: "bismark_skip_deduplication", 
+            description: "Params: bismark | skip_deduplication",
+            params: [
+                skip_deduplication: true
+            ]
+        ],
+        [
+            name: "bismark_cytosine_report",
+            description: "Params: bismark | cytosine_report",
+            params: [
+                cytosine_report: true
+            ]
+        ],
+        [
+            name: "bismark_rrbs",
+            description: "Params: bismark | rrbs", 
+            params: [
+                rrbs: true
+            ]
+        ],
+        [
+            name: "bismark_emseq_clip_r1",
+            description: "Params: bismark | em_seq | clip_r1",
+            params: [
+                em_seq: true,
+                clip_r1: 2
+            ]
+        ],
+        [
+            name: "bismark_nomeseq",
+            description: "Params: bismark | nomeseq",
+            params: [
+                nomeseq: true
+            ]
+        ],
+        [
+            name: "bismark_save_reference_save_align_intermeds",
+            description: "Params: bismark | save_reference | save_align_intermeds",
+            params: [
+                save_reference: true,
+                save_align_intermeds: true
+            ]
+        ],
+        [
+            name: "bismark_run_preseq",
+            description: "Params: bismark | run_preseq",
+            params: [
+                run_preseq: true
+            ]
+        ],
+        [
+            name: "bismark_run_qualimap",
+            description: "Params: bismark | run_qualimap", 
+            params: [
+                run_qualimap: true
+            ]
+        ],
+        [
+            name: "bismark_skip_multiqc",
+            description: "Params: bismark | skip_multiqc",
+            params: [
+                skip_multiqc: true
+            ]
+        ]
+    ]
+
+    // Common assertion function
+    def runStandardAssertions = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+        
+        return [
+            workflow.trace.succeeded().size(),
+            removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "$outputDir"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(runStandardAssertions(params.outdir)).match() }
+                )
+            }
+        }
+    }
+} 

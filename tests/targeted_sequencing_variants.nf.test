@@ -1,0 +1,90 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Targeted Sequencing Variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Define targeted sequencing test scenarios
+    def testScenarios = [
+        [
+            name: "bismark_run_targeted_sequencing",
+            description: "Params: bismark | run_targeted_sequencing",
+            params: [
+                aligner: "bismark",
+                run_targeted_sequencing: true
+            ]
+        ],
+        [
+            name: "bwameth_run_targeted_sequencing",
+            description: "Params: bwameth | run_targeted_sequencing",
+            params: [
+                aligner: "bwameth", 
+                run_targeted_sequencing: true
+            ]
+        ],
+        [
+            name: "bwameth_all_contexts_run_targeted_sequencing",
+            description: "Params: bwameth | all_contexts | run_targeted_sequencing",
+            params: [
+                aligner: "bwameth",
+                all_contexts: true,
+                run_targeted_sequencing: true
+            ]
+        ],
+        [
+            name: "bwameth_run_targeted_sequencing_collecthsmetrics",
+            description: "Params: bwameth | run_targeted_sequencing | collecthsmetrics",
+            params: [
+                aligner: "bwameth",
+                run_targeted_sequencing: true,
+                collecthsmetrics: true
+            ]
+        ],
+        [
+            name: "bismark_run_targeted_sequencing_collecthsmetrics",
+            description: "Params: bismark | run_targeted_sequencing | collecthsmetrics", 
+            params: [
+                aligner: "bismark",
+                run_targeted_sequencing: true,
+                collecthsmetrics: true
+            ]
+        ]
+    ]
+
+    // Common assertion function
+    def runStandardAssertions = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+        
+        return [
+            workflow.trace.succeeded().size(),
+            removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "$outputDir"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(runStandardAssertions(params.outdir)).match() }
+                )
+            }
+        }
+    }
+} 

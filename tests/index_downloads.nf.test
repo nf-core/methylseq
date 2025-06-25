@@ -1,0 +1,70 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Index Download Scenarios"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Define index download test scenarios
+    def testScenarios = [
+        [
+            name: "default_with_bowtie2_index",
+            description: "Params: default with bowtie2-index",
+            params: [
+                bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
+            ]
+        ],
+        [
+            name: "bismark_run_preseq_with_bowtie2_index",
+            description: "Params: bismark | run_preseq with bowtie2-index",
+            params: [
+                bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz",
+                run_preseq: true
+            ]
+        ],
+        [
+            name: "bwameth_with_bwameth_index",
+            description: "Params: bwameth with bwameth-index",
+            params: [
+                aligner: "bwameth",
+                bwameth_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwameth_Index.tar.gz"
+            ]
+        ],
+        [
+            name: "bismark_hisat_with_hisat2_index",
+            description: "Params: bismark_hisat with hisat2-index",
+            params: [
+                aligner: "bismark_hisat",
+                hisat2_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/HISAT2_Index.tar.gz"
+            ]
+        ]
+    ]
+
+    // Simplified assertion function for index downloads (fewer outputs expected)
+    def runIndexAssertions = { outputDir ->
+        return [
+            workflow.trace.succeeded().size()
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "$outputDir"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(runIndexAssertions(params.outdir)).match() }
+                )
+            }
+        }
+    }
+} 
