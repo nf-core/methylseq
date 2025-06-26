@@ -55,7 +55,10 @@ nextflow_pipeline {
             then {
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(workflow.trace.succeeded().size()).match() }
+                    { assert snapshot(
+                        workflow.trace.succeeded().size(),
+                        removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                        ).match() }
                 )
             }
         }
