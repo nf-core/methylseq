@@ -18,7 +18,7 @@ nextflow_pipeline {
             name: "bwameth_run_targeted_sequencing",
             description: "Params: bwameth | run_targeted_sequencing",
             params: [
-                aligner: "bwameth", 
+                aligner: "bwameth",
                 run_targeted_sequencing: true
             ]
         ],
@@ -42,7 +42,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_run_targeted_sequencing_collecthsmetrics",
-            description: "Params: bismark | run_targeted_sequencing | collecthsmetrics", 
+            description: "Params: bismark | run_targeted_sequencing | collecthsmetrics",
             params: [
                 aligner: "bismark",
                 run_targeted_sequencing: true,
@@ -56,7 +56,7 @@ nextflow_pipeline {
         def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
         def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
         def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
-        
+
         return [
             removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
             stable_name,
@@ -89,4 +89,4 @@ nextflow_pipeline {
             }
         }
     }
-} 
+}

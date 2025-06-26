@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔄 Updated template to nf-core/tools v3.2.0 [#](https://github.com/nf-core/methylseq/pull/)
 - 🐛 bumped the minimum for `PARABRICKS_FQ2BAMMETH` to 100.GB as suggested by the docs [#528](https://github.com/nf-core/methylseq/issues/528)
 - 🐛 fix parabricks/fq2bammeth failure on AWS Batch like executors where symlinks don't exist [#536](https://github.com/nf-core/methylseq/issues/536)
+- 🔧 FASTA Index Subworkflow Refactoring - remove implicit params [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🔧 Improved channel handling for FASTA files with better branching logic for gzipped vs unzipped files [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🔧 Refactored input handling to use channels instead of direct file paths [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🔧 Updated multiple nf-core modules to latest versions [#539](https://github.com/nf-core/methylseq/pull/539)
 
 ### Pipeline Updates
 
@@ -24,6 +28,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Update `--pbat` trimming options to 8|8|8|8 [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔄 Removed `--cegx` and `--epignome` preset trimming options (kits discontinued) [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔧 Removed parameter `use_gpu`. Adding the `gpu` profile with `--profile gpu` is adequate to activate the GPU-based pathways [#520](https://github.com/nf-core/methylseq/pull/520)
+- 🔧 Enhanced targeted sequencing subworkflow with better parameter handling [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🔧 Added aligner and collecthsmetrics parameters to the FASTA index subworkflow inputs [#539](https://github.com/nf-core/methylseq/pull/539)
+
+### Testing Updates
+
+- 🧪 Test Suite Consolidation - Removed 19 individual test files (~7,000 lines) and created comprehensive variant-based test suites [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Created `bismark_variants.nf.test` for comprehensive Bismark testing [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Created `bwameth_variants.nf.test` for comprehensive Bwameth testing [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Added `targeted_sequencing_variants.nf.test` for targeted sequencing workflow testing [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Added `index_downloads.nf.test` for testing index download scenarios [#539](https://github.com/nf-core/methylseq/pull/539)
 
 ## [v3.0.0](https://github.com/nf-core/methylseq/releases/tag/3.0.0) - [2024-12-16]
 
