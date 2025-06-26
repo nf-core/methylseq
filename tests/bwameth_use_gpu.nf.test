@@ -1,0 +1,33 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bwameth GPU"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "gpu"
+
+    test("Params: bwameth | use_gpu") {
+        when {
+            params {
+                outdir  = "$outputDir"
+                input   = "${projectDir}/assets/samplesheet_gpu.csv"
+                aligner = "bwameth"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    workflow.trace.succeeded().size(),
+                    removeNextflowVersion("$params.outdir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+} 

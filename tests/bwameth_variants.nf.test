@@ -53,6 +53,16 @@ nextflow_pipeline {
                 aligner: "bwameth",
                 run_qualimap: true
             ]
+        ],
+        [
+            name: "bwameth_cat_fastq_skip_trimming_skip_deduplication",
+            description: "Params: bwameth | CAT_FASTQ | skip_trimming | skip_deduplication",
+            params: [
+                input: "${projectDir}/assets/samplesheet_replicates.csv",
+                aligner: "bwameth",
+                skip_trimming: true,
+                skip_deduplication: true
+            ]
         ]
     ]
 
@@ -78,7 +88,12 @@ nextflow_pipeline {
                     outdir = "$outputDir"
                     // Apply scenario-specific parameters
                     scenario.params.each { key, value ->
-                        delegate."$key" = value
+                        if (key == 'input') {
+                            // Handle special case for input files that are already full paths
+                            input = value
+                        } else {
+                            delegate."$key" = value
+                        }
                     }
                 }
             }
