@@ -58,7 +58,7 @@ nextflow_pipeline {
             name: "bwameth_cat_fastq_skip_trimming_skip_deduplication",
             description: "Params: bwameth | CAT_FASTQ | skip_trimming | skip_deduplication",
             params: [
-                input: "${projectDir}/assets/samplesheet_replicates.csv",
+                input: "assets/samplesheet_replicates.csv",
                 aligner: "bwameth",
                 skip_trimming: true,
                 skip_deduplication: true
@@ -71,7 +71,7 @@ nextflow_pipeline {
         def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
         def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
         def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
-        
+
         return [
             removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
             stable_name,
@@ -89,8 +89,8 @@ nextflow_pipeline {
                     // Apply scenario-specific parameters
                     scenario.params.each { key, value ->
                         if (key == 'input') {
-                            // Handle special case for input files that are already full paths
-                            input = value
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
                         } else {
                             delegate."$key" = value
                         }
@@ -109,4 +109,4 @@ nextflow_pipeline {
             }
         }
     }
-} 
+}

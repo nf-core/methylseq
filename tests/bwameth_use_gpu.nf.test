@@ -8,7 +8,7 @@ nextflow_pipeline {
         when {
             params {
                 outdir  = "$outputDir"
-                input   = "${projectDir}/assets/samplesheet_gpu.csv"
+                input   = "${baseDir}/assets/samplesheet_gpu.csv"
                 aligner = "bwameth"
             }
         }
@@ -17,7 +17,7 @@ nextflow_pipeline {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
             def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
-            
+
             assertAll(
                 { assert workflow.success },
                 { assert snapshot(
@@ -30,4 +30,4 @@ nextflow_pipeline {
             )
         }
     }
-} 
+}
