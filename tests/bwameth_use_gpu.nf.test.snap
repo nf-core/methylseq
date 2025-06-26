@@ -1,11 +1,8 @@
 {
-    "Params: bwameth | use_gpu": {
+    "Params: PARABRICKS_FQ2BAMMETH | GPU Profile": {
         "content": [
             36,
             {
-                "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.7"
-                },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.7"
                 },
@@ -14,6 +11,9 @@
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
+                },
+                "PARABRICKS_FQ2BAMMETH": {
+                    "pbrun": "4.3.2-1"
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -220,27 +220,27 @@
             [
                 [
                     "SRR389222_sub1.deduplicated.sorted.bam",
-                    "e50275d6d44138f19d65ee479444d5ce"
+                    "97e6767c5ddea54cb2a6498192a09c68"
                 ],
                 [
                     "SRR389222_sub1.markdup.sorted.bam",
-                    "e50275d6d44138f19d65ee479444d5ce"
+                    "97e6767c5ddea54cb2a6498192a09c68"
                 ],
                 [
                     "SRR389222_sub2.deduplicated.sorted.bam",
-                    "d365b8b2662b2abffb51dd67a1f463b4"
+                    "313ae71af4023059a295ed8a132fd9ad"
                 ],
                 [
                     "SRR389222_sub2.markdup.sorted.bam",
-                    "d365b8b2662b2abffb51dd67a1f463b4"
+                    "313ae71af4023059a295ed8a132fd9ad"
                 ],
                 [
                     "SRR389222_sub3.deduplicated.sorted.bam",
-                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                    "9eaa07df5ad58a78ab57ee55f948a044"
                 ],
                 [
                     "SRR389222_sub3.markdup.sorted.bam",
-                    "a9fd2900b9d759f8f4f62cbbb2744fde"
+                    "9eaa07df5ad58a78ab57ee55f948a044"
                 ]
             ]
         ],
@@ -248,6 +248,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-06-25T06:30:57.609446598"
+        "timestamp": "2025-06-26T12:32:08.026829925"
     }
 }

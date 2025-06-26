@@ -44,7 +44,7 @@ nextflow_pipeline {
         test(scenario.description) {
             when {
                 params {
-                    outdir = "$outputDir"
+                    outdir = "${outputDir}"
                     // Apply scenario-specific parameters
                     scenario.params.each { key, value ->
                         delegate."$key" = value

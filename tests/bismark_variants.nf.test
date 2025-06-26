@@ -101,7 +101,7 @@ nextflow_pipeline {
         def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
 
         return [
-            removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
             stable_name,
             stable_path,
             bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
@@ -113,7 +113,7 @@ nextflow_pipeline {
         test(scenario.description) {
             when {
                 params {
-                    outdir = "$outputDir"
+                    outdir = "${outputDir}"
                     // Apply scenario-specific parameters
                     scenario.params.each { key, value ->
                         if (key == 'input') {
