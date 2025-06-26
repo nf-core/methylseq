@@ -39,13 +39,6 @@ nextflow_pipeline {
         ]
     ]
 
-    // Simplified assertion function for index downloads (fewer outputs expected)
-    def runIndexAssertions = { outputDir ->
-        return [
-            workflow.trace.succeeded().size()
-        ]
-    }
-
     // Generate tests for each scenario
     testScenarios.each { scenario ->
         test(scenario.description) {
@@ -62,9 +55,9 @@ nextflow_pipeline {
             then {
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(runIndexAssertions(params.outdir)).match() }
+                    { assert snapshot(workflow.trace.succeeded().size()).match() }
                 )
             }
         }
     }
-} 
+}

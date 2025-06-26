@@ -1,0 +1,42 @@
+{
+    "Params: default with bowtie2-index": {
+        "content": [
+            36
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-06-26T03:16:46.516469937"
+    },
+    "Params: bismark_hisat with hisat2-index": {
+        "content": [
+            36
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-06-26T03:22:25.366402297"
+    },
+    "Params: bismark | run_preseq with bowtie2-index": {
+        "content": [
+            36
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-06-26T03:18:30.020152804"
+    },
+    "Params: bwameth with bwameth-index": {
+        "content": [
+            47
+        ],
+        "meta": {
+            "nf-test": "0.9.2",
+            "nextflow": "25.04.4"
+        },
+        "timestamp": "2025-06-26T03:20:40.875165382"
+    }
+}
