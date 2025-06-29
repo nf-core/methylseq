@@ -24,6 +24,54 @@
 
 ![nf-core/methylseq metro map](docs/images/3.0.0_metromap.png)
 
+```mermaid
+flowchart TD
+    subgraph Stage1[Pre-processing]
+        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+    end
+
+    subgraph Stage2[Genome alignment]
+        C --> D1["bwa-meth align - GPU or CPU"]
+        C --> D2["Bismark align - Bowtie2/HISAT2"]
+    end
+
+    subgraph Stage3[Post-processing]
+        D1 --> E1["Samtools sort"]
+        E1 --> E2["Samtools index/stats"]
+        E2 --> E3["Picard MarkDuplicates"]
+        E3 --> E4["MethylDackel extract/M-bias"]
+
+        D2 --> F1["Bismark deduplicate"]
+        F1 --> F2["Bismark methylation extractor"]
+        F2 --> F3["Bismark coverage2cytosine"]
+        F3 --> F4["Bismark report"]
+        F4 --> F5["Bismark Summary"]
+        F4 --> G1["Samtools sort/index"]
+    end
+
+    subgraph Stage3b[Targeted Sequencing - Optional]
+        E4 --> I1["Targeted Sequencing<br/>(bedGraph filtering)"]
+        F3 --> I1
+        I1 --> I2["Picard CollectHsMetrics<br/>(optional)"]
+    end
+
+    subgraph Stage3c[Optional QC]
+        E3 --> J1["preseq (optional)"]
+        G1 --> J1
+        E3 --> J2["Qualimap (optional)"]
+        G1 --> J2
+    end
+
+    subgraph Stage4[Final QC]
+        E4 --> H1["MultiQC"]
+        G1 --> H1
+        I1 --> H1
+        I2 --> H1
+        J1 --> H1
+        J2 --> H1
+    end
+```
+
 The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity containers making installation trivial and results highly reproducible.
 
 On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/methylseq/results).

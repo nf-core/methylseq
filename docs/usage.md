@@ -92,19 +92,19 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Parameters
 
-Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/3.0.0/parameters/).
+Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/parameters/).
 
-- [Input/output options](https://nf-co.re/methylseq/3.0.0/parameters/#input-output-options)
-- [Save intermediate files](https://nf-co.re/methylseq/3.0.0/parameters/#save-intermediate-files)
-- [Reference genome options](https://nf-co.re/methylseq/3.0.0/parameters/#reference-genome-options)
-- [Alignment options](https://nf-co.re/methylseq/3.0.0/parameters/#alignment-options)
-- [Special library types](https://nf-co.re/methylseq/3.0.0/parameters/#special-library-types)
-- [Adapter Trimming](https://nf-co.re/methylseq/3.0.0/parameters/#adapter-trimming)
-- [Bismark options](https://nf-co.re/methylseq/3.0.0/parameters/#bismark-options)
-- [bwa-meth options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
-- [Qualimap Options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
-- [Skip pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#skip-pipeline-steps)
-- [Run pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#Run-pipeline-steps)
+- [Input/output options](https://nf-co.re/methylseq/parameters/#input-output-options)
+- [Save intermediate files](https://nf-co.re/methylseq/parameters/#save-intermediate-files)
+- [Reference genome options](https://nf-co.re/methylseq/parameters/#reference-genome-options)
+- [Alignment options](https://nf-co.re/methylseq/parameters/#alignment-options)
+- [Special library types](https://nf-co.re/methylseq/parameters/#special-library-types)
+- [Adapter Trimming](https://nf-co.re/methylseq/parameters/#adapter-trimming)
+- [Bismark options](https://nf-co.re/methylseq/parameters/#bismark-options)
+- [bwa-meth options](https://nf-co.re/methylseq/parameters/#bwa-meth-options)
+- [Qualimap Options](https://nf-co.re/methylseq/parameters/#qualimap-options)
+- [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
+- [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
 
 > It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
 
@@ -153,11 +153,11 @@ You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-c
 
 ### Providing `ext.args` to Tools
 
-Additional arguments can be appended to a command in a module by specifying them within the module’s custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module’s publishDir path can also be customized in these configurations.
+Additional arguments can be appended to a command in a module by specifying them within the module's custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module's publishDir path can also be customized in these configurations.
 
 For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files.
 
-These errors are typically caused by the operating system’s limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+These errors are typically caused by the operating system's limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
 
 To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`.
 

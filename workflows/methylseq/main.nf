@@ -43,6 +43,8 @@ workflow METHYLSEQ {
     ch_reads         = Channel.empty()
     ch_bam           = Channel.empty()
     ch_bai           = Channel.empty()
+    ch_bedgraph      = Channel.empty()
+    ch_aligner_mqc   = Channel.empty()
     ch_qualimap      = Channel.empty()
     ch_preseq        = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -154,6 +156,9 @@ workflow METHYLSEQ {
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
+    }
+    else {
+        error "ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', or 'bwameth'"
     }
 
     //
