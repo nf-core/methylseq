@@ -15,7 +15,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_run_preseq_with_bowtie2_index",
-            description: "Params: bismark | run_preseq with bowtie2-index",
+            description: "Params: bismark with run_preseq with bowtie2-index",
             params: [
                 bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz",
                 run_preseq: true

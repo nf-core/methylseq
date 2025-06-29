@@ -15,7 +15,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_skip_trimming",
-            description: "Params: bwameth | skip_trimming",
+            description: "Params: bwameth with skip_trimming",
             params: [
                 aligner: "bwameth",
                 skip_trimming: true
@@ -23,7 +23,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_skip_deduplication",
-            description: "Params: bwameth | skip_deduplication",
+            description: "Params: bwameth with skip_deduplication",
             params: [
                 aligner: "bwameth",
                 skip_deduplication: true
@@ -31,7 +31,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_rrbs",
-            description: "Params: bwameth | rrbs",
+            description: "Params: bwameth with rrbs",
             params: [
                 aligner: "bwameth",
                 rrbs: true
@@ -39,7 +39,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_save_reference_save_align_intermeds",
-            description: "Params: bwameth | save_reference | save_align_intermeds",
+            description: "Params: bwameth with save_reference and save_align_intermeds",
             params: [
                 aligner: "bwameth",
                 save_reference: true,
@@ -48,7 +48,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_run_qualimap",
-            description: "Params: bwameth | run_qualimap",
+            description: "Params: bwameth with run_qualimap",
             params: [
                 aligner: "bwameth",
                 run_qualimap: true
@@ -56,7 +56,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_skip_fastqc",
-            description: "Params: bwameth | skip_fastqc",
+            description: "Params: bwameth with skip_fastqc",
             params: [
                 aligner: "bwameth",
                 skip_fastqc: true
@@ -64,7 +64,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_skip_multiqc",
-            description: "Params: bwameth | skip_multiqc",
+            description: "Params: bwameth with skip_multiqc",
             params: [
                 aligner: "bwameth",
                 skip_multiqc: true
@@ -72,7 +72,7 @@ nextflow_pipeline {
         ],
         [
             name: "bwameth_cat_fastq_skip_trimming_skip_deduplication",
-            description: "Params: bwameth | CAT_FASTQ | skip_trimming | skip_deduplication",
+            description: "Params: bwameth with CAT_FASTQ and skip_trimming and skip_deduplication",
             params: [
                 input: "assets/samplesheet_replicates.csv",
                 aligner: "bwameth",

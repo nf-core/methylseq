@@ -16,7 +16,19 @@
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
                 },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "0.24.2"
+                },
                 "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_SUMMARY": {
                     "bismark": "0.24.2"
                 },
                 "FASTQC": {
@@ -24,6 +36,12 @@
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.21
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -369,6 +387,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-06-25T07:49:45.636185588"
+        "timestamp": "2025-06-29T06:44:39.001354404"
     }
 }

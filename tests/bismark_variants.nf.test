@@ -13,35 +13,35 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_skip_trimming",
-            description: "Params: bismark | skip_trimming",
+            description: "Params: bismark with skip_trimming",
             params: [
                 skip_trimming: true
             ]
         ],
         [
             name: "bismark_skip_deduplication",
-            description: "Params: bismark | skip_deduplication",
+            description: "Params: bismark with skip_deduplication",
             params: [
                 skip_deduplication: true
             ]
         ],
         [
             name: "bismark_cytosine_report",
-            description: "Params: bismark | cytosine_report",
+            description: "Params: bismark with cytosine_report",
             params: [
                 cytosine_report: true
             ]
         ],
         [
             name: "bismark_rrbs",
-            description: "Params: bismark | rrbs",
+            description: "Params: bismark with rrbs",
             params: [
                 rrbs: true
             ]
         ],
         [
             name: "bismark_emseq_clip_r1",
-            description: "Params: bismark | em_seq | clip_r1",
+            description: "Params: bismark with em_seq and clip_r1",
             params: [
                 em_seq: true,
                 clip_r1: 2
@@ -56,7 +56,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_save_reference_save_align_intermeds",
-            description: "Params: bismark | save_reference | save_align_intermeds",
+            description: "Params: bismark with save_reference and save_align_intermeds",
             params: [
                 save_reference: true,
                 save_align_intermeds: true
@@ -64,35 +64,35 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_run_preseq",
-            description: "Params: bismark | run_preseq",
+            description: "Params: bismark with run_preseq",
             params: [
                 run_preseq: true
             ]
         ],
         [
             name: "bismark_run_qualimap",
-            description: "Params: bismark | run_qualimap",
+            description: "Params: bismark with run_qualimap",
             params: [
                 run_qualimap: true
             ]
         ],
         [
             name: "bismark_skip_multiqc",
-            description: "Params: bismark | skip_multiqc",
+            description: "Params: bismark with skip_multiqc",
             params: [
                 skip_multiqc: true
             ]
         ],
         [
             name: "bismark_skip_fastqc",
-            description: "Params: bismark | skip_fastqc",
+            description: "Params: bismark with skip_fastqc",
             params: [
                 skip_fastqc: true
             ]
         ],
         [
             name: "bismark_cat_fastq_skip_trimming_skip_deduplication",
-            description: "Params: bismark | CAT_FASTQ | skip_trimming | skip_deduplication",
+            description: "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication",
             params: [
                 input: "assets/samplesheet_replicates.csv",
                 skip_trimming: true,
