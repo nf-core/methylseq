@@ -49,7 +49,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_nomeseq",
-            description: "Params: bismark | nomeseq",
+            description: "Params: bismark with nomeseq",
             params: [
                 nomeseq: true
             ]

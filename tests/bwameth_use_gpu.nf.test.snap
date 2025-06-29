@@ -1,5 +1,5 @@
 {
-    "Params: PARABRICKS_FQ2BAMMETH | GPU Profile": {
+    "Params: PARABRICKS_FQ2BAMMETH - GPU Profile": {
         "content": [
             36,
             {
@@ -12,8 +12,32 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
+                "METHYLDACKEL_EXTRACT": {
+                    "methyldackel": "0.6.1"
+                },
+                "METHYLDACKEL_MBIAS": {
+                    "methyldackel": "0.6.1"
+                },
                 "PARABRICKS_FQ2BAMMETH": {
                     "pbrun": "4.3.2-1"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.3.0"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_INDEX_ALIGNMENTS": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_INDEX_DEDUPLICATED": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.21
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -248,6 +272,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.4"
         },
-        "timestamp": "2025-06-26T12:32:08.026829925"
+        "timestamp": "2025-06-29T11:25:42.493010939"
     }
 }
