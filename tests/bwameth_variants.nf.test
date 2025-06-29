@@ -55,6 +55,22 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bwameth_skip_fastqc",
+            description: "Params: bwameth | skip_fastqc",
+            params: [
+                aligner: "bwameth",
+                skip_fastqc: true
+            ]
+        ],
+        [
+            name: "bwameth_skip_multiqc",
+            description: "Params: bwameth | skip_multiqc",
+            params: [
+                aligner: "bwameth",
+                skip_multiqc: true
+            ]
+        ],
+        [
             name: "bwameth_cat_fastq_skip_trimming_skip_deduplication",
             description: "Params: bwameth | CAT_FASTQ | skip_trimming | skip_deduplication",
             params: [

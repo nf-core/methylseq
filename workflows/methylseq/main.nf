@@ -70,13 +70,18 @@ workflow METHYLSEQ {
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_fastq
-    )
-    ch_fastqc_html   = FASTQC.out.html
-    ch_fastqc_zip    = FASTQC.out.zip
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
-    ch_versions      = ch_versions.mix(FASTQC.out.versions)
+    if (!params.skip_fastqc) {
+        FASTQC (
+            ch_fastq
+        )
+        ch_fastqc_html   = FASTQC.out.html
+        ch_fastqc_zip    = FASTQC.out.zip
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
+        ch_versions      = ch_versions.mix(FASTQC.out.versions)
+    } else {
+        ch_fastqc_html   = Channel.empty()
+        ch_fastqc_zip    = Channel.empty()
+    }
 
     //
     // MODULE: Run TrimGalore!
@@ -120,7 +125,7 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions.unique{ it.baseName })
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
@@ -148,7 +153,7 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
 
     //
@@ -210,63 +215,70 @@ workflow METHYLSEQ {
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config = params.multiqc_config ?
-        Channel.fromPath(params.multiqc_config, checkIfExists: true) :
-        Channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo ?
-        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
-        Channel.empty()
+    if (!params.skip_multiqc) {
+        ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+        ch_multiqc_custom_config = params.multiqc_config ?
+            Channel.fromPath(params.multiqc_config, checkIfExists: true) :
+            Channel.empty()
+        ch_multiqc_logo          = params.multiqc_logo ?
+            Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+            Channel.empty()
 
-    summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
+        summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+        ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
 
-    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
-        file(params.multiqc_methods_description, checkIfExists: true) :
-        file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+        ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
+            file(params.multiqc_methods_description, checkIfExists: true) :
+            file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+        ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
 
-    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-    ch_multiqc_files = ch_multiqc_files.mix(
-        ch_methods_description.collectFile(
-            name: 'methods_description_mqc.yaml',
-            sort: true
+        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+        ch_multiqc_files = ch_multiqc_files.mix(
+            ch_methods_description.collectFile(
+                name: 'methods_description_mqc.yaml',
+                sort: true
+            )
         )
-    )
 
-    if(params.run_qualimap) {
-        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-    }
-    if (params.run_preseq) {
-        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
-    }
-    ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
-    if (!params.skip_trimming) {
-        ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
-    }
-    if (params.run_targeted_sequencing) {
-        if (params.collecthsmetrics) {
-            ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
+        if(params.run_qualimap) {
+            ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
         }
-    }
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+        if (params.run_preseq) {
+            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+        }
+        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
+        if (!params.skip_trimming) {
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        if (params.run_targeted_sequencing) {
+            if (params.collecthsmetrics) {
+                ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
+            }
+        }
+        if (!params.skip_fastqc) {
+            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+        }
 
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        []
-    )
+        MULTIQC (
+            ch_multiqc_files.collect(),
+            ch_multiqc_config.toList(),
+            ch_multiqc_custom_config.toList(),
+            ch_multiqc_logo.toList(),
+            [],
+            []
+        )
+        ch_multiqc_report = MULTIQC.out.report.toList()
+    } else {
+        ch_multiqc_report = Channel.empty()
+    }
 
     emit:
     bam            = ch_bam                      // channel: [ val(meta), path(bam) ]
     bai            = ch_bai                      // channel: [ val(meta), path(bai) ]
     qualimap       = ch_qualimap                 // channel: [ val(meta), path(qualimap) ]
     preseq         = ch_preseq                   // channel: [ val(meta), path(preseq) ]
-    multiqc_report = MULTIQC.out.report.toList() // channel: [ path(multiqc_report.html )  ]
+    multiqc_report = ch_multiqc_report            // channel: [ path(multiqc_report.html )  ]
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 

@@ -84,6 +84,13 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bismark_skip_fastqc",
+            description: "Params: bismark | skip_fastqc",
+            params: [
+                skip_fastqc: true
+            ]
+        ],
+        [
             name: "bismark_cat_fastq_skip_trimming_skip_deduplication",
             description: "Params: bismark | CAT_FASTQ | skip_trimming | skip_deduplication",
             params: [
