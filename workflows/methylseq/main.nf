@@ -65,7 +65,7 @@ workflow METHYLSEQ {
         ch_samplesheet.multiple
     )
     ch_fastq    = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC
@@ -76,7 +76,7 @@ workflow METHYLSEQ {
     ch_fastqc_html   = FASTQC.out.html
     ch_fastqc_zip    = FASTQC.out.zip
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
-    ch_versions      = ch_versions.mix(FASTQC.out.versions.first())
+    ch_versions      = ch_versions.mix(FASTQC.out.versions)
 
     //
     // MODULE: Run TrimGalore!
@@ -86,7 +86,7 @@ workflow METHYLSEQ {
             ch_fastq
         )
         ch_reads    = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
+        ch_versions = ch_versions.mix(TRIMGALORE.out.versions)
     } else {
         ch_reads    = ch_fastq
     }
@@ -100,10 +100,19 @@ workflow METHYLSEQ {
         //
         // Run Bismark alignment + downstream processing
         //
+        ch_bismark_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_bismark_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
+                reads: [ meta, reads ]
+                fasta: [ meta_fasta, fasta ]
+                bismark_index: [ meta_bismark, bismark_index ]
+            }
+
         FASTQ_ALIGN_DEDUP_BISMARK (
-            ch_reads,
-            ch_fasta.first(),
-            ch_bismark_index.first(),
+            ch_bismark_inputs.reads,
+            ch_bismark_inputs.fasta,
+            ch_bismark_inputs.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
@@ -116,11 +125,22 @@ workflow METHYLSEQ {
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
+        ch_bwameth_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_fasta_index)
+            .combine(ch_bwameth_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwameth, bwameth_index ->
+                reads: [ meta, reads ]
+                fasta: [ meta_fasta, fasta ]
+                fasta_index: [ meta_fasta_index, fasta_index ]
+                bwameth_index: [ meta_bwameth, bwameth_index ]
+            }
+
         FASTQ_ALIGN_DEDUP_BWAMETH (
-            ch_reads,
-            ch_fasta.first(),
-            ch_fasta_index,
-            ch_bwameth_index.first(),
+            ch_bwameth_inputs.reads,
+            ch_bwameth_inputs.fasta,
+            ch_bwameth_inputs.fasta_index,
+            ch_bwameth_inputs.bwameth_index,
             params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
         )
@@ -141,7 +161,7 @@ workflow METHYLSEQ {
             params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
         )
         ch_qualimap = QUALIMAP_BAMQC.out.results
-        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions)
     }
 
     //
@@ -173,7 +193,7 @@ workflow METHYLSEQ {
             ch_bam
         )
         ch_preseq   = PRESEQ_LCEXTRAP.out.lc_extrap
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
     }
 
     //

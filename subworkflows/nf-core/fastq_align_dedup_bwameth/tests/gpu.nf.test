@@ -35,7 +35,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: parabricks/fq2bammeth single-end | use_gpu") {
+    test("Params: parabricks/fq2bammeth single-end - use_gpu") {
 
         when {
 
@@ -79,7 +79,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: parabricks/fq2bammeth single-end | use_gpu | skip_deduplication") {
+    test("Params: parabricks/fq2bammeth single-end - use_gpu - skip_deduplication") {
 
         when {
             params {

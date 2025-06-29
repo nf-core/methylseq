@@ -89,11 +89,24 @@ workflow TARGETED_SEQUENCING {
          * Note: Using the same intervals for both target and bait as they are typically
          * the same for targeted methylation sequencing experiments
          */
+        ch_picard_inputs = ch_bam.join(ch_bai)
+            .combine(ch_intervals)
+            .combine(ch_intervals)
+            .combine(ch_fasta_with_meta)
+            .combine(ch_fasta_index_with_meta)
+            .combine(ch_sequence_dictionary)
+            .multiMap { meta, bam, bai, intervals1, intervals2, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_dict, dict ->
+                bam_etc: [ meta, bam, bai, intervals1, intervals2 ] // intervals: baits, targets
+                fasta: [ meta_fasta, fasta ]
+                fasta_index: [ meta_fasta_index, fasta_index ]
+                dict: [ meta_dict, dict ]
+            }
+
         PICARD_COLLECTHSMETRICS(
-            ch_bam.join(ch_bai).combine(ch_intervals).combine(ch_intervals),
-            ch_fasta_with_meta.first(),
-            ch_fasta_index_with_meta,
-            ch_sequence_dictionary.first()
+            ch_picard_inputs.bam_etc,
+            ch_picard_inputs.fasta,
+            ch_picard_inputs.fasta_index,
+            ch_picard_inputs.dict
         )
         ch_picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics
         ch_versions = ch_versions.mix(PICARD_COLLECTHSMETRICS.out.versions)

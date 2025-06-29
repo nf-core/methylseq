@@ -15,7 +15,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_hisat_rrbs",
-            description: "Params: bismark_hisat | rrbs",
+            description: "Params: bismark_hisat with rrbs",
             params: [
                 aligner: "bismark_hisat",
                 rrbs: true
@@ -23,7 +23,7 @@ nextflow_pipeline {
         ],
         [
             name: "bismark_hisat_save_reference_save_align_intermeds",
-            description: "Params: bismark_hisat | save_reference | save_align_intermeds",
+            description: "Params: bismark_hisat with save_reference and save_align_intermeds",
             params: [
                 aligner: "bismark_hisat",
                 save_reference: true,

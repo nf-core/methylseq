@@ -4,7 +4,7 @@ nextflow_pipeline {
     config "./nextflow.config"
     tag "gpu"
 
-    test("Params: PARABRICKS_FQ2BAMMETH | GPU Profile") {
+    test("Params: PARABRICKS_FQ2BAMMETH - GPU Profile") {
         when {
             params {
                 outdir  = "${outputDir}"
