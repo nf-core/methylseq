@@ -46,21 +46,6 @@ workflow TARGETED_SEQUENCING {
      * Run Picard CollectHSMetrics
      */
     if (collecthsmetrics) {
-        // Setup channels fasta, fasta_index and target regions
-        ch_fasta_with_meta = ch_fasta
-            .map { meta, fasta ->
-                def fasta_file = file(fasta)
-                tuple(meta + ["id": fasta_file.name.replaceFirst(~/\.[^\.]+$/, '')], fasta_file)
-            }
-
-        ch_fasta_index_with_meta = ch_fasta_index.map { meta, fasta_index ->
-            def fasta_index_file = file(fasta_index)
-            tuple(
-                meta + ["id": fasta_index_file.name.replaceFirst(~/\.[^\.]+$/, '')],
-                fasta_index_file
-            )
-        }
-
         // Create target regions with meta for Picard tools
         target_regions_with_meta = ch_target_regions.map { target_file ->
             tuple(["id": file(target_file).baseName], target_file)
@@ -69,7 +54,7 @@ workflow TARGETED_SEQUENCING {
         /*
          * Creation of a dictionary for the reference genome
          */
-        PICARD_CREATESEQUENCEDICTIONARY(ch_fasta_with_meta)
+        PICARD_CREATESEQUENCEDICTIONARY(ch_fasta)
         ch_sequence_dictionary = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
         ch_versions = ch_versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
 
@@ -92,8 +77,8 @@ workflow TARGETED_SEQUENCING {
         ch_picard_inputs = ch_bam.join(ch_bai)
             .combine(ch_intervals)
             .combine(ch_intervals)
-            .combine(ch_fasta_with_meta)
-            .combine(ch_fasta_index_with_meta)
+            .combine(ch_fasta)
+            .combine(ch_fasta_index)
             .combine(ch_sequence_dictionary)
             .multiMap { meta, bam, bai, intervals1, intervals2, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_dict, dict ->
                 bam_etc: [ meta, bam, bai, intervals1, intervals2 ] // intervals: baits, targets
