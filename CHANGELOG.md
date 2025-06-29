@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v3.1.0](https://github.com/nf-core/methylseq/releases/tag/3.1.0) - []
+## [v3.1.0](https://github.com/nf-core/methylseq/releases/tag/3.1.0) - [2025-07-04]
 
 ### Bug fixes & refactoring
 
@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Improved channel handling for FASTA files with better branching logic for gzipped vs unzipped files [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🔧 Refactored input handling to use channels instead of direct file paths [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🔧 Updated multiple nf-core modules to latest versions [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🔧 Fix workflow versions collection and improve conditional logic for FastQC and MultiQC execution
 
 ### Pipeline Updates
 
@@ -28,8 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Update `--pbat` trimming options to 8|8|8|8 [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔄 Removed `--cegx` and `--epignome` preset trimming options (kits discontinued) [#560](https://github.com/nf-core/methylseq/pull/506)
 - 🔧 Removed parameter `use_gpu`. Adding the `gpu` profile with `--profile gpu` is adequate to activate the GPU-based pathways [#520](https://github.com/nf-core/methylseq/pull/520)
-- 🔧 Enhanced targeted sequencing subworkflow with better parameter handling [#539](https://github.com/nf-core/methylseq/pull/539)
-- 🔧 Added aligner and collecthsmetrics parameters to the FASTA index subworkflow inputs [#539](https://github.com/nf-core/methylseq/pull/539)
+- ✨ Targeted Sequencing subworkflow with improved parameter handling and region-specific analysis capabilities [#539](https://github.com/nf-core/methylseq/pull/539)
+- ✨ Added `--collecthsmetrics` parameter to allow collection of Picard HS metrics [#539](https://github.com/nf-core/methylseq/pull/539)
+- ✨ Added `--skip_fastqc` parameter to allow skipping FastQC quality control step [#539](https://github.com/nf-core/methylseq/pull/539)
+- ✨ Added `--skip_multiqc` parameter to allow skipping MultiQC quality control step [#539](https://github.com/nf-core/methylseq/pull/539)
 
 ### Testing Updates
 
