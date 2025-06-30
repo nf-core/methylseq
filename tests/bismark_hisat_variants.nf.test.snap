@@ -36,7 +36,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v3.1.0dev"
+                    "nf-core/methylseq": "v4.0.0"
                 }
             },
             [
@@ -421,7 +421,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v3.1.0dev"
+                    "nf-core/methylseq": "v4.0.0"
                 }
             },
             [
@@ -884,7 +884,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v3.1.0dev"
+                    "nf-core/methylseq": "v4.0.0"
                 }
             },
             [
