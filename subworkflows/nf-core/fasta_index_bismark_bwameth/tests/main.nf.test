@@ -14,7 +14,7 @@ nextflow_workflow {
     tag "bwameth/index"
     tag "samtools/faidx"
 
-    test("Params: bismark - download bismark index (bowtie2)") {
+    test("Params: bismark | download bismark index (bowtie2)") {
 
         when {
             workflow {
@@ -43,7 +43,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark - generate bismark index (bowtie2)") {
+    test("Params: bismark | generate bismark index (bowtie2)") {
 
         when {
             workflow {
@@ -72,7 +72,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat - download bismark index (hisat2)") {
+    test("Params: bismark_hisat | download bismark index (hisat2)") {
 
         when {
             workflow {
@@ -101,7 +101,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat - generate bismark index (hisat2)") {
+    test("Params: bismark_hisat | generate bismark index (hisat2)") {
 
         when {
             workflow {
@@ -130,7 +130,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth - download fasta index - download bwameth index") {
+    test("Params: bwameth | download fasta index | download bwameth index") {
 
         when {
             workflow {
@@ -159,7 +159,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth - generate fasta index - download bwameth index") {
+    test("Params: bwameth | generate fasta index | download bwameth index") {
 
         when {
             workflow {
@@ -188,7 +188,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth - generate fasta index - generate bwameth index") {
+    test("Params: bwameth | generate fasta index | generate bwameth index") {
 
         when {
             workflow {
@@ -217,7 +217,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth - generate fasta index - download bwameth index - collecthsmetrics") {
+    test("Params: bwameth | generate fasta index | download bwameth index | collecthsmetrics") {
 
         when {
             workflow {
