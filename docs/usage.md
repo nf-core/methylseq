@@ -18,6 +18,54 @@ The nf-core/methylseq pipeline provides two distinct workflows for DNA methylati
 
 > Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](./docs/bs-seq-primer.md)
 
+```mermaid
+flowchart TD
+    subgraph Stage1[Pre-processing]
+        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+    end
+
+    subgraph Stage2[Genome alignment]
+        C --> D1["bwa-meth align - GPU or CPU"]
+        C --> D2["Bismark align - Bowtie2/HISAT2"]
+    end
+
+    subgraph Stage3[Post-processing]
+        D1 --> E1["Samtools sort"]
+        E1 --> E2["Samtools index/stats"]
+        E2 --> E3["Picard MarkDuplicates"]
+        E3 --> E4["MethylDackel extract/M-bias"]
+
+        D2 --> F1["Bismark deduplicate"]
+        F1 --> F2["Bismark methylation extractor"]
+        F2 --> F3["Bismark coverage2cytosine"]
+        F3 --> F4["Bismark report"]
+        F4 --> F5["Bismark Summary"]
+        F4 --> G1["Samtools sort/index"]
+    end
+
+    subgraph Stage3b[Targeted Sequencing - Optional]
+        E4 --> I1["Targeted Sequencing<br/>(bedGraph filtering)"]
+        F3 --> I1
+        I1 --> I2["Picard CollectHsMetrics<br/>(optional)"]
+    end
+
+    subgraph Stage3c[Optional QC]
+        E3 --> J1["preseq (optional)"]
+        G1 --> J1
+        E3 --> J2["Qualimap (optional)"]
+        G1 --> J2
+    end
+
+    subgraph Stage4[Final QC]
+        E4 --> H1["MultiQC"]
+        G1 --> H1
+        I1 --> H1
+        I2 --> H1
+        J1 --> H1
+        J2 --> H1
+    end
+```
+
 ### Workflow: Bismark
 
 By default, the nf-core/methylseq pipeline uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as the alignment tool. This configuration is optimized for most DNA methylation workflows and will run unless an alternative aligner is specified.
