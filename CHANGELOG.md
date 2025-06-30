@@ -3,26 +3,27 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v3.1.0](https://github.com/nf-core/methylseq/releases/tag/3.1.0) - [2025-07-04]
+## [v4.0.0](https://github.com/nf-core/methylseq/releases/tag/4.0.0) - [2025-07-04]
 
 ### Bug fixes & refactoring
 
 - 🔙 Reverted PR #523 which changes subworkflows directly in the pipeline.
-- 🔄 Updated template to nf-core/tools v3.2.0 [#](https://github.com/nf-core/methylseq/pull/)
+- 🔄 Updated template to nf-core/tools v3.2.0 [#504](https://github.com/nf-core/methylseq/pull/504)
 - 🐛 bumped the minimum for `PARABRICKS_FQ2BAMMETH` to 100.GB as suggested by the docs [#528](https://github.com/nf-core/methylseq/issues/528)
 - 🐛 fix parabricks/fq2bammeth failure on AWS Batch like executors where symlinks don't exist [#536](https://github.com/nf-core/methylseq/issues/536)
 - 🔧 FASTA Index Subworkflow Refactoring - remove implicit params [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🔧 Improved channel handling for FASTA files with better branching logic for gzipped vs unzipped files [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🔧 Refactored input handling to use channels instead of direct file paths [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🔧 Updated multiple nf-core modules to latest versions [#539](https://github.com/nf-core/methylseq/pull/539)
-- 🔧 Fix workflow versions collection and improve conditional logic for FastQC and MultiQC execution
+- 🔧 Fix workflow versions collection and improve conditional logic for FastQC and MultiQC execution [#539](https://github.com/nf-core/methylseq/pull/539)
 
 ### Pipeline Updates
 
-- ✨ Add `--run_targeted_sequencing` to enable further analysis of targeted methylation experiments [#511](https://github.com/nf-core/methylseq/issues/511)
-- 🔧 Add `--all_contexts` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
-- 🔧 Add `--merge_context` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/issues/460)
-- 🔧 Decouple `--merge_non_CpG` from `--comprehensive` in Bismark's workflow [#388](https://github.com/nf-core/methylseq/issues/388)
+- ✨ Add `--run_targeted_sequencing` to enable further analysis of targeted methylation experiments [#511](https://github.com/nf-core/methylseq/pull/516)
+- 🔧 Add `--all_contexts` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/pull/516)
+- 🔧 Add `--merge_context` param in bwameth workflow [#460](https://github.com/nf-core/methylseq/pull/516)
+- 🔧 Decouple `--merge_non_CpG` from `--comprehensive` in Bismark's workflow [#388](https://github.com/nf-core/methylseq/pull/516)
+- 🔧 Removed `--comprehensive` parameter from the `bwameth` workflow [#511](https://github.com/nf-core/methylseq/pull/516)
 - 🔧 Install `bedtools/intersect` module from nf-core/modules
 - 🔧 Install `picard/collecthsmetrics` module from nf-core/modules
 - 🔧 Added new flag `skip_trimming_presets` to overwrite any preset trimming options [#560](https://github.com/nf-core/methylseq/pull/506)
@@ -36,8 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Testing Updates
 
-- 🧪 Test Suite Consolidation - Removed 19 individual test files (~7,000 lines) and created comprehensive variant-based test suites [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Test Suite Consolidation - Removed 19 individual test files and replaced comprehensive test suites [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🧪 Created `bismark_variants.nf.test` for comprehensive Bismark testing [#539](https://github.com/nf-core/methylseq/pull/539)
+- 🧪 Created `bismark_hisat_variants.nf.test` for comprehensive Bismark testing [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🧪 Created `bwameth_variants.nf.test` for comprehensive Bwameth testing [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🧪 Added `targeted_sequencing_variants.nf.test` for targeted sequencing workflow testing [#539](https://github.com/nf-core/methylseq/pull/539)
 - 🧪 Added `index_downloads.nf.test` for testing index download scenarios [#539](https://github.com/nf-core/methylseq/pull/539)
