@@ -262,8 +262,3 @@ def methodsDescriptionText(mqc_methods_yaml) {
 
     return description_html.toString()
 }
-
-def ensureList(obj) {
-    // If 'obj' is not a List, return a List with 'obj' as single entry
-        return obj instanceof List ? obj : [obj]
-    }

@@ -23,6 +23,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
 - [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
+- [Reference Genome Preparation](#reference-genome-preparation) - Preparing indices for alignment [OPTIONAL]
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
@@ -85,6 +86,16 @@ bwameth/
 ```
 
 ### Detailed Output Descriptions
+
+### Reference Genome Preparation
+
+If you provide a FASTA file as input (`--fasta`), the pipeline will automatically generate the necessary reference genome files for your chosen aligner. These files are saved in the `results` directory.
+
+**Output directory: `results/<aligner>/reference_genome/`**
+
+- This directory contains the aligner-specific index files. For Bismark, this will be a `BismarkIndex/` directory. For bwa-meth, this will be a `BwamethIndex/` directory.
+
+> **NB:** These files are only generated if a FASTA file is provided as input and `--save_reference` is specified.
 
 ### FastQC
 
@@ -220,12 +231,28 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-### Targeted methylation
+### Targeted Sequencing
 
-If `--run_targeted_sequencing` is set to `true`, bedGraph files are filtered using the BED file passed to `--target_regions_file`.
+If `--run_targeted_sequencing` is set to `true`, the pipeline performs additional analysis for targeted sequencing experiments.
 
-- `sample.targeted.bedGraph`
+#### Filtered Methylation Calls
+
+BedGraph files are filtered using the BED file passed to `--target_regions_file`.
+
+**Bismark output directory: `results/bismark/methylation_calls/bedGraph/`**
+**bwa-meth output directory: `results/methyldackel/`**
+
+- `*.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
+
+#### High-Sensitivity Metrics
+
+[Picard CollectHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
+
+**Output directory: `results/enrichment_metrics`**
+
+- `*.CollectHsMetrics.coverage_metrics`
+  - Text-based statistics showed also in the MultiQC report.
 
 ### Bismark Reports
 

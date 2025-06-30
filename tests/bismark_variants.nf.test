@@ -1,0 +1,147 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bismark Variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Define bismark test scenarios
+    def testScenarios = [
+        [
+            name: "bismark_default",
+            description: "Params: bismark (default)",
+            params: [:]
+        ],
+        [
+            name: "bismark_skip_trimming",
+            description: "Params: bismark with skip_trimming",
+            params: [
+                skip_trimming: true
+            ]
+        ],
+        [
+            name: "bismark_skip_deduplication",
+            description: "Params: bismark with skip_deduplication",
+            params: [
+                skip_deduplication: true
+            ]
+        ],
+        [
+            name: "bismark_cytosine_report",
+            description: "Params: bismark with cytosine_report",
+            params: [
+                cytosine_report: true
+            ]
+        ],
+        [
+            name: "bismark_rrbs",
+            description: "Params: bismark with rrbs",
+            params: [
+                rrbs: true
+            ]
+        ],
+        [
+            name: "bismark_emseq_clip_r1",
+            description: "Params: bismark with em_seq and clip_r1",
+            params: [
+                em_seq: true,
+                clip_r1: 2
+            ]
+        ],
+        [
+            name: "bismark_nomeseq",
+            description: "Params: bismark with nomeseq",
+            params: [
+                nomeseq: true
+            ]
+        ],
+        [
+            name: "bismark_save_reference_save_align_intermeds",
+            description: "Params: bismark with save_reference and save_align_intermeds",
+            params: [
+                save_reference: true,
+                save_align_intermeds: true
+            ]
+        ],
+        [
+            name: "bismark_run_preseq",
+            description: "Params: bismark with run_preseq",
+            params: [
+                run_preseq: true
+            ]
+        ],
+        [
+            name: "bismark_run_qualimap",
+            description: "Params: bismark with run_qualimap",
+            params: [
+                run_qualimap: true
+            ]
+        ],
+        [
+            name: "bismark_skip_multiqc",
+            description: "Params: bismark with skip_multiqc",
+            params: [
+                skip_multiqc: true
+            ]
+        ],
+        [
+            name: "bismark_skip_fastqc",
+            description: "Params: bismark with skip_fastqc",
+            params: [
+                skip_fastqc: true
+            ]
+        ],
+        [
+            name: "bismark_cat_fastq_skip_trimming_skip_deduplication",
+            description: "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication",
+            params: [
+                input: "assets/samplesheet_replicates.csv",
+                skip_trimming: true,
+                skip_deduplication: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        if (key == 'input') {
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
+                        } else {
+                            delegate."$key" = value
+                        }
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        workflow.trace.succeeded().size(),
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

@@ -43,6 +43,8 @@ workflow METHYLSEQ {
     ch_reads         = Channel.empty()
     ch_bam           = Channel.empty()
     ch_bai           = Channel.empty()
+    ch_bedgraph      = Channel.empty()
+    ch_aligner_mqc   = Channel.empty()
     ch_qualimap      = Channel.empty()
     ch_preseq        = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -65,18 +67,23 @@ workflow METHYLSEQ {
         ch_samplesheet.multiple
     )
     ch_fastq    = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first())
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_fastq
-    )
-    ch_fastqc_html   = FASTQC.out.html
-    ch_fastqc_zip    = FASTQC.out.zip
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
-    ch_versions      = ch_versions.mix(FASTQC.out.versions.first())
+    if (!params.skip_fastqc) {
+        FASTQC (
+            ch_fastq
+        )
+        ch_fastqc_html   = FASTQC.out.html
+        ch_fastqc_zip    = FASTQC.out.zip
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
+        ch_versions      = ch_versions.mix(FASTQC.out.versions)
+    } else {
+        ch_fastqc_html   = Channel.empty()
+        ch_fastqc_zip    = Channel.empty()
+    }
 
     //
     // MODULE: Run TrimGalore!
@@ -86,7 +93,7 @@ workflow METHYLSEQ {
             ch_fastq
         )
         ch_reads    = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
+        ch_versions = ch_versions.mix(TRIMGALORE.out.versions)
     } else {
         ch_reads    = ch_fastq
     }
@@ -100,10 +107,19 @@ workflow METHYLSEQ {
         //
         // Run Bismark alignment + downstream processing
         //
+        ch_bismark_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_bismark_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
+                reads: [ meta, reads ]
+                fasta: [ meta_fasta, fasta ]
+                bismark_index: [ meta_bismark, bismark_index ]
+            }
+
         FASTQ_ALIGN_DEDUP_BISMARK (
-            ch_reads,
-            ch_fasta,
-            ch_bismark_index,
+            ch_bismark_inputs.reads,
+            ch_bismark_inputs.fasta,
+            ch_bismark_inputs.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq
         )
@@ -111,16 +127,27 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions.unique{ it.baseName })
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
 
+        ch_bwameth_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_fasta_index)
+            .combine(ch_bwameth_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwameth, bwameth_index ->
+                reads: [ meta, reads ]
+                fasta: [ meta_fasta, fasta ]
+                fasta_index: [ meta_fasta_index, fasta_index ]
+                bwameth_index: [ meta_bwameth, bwameth_index ]
+            }
+
         FASTQ_ALIGN_DEDUP_BWAMETH (
-            ch_reads,
-            ch_fasta,
-            ch_fasta_index.map{ index -> [ [:], index ]},
-            ch_bwameth_index,
+            ch_bwameth_inputs.reads,
+            ch_bwameth_inputs.fasta,
+            ch_bwameth_inputs.fasta_index,
+            ch_bwameth_inputs.bwameth_index,
             params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
         )
@@ -128,7 +155,10 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
+    }
+    else {
+        error "ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', or 'bwameth'"
     }
 
     //
@@ -141,7 +171,7 @@ workflow METHYLSEQ {
             params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
         )
         ch_qualimap = QUALIMAP_BAMQC.out.results
-        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions.first())
+        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions)
     }
 
     //
@@ -149,13 +179,17 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
     if (params.run_targeted_sequencing){
+        if (!params.target_regions_file) {
+            error "ERROR: --target_regions_file must be specified when using --run_targeted_sequencing"
+        }
         TARGETED_SEQUENCING (
             ch_bedgraph,
-            params.target_regions_file,
+            Channel.fromPath(params.target_regions_file, checkIfExists: true),
             ch_fasta,
             ch_fasta_index,
             ch_bam,
-            ch_bai
+            ch_bai,
+            params.collecthsmetrics
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }
@@ -169,7 +203,7 @@ workflow METHYLSEQ {
             ch_bam
         )
         ch_preseq   = PRESEQ_LCEXTRAP.out.lc_extrap
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions.first())
+        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
     }
 
     //
@@ -186,63 +220,70 @@ workflow METHYLSEQ {
     //
     // MODULE: MultiQC
     //
-    ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-    ch_multiqc_custom_config = params.multiqc_config ?
-        Channel.fromPath(params.multiqc_config, checkIfExists: true) :
-        Channel.empty()
-    ch_multiqc_logo          = params.multiqc_logo ?
-        Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
-        Channel.empty()
+    if (!params.skip_multiqc) {
+        ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+        ch_multiqc_custom_config = params.multiqc_config ?
+            Channel.fromPath(params.multiqc_config, checkIfExists: true) :
+            Channel.empty()
+        ch_multiqc_logo          = params.multiqc_logo ?
+            Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+            Channel.empty()
 
-    summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
+        summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
+        ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
 
-    ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
-        file(params.multiqc_methods_description, checkIfExists: true) :
-        file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-    ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+        ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
+            file(params.multiqc_methods_description, checkIfExists: true) :
+            file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+        ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
 
-    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-    ch_multiqc_files = ch_multiqc_files.mix(
-        ch_methods_description.collectFile(
-            name: 'methods_description_mqc.yaml',
-            sort: true
+        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+        ch_multiqc_files = ch_multiqc_files.mix(
+            ch_methods_description.collectFile(
+                name: 'methods_description_mqc.yaml',
+                sort: true
+            )
         )
-    )
 
-    if(params.run_qualimap) {
-        ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
-    }
-    if (params.run_preseq) {
-        ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
-    }
-    ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
-    if (!params.skip_trimming) {
-        ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
-    }
-    if (params.run_targeted_sequencing) {
-        if (params.run_picard_collecthsmetrics) {
-            ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
+        if(params.run_qualimap) {
+            ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect{ it[1] }.ifEmpty([]))
         }
-    }
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+        if (params.run_preseq) {
+            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect{ it[1] }.ifEmpty([]))
+        }
+        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
+        if (!params.skip_trimming) {
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect{ it[1] })
+        }
+        if (params.run_targeted_sequencing) {
+            if (params.collecthsmetrics) {
+                ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] }.ifEmpty([]))
+            }
+        }
+        if (!params.skip_fastqc) {
+            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+        }
 
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList(),
-        [],
-        []
-    )
+        MULTIQC (
+            ch_multiqc_files.collect(),
+            ch_multiqc_config.toList(),
+            ch_multiqc_custom_config.toList(),
+            ch_multiqc_logo.toList(),
+            [],
+            []
+        )
+        ch_multiqc_report = MULTIQC.out.report.toList()
+    } else {
+        ch_multiqc_report = Channel.empty()
+    }
 
     emit:
     bam            = ch_bam                      // channel: [ val(meta), path(bam) ]
     bai            = ch_bai                      // channel: [ val(meta), path(bai) ]
     qualimap       = ch_qualimap                 // channel: [ val(meta), path(qualimap) ]
     preseq         = ch_preseq                   // channel: [ val(meta), path(preseq) ]
-    multiqc_report = MULTIQC.out.report.toList() // channel: [ path(multiqc_report.html )  ]
+    multiqc_report = ch_multiqc_report            // channel: [ path(multiqc_report.html )  ]
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 

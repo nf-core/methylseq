@@ -34,7 +34,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth single-end | default") {
+    test("Params: bwameth single-end - default") {
 
         when {
 
@@ -78,7 +78,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth paired-end | default") {
+    test("Params: bwameth paired-end - default") {
 
         when {
 
@@ -123,7 +123,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bwameth paired-end | skip_deduplication") {
+    test("Params: bwameth paired-end - skip_deduplication") {
 
         when {
 

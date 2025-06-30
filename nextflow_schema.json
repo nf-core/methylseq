@@ -442,7 +442,7 @@
                     "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
                     "fa_icon": "fas fa-file"
                 },
-                "run_picard_collecthsmetrics": {
+                "collecthsmetrics": {
                     "type": "boolean",
                     "description": "Run Picard CollectHsMetrics in the targeted analysis",
                     "help_text": "Instructs the pipeline to run `picard CollectHsMetrics` with the target regions BED on the BAM files to estimate several enrichment metrics",
@@ -465,6 +465,11 @@
                     "type": "boolean",
                     "description": "Skip deduplication step after alignment.",
                     "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "description": "Skip FastQC",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "skip_multiqc": {

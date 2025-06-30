@@ -1,0 +1,73 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bismark HISAT Variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Define bismark_hisat test scenarios
+    def testScenarios = [
+        [
+            name: "bismark_hisat_default",
+            description: "Params: bismark_hisat",
+            params: [
+                aligner: "bismark_hisat"
+            ]
+        ],
+        [
+            name: "bismark_hisat_rrbs",
+            description: "Params: bismark_hisat with rrbs",
+            params: [
+                aligner: "bismark_hisat",
+                rrbs: true
+            ]
+        ],
+        [
+            name: "bismark_hisat_save_reference_save_align_intermeds",
+            description: "Params: bismark_hisat with save_reference and save_align_intermeds",
+            params: [
+                aligner: "bismark_hisat",
+                save_reference: true,
+                save_align_intermeds: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        workflow.trace.succeeded().size(),
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

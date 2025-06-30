@@ -9,14 +9,26 @@
         },
         "timestamp": "2024-11-27T17:37:46.406666357"
     },
-    "Params: default": {
+    "-profile test": {
         "content": [
             36,
             {
                 "BISMARK_ALIGN": {
                     "bismark": "0.24.2"
                 },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "0.24.2"
+                },
                 "BISMARK_GENOMEPREPARATION": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "0.24.2"
+                },
+                "BISMARK_SUMMARY": {
                     "bismark": "0.24.2"
                 },
                 "FASTQC": {
@@ -24,6 +36,12 @@
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.21
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.21
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -125,6 +143,7 @@
                 "multiqc",
                 "multiqc/bismark",
                 "multiqc/bismark/multiqc_data",
+                "multiqc/bismark/multiqc_data/BETA-multiqc.parquet",
                 "multiqc/bismark/multiqc_data/bismark-methylation-dp.txt",
                 "multiqc/bismark/multiqc_data/bismark_alignment.txt",
                 "multiqc/bismark/multiqc_data/bismark_deduplication.txt",
@@ -191,7 +210,6 @@
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_sequence_counts_plot-pct.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_sequence_duplication_levels_plot.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_top_overrepresented_sequences_table.pdf",
-                "multiqc/bismark/multiqc_plots/pdf/general_stats_table.pdf",
                 "multiqc/bismark/multiqc_plots/png",
                 "multiqc/bismark/multiqc_plots/png/bismark-methylation-dp.png",
                 "multiqc/bismark/multiqc_plots/png/bismark_alignment-cnt.png",
@@ -222,7 +240,6 @@
                 "multiqc/bismark/multiqc_plots/png/fastqc_sequence_counts_plot-pct.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_sequence_duplication_levels_plot.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_top_overrepresented_sequences_table.png",
-                "multiqc/bismark/multiqc_plots/png/general_stats_table.png",
                 "multiqc/bismark/multiqc_plots/svg",
                 "multiqc/bismark/multiqc_plots/svg/bismark-methylation-dp.svg",
                 "multiqc/bismark/multiqc_plots/svg/bismark_alignment-cnt.svg",
@@ -253,7 +270,6 @@
                 "multiqc/bismark/multiqc_plots/svg/fastqc_sequence_counts_plot-pct.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_sequence_duplication_levels_plot.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_top_overrepresented_sequences_table.svg",
-                "multiqc/bismark/multiqc_plots/svg/general_stats_table.svg",
                 "multiqc/bismark/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
@@ -369,8 +385,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
+            "nextflow": "25.04.4"
         },
-        "timestamp": "2025-03-25T05:34:50.680481536"
+        "timestamp": "2025-06-29T06:44:39.001354404"
     }
 }
