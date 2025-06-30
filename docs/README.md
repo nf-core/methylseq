@@ -6,7 +6,5 @@ The nf-core/methylseq documentation is split into the following pages:
   - An overview of how the pipeline works, how to run it and a description of all of the different command-line flags.
 - [Output](output.md)
   - An overview of the different results produced by the pipeline and how to interpret them.
-- [Bisulfite Sequencing Primer](bs-seq-primer.md)
-  - A comprehensive guide to bisulfite sequencing and the three-base aligners used in this pipeline.
 
 You can find a lot more documentation about installing, configuring and running nf-core pipelines on the website: [https://nf-co.re](https://nf-co.re)
