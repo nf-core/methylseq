@@ -245,7 +245,7 @@ BedGraph files are filtered using the BED file passed to `--target_regions_file`
 - `*.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
 
-#### High-Sensitivity Metrics
+#### Hybrid-selection (HS) Metrics
 
 [Picard CollectHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
 
@@ -283,15 +283,6 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 
 - `sample_ccurve.txt`
   - This file contains plot values for the complexity curve, plotted in the MultiQC report.
-
-## HS Metrics
-
-[Picard CollecHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
-
-**Output directory: `results/enrichment_metrics`**
-
-- `sample.CollectHsMetrics.coverage_metrics`
-  - Text-based statistics showed also in the MultiQC report.
 
 ### MultiQC
 
