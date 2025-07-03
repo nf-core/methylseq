@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 🔙 Reverted PR #523 which changes subworkflows directly in the pipeline.
 - 🔄 Updated template to nf-core/tools v3.2.0 [#504](https://github.com/nf-core/methylseq/pull/504)
+- 🔄 Updated template to nf-core/tools v3.3.1 [#538](https://github.com/nf-core/methylseq/pull/538)
 - 🐛 bumped the minimum for `PARABRICKS_FQ2BAMMETH` to 100.GB as suggested by the docs [#528](https://github.com/nf-core/methylseq/issues/528)
 - 🐛 fix parabricks/fq2bammeth failure on AWS Batch like executors where symlinks don't exist [#536](https://github.com/nf-core/methylseq/issues/536)
 - 🔧 FASTA Index Subworkflow Refactoring - remove implicit params [#539](https://github.com/nf-core/methylseq/pull/539)
