@@ -148,12 +148,6 @@
                     "fa_icon": "fas fa-dot-circle",
                     "enum": ["bismark", "bismark_hisat", "bwameth"],
                     "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
-                },
-                "comprehensive": {
-                    "type": "boolean",
-                    "description": "Output information for all cytosine contexts.",
-                    "fa_icon": "fas fa-arrows-alt",
-                    "help_text": "By default, the pipeline only produces data for cytosine methylation states in CpG context. Specifying `--comprehensive` makes the pipeline give results for all cytosine contexts. Note that for large genomes (e.g. Human), these can be massive files. This is only recommended for small genomes (especially those that don't exhibit strong CpG context methylation specificity).\n\nIf specified, this flag instructs the Bismark methylation extractor to use the `--comprehensive` and `--merge_non_CpG` flags. This produces coverage files with information from about all strands and cytosine contexts merged into two files - one for CpG context and one for non-CpG context.\n\nIf using the bwa-meth workflow, the flag makes MethylDackel report CHG and CHH contexts as well."
                 }
             },
             "required": ["aligner"],
@@ -169,7 +163,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-outdent",
                     "description": "Preset for working with PBAT libraries.",
-                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 6` `--clip_r2 9` `--three_prime_clip_r1 6` `--three_prime_clip_r2 9`"
+                    "help_text": "Specify this parameter when working with PBAT _(Post Bisulfite Adapter Tagging)_ libraries.\n\nUsing this parameter sets the `--pbat` flag when aligning with Bismark. This tells Bismark to align complementary strands (the opposite of `--directional`).\n\nAdditionally, this is a trimming preset equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`, unless `--skip_trimming_presets` is set to `true`"
                 },
                 "rrbs": {
                     "type": "boolean",
@@ -201,18 +195,6 @@
                     "help_text": "Equivalent to `--clip_r1 10` `--clip_r2 15` `--three_prime_clip_r1 10` `--three_prime_clip_r2 10`",
                     "description": "Trimming preset for the Accel kit."
                 },
-                "cegx": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the CEGX bisulfite kit.",
-                    "help_text": "Equivalent to `--clip_r1 6` `--clip_r2 6` `--three_prime_clip_r1 2` `--three_prime_clip_r2 2`"
-                },
-                "epignome": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-cut",
-                    "description": "Trimming preset for the Epignome kit.",
-                    "help_text": "Equivalent to `--clip_r1 8` `--clip_r2 8` `--three_prime_clip_r1 8` `--three_prime_clip_r2 8`"
-                },
                 "zymo": {
                     "type": "boolean",
                     "fa_icon": "fas fa-cut",
@@ -225,7 +207,7 @@
         "adapter_trimming": {
             "title": "Adapter Trimming",
             "type": "object",
-            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.",
+            "description": "Bisulfite libraries often require additional base pairs to be removed from the ends of the reads before alignment.\n\nIn addition to manually specifying bases to be hard-clipped, the workflow has a number of parameter presets:\n\n| Parameter  | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim | \n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 8          | 8          | 8          | 8          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n|  `--accel`      | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         | \n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely.\nFurther, `--skip_trimming_presets` disables setting any presets for hard-clipping, thereby uncoupling trimming from specific alignment modes entirely",
             "default": "",
             "properties": {
                 "clip_r1": {
@@ -261,10 +243,15 @@
                     "type": "integer",
                     "description": "Discard reads that become shorter than INT because of either quality or adapter trimming.",
                     "fa_icon": "fas fa-trash-alt"
+                },
+                "skip_trimming_presets": {
+                    "type": "boolean",
+                    "description": "Skip presetting trimming parameters entirely",
+                    "default": false,
+                    "fa_icon": "fas fa-dot-circle"
                 }
             },
-            "fa_icon": "fas fa-cut",
-            "help_text": "In addition to manually specifying bases to be specified, the pipeline has a number of parameter presets:\n\n| Parameter       | 5' R1 Trim | 5' R2 Trim | 3' R1 Trim | 3' R2 Trim |\n|-----------------|------------|------------|------------|------------|\n| `--pbat`        | 6          | 9          | 6          | 9          |\n| `--single_cell` | 6          | 6          | 6          | 6          |\n| `--epignome`    | 8          | 8          | 8          | 8          |\n| `--accel`       | 10         | 15         | 10         | 10         |\n| `--zymo`        | 10         | 15         | 10         | 10         |\n| `--cegx`        | 6          | 6          | 2          | 2          |\n\nNote that you can use the `--skip_trimming` parameter to skip trimming completely."
+            "fa_icon": "fas fa-cut"
         },
         "bismark_options": {
             "title": "Bismark options",
@@ -371,6 +358,12 @@
                     "fa_icon": "fas fa-dna",
                     "description": "Sample is NOMe-seq or NMT-seq. Runs coverage2cytosine.",
                     "help_text": "Sets `--CX` during methylation extraction and `--nome` during the `coverage2cytosine` step.\n\nWill also force the coverage2cytosine step to run."
+                },
+                "comprehensive": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-dna",
+                    "description": "Merges methylation calls for every strand into a single, context dependent file.",
+                    "help_text": "By default `bismark_methylation_extractor` will produce a strand-specific output named as OT, OB, CTOT or CTOB. This flag will merge all strands into a single, context dependent file."
                 }
             }
         },
@@ -380,11 +373,17 @@
             "description": "",
             "default": "",
             "properties": {
-                "use_gpu": {
+                "all_contexts": {
                     "type": "boolean",
-                    "description": "Run Parabricks GPU-accelerated fq2bammeth module for alignment",
-                    "default": false,
-                    "fa_icon": "fas fa-dot-circle"
+                    "description": "Call methylation in all three CpG, CHG and CHH contexts.",
+                    "help_text": "By default MethylDackel calls methylation just in the CpG context. The `--all_contexts` parameter sets MethylDackel to run with options `--CHH` and `--CHG` to call methylation in all three contexts.",
+                    "fa_icon": "fas fa-ellipsis-h"
+                },
+                "merge_context": {
+                    "type": "boolean",
+                    "description": "Merges methylation metrics of the Cytosines in a given context.",
+                    "help_text": "By default methylation results are provided at the Cytosine level. This parameter specifies MethylDackel to run with the `--mergeContext` option, which will merge the metrics of the Cytosines in contexts CpG and CHG.",
+                    "fa_icon": "fa fa-magnet"
                 },
                 "min_depth": {
                     "type": "integer",
@@ -412,6 +411,7 @@
             "type": "object",
             "description": "Qualimap configurations",
             "default": "",
+            "fa_icon": "fas fa-chart-pie",
             "properties": {
                 "bamqc_regions_file": {
                     "type": "string",
@@ -420,7 +420,33 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.gff|\\.bed(\\.gz)?$",
                     "description": "A GFF or BED file containing the target regions which will be passed to Qualimap/Bamqc.",
-                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data."
+                    "help_text": "Setting this option could be useful if you want calculate coverage stats over a list of regions, i.e. for targeted methylation sequencing data.",
+                    "fa_icon": "fas fa-file"
+                }
+            }
+        },
+        "targeted_sequencing_analysis_options": {
+            "title": "Targeted Sequencing Analysis Options",
+            "type": "object",
+            "description": "Targeted sequencing analysis configurations. They need `--run_targeted_sequencing` to have an effect",
+            "default": "",
+            "fa_icon": "fas fa-bullseye",
+            "properties": {
+                "target_regions_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "text/plain",
+                    "pattern": "^\\S+|\\.bed(\\.gz)?$",
+                    "description": "A BED file containing the target regions",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
+                    "fa_icon": "fas fa-file"
+                },
+                "collecthsmetrics": {
+                    "type": "boolean",
+                    "description": "Run Picard CollectHsMetrics in the targeted analysis",
+                    "help_text": "Instructs the pipeline to run `picard CollectHsMetrics` with the target regions BED on the BAM files to estimate several enrichment metrics",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             }
         },
@@ -441,9 +467,15 @@
                     "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
                     "fa_icon": "fas fa-fast-forward"
                 },
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "description": "Skip FastQC",
+                    "fa_icon": "fas fa-fast-forward"
+                },
                 "skip_multiqc": {
                     "type": "boolean",
-                    "description": "Skip MultiQC"
+                    "description": "Skip MultiQC",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -462,6 +494,11 @@
                 "run_qualimap": {
                     "type": "boolean",
                     "description": "Run qualimap/bamqc tool",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_targeted_sequencing": {
+                    "type": "boolean",
+                    "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions",
                     "fa_icon": "fas fa-fast-forward"
                 }
             },
@@ -640,6 +677,9 @@
         },
         {
             "$ref": "#/$defs/qualimap_options"
+        },
+        {
+            "$ref": "#/$defs/targeted_sequencing_analysis_options"
         },
         {
             "$ref": "#/$defs/skip_pipeline_steps"

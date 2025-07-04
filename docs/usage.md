@@ -18,6 +18,54 @@ The nf-core/methylseq pipeline provides two distinct workflows for DNA methylati
 
 > Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](./docs/bs-seq-primer.md)
 
+```mermaid
+flowchart TD
+    subgraph Stage1[Pre-processing]
+        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+    end
+
+    subgraph Stage2[Genome alignment]
+        C --> D1["bwa-meth align - GPU or CPU"]
+        C --> D2["Bismark align - Bowtie2/HISAT2"]
+    end
+
+    subgraph Stage3[Post-processing]
+        D1 --> E1["Samtools sort"]
+        E1 --> E2["Samtools index/stats"]
+        E2 --> E3["Picard MarkDuplicates"]
+        E3 --> E4["MethylDackel extract/M-bias"]
+
+        D2 --> F1["Bismark deduplicate"]
+        F1 --> F2["Bismark methylation extractor"]
+        F2 --> F3["Bismark coverage2cytosine"]
+        F3 --> F4["Bismark report"]
+        F4 --> F5["Bismark Summary"]
+        F4 --> G1["Samtools sort/index"]
+    end
+
+    subgraph Stage3b[Targeted Sequencing - Optional]
+        E4 --> I1["Targeted Sequencing<br/>(bedGraph filtering)"]
+        F3 --> I1
+        I1 --> I2["Picard CollectHsMetrics<br/>(optional)"]
+    end
+
+    subgraph Stage3c[Optional QC]
+        E3 --> J1["preseq (optional)"]
+        G1 --> J1
+        E3 --> J2["Qualimap (optional)"]
+        G1 --> J2
+    end
+
+    subgraph Stage4[Final QC]
+        E4 --> H1["MultiQC"]
+        G1 --> H1
+        I1 --> H1
+        I2 --> H1
+        J1 --> H1
+        J2 --> H1
+    end
+```
+
 ### Workflow: Bismark
 
 By default, the nf-core/methylseq pipeline uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as the alignment tool. This configuration is optimized for most DNA methylation workflows and will run unless an alternative aligner is specified.
@@ -34,7 +82,7 @@ bwa-meth aligner options:
 
 - Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors.
 
-- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `--use_gpu` flag along with `--aligner bwameth`.
+- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
 
 ## Samplesheet input
 
@@ -92,19 +140,19 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 ## Parameters
 
-Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/3.0.0/parameters/).
+Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/parameters/).
 
-- [Input/output options](https://nf-co.re/methylseq/3.0.0/parameters/#input-output-options)
-- [Save intermediate files](https://nf-co.re/methylseq/3.0.0/parameters/#save-intermediate-files)
-- [Reference genome options](https://nf-co.re/methylseq/3.0.0/parameters/#reference-genome-options)
-- [Alignment options](https://nf-co.re/methylseq/3.0.0/parameters/#alignment-options)
-- [Special library types](https://nf-co.re/methylseq/3.0.0/parameters/#special-library-types)
-- [Adapter Trimming](https://nf-co.re/methylseq/3.0.0/parameters/#adapter-trimming)
-- [Bismark options](https://nf-co.re/methylseq/3.0.0/parameters/#bismark-options)
-- [bwa-meth options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
-- [Qualimap Options](https://nf-co.re/methylseq/3.0.0/parameters/#bwa-meth-options)
-- [Skip pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#skip-pipeline-steps)
-- [Run pipeline steps](https://nf-co.re/methylseq/3.0.0/parameters/#Run-pipeline-steps)
+- [Input/output options](https://nf-co.re/methylseq/parameters/#input-output-options)
+- [Save intermediate files](https://nf-co.re/methylseq/parameters/#save-intermediate-files)
+- [Reference genome options](https://nf-co.re/methylseq/parameters/#reference-genome-options)
+- [Alignment options](https://nf-co.re/methylseq/parameters/#alignment-options)
+- [Special library types](https://nf-co.re/methylseq/parameters/#special-library-types)
+- [Adapter Trimming](https://nf-co.re/methylseq/parameters/#adapter-trimming)
+- [Bismark options](https://nf-co.re/methylseq/parameters/#bismark-options)
+- [bwa-meth options](https://nf-co.re/methylseq/parameters/#bwa-meth-options)
+- [Qualimap Options](https://nf-co.re/methylseq/parameters/#qualimap-options)
+- [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
+- [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
 
 > It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
 
@@ -153,11 +201,11 @@ You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-c
 
 ### Providing `ext.args` to Tools
 
-Additional arguments can be appended to a command in a module by specifying them within the module’s custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module’s publishDir path can also be customized in these configurations.
+Additional arguments can be appended to a command in a module by specifying them within the module's custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module's publishDir path can also be customized in these configurations.
 
 For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files.
 
-These errors are typically caused by the operating system’s limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+These errors are typically caused by the operating system's limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
 
 To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`.
 
@@ -176,7 +224,6 @@ Every nf-core pipeline comes with test data than can be run using `-profile test
 
 ```bash
 nextflow run nf-core/methylseq \
-  --input samplesheet.csv \
   --outdir <OUTDIR> \
   --genome GRCh38 \
   -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>

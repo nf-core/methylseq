@@ -30,7 +30,9 @@ env:
 
 jobs:
   get-shards:
-    runs-on: ubuntu-latest
+    runs-on:
+      - runs-on=${{ github.run_id }}-nf-test-get-shards-gpu
+      - runner=2cpu-linux-x64
     name: "Get Shards"
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
@@ -58,7 +60,7 @@ jobs:
 
   nf-test-gpu:
     needs: [get-shards]
-    runs-on: "gpu"
+    runs-on: "runs-on=${{ github.run_id }}/family=g4dn.xlarge/image=ubuntu24-gpu-x64"
     name: "GPU Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
     env:
       NXF_VER: ${{ matrix.NXF_VER }}
@@ -86,6 +88,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Test CUDA
+        run: |
+          nvidia-smi -L
+
       - name: Run nf-test Action
         uses: ./.github/actions/nf-test
         with:
@@ -95,8 +101,10 @@ jobs:
           filters: ${{ matrix.filters }}
           tags: "gpu"
 
-  confirm-pass:
-    runs-on: ubuntu-latest
+  confirm-pass-gpu:
+    runs-on:
+      - runs-on=${{ github.run_id }}-confirm-pass
+      - runner=2cpu-linux-x64
     needs: [nf-test-gpu]
     if: always()
     steps:

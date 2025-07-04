@@ -1,9 +1,12 @@
 name: Run nf-tests
 on:
-  push:
-    branches:
-      - dev
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "**/meta.yml"
+      - "**/*.md"
+      - "**/*.png"
+      - "**/*.svg"
   release:
     types: [published]
   workflow_dispatch:
@@ -33,7 +36,9 @@ env:
 
 jobs:
   get-shards:
-    runs-on: ubuntu-latest
+    runs-on:
+      - runs-on=${{ github.run_id }}-nf-test-get-shards
+      - runner=2cpu-linux-x64
     name: "Get Shards"
     outputs:
       shard: ${{ steps.set-shards.outputs.shard }}
@@ -61,7 +66,10 @@ jobs:
 
   nf-test:
     needs: [get-shards]
-    runs-on: "ubuntu-latest"
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=4cpu-linux-x64
+      - image=ubuntu22-full-x64
     name: "Test | ${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }} | ${{ matrix.filters }}"
     env:
       NXF_VER: ${{ matrix.NXF_VER }}
@@ -100,7 +108,9 @@ jobs:
           tags: "cpu"
 
   confirm-pass:
-    runs-on: ubuntu-latest
+    runs-on:
+      - runs-on=${{ github.run_id }}-confirm-pass
+      - runner=2cpu-linux-x64
     needs: [nf-test]
     if: always()
     steps:

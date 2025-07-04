@@ -22,6 +22,8 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
+- [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
+- [Reference Genome Preparation](#reference-genome-preparation) - Preparing indices for alignment [OPTIONAL]
 - [MultiQC](#multiqc) - Aggregate report describing results and QC from the whole pipeline
 - [Pipeline information](#pipeline-information) - Report metrics generated during the workflow execution
 
@@ -84,6 +86,16 @@ bwameth/
 ```
 
 ### Detailed Output Descriptions
+
+### Reference Genome Preparation
+
+If you provide a FASTA file as input (`--fasta`), the pipeline will automatically generate the necessary reference genome files for your chosen aligner. These files are saved in the `results` directory.
+
+**Output directory: `results/<aligner>/reference_genome/`**
+
+- This directory contains the aligner-specific index files. For Bismark, this will be a `BismarkIndex/` directory. For bwa-meth, this will be a `BwamethIndex/` directory.
+
+> **NB:** These files are only generated if a FASTA file is provided as input and `--save_reference` is specified.
 
 ### FastQC
 
@@ -188,7 +200,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
 
-Note that the output may vary a little depending on whether you specify `--comprehensive` or `--non_directional` when running the pipeline.
+Note that the output may vary a little depending on whether you specify `--comprehensive`, `--non_directional`, `--all_contexts` or `--run_targeted_sequencing` when running the pipeline.
 
 Filename abbreviations stand for the following reference alignment strands:
 
@@ -204,9 +216,9 @@ Filename abbreviations stand for the following reference alignment strands:
 - `methylation_calls/XXX_context_sample.txt.gz`
   - Individual methylation calls, sorted into files according to cytosine context.
 - `methylation_coverage/sample.bismark.cov.gz`
-  - Coverage text file summarising cytosine methylation values.
+  - Coverage text file summarising cytosine methylation values. Available only for CpG context.
 - `bedGraph/sample.bedGraph.gz`
-  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates.
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, with 0-based genomic start and 1- based end coordinates. Available only for CpG context.
 - `m-bias/sample.M-bias.txt`
   - QC data showing methylation bias across read lengths. See the [bismark documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#m-bias-plot) for more information.
 - `logs/sample_splitting_report.txt`
@@ -214,8 +226,33 @@ Filename abbreviations stand for the following reference alignment strands:
 
 **bwa-meth workflow output directory: `results/methyldackel/`**
 
+> **NB:** `CHG` and `CHH` contexts are not provided unless `--all_contexts` specified.
+
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
+
+### Targeted Sequencing
+
+If `--run_targeted_sequencing` is set to `true`, the pipeline performs additional analysis for targeted sequencing experiments.
+
+#### Filtered Methylation Calls
+
+BedGraph files are filtered using the BED file passed to `--target_regions_file`.
+
+**Bismark output directory: `results/bismark/methylation_calls/bedGraph/`**
+**bwa-meth output directory: `results/methyldackel/`**
+
+- `*.targeted.bedGraph`
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
+
+#### Hybrid-selection (HS) Metrics
+
+[Picard CollectHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
+
+**Output directory: `results/enrichment_metrics`**
+
+- `*.CollectHsMetrics.coverage_metrics`
+  - Text-based statistics showed also in the MultiQC report.
 
 ### Bismark Reports
 

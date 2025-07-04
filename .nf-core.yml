@@ -1,19 +1,18 @@
 lint:
-  actions_ci: false
   files_exist:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
     - .github/workflows/ci.yml
   modules_config: false
-nf_core_version: 3.1.0
+nf_core_version: 3.3.1
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
-  description: Methylation (Bisulfite-Sequencing) Best Practice analysis pipeline,
-    part of the nf-core community.
+  description: Methylation (Bisulfite-Sequencing) Best Practice analysis
+    pipeline, part of the nf-core community.
   force: false
   is_nfcore: true
   name: methylseq
   org: nf-core
   outdir: .
-  version: 3.0.0
+  version: 4.0.0
