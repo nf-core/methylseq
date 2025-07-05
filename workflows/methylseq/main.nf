@@ -78,7 +78,6 @@ workflow METHYLSEQ {
         )
         ch_fastqc_html   = FASTQC.out.html
         ch_fastqc_zip    = FASTQC.out.zip
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
         ch_versions      = ch_versions.mix(FASTQC.out.versions)
     } else {
         ch_fastqc_html   = Channel.empty()
