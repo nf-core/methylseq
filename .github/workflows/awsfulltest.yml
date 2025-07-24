@@ -12,7 +12,7 @@ on:
 
 jobs:
   run-platform:
-    name: Run AWS full tests (${{ matrix.aligner }}${{ matrix.profile == 'test_full_gpu,gpu' && ' - GPU' || '' }})
+    name: Run AWS full tests (${{ matrix.aligner }} - ${{ matrix.compute_env }})
     # run only if the PR is approved by at least 2 reviewers and against the master/main branch or manually triggered
     if: github.repository == 'nf-core/methylseq' && github.event.review.state == 'approved' && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'main') || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
     runs-on: ubuntu-latest
@@ -21,12 +21,25 @@ jobs:
         include:
           - aligner: "bismark"
             profile: "test_full"
+            compute_env: "CPU"
           - aligner: "bismark_hisat"
             profile: "test_full"
+            compute_env: "CPU"
           - aligner: "bwameth"
             profile: "test_full"
+            compute_env: "CPU"
           - aligner: "bwameth"
             profile: "test_full,gpu"
+            compute_env: "GPU"
+          - aligner: "bismark"
+            profile: "test_full"
+            compute_env: "ARM"
+          - aligner: "bismark_hisat"
+            profile: "test_full"
+            compute_env: "ARM"
+          - aligner: "bwameth"
+            profile: "test_full"
+            compute_env: "ARM"
     steps:
       - name: Set revision variable
         id: revision
@@ -38,20 +51,20 @@ jobs:
         with:
           workspace_id: ${{ secrets.TOWER_WORKSPACE_ID }}
           access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
-          compute_env: ${{ secrets.TOWER_COMPUTE_ENV }}
+          compute_env: ${{ matrix.compute_env == 'CPU' && secrets.TOWER_COMPUTE_ENV_CPU || matrix.compute_env == 'GPU' && secrets.TOWER_COMPUTE_ENV_GPU || secrets.TOWER_COMPUTE_ENV_ARM }}
           revision: ${{ steps.revision.outputs.revision }}
-          workdir: s3://${{ secrets.AWS_S3_BUCKET }}/work/methylseq/work-${{ steps.revision.outputs.revision }}-${{ matrix.aligner }}-${{ contains(matrix.profile, 'gpu') && 'gpu' || 'cpu' }}
+          workdir: s3://nf-core-awsmegatests/work/methylseq/work-${{ steps.revision.outputs.revision }}-${{ matrix.aligner }}-${{ matrix.compute_env }}
           parameters: |
             {
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
-              "outdir": "s3://${{ secrets.AWS_S3_BUCKET }}/methylseq/results-${{ steps.revision.outputs.revision }}-${{ matrix.aligner }}-${{ contains(matrix.profile, 'gpu') && 'gpu' || 'cpu' }}",
+              "outdir": "s3://nf-core-awsmegatests/methylseq/results-${{ steps.revision.outputs.revision }}-${{ matrix.aligner }}-${{ matrix.compute_env }}",
               "aligner": "${{ matrix.aligner }}"
             }
           profiles: ${{ matrix.profile }}
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: Seqera Platform debug log file (${{ matrix.aligner }}-${{ matrix.profile }})
+          name: Seqera Platform debug log file (${{ matrix.aligner }}-${{ matrix.compute_env }})
           path: |
             seqera_platform_action_*.log
             seqera_platform_action_*.json
