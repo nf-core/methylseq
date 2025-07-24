@@ -60,6 +60,7 @@ jobs:
           compute_env: ${{ matrix.compute_env == 'CPU' && vars.TOWER_COMPUTE_ENV_CPU || matrix.compute_env == 'GPU' && vars.TOWER_COMPUTE_ENV_GPU || vars.TOWER_COMPUTE_ENV_ARM }}
           revision: ${{ steps.revision.outputs.revision }}
           workdir: s3://nf-core-awsmegatests/work/methylseq/work-${{ steps.revision.outputs.revision }}-${{ matrix.aligner }}-${{ matrix.compute_env }}
+          labels: ${{ matrix.compute_env == 'GPU' && 'full_test,gpu' || matrix.compute_env == 'ARM' && 'full_test,arm' || 'full_test' }}
           parameters: |
             {
               "hook_url": "${{ secrets.MEGATESTS_ALERTS_SLACK_HOOK_URL }}",
