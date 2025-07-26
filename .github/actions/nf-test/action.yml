@@ -62,6 +62,8 @@ runs:
 
     - name: Run nf-test
       shell: bash
+      env:
+        NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
       run: |
         NFT_WORKDIR=~ \
         nf-test test \
