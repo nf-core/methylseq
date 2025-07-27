@@ -16,7 +16,7 @@
 
 The nf-core/methylseq pipeline provides two distinct workflows for DNA methylation analysis. These workflows support different aligners and cater to a range of computational requirements.
 
-> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](./docs/bs-seq-primer.md)
+> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](https://github.com/nf-core/methylseq/blob/master/docs/bs-seq-primer.md)
 
 ```mermaid
 flowchart TD
@@ -136,7 +136,7 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
 
-An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+An [example samplesheet](https://github.com/nf-core/methylseq/blob/dev/assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Parameters
 
@@ -299,7 +299,7 @@ You can also supply a run name to resume a specific run: `-resume [run-name]`. U
 
 ### `-c`
 
-Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/usage/configuration) for more information.
+Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/docs/usage/configuration) for more information.
 
 ## Custom configuration
 
@@ -366,7 +366,7 @@ process {
 
 #### Advanced option on process level
 
-To find out exactly what resources have been set for a process, for example., the `BISMARK_ALIGN` process. Navigate to the [BISMARK_ALIGN](../modules/nf-core/bismark/align/main.nf) module used in the workflow.
+To find out exactly what resources have been set for a process, for example., the `BISMARK_ALIGN` process. Navigate to the [BISMARK_ALIGN](https://github.com/nf-core/methylseq/blob/dev/modules/nf-core/bismark/align/main.nf) module used in the workflow.
 
 > We have standardised the structure of Nextflow DSL2 pipelines such that all module files will be present in the `modules/` directory and so, based on the search results, the file we want is `modules/nf-core/bismark/align/main.nf`.
 
@@ -376,7 +376,7 @@ The [Nextflow `label`](https://www.nextflow.io/docs/latest/process.html#label) d
 
 The default values for the `process_high` label are set in the pipeline's [`base.config`](https://github.com/nf-core/methylseq/blob/master/conf/base.config) which in this case is defined as `72.GB`.
 
-Providing you haven't set any other standard nf-core parameters to **cap** the [maximum resources](https://nf-co.re/usage/configuration#max-resources) used by the pipeline then we can try and bypass the `BISMARK_ALIGN` process failure by creating a custom config file that sets at least `72.GB` of memory, in this case increased to `100.GB`.
+Providing you haven't set any other standard nf-core parameters to **cap** the [maximum resources](https://nf-co.re/docs/usage/configuration#max-resources) used by the pipeline then we can try and bypass the `BISMARK_ALIGN` process failure by creating a custom config file that sets at least `72.GB` of memory, in this case increased to `100.GB`.
 
 The custom config below can then be provided to the pipeline via the [`-c`](#-c) parameter as highlighted in previous sections.
 
