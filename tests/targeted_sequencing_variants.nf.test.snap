@@ -329,7 +329,7 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-07-27T04:49:26.999424727"
+        "timestamp": "2025-07-27T12:05:39.201765867"
     },
     "Params: bismark with run_targeted_sequencing and collecthsmetrics": {
         "content": [
