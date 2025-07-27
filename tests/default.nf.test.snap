@@ -168,6 +168,7 @@
                 "multiqc/bismark/multiqc_data/fastqc_sequence_counts_plot.txt",
                 "multiqc/bismark/multiqc_data/fastqc_sequence_duplication_levels_plot.txt",
                 "multiqc/bismark/multiqc_data/fastqc_top_overrepresented_sequences_table.txt",
+                "multiqc/bismark/multiqc_data/llms-full.txt",
                 "multiqc/bismark/multiqc_data/multiqc.log",
                 "multiqc/bismark/multiqc_data/multiqc_bismark_alignment.txt",
                 "multiqc/bismark/multiqc_data/multiqc_bismark_dedup.txt",
@@ -358,6 +359,7 @@
                 "fastqc_sequence_counts_plot.txt:md5,58eeeb06bc9dcc1764c7daf0847d6bbf",
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
+                "llms-full.txt:md5,0f92018ad999ba9aa8441a33b81ecc84",
                 "multiqc_bismark_alignment.txt:md5,40ab86041f508d3f1a63bde20cab5440",
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,825f57cdf45203406e583beb495afccc",
@@ -385,8 +387,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-06-29T06:44:39.001354404"
+        "timestamp": "2025-07-27T05:01:50.875931953"
     }
 }
