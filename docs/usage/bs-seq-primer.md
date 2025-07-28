@@ -5,10 +5,12 @@
 ## **Principle of Bisulfite Sequencing**
 
 1. **Bisulfite Treatment**:
+
    - During bisulfite treatment, **non-methylated cytosines** in DNA are converted to **uracils**, while **methylated cytosines** remain unaffected
    - This chemical reaction forms the foundation for distinguishing methylated and unmethylated cytosines
 
 2. **PCR Amplification**:
+
    - After bisulfite treatment, the DNA undergoes PCR amplification
    - During this step, uracils are converted into **thymines**
    - This conversion results in a reduced complexity of the DNA code, introducing computational challenges in downstream analysis

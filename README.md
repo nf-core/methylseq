@@ -28,7 +28,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool
 
 On release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/methylseq/results).
 
-> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](https://github.com/nf-core/methylseq/blob/master/docs/bs-seq-primer.md)
+> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](docs/usage/bs-seq-primer.md)
 
 ## Pipeline Summary
 
