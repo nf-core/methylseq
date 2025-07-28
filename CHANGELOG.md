@@ -3,14 +3,20 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v4.1.0](https://github.com/nf-core/methylseq/releases/tag/4.0.0) - []
+## [v4.1.0](https://github.com/nf-core/methylseq/releases/tag/4.1.0) - [2025-08-02]
 
 ### Bug fixes & refactoring
+
+- 🐛 Fix bug where fastqc output is added to multiqc_ch twice [#546](https://github.com/nf-core/methylseq/pull/)
+- 🐛 Fix broken doc links [#547](https://github.com/nf-core/methylseq/pull/554)
+- 🐛 Update bwameth container to fix bwa-mem2 install [#550](https://github.com/nf-core/methylseq/pull/554)
 
 ### Pipeline Updates
 
 - 🔄 Updated template to nf-core/tools v3.3.2 [#549](https://github.com/nf-core/methylseq/pull/549)
-- 🔧 Add GitHub Actions CI for GPU tests snapshot update [#](https://github.com/nf-core/methylseq/pull/)
+- 🔄 modules update [#550](https://github.com/nf-core/methylseq/pull/554)
+- 🔧 Raised Nextflow version requirement to `24.10.5` [#549](https://github.com/nf-core/methylseq/pull/554)
+- 🔧 Add GitHub Actions CI for GPU tests snapshot update (https://github.com/nf-core/methylseq/pull/554)
 
 ### Testing Updates
 
