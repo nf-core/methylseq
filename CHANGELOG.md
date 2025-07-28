@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 🐛 Fix bug where fastqc output is added to multiqc_ch twice [#546](https://github.com/nf-core/methylseq/pull/)
 - 🐛 Fix broken doc links [#](https://github.com/nf-core/methylseq/pull/)
+- 🔧 Add GitHub Actions CI for GPU tests snapshot update [#](https://github.com/nf-core/methylseq/pull/)
 
 ### Pipeline Updates
 
