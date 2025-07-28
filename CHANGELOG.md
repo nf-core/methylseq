@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Pipeline Updates
 
 - 🔄 Updated template to nf-core/tools v3.3.2 [#549](https://github.com/nf-core/methylseq/pull/549)
+- 🔧 Add GitHub Actions CI for GPU tests snapshot update [#](https://github.com/nf-core/methylseq/pull/)
 
 ### Testing Updates
 
