@@ -115,4 +115,4 @@ jobs:
         if: failure()
         with:
           comment-id: ${{ github.event.comment.id }}
-          reactions: confused 
+          reactions: confused
