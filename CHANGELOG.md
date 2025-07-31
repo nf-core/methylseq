@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
-- 🐛 Fix bug where fastqc output is added to multiqc_ch twice [#546](https://github.com/nf-core/methylseq/pull/)
+- 🐛 Fix bug where fastqc output is added to multiqc_ch twice [#546](https://github.com/nf-core/methylseq/pull/554)
 - 🐛 Fix broken doc links [#547](https://github.com/nf-core/methylseq/pull/554)
 - 🐛 Update bwameth container to fix bwa-mem2 install [#550](https://github.com/nf-core/methylseq/pull/554)
 
@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔄 modules update [#550](https://github.com/nf-core/methylseq/pull/554)
 - 🔧 Raised Nextflow version requirement to `24.10.5` [#549](https://github.com/nf-core/methylseq/pull/554)
 - 🔧 Add GitHub Actions CI for GPU tests snapshot update (https://github.com/nf-core/methylseq/pull/554)
+- 🔧 Update AWS megatests workflow to use new CE org variables (https://github.com/nf-core/methylseq/pull/553)
+- 🔧 Add wave to ARM Megatests (https://github.com/nf-core/methylseq/pull/556)
 
 ### Testing Updates
 
