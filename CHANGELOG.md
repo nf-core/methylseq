@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Add GitHub Actions CI for GPU tests snapshot update (https://github.com/nf-core/methylseq/pull/554)
 - 🔧 Update AWS megatests workflow to use new CE org variables (https://github.com/nf-core/methylseq/pull/553)
 - 🔧 Add wave to ARM Megatests (https://github.com/nf-core/methylseq/pull/556)
+- 🔄 Update bismark to version 0.25.0 (https://github.com/nf-core/methylseq/pull/556)
 
 ### Testing Updates
 

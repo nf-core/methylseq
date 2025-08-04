@@ -3,6 +3,9 @@
         "content": [
             36,
             {
+                "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.7"
+                },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.7"
                 },
@@ -17,9 +20,6 @@
                 },
                 "METHYLDACKEL_MBIAS": {
                     "methyldackel": "0.6.1"
-                },
-                "PARABRICKS_FQ2BAMMETH": {
-                    "pbrun": "4.3.2-1"
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.3.0"
@@ -245,27 +245,27 @@
             [
                 [
                     "SRR389222_sub1.deduplicated.sorted.bam",
-                    "97e6767c5ddea54cb2a6498192a09c68"
+                    "e50275d6d44138f19d65ee479444d5ce"
                 ],
                 [
                     "SRR389222_sub1.markdup.sorted.bam",
-                    "97e6767c5ddea54cb2a6498192a09c68"
+                    "e50275d6d44138f19d65ee479444d5ce"
                 ],
                 [
                     "SRR389222_sub2.deduplicated.sorted.bam",
-                    "313ae71af4023059a295ed8a132fd9ad"
+                    "d365b8b2662b2abffb51dd67a1f463b4"
                 ],
                 [
                     "SRR389222_sub2.markdup.sorted.bam",
-                    "313ae71af4023059a295ed8a132fd9ad"
+                    "d365b8b2662b2abffb51dd67a1f463b4"
                 ],
                 [
                     "SRR389222_sub3.deduplicated.sorted.bam",
-                    "9eaa07df5ad58a78ab57ee55f948a044"
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
                 ],
                 [
                     "SRR389222_sub3.markdup.sorted.bam",
-                    "9eaa07df5ad58a78ab57ee55f948a044"
+                    "a9fd2900b9d759f8f4f62cbbb2744fde"
                 ]
             ]
         ],
@@ -273,6 +273,6 @@
             "nf-test": "0.9.2",
             "nextflow": "25.04.6"
         },
-        "timestamp": "2025-07-28T06:35:43.331096802"
+        "timestamp": "2025-08-04T14:05:19.927733411"
     }
 }
