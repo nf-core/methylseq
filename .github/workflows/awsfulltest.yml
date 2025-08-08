@@ -53,7 +53,7 @@ jobs:
           echo "Access token present: ${{ secrets.TOWER_ACCESS_TOKEN != '' }}"
 
       - name: Launch workflow via Seqera Platform
-        uses: seqeralabs/action-tower-launch@v2
+        uses: seqeralabs/action-tower-launch@refactor-javascript
         with:
           workspace_id: ${{ vars.TOWER_WORKSPACE_ID }}
           access_token: ${{ secrets.TOWER_ACCESS_TOKEN }}
