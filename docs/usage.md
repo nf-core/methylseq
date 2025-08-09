@@ -7,7 +7,10 @@
 ## Table of contents
 
 - [Introduction](#introduction)
-- [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+- [Requirements](#requirements)
+- [Workflow: Bismark](#workflow-bismark)
+- [Workflow: BWA-Meth](#workflow-bwa-meth)
+- [Targeted sequencing (optional)](#targeted-sequencing-optional)
 - [Running the pipeline](#running-the-pipeline)
 - [Updating the pipeline](#updating-the-pipeline)
 - [Reproducibility](#reproducibility)
@@ -17,6 +20,11 @@
 The nf-core/methylseq pipeline provides two distinct workflows for DNA methylation analysis. These workflows support different aligners and cater to a range of computational requirements.
 
 > Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](usage/bs-seq-primer.md)
+
+### Requirements
+
+- Nextflow >= 24.10.5
+- Container runtime: Docker, Singularity, Podman, Charliecloud, or Apptainer. Conda is also supported for CPU workflows, but the Parabricks GPU pathway does not support Conda/Mamba.
 
 ```mermaid
 flowchart TD
@@ -82,9 +90,10 @@ bwa-meth aligner options:
 
 - Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors. By default, this uses the standard BWA-MEM algorithm.
 
-- BWA-MEM2 algorithm: For improved performance, you can enable the BWA-MEM2 algorithm by adding `--use_mem2` to your command. BWA-MEM2 is a drop-in replacement for BWA-MEM that is generally faster and more accurate. This applies to both CPU and GPU modes.
+- BWA-MEM2 algorithm: For improved performance, you can enable the BWA-MEM2 algorithm by adding `--use_mem2` to your command. BWA-MEM2 is a drop-in replacement for BWA-MEM that is generally faster and more accurate. When enabled, it affects the BWA-Meth CPU workflow (indexing and alignment). The GPU pathway (Parabricks) uses its own implementation and does not use BWA-MEM2.
 
 Examples:
+
 ```bash
 # Use BWA-Meth with BWA-MEM2 algorithm (CPU)
 nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --input samplesheet.csv --genome GRCh38
@@ -94,6 +103,27 @@ nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --profile gpu --inpu
 ```
 
 - `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
+
+> [!NOTE]
+> The Parabricks module does not support Conda/Mamba. Use Docker, Singularity, or Podman.
+>
+> By default, the Parabricks step requests 100 GB of memory (configurable via process selectors).
+
+### Targeted sequencing (optional)
+
+To run region-focused analysis and optional hybrid-capture metrics:
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --genome GRCh38 \
+  --aligner bismark \
+  --run_targeted_sequencing \
+  --target_regions_file genome_target_regions.bed \
+  --collecthsmetrics
+```
+
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets.
 
 ## Samplesheet input
 
