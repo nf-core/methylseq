@@ -147,7 +147,7 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
 
-An [example samplesheet](.../assets/samplesheet.csv) has been provided with the pipeline.
+An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Parameters
 
@@ -379,7 +379,7 @@ process {
 
 We have standardised the structure of Nextflow DSL2 pipelines such that all module files will be present in the `modules/` directory and so, based on the search results, the file we want is `modules/nf-core/bismark/align/main.nf`.
 
-In the module `main.nf`, you will notice that there is a `label` directive at the top of the module that is set to [`label process_high`].
+In the module `main.nf`, you will notice that there is a `label` directive at the top of the module that is set to `label process_high`.
 
 The [Nextflow `label`](https://www.nextflow.io/docs/latest/process.html#label) directive allows us to organize workflow processes in separate groups which can be referenced in a configuration file to select and configure subset of processes having similar computing requirements.
 
