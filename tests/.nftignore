@@ -12,6 +12,7 @@ fastqc/*.html
 fastqc/zips/*.zip
 multiqc/*/multiqc_data/*.{log,json}
 multiqc/*/multiqc_data/BETA-multiqc.parquet
+multiqc/*/multiqc_data/llms-full.txt
 multiqc/*/multiqc_data/multiqc_fastqc.txt
 multiqc/*/multiqc_data/multiqc_general_stats.txt
 multiqc/*/multiqc_data/multiqc_qualimap_bamqc_genome_results.txt

@@ -7,7 +7,10 @@
 ## Table of contents
 
 - [Introduction](#introduction)
-- [Bismark and bwa-meth workflow](#bismark-and-bwa-meth-workflow)
+- [Requirements](#requirements)
+- [Workflow: Bismark](#workflow-bismark)
+- [Workflow: BWA-Meth](#workflow-bwa-meth)
+- [Targeted sequencing (optional)](#targeted-sequencing-optional)
 - [Running the pipeline](#running-the-pipeline)
 - [Updating the pipeline](#updating-the-pipeline)
 - [Reproducibility](#reproducibility)
@@ -16,7 +19,12 @@
 
 The nf-core/methylseq pipeline provides two distinct workflows for DNA methylation analysis. These workflows support different aligners and cater to a range of computational requirements.
 
-> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](./docs/bs-seq-primer.md)
+> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](usage/bs-seq-primer.md)
+
+### Requirements
+
+- Nextflow >= 24.10.5
+- Container runtime: Docker, Singularity, Podman, Charliecloud, or Apptainer. Conda is also supported for CPU workflows, but the Parabricks GPU pathway does not support Conda/Mamba.
 
 ```mermaid
 flowchart TD
@@ -80,9 +88,42 @@ The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) as the a
 
 bwa-meth aligner options:
 
-- Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors.
+- Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors. By default, this uses the standard BWA-MEM algorithm.
+
+- BWA-MEM2 algorithm: For improved performance, you can enable the BWA-MEM2 algorithm by adding `--use_mem2` to your command. BWA-MEM2 is a drop-in replacement for BWA-MEM that is generally faster and more accurate. When enabled, it affects the BWA-Meth CPU workflow (indexing and alignment). The GPU pathway (Parabricks) uses its own implementation and does not use BWA-MEM2.
+
+Examples:
+
+```bash
+# Use BWA-Meth with BWA-MEM2 algorithm (CPU)
+nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --input samplesheet.csv --genome GRCh38
+
+# Use BWA-Meth with BWA-MEM2 algorithm (GPU)
+nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --profile gpu --input samplesheet.csv --genome GRCh38
+```
 
 - `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
+
+> [!NOTE]
+> The Parabricks module does not support Conda/Mamba. Use Docker, Singularity, or Podman.
+>
+> By default, the Parabricks step requests 100 GB of memory (configurable via process selectors).
+
+### Targeted sequencing (optional)
+
+To run region-focused analysis and optional hybrid-capture metrics:
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --genome GRCh38 \
+  --aligner bismark \
+  --run_targeted_sequencing \
+  --target_regions_file genome_target_regions.bed \
+  --collecthsmetrics
+```
+
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets.
 
 ## Samplesheet input
 
@@ -299,7 +340,7 @@ You can also supply a run name to resume a specific run: `-resume [run-name]`. U
 
 ### `-c`
 
-Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/usage/configuration) for more information.
+Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/docs/usage/configuration) for more information.
 
 ## Custom configuration
 
@@ -366,17 +407,15 @@ process {
 
 #### Advanced option on process level
 
-To find out exactly what resources have been set for a process, for example., the `BISMARK_ALIGN` process. Navigate to the [BISMARK_ALIGN](../modules/nf-core/bismark/align/main.nf) module used in the workflow.
+We have standardised the structure of Nextflow DSL2 pipelines such that all module files will be present in the `modules/` directory and so, based on the search results, the file we want is `modules/nf-core/bismark/align/main.nf`.
 
-> We have standardised the structure of Nextflow DSL2 pipelines such that all module files will be present in the `modules/` directory and so, based on the search results, the file we want is `modules/nf-core/bismark/align/main.nf`.
-
-In the module `main.nf`, you will notice that there is a `label` directive at the top of the module that is set to [`label process_high`](https://github.com/nf-core/modules/blob/9a19690b0a3fae05fa1a6ad90a0720d681429e31/modules/nf-core/bismark/align/main.nf#L3).
+In the module `main.nf`, you will notice that there is a `label` directive at the top of the module that is set to `label process_high`.
 
 The [Nextflow `label`](https://www.nextflow.io/docs/latest/process.html#label) directive allows us to organize workflow processes in separate groups which can be referenced in a configuration file to select and configure subset of processes having similar computing requirements.
 
 The default values for the `process_high` label are set in the pipeline's [`base.config`](https://github.com/nf-core/methylseq/blob/master/conf/base.config) which in this case is defined as `72.GB`.
 
-Providing you haven't set any other standard nf-core parameters to **cap** the [maximum resources](https://nf-co.re/usage/configuration#max-resources) used by the pipeline then we can try and bypass the `BISMARK_ALIGN` process failure by creating a custom config file that sets at least `72.GB` of memory, in this case increased to `100.GB`.
+Providing you haven't set any other standard nf-core parameters to **cap** the [resource limits](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits) used by the pipeline then we can try and bypass the `BISMARK_ALIGN` process failure by creating a custom config file that sets at least `72.GB` of memory, in this case increased to `100.GB`.
 
 The custom config below can then be provided to the pipeline via the [`-c`](#-c) parameter as highlighted in previous sections.
 

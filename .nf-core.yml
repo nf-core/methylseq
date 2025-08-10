@@ -4,7 +4,7 @@ lint:
     - conf/modules.config
     - .github/workflows/ci.yml
   modules_config: false
-nf_core_version: 3.3.1
+nf_core_version: 3.3.2
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
@@ -15,4 +15,4 @@ template:
   name: methylseq
   org: nf-core
   outdir: .
-  version: 4.0.0
+  version: 4.1.0

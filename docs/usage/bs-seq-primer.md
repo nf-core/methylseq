@@ -1,16 +1,14 @@
 # Bisulfite Sequencing & Three-Base Aligners Primer
 
-[Bisulfite sequencing](https://github.com/nf-core/methylseq) (**BS-seq**) is a widely-used technique to investigate **DNA methylation**, a crucial epigenetic modification that regulates gene expression without altering the DNA sequence.
+[Bisulfite sequencing](https://en.wikipedia.org/wiki/Bisulfite_sequencing) (**BS-seq**) is a widely-used technique to investigate **DNA methylation**, a crucial epigenetic modification that regulates gene expression without altering the DNA sequence.
 
 ## **Principle of Bisulfite Sequencing**
 
 1. **Bisulfite Treatment**:
-
    - During bisulfite treatment, **non-methylated cytosines** in DNA are converted to **uracils**, while **methylated cytosines** remain unaffected
    - This chemical reaction forms the foundation for distinguishing methylated and unmethylated cytosines
 
 2. **PCR Amplification**:
-
    - After bisulfite treatment, the DNA undergoes PCR amplification
    - During this step, uracils are converted into **thymines**
    - This conversion results in a reduced complexity of the DNA code, introducing computational challenges in downstream analysis
@@ -54,10 +52,13 @@ To address these challenges, specialized “three-base aligners” have been dev
 
 - Bismark resolves strand ambiguity by performing up to four parallel alignments
 - First, sequencing reads are converted _in silico_ to represent both forward and reverse strand conversions (C-to-T and G-to-A), mirroring fully bisulfite-converted versions of the reference genome
-- Each read set is then aligned using Bowtie2 (alternatively HISAT2 or minimap2) against equally converted references; this enables support for indels, local alignments, and bisulfite converted RNA-seq-type or long reads (e.g. EM-seq using Nanopore or Pac Bio reads)
+- Each read set is then aligned using Bowtie2 (alternatively HISAT2) against equally converted references; this enables support for indels and local alignments
 - By comparing these (up-to) four alignments, Bismark identifies each read’s correct strand origin
 
 This approach allows Bismark to handle directional, PBAT, amplicon, and non-directional libraries robustly and to accurately align reads that represent partially methylated cytosines.
+
+> Note
+> In nf-core/methylseq, Bismark is used with Bowtie2 or HISAT2. Long-read aligners are not yet supported in this pipeline.
 
 ### BWA-Meth ([docs](https://github.com/brentp/bwa-meth); [publication](https://arxiv.org/abs/1401.1129))
 
@@ -72,9 +73,9 @@ python bwameth.py --reference ref.fa A.fq B.fq
 is transparently translated into a command that pipes converted reads directly to bwa mem (or bwa-mem2) without creating temporary files:
 
 ```bash
-bwa mem -pCMR ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
+bwa mem -p ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
 # or, if using BWA-MEM2 indexing:
-bwa-mem2 mem -pCMR ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
+bwa-mem2 mem -p ref.fa.bwameth.c2t '<python bwameth.py c2t A.fq B.fq'
 ```
 
 Here, **`A.fq`** is converted **`C-to-T`** and **`B.fq`** is converted **`G-to-A`** on the fly, and both are streamed into the aligner. The output is the standard `SAM` alignment file.
@@ -83,7 +84,7 @@ Here, **`A.fq`** is converted **`C-to-T`** and **`B.fq`** is converted **`G-to-A
 
 | Feature/Attribute                     | **Bismark**                                                                                                                                              | **BWA-Meth**                                                                                                                           |
 | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **Core algorithm & approach**         | Uses Bowtie2/HISAT2/minimap2 for 3-letter alignments                                                                                                     | Uses BWA-MEM for 3-letter alignments                                                                                                   |
+| **Core algorithm & approach**         | Uses Bowtie2/HISAT2 for 3-letter alignments                                                                                                              | Uses BWA-MEM for 3-letter alignments                                                                                                   |
 | **Computational efficiency**          | More computationally intensive                                                                                                                           | Generally faster and more efficient due to single alignment step                                                                       |
 | **Output format & methylation calls** | Produces SAM/BAM, deduplication, direct methylation calls (CpG, CHG, CHH), bedGraph/coverage and cytosine context files with integrated QC and reporting | Produces standard SAM/BAM; requires external tools (e.g., MethylDackel) for methylation calling and QC                                 |
 | **Downstream analysis**               | Built-in methylation calling, filtering and (context-) reporting options                                                                                 | Requires external tools for methylation calling, offering more customization but added complexity                                      |
@@ -104,7 +105,7 @@ Here, **`A.fq`** is converted **`C-to-T`** and **`B.fq`** is converted **`G-to-A
 
 #### Quality Control (QC) Metrics:
 
-- **M-bias Plots**: Analysis tools can generate M-bias plots to visualize methylation bias across read positions. This helps identify technical artefacts, or non-uniform conversion at biased positiones at the ends of reads
+- **M-bias Plots**: Analysis tools can generate M-bias plots to visualize methylation bias across read positions. This helps identify technical artefacts, or non-uniform conversion at biased positions at the ends of reads
 - **Adapter- and quality-trimming**: Even more than standard sequencing data, bisulfite reads benefit from adapter removal and quality filtering. Tools like Trim Galore (often bundled with Bismark) ensure higher-quality alignments and more accurate methylation calls
 
 #### Post-alignment deduplication and bias correction:
@@ -120,7 +121,7 @@ Note: CpG, CHG, and CHH contexts.
 #### Large-scale analysis and cloud computing:
 
 - As whole-genome bisulfite sequencing (WGBS) datasets grow larger, computational efficiency, scalability, and memory usage become critical factors
-- **Cloud-based computing**: Tools that integrate into cloud-based workflows (e.g., AWS, GCP) and employ parallelization or GPU-acceleration (e.g., NVIDIA Parabricks for `fq2bam_meth`) can significantly reduce runtime for large projects
+- **Cloud-based computing**: Tools that integrate into cloud-based workflows (e.g., AWS, GCP) and employ parallelization or GPU-acceleration (e.g., NVIDIA Parabricks for `fq2bam_meth` within this pipeline; enable with `-profile gpu`) can significantly reduce runtime for large projects
 
 #### Long-read bisulfite sequencing:
 
