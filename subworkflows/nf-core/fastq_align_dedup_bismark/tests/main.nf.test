@@ -44,7 +44,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark single-end - default") {
+    test("Params: bismark single-end | default") {
 
         when {
             params {
@@ -93,7 +93,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark paired-end - default") {
+    test("Params: bismark paired-end | default") {
 
         when {
             params {
@@ -143,7 +143,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark paired-end - skip_deduplication") {
+    test("Params: bismark paired-end | skip_deduplication") {
 
         when {
             params {
@@ -192,7 +192,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark paired-end - cytosine_report") {
+    test("Params: bismark paired-end | cytosine_report") {
 
         when {
             params {
@@ -241,7 +241,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat single-end - default") {
+    test("Params: bismark_hisat single-end | default") {
 
         when {
             params {
@@ -290,7 +290,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat paired-end - default") {
+    test("Params: bismark_hisat paired-end | default") {
 
         when {
             params {
@@ -340,7 +340,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat paired-end - skip_deduplication") {
+    test("Params: bismark_hisat paired-end | skip_deduplication") {
 
         when {
             params {
@@ -389,7 +389,7 @@ nextflow_workflow {
         }
     }
 
-    test("Params: bismark_hisat paired-end - cytosine_report") {
+    test("Params: bismark_hisat paired-end | cytosine_report") {
 
         when {
             params {
