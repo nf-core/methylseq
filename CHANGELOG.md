@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
-- ✨ Add `--use_mem2` parameter to enable BWA-MEM2 algorithm for BWA-Meth indexing and alignment
-- 🔄 Updated BWA-Meth modules to support BWA-MEM2 indexing with `use_mem2` parameter
-- 🔄 Updated `fasta_index_bismark_bwameth` subworkflow to pass `use_mem2` parameter to BWA-Meth indexing
+- ✨ Add `--use_mem2` parameter to enable BWA-MEM2 algorithm for BWA-Meth indexing and alignment (https://github.com/nf-core/methylseq/pull/561)
+  - 🔄 Updated BWA-Meth modules to support BWA-MEM2 indexing with `use_mem2` parameter
+  - 🔄 Updated `fasta_index_bismark_bwameth` subworkflow to pass `use_mem2` parameter to BWA-Meth indexing
 - 🔄 Updated template to nf-core/tools v3.3.2 [#549](https://github.com/nf-core/methylseq/pull/549)
 - 🔄 modules update [#550](https://github.com/nf-core/methylseq/pull/554)
 - 🔧 Raised Nextflow version requirement to `24.10.5` [#549](https://github.com/nf-core/methylseq/pull/554)

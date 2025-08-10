@@ -47,7 +47,7 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
+                        "git_sha": "96d9a187355d26f9a5e0380f8b59c7005d073268",
                         "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "bwameth/index": {
