@@ -4,7 +4,7 @@
             36,
             {
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.7"
+                    "bwameth": "0.2.9"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"

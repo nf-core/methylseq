@@ -4,19 +4,19 @@
             36,
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -45,31 +45,31 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-06-29T08:41:24.576362735"
+        "timestamp": "2025-08-10T07:07:20.149774781"
     },
     "Params: bismark_hisat with hisat2-index": {
         "content": [
             36,
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_GENOMEPREPARATION": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -95,28 +95,28 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-06-29T08:47:22.82688768"
+        "timestamp": "2025-08-10T07:14:19.052184259"
     },
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
             36,
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "0.24.2"
+                    "bismark": "0.25.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -145,16 +145,16 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-06-29T08:43:10.820387558"
+        "timestamp": "2025-08-10T07:09:48.321936029"
     },
     "Params: bwameth with bwameth-index": {
         "content": [
             47,
             {
                 "BWAMETH_ALIGN": {
-                    "bwameth": "0.2.7"
+                    "bwameth": "0.2.9"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -201,8 +201,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.4"
+            "nextflow": "25.04.6"
         },
-        "timestamp": "2025-06-29T08:45:16.820888114"
+        "timestamp": "2025-08-10T07:12:09.432510433"
     }
 }
