@@ -47,12 +47,12 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "a9807fa1578811b91242a04a45f00fdca7101efb",
+                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
                         "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "6969ca92f5d648c2ff806ffd3daeb8a74dae5396",
+                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
                         "installed_by": ["fasta_index_bismark_bwameth"]
                     },
                     "cat/fastq": {
@@ -166,7 +166,7 @@
                 "nf-core": {
                     "fasta_index_bismark_bwameth": {
                         "branch": "master",
-                        "git_sha": "8777e22535c73a773124f70a5a82be121394a66b",
+                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
                         "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bismark": {
@@ -176,7 +176,7 @@
                     },
                     "fastq_align_dedup_bwameth": {
                         "branch": "master",
-                        "git_sha": "e55eae4a09b659522cf1b7898b5644fe06f66198",
+                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
                         "installed_by": ["subworkflows"]
                     },
                     "utils_nextflow_pipeline": {
