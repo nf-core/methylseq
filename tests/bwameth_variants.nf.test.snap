@@ -48,7 +48,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -542,7 +542,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -810,7 +810,7 @@
                     "samtools": 1.21
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -1017,7 +1017,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -1267,7 +1267,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -1588,7 +1588,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -1765,7 +1765,7 @@
                     "samtools": 1.21
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -2047,7 +2047,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -2368,7 +2368,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
@@ -2741,7 +2741,7 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.1.0"
+                    "nf-core/methylseq": "v4.2.0dev"
                 }
             },
             [
