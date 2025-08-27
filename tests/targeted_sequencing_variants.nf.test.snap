@@ -1,7 +1,7 @@
 {
     "Params: bwameth with run_targeted_sequencing": {
         "content": [
-            51,
+            42,
             {
                 "BEDTOOLS_INTERSECT": {
                     "bedtools": "2.31.1"
@@ -96,17 +96,8 @@
                 "methyldackel",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph",
                 "methyldackel/mbias",
                 "methyldackel/mbias/Ecoli_10K_methylated.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub1.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub2.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub3.mbias.txt",
                 "multiqc",
                 "multiqc/bwameth",
                 "multiqc/bwameth/multiqc_data",
@@ -252,16 +243,7 @@
                 "SRR389222_sub3.stats:md5,6876e424094ecdf302bd2097f8e21b1c",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
-                "SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
-                "SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
-                "SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "Ecoli_10K_methylated.mbias.txt:md5,3a448a2a6364b2de3129365a271c0534",
-                "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -327,9 +309,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:18:45.294737151"
+        "timestamp": "2025-08-27T17:10:47.059934147"
     },
     "Params: bismark with run_targeted_sequencing and collecthsmetrics": {
         "content": [
@@ -751,9 +733,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:31:53.241116672"
+        "timestamp": "2025-08-27T17:23:42.555800913"
     },
     "Params: bismark with run_targeted_sequencing": {
         "content": [
@@ -1143,13 +1125,13 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:16:31.519155686"
+        "timestamp": "2025-08-27T17:09:28.027817882"
     },
     "Params: bwameth with run_targeted_sequencing and collecthsmetrics": {
         "content": [
-            57,
+            48,
             {
                 "BEDTOOLS_INTERSECT": {
                     "bedtools": "2.31.1"
@@ -1258,17 +1240,8 @@
                 "methyldackel",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph",
                 "methyldackel/mbias",
                 "methyldackel/mbias/Ecoli_10K_methylated.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub1.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub2.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub3.mbias.txt",
                 "multiqc",
                 "multiqc/bwameth",
                 "multiqc/bwameth/multiqc_data",
@@ -1423,16 +1396,7 @@
                 "SRR389222_sub3.stats:md5,6876e424094ecdf302bd2097f8e21b1c",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
-                "SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
-                "SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
-                "SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "Ecoli_10K_methylated.mbias.txt:md5,3a448a2a6364b2de3129365a271c0534",
-                "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -1501,13 +1465,13 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:26:55.550089201"
+        "timestamp": "2025-08-27T17:18:00.759838234"
     },
     "Params: bwameth with all_contexts and run_targeted_sequencing": {
         "content": [
-            59,
+            44,
             {
                 "BEDTOOLS_INTERSECT": {
                     "bedtools": "2.31.1"
@@ -1606,29 +1570,8 @@
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CHH.targeted.bedGraph",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
                 "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CHG.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CHG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CHH.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CHH.targeted.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CHG.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CHG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CHH.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CHH.targeted.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CHG.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CHG.targeted.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CHH.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CHH.targeted.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.bedGraph",
-                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph",
                 "methyldackel/mbias",
                 "methyldackel/mbias/Ecoli_10K_methylated.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub1.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub2.mbias.txt",
-                "methyldackel/mbias/SRR389222_sub3.mbias.txt",
                 "multiqc",
                 "multiqc/bwameth",
                 "multiqc/bwameth/multiqc_data",
@@ -1778,28 +1721,7 @@
                 "Ecoli_10K_methylated.markdup.sorted_CHH.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.markdup.sorted_CHG.bedGraph:md5,0ce7d97fa71f60650cdcf0adc3ed9514",
-                "SRR389222_sub1.markdup.sorted_CHG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.markdup.sorted_CHH.bedGraph:md5,16938a3095ffdd55ab1b8a283980409d",
-                "SRR389222_sub1.markdup.sorted_CHH.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
-                "SRR389222_sub1.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.markdup.sorted_CHG.bedGraph:md5,aea4990db2548f20a1a634cc2c30bb5f",
-                "SRR389222_sub2.markdup.sorted_CHG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.markdup.sorted_CHH.bedGraph:md5,3e054ecd1cc54dea2d8abe8dc4de92d9",
-                "SRR389222_sub2.markdup.sorted_CHH.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
-                "SRR389222_sub2.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.markdup.sorted_CHG.bedGraph:md5,e9b216590dd00beae1afae13566adb3c",
-                "SRR389222_sub3.markdup.sorted_CHG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.markdup.sorted_CHH.bedGraph:md5,65f357a08b3b97f9f78fc7bf3d621181",
-                "SRR389222_sub3.markdup.sorted_CHH.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
-                "SRR389222_sub3.markdup.sorted_CpG.targeted.bedGraph:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "Ecoli_10K_methylated.mbias.txt:md5,a25ea114bf904711e106cef5c275102a",
-                "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
-                "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -1865,8 +1787,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:21:13.344618695"
+        "timestamp": "2025-08-27T17:12:03.47708625"
     }
 }

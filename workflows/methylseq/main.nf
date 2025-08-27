@@ -4,20 +4,23 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryMap           } from 'plugin/nf-schema'
-include { FASTQC                     } from '../../modules/nf-core/fastqc/main'
-include { TRIMGALORE                 } from '../../modules/nf-core/trimgalore/main'
-include { QUALIMAP_BAMQC             } from '../../modules/nf-core/qualimap/bamqc/main'
-include { PRESEQ_LCEXTRAP            } from '../../modules/nf-core/preseq/lcextrap/main'
-include { MULTIQC                    } from '../../modules/nf-core/multiqc/main'
-include { CAT_FASTQ                  } from '../../modules/nf-core/cat/fastq/main'
-include { FASTQ_ALIGN_DEDUP_BISMARK  } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
-include { FASTQ_ALIGN_DEDUP_BWAMETH  } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
-include { paramsSummaryMultiqc       } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML     } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
-include { TARGETED_SEQUENCING        } from '../../subworkflows/local/targeted_sequencing'
-include { methodsDescriptionText     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet   } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { paramsSummaryMap          } from 'plugin/nf-schema'
+include { FASTQC                    } from '../../modules/nf-core/fastqc/main'
+include { TRIMGALORE                } from '../../modules/nf-core/trimgalore/main'
+include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc/main'
+include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
+include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
+include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
+include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
+include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
+include { FASTQ_ALIGN_DEDUP_BWAMEM  } from '../../subworkflows/local/fastq_align_dedup_bwamem/main'
+include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { TAPS_CONVERSION           } from '../../subworkflows/local/taps_conversion'
+include { METHYLDACKEL              } from '../../subworkflows/local/methyldackel/main'
+include { TARGETED_SEQUENCING       } from '../../subworkflows/local/targeted_sequencing'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,9 +37,9 @@ workflow METHYLSEQ {
     ch_fasta_index     // channel: [ path(fasta index)     ]
     ch_bismark_index   // channel: [ path(bismark index)   ]
     ch_bwameth_index   // channel: [ path(bwameth index)   ]
+    ch_bwamem_index    // channel: [ path(bwamem_index)    ]
 
     main:
-
     ch_fastq         = Channel.empty()
     ch_fastqc_html   = Channel.empty()
     ch_fastqc_zip    = Channel.empty()
@@ -101,8 +104,13 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
+    if (params.taps & params.aligner != 'bwamem') {
+        log.info "TAPS protocol detected and aligner is not 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
+        // params.aligner = 'bwamem'
+    } 
+
     // Aligner: bismark or bismark_hisat
-    if ( params.aligner =~ /bismark/ ) {
+    if (params.aligner =~ /bismark/ ) {
         //
         // Run Bismark alignment + downstream processing
         //
@@ -129,7 +137,7 @@ workflow METHYLSEQ {
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     // Aligner: bwameth
-    else if ( params.aligner == 'bwameth' ){
+    else if (params.aligner == 'bwameth'){
 
         ch_bwameth_inputs = ch_reads
             .combine(ch_fasta)
@@ -152,12 +160,73 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
-        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
+
+    // Aligner: bwamem
+    else if (params.aligner == 'bwamem'){
+
+        ch_bwamem_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_fasta_index)
+            .combine(ch_bwamem_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
+                reads: [ meta, reads ]
+                fasta: [ meta_fasta, fasta ]
+                fasta_index: [ meta_fasta_index, fasta_index ]
+                bwamem_index: [ meta_bwamem, bwamem_index ]
+            }
+
+        FASTQ_ALIGN_DEDUP_BWAMEM (
+            ch_bwamem_inputs.reads,
+            ch_bwamem_inputs.fasta,
+            ch_bwamem_inputs.fasta_index,
+            ch_bwamem_inputs.bwamem_index,
+            params.skip_deduplication,
+            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
+        )
+
+        ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
+        ch_bai         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bai
+        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMEM.out.versions.unique{ it.baseName })
+    }   
+
     else {
-        error "ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', or 'bwameth'"
+        error "ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth' or 'bwamem'."
+    }
+
+    //
+    // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
+    //
+    if (params.taps || params.aligner == 'bwamem') {
+        log.info "TAPS protocol detected. Running TAPS conversion module."
+        TAPS_CONVERSION (
+            ch_bam,
+            ch_bai,
+            ch_fasta,
+            ch_fasta_index,
+        )
+        ch_rastair_mbias = TAPS_CONVERSION.out.mbias // channel: [ val(meta), [ txt ] ]
+        ch_rastair_call  = TAPS_CONVERSION.out.call // channel: [ val(meta), [ txt ] ]
+        ch_versions      = ch_versions.mix(TAPS_CONVERSION.out.versions)
+    } 
+
+    //
+    // Subworkflow: Count negative C->T conversion rates as a readout for DNA methylation
+    //
+    else if (!params.taps && (params.aligner == 'bwameth' || (params.aligner == 'bwamem'))) {
+        METHYLDACKEL (
+            ch_bam,
+            ch_bai,
+            ch_fasta,
+            ch_fasta_index
+        )
+        ch_bedgraph    = METHYLDACKEL.out.methydackel_extract_bedgraph  // channel: [ val(meta), [ bedgraph ]  ]
+        ch_methylkit   = METHYLDACKEL.out.methydackel_extract_methylkit // channel: [ val(meta), [ methylkit ] ]
+        ch_mbias       = METHYLDACKEL.out.methydackel_mbias // channel: [ val(meta), [ mbias ] ]
+        ch_versions    = ch_versions.mix(METHYLDACKEL.out.versions)
     }
 
     //
