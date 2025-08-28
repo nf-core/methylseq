@@ -33,6 +33,10 @@
 
   > Felix Krueger, Simon R. Andrews, Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications, Bioinformatics, Volume 27, Issue 11, 1 June 2011, Pages 1571–1572, doi: [10.1093/bioinformatics/btr167](https://doi.org/10.1093/bioinformatics/btr167)
 
+- [BWA-MEM](https://arxiv.org/abs/1303.3997v2)
+
+  > Li H: Aligning sequence reads, clone sequences and assembly contigs with BWA-MEM. arXiv 2013. doi: 10.48550/arXiv.1303.3997
+  
 - [bwa-meth](https://arxiv.org/abs/1401.1129)
 
   > Pedersen, Brent S. and Eyring, Kenneth and De, Subhajyoti and Yang, Ivana V. and Schwartz, David A. Fast and accurate alignment of long bisulfite-seq reads, arXiv:1401.1129, doi: [10.48550/arXiv.1401.1129](https://doi.org/10.48550/arXiv.1401.1129)
@@ -48,6 +52,8 @@
 - [Preseq](https://doi.org/10.1038/nmeth.2375)
 
   > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
+
+- [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/)
 
 - [Samtools](https://doi.org/10.1093/gigascience/giab008)
 

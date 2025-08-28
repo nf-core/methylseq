@@ -102,7 +102,17 @@ nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --input samplesheet.
 nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --profile gpu --input samplesheet.csv --genome GRCh38
 ```
 
-- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
+- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth`. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
+
+### Workflow: BWA-Mem
+
+The third workflow uses [BWA-Mem](https://github.com/lh3/bwa) as the alignment tool and [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/) for post-processing.
+
+bwa-mem aligner options:
+
+- Standard `bwa-mem` (CPU-based): This option can be invoked via `--aligner bwamem` and uses the traditional BWA-Mem aligner and runs on CPU processors.
+
+- `Parabricks/FQ2BAM` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-mem (fq2bam)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implements the baseline tool `bwa-mem`. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwamem`.
 
 > [!NOTE]
 > The Parabricks module does not support Conda/Mamba. Use Docker, Singularity, or Podman.
@@ -258,6 +268,7 @@ For a detailed list of different options available, please refer to the official
 
 - [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
 - [bwa-meth](https://github.com/brentp/bwa-meth)
+- [bwa-mem](https://github.com/lh3/bwa)
 
 ### Running the `test` profile
 

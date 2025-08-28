@@ -45,9 +45,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:07:20.149774781"
+        "timestamp": "2025-08-27T19:02:08.426866526"
     },
     "Params: bismark_hisat with hisat2-index": {
         "content": [
@@ -95,9 +95,9 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:14:19.052184259"
+        "timestamp": "2025-08-27T19:05:19.128708792"
     },
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
@@ -145,13 +145,13 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:09:48.321936029"
+        "timestamp": "2025-08-27T19:03:14.446161967"
     },
     "Params: bwameth with bwameth-index": {
         "content": [
-            47,
+            41,
             {
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.9"
@@ -201,8 +201,8 @@
         ],
         "meta": {
             "nf-test": "0.9.2",
-            "nextflow": "25.04.6"
+            "nextflow": "24.10.5"
         },
-        "timestamp": "2025-08-10T07:12:09.432510433"
+        "timestamp": "2025-08-27T19:04:09.087218234"
     }
 }

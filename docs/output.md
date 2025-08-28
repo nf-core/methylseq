@@ -6,7 +6,7 @@ This document describes the output produced by the methylseq pipeline.
 
 Most of the plots are taken from the MultiQC report, which summarizes results at the end of the pipeline.
 
-> NOTE: nf-core/methylseq contains two workflows - one for Bismark, one for bwa-meth. The results files produced will vary depending on which variant is run.
+> NOTE: nf-core/methylseq contains three alignment workflows - one for Bismark, one for bwa-meth and one for bwa-mem. On top of that, there is an extra workflow to process conversion rates from TAPS data (protocol for positive methylation reading) through Rastair. The results files produced will vary depending on which variant is run.
 
 The output directories listed below will be created in the results directory after the pipeline has finished. All paths are relative to the top-level results directory.
 
@@ -83,6 +83,47 @@ bwameth/
 └── trimgalore
     ├── fastqc
     └── logs
+```
+
+#### bwa-mem
+
+```
+bwamem/
+├── bwamem
+│   ├── alignments
+│   └── deduplicated
+├── fastqc
+│   ├── Ecoli_10K_methylated_1_fastqc.html
+│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   └── zips
+├── multiqc
+│   └── bwamem
+├── pipeline_info
+│   ├── execution_report_2024-12-13_05-36-34.html
+│   ├── execution_timeline_2024-12-13_05-36-34.html
+│   ├── execution_trace_2024-12-13_05-36-34.txt
+│   ├── nf_core_methylseq_software_mqc_versions.yml
+│   ├── params_2024-12-13_05-36-43.json
+│   └── pipeline_dag_2024-12-13_05-36-34.html
+└── trimgalore
+    ├── fastqc
+    └── logs
+```
+
+#### rastair
+
+```
+rastair
+├── call
+|   └── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_call.tsv
+├── mbias
+|   └── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_mbias.tsv
+├── mbias_parser
+│   ├── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_mbias_processed.txt
+│   ├── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_mbias_processed.csv
+│   └── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_mbias_processed.pdf
+├── methylkit
+|   └── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_methylkit.txt.gz
 ```
 
 ### Detailed Output Descriptions
@@ -174,6 +215,9 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `logs/samtools_stats/sample_stats.txt`
   - Summary file giving lots of metrics about the aligned BAM file.
 
+**bwa-mem output directory: `results/bwamem/alignments/`**
+# TODO
+
 ### Deduplication
 
 This step removes alignments with identical mapping position to avoid technical duplication in the results. Note that it is skipped if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
@@ -195,6 +239,9 @@ This step removes alignments with identical mapping position to avoid technical 
   - Index for markDups BAM file.
 - `logs/sample.sorted.markDups_metrics.txt`
   - Log file giving summary statistics about deduplication.
+
+**bwa-mem output directory: `results/bwamem/deduplicated/`**
+# TODO
 
 ### Methylation Extraction
 
@@ -231,6 +278,9 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
+**bwa-mem / TAPS workflow output directory: `results/rastair/`**
+# TODO
+
 ### Targeted Sequencing
 
 If `--run_targeted_sequencing` is set to `true`, the pipeline performs additional analysis for targeted sequencing experiments.
@@ -241,6 +291,7 @@ BedGraph files are filtered using the BED file passed to `--target_regions_file`
 
 **Bismark output directory: `results/bismark/methylation_calls/bedGraph/`**
 **bwa-meth output directory: `results/methyldackel/`**
+# TODO: implement filtering by `--target_regions_file` in bwa-mem
 
 - `*.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
@@ -253,6 +304,10 @@ BedGraph files are filtered using the BED file passed to `--target_regions_file`
 
 - `*.CollectHsMetrics.coverage_metrics`
   - Text-based statistics showed also in the MultiQC report.
+
+
+### Rastair
+# TODO
 
 ### Bismark Reports
 
