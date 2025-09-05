@@ -202,16 +202,34 @@ workflow METHYLSEQ {
     //
     if (params.taps || params.aligner == 'bwamem') {
         log.info "TAPS protocol detected. Running TAPS conversion module."
-        TAPS_CONVERSION (
-            ch_bam,
-            ch_bai,
-            ch_fasta,
-            ch_fasta_index,
+
+        ch_bam_bai = ch_bam.join(ch_bai)
+        ch_taps_inputs = ch_bam_bai
+            .combine(ch_fasta)         // broadcast fasta
+            .combine(ch_fasta_index)   // broadcast fai
+            .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
+                bam:         [ meta, bam ]      // use sample meta so subworkflow aligns properly
+                bai:         [ meta, bai ]      // use sample meta so subworkflow aligns properly
+                fasta:       [ meta, fasta ]    // use sample meta so subworkflow aligns properly
+                fasta_index: [ meta, fai ]      // same here
+            }
+
+        TAPS_CONVERSION(
+            ch_taps_inputs.bam,
+            ch_taps_inputs.bai,
+            ch_taps_inputs.fasta,
+            ch_taps_inputs.fasta_index
         )
+
         ch_rastair_mbias = TAPS_CONVERSION.out.mbias // channel: [ val(meta), [ txt ] ]
         ch_rastair_call  = TAPS_CONVERSION.out.call // channel: [ val(meta), [ txt ] ]
+        ch_methylkit     = TAPS_CONVERSION.out.methylkit // channel: [ val(meta), [ txt ] ]
         ch_versions      = ch_versions.mix(TAPS_CONVERSION.out.versions)
-    } 
+
+        ch_rastair_mbias.view{ it -> "Rastair mbias output: ${it}" }
+        ch_rastair_call.view{ it -> "Rastair call output: ${it}" }
+        ch_methylkit.view{ it -> "Methylkit output: ${it}" }
+        }
 
     //
     // Subworkflow: Count negative C->T conversion rates as a readout for DNA methylation

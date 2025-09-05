@@ -14,8 +14,8 @@ workflow TAPS_CONVERSION {
     take:
     ch_bam                 // channel: [ val(meta), [ bam ] ] ## BAM from alignment
     ch_bai                 // channel: [ val(meta), [ bai ] ] ## BAI from alignment
-    ch_fasta               // channel: [ val(meta), [ fasta ] ]
-    ch_fasta_index         // channel: [ val(meta), /path/to/genome.fa.fai]
+    ch_fasta               // channel: [ val(meta), [ fa ] ]
+    ch_fasta_index         // channel: [ val(meta), [ fa.fai ] ]
 
     main:
     ch_rastair_mbias = Channel.empty()
@@ -23,6 +23,11 @@ workflow TAPS_CONVERSION {
     ch_versions      = Channel.empty()
 
     log.info "Running TAPS conversion module with Rastair to assess C->T conversion as a readout for methylation."
+
+    ch_bam.view{ it -> "BAM input to TAPS conversion module: ${it}" }
+    ch_bai.view{ it -> "BAI input to TAPS conversion module: ${it}" }
+    ch_fasta.view{ it -> "FASTA input to TAPS conversion module: ${it}" }
+    ch_fasta_index.view{ it -> "FASTA INDEX input to TAPS conversion module: ${it}" }
 
     RASTAIR_MBIAS (
         ch_bam,
@@ -33,11 +38,15 @@ workflow TAPS_CONVERSION {
     ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), txt ]
     ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions)
 
+    RASTAIR_MBIAS.out.txt.view()
+
     RASTAIR_MBIAS_PARSER (
         ch_rastair_mbias
     )
     ch_rastair_mbias_parser = RASTAIR_MBIAS_PARSER.out.mbias_processed_str // channel: [ val(meta), nOT_clip, nOB_clip ]
     ch_versions             = ch_versions.mix(RASTAIR_MBIAS_PARSER.out.versions)
+
+    RASTAIR_MBIAS_PARSER.out.mbias_processed_str.view()
 
     RASTAIR_CALL (
         ch_bam,
@@ -49,6 +58,8 @@ workflow TAPS_CONVERSION {
     )
     ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), txt ]
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions)
+
+    RASTAIR_CALL.out.txt.view()
 
     CONVERT_TO_METHYLKIT (
         ch_rastair_call

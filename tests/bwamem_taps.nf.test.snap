@@ -1,7 +1,7 @@
 {
     "Params: bwamem | taps": {
         "content": [
-            51,
+            63,
             {
                 "BWA_INDEX": {
                     "bwa": "0.7.18-r1243-dirty"
@@ -150,14 +150,29 @@
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
                 "rastair",
                 "rastair/call",
+                "rastair/call/Ecoli_10K_methylated.rastair_call.txt",
+                "rastair/call/Ecoli_10K_methylated.rastair_methylkit.txt.gz",
+                "rastair/call/SRR389222_sub1.rastair_call.txt",
+                "rastair/call/SRR389222_sub1.rastair_methylkit.txt.gz",
                 "rastair/call/SRR389222_sub2.rastair_call.txt",
                 "rastair/call/SRR389222_sub2.rastair_methylkit.txt.gz",
+                "rastair/call/SRR389222_sub3.rastair_call.txt",
+                "rastair/call/SRR389222_sub3.rastair_methylkit.txt.gz",
                 "rastair/mbias",
+                "rastair/mbias/Ecoli_10K_methylated.rastair_mbias.txt",
+                "rastair/mbias/SRR389222_sub1.rastair_mbias.txt",
                 "rastair/mbias/SRR389222_sub2.rastair_mbias.txt",
+                "rastair/mbias/SRR389222_sub3.rastair_mbias.txt",
                 "rastair/mbias_parser",
+                "rastair/mbias_parser/Ecoli_10K_methylated.rastair_mbias_processed.csv",
+                "rastair/mbias_parser/SRR389222_sub1.rastair_mbias_processed.csv",
                 "rastair/mbias_parser/SRR389222_sub2.rastair_mbias_processed.csv",
+                "rastair/mbias_parser/SRR389222_sub3.rastair_mbias_processed.csv",
                 "rastair/methylkit",
+                "rastair/methylkit/Ecoli_10K_methylated.rastair_methylkit.txt.gz",
+                "rastair/methylkit/SRR389222_sub1.rastair_methylkit.txt.gz",
                 "rastair/methylkit/SRR389222_sub2.rastair_methylkit.txt.gz",
+                "rastair/methylkit/SRR389222_sub3.rastair_methylkit.txt.gz",
                 "samtools",
                 "samtools/Ecoli_10K_methylated.idxstats",
                 "samtools/SRR389222_sub1.idxstats",
@@ -236,11 +251,26 @@
                 "SRR389222_sub1.bam:md5,c69a10f00a610ac1ed552a1b100f69a2",
                 "SRR389222_sub2.bam:md5,456398b0cc6d09ca229eb6e5b55b04d6",
                 "SRR389222_sub3.bam:md5,d58bbd13b1d016f9eb147cfa5588052d",
+                "Ecoli_10K_methylated.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
+                "Ecoli_10K_methylated.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
+                "SRR389222_sub1.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
+                "SRR389222_sub1.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
                 "SRR389222_sub2.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "SRR389222_sub2.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
+                "SRR389222_sub3.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
+                "SRR389222_sub3.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
+                "Ecoli_10K_methylated.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
+                "SRR389222_sub1.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
                 "SRR389222_sub2.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
+                "SRR389222_sub3.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
+                "Ecoli_10K_methylated.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
+                "SRR389222_sub1.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
                 "SRR389222_sub2.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
+                "SRR389222_sub3.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
+                "Ecoli_10K_methylated.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
+                "SRR389222_sub1.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
                 "SRR389222_sub2.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
+                "SRR389222_sub3.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445",
                 "Ecoli_10K_methylated.idxstats:md5,bfccbb1237079763a8b6625821423ed0",
                 "SRR389222_sub1.idxstats:md5,47eaa730cb2000975476b03df209a5e8",
                 "SRR389222_sub2.idxstats:md5,766288f18a1767e4b95c7383005161e8",
@@ -317,6 +347,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.5"
         },
-        "timestamp": "2025-09-03T17:04:49.926439"
+        "timestamp": "2025-09-05T09:31:20.228669"
     }
 }
