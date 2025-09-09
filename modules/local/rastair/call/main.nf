@@ -7,7 +7,10 @@ in a genome-wide basis
 
 process RASTAIR_CALL {
     label 'process_medium'
-    container "docker.io/sbludwig/rastair:version-0.8.2"
+
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/3f/3f0a47f3c0c4f521ed0623cd709c51fb1ece4df1fb4bd85c75d04e0383a8c5d4/data' :
+        'community.wave.seqera.io/library/rastair:0.8.2--b09a8e25a0d53059' }"
 
     input:
     tuple val(meta), path(bam)
@@ -19,7 +22,6 @@ process RASTAIR_CALL {
 
     output:
     tuple val(meta), path("*.rastair_call.txt"),    emit: txt
-    tuple val(meta), path("*_methylkit.txt.gz"),    emit: gz
     path "versions.yml",                            emit: versions
 
     when:
@@ -37,7 +39,7 @@ process RASTAIR_CALL {
         --nOT ${nt_OT_to_trim} \\
         --nOB ${nt_OB_to_trim} \\
         --fasta-file ${fasta} \\
-        ${bam} | tee ${prefix}.rastair_call.txt | /app/scripts/rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
+        ${bam} > ${prefix}.rastair_call.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
