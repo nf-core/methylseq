@@ -177,13 +177,14 @@ workflow METHYLSEQ {
             .combine(ch_fasta.broadcast())
             .combine(ch_fasta_index.broadcast())
             .combine(ch_bwamem_index.broadcast())
-
-            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
-                reads: [ meta, reads ]
-                fasta: [ meta_fasta, fasta ]
-                fasta_index: [ meta_fasta_index, fasta_index ]
-                bwamem_index: [ meta_bwamem, bwamem_index ]
+            .multiMap { meta, reads, _mf, fasta, _mi, fasta_index, _mb, bwamem_index ->
+                reads:        [ meta, reads ]
+                fasta:        [ meta, fasta ]
+                fasta_index:  [ meta, fasta_index ]
+                bwamem_index: [ meta, bwamem_index ]
             }
+
+        ch_bwamem_inputs.reads.view { "BWAMEM input: ${it[0].id}" }
 
         FASTQ_ALIGN_DEDUP_BWAMEM (
             ch_bwamem_inputs.reads,
@@ -192,9 +193,9 @@ workflow METHYLSEQ {
             ch_bwamem_inputs.bwamem_index,
             params.skip_deduplication,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
-            "bam",                  // output_fmt
-            Channel.of([[:], []]),  // interval_file
-            Channel.of([[:], []]),  // known_sites
+            "bam",                              // output_fmt
+            Channel.of([[:], []]).broadcast(),  // interval_file
+            Channel.of([[:], []]).broadcast(),  // known_sites
         )
 
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
