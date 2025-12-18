@@ -41,6 +41,8 @@ workflow METHYLSEQ {
     ch_bismark_index   // channel: [ path(bismark index)   ]
     ch_bwameth_index   // channel: [ path(bwameth index)   ]
     ch_bwamem_index    // channel: [ path(bwamem_index)    ]
+    ch_interval_file   // channel: [ path(interval file)   ]
+    ch_known_sites     // channel: [ path(known sites)     ]
 
     main:
     ch_fastq         = channel.empty()
@@ -174,14 +176,18 @@ workflow METHYLSEQ {
     else if (params.aligner == 'bwamem'){
 
         ch_bwamem_inputs = ch_reads
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .combine(ch_bwamem_index)
-            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
+            .combine(ch_fasta.broadcast())
+            .combine(ch_fasta_index.broadcast())
+            .combine(ch_bwamem_index.broadcast())
+            .combine(ch_interval_file.broadcast())
+            .combine(ch_known_sites.broadcast())
+            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index, meta_intervalsites, interval_file, meta_knownsites, known_sites ->
                 reads: [ meta, reads ]
                 fasta: [ meta_fasta, fasta ]
                 fasta_index: [ meta_fasta_index, fasta_index ]
                 bwamem_index: [ meta_bwamem, bwamem_index ]
+                interval_file: [ meta_intervalsites, interval_file ]
+                known_sites: [ meta_knownsites, known_sites ]
             }
 
         FASTQ_ALIGN_DEDUP_BWAMEM (
@@ -191,15 +197,15 @@ workflow METHYLSEQ {
             ch_bwamem_inputs.bwamem_index,
             params.skip_deduplication,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
-            "bam",
-            Channel.of([[:], []]), // interval_file
-            Channel.of([[:], []]),  // known_sites
+            "bam",                          // output_fmt
+            ch_bwamem_inputs.interval_file, // interval_file
+            ch_bwamem_inputs.known_sites,   // known_sites
         )
 
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bai
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMEM.out.versions.unique{ it.baseName })
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMEM.out.versions)
     }
 
     else {
