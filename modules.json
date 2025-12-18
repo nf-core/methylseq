@@ -95,6 +95,29 @@
                         "git_sha": "0b2435805036a16dcdcf21533632d956b8273ac4",
                         "installed_by": ["modules"]
                     },
+                    "parabricks/fq2bam": {
+                        "branch": "master",
+                        "git_sha": "1e4345f4e18eca1985e35562e8f5d29caf7f8206",
+                        "installed_by": [
+                            "_",
+                            "a",
+                            "b",
+                            "d",
+                            "e",
+                            "f",
+                            "g",
+                            "i",
+                            "l",
+                            "m",
+                            "n",
+                            "p",
+                            "q",
+                            "s",
+                            "t",
+                            "u",
+                            "w"
+                        ]
+                    },
                     "parabricks/fq2bammeth": {
                         "branch": "master",
                         "git_sha": "e753770db613ce014b3c4bc94f6cba443427b726",
@@ -221,7 +244,26 @@
                     "bam_sort_stats_samtools": {
                         "branch": "master",
                         "git_sha": "0b2435805036a16dcdcf21533632d956b8273ac4",
-                        "installed_by": ["fastq_align_bwa"]
+                        "installed_by": [
+                            "_",
+                            "a",
+                            "b",
+                            "d",
+                            "e",
+                            "f",
+                            "fastq_align_bwa",
+                            "g",
+                            "i",
+                            "l",
+                            "m",
+                            "n",
+                            "p",
+                            "q",
+                            "s",
+                            "t",
+                            "u",
+                            "w"
+                        ]
                     },
                     "bam_stats_samtools": {
                         "branch": "master",
@@ -255,7 +297,7 @@
                     },
                     "fastq_align_dedup_bwamem": {
                         "branch": "master",
-                        "git_sha": "654daca6c7d8a17479d1c56fb5fb8d1663f11428",
+                        "git_sha": "e3d2496d0e47f444e6cd2cfddc9299ceb320c80e",
                         "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bwameth": {
