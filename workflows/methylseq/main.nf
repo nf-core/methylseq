@@ -181,7 +181,7 @@ workflow METHYLSEQ {
             .combine(ch_fasta_val)
             .combine(ch_fasta_index_val)
             .combine(ch_bwamem_index.first())
-            .multiMap { meta, reads, fasta, fasta_index, bwamem_index ->
+            .multiMap { meta, reads, _mf, fasta, _mi, fasta_index, _mb, bwamem_index ->
                 reads:        [ meta, reads ]
                 fasta:        [ meta, fasta ]
                 fasta_index:  [ meta, fasta_index ]
