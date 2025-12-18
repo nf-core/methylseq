@@ -60,6 +60,10 @@ workflow METHYLSEQ {
     ch_preseq        = channel.empty()
     ch_multiqc_files = channel.empty()
 
+    // FIX: Convert reference channels to Value Channels for reuse
+    ch_fasta_val       = ch_fasta.first()
+    ch_fasta_index_val = ch_fasta_index.first()
+
     //
     // Branch channels from input samplesheet channel
     //
@@ -174,10 +178,10 @@ workflow METHYLSEQ {
     else if (params.aligner == 'bwamem'){
 
         ch_bwamem_inputs = ch_reads
-            .combine(ch_fasta.broadcast())
-            .combine(ch_fasta_index.broadcast())
-            .combine(ch_bwamem_index.broadcast())
-            .multiMap { meta, reads, _mf, fasta, _mi, fasta_index, _mb, bwamem_index ->
+            .combine(ch_fasta_val)
+            .combine(ch_fasta_index_val)
+            .combine(ch_bwamem_index.first())
+            .multiMap { meta, reads, fasta, fasta_index, bwamem_index ->
                 reads:        [ meta, reads ]
                 fasta:        [ meta, fasta ]
                 fasta_index:  [ meta, fasta_index ]
@@ -194,8 +198,8 @@ workflow METHYLSEQ {
             params.skip_deduplication,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
             "bam",                              // output_fmt
-            Channel.of([[:], []]).broadcast(),  // interval_file
-            Channel.of([[:], []]).broadcast(),  // known_sites
+            Channel.of([[:], []]).collect(),  // interval_file
+            Channel.of([[:], []]).collect(),  // known_sites
         )
 
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
