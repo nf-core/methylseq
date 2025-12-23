@@ -15,7 +15,7 @@ process METHYLDACKEL_EXTRACT {
     output:
     tuple val(meta), path("*.bedGraph") , optional: true, emit: bedgraph
     tuple val(meta), path("*.methylKit"), optional: true, emit: methylkit
-    path  "versions.yml"                                , emit: versions
+    path  "versions.yml"                                , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

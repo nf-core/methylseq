@@ -16,7 +16,7 @@ process BISMARK_COVERAGE2CYTOSINE {
     tuple val(meta), path("*.cov.gz")                      , emit: coverage,  optional: true
     tuple val(meta), path("*report.txt.gz")                , emit: report
     tuple val(meta), path("*cytosine_context_summary.txt") , emit: summary
-    path  "versions.yml"                                   , emit: versions
+    path  "versions.yml"                                   , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

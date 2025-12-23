@@ -47,15 +47,14 @@ workflow NFCORE_METHYLSEQ {
 
     main:
 
-    ch_versions = Channel.empty()
 
     //
     // Initialize file channels or values based on params
     //
-    ch_fasta                = params.fasta         ? Channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] } : Channel.empty()
-    ch_or_val_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
-    ch_or_val_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
-    ch_or_val_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_fasta                = params.fasta         ? channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] } : channel.empty()
+    ch_or_val_fasta_index   = params.fasta_index   ? channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bismark_index = params.bismark_index ? channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwameth_index = params.bwameth_index ? channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
@@ -69,7 +68,6 @@ workflow NFCORE_METHYLSEQ {
         params.collecthsmetrics,
         params.use_mem2
     )
-    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
 
     //
     // WORKFLOW: Run pipeline
@@ -77,17 +75,14 @@ workflow NFCORE_METHYLSEQ {
 
     METHYLSEQ (
         samplesheet,
-        ch_versions,
         FASTA_INDEX_BISMARK_BWAMETH.out.fasta,
         FASTA_INDEX_BISMARK_BWAMETH.out.fasta_index,
         FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
         FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
     )
-    ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: [ path(multiqc_report.html )  ]
-    versions       = ch_versions                  // channel: [ path(versions.yml) ]
 
 }
 /*

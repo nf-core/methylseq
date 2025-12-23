@@ -12,7 +12,7 @@ process BISMARK_REPORT {
 
     output:
     tuple val(meta), path("*report.{html,txt}"), emit: report
-    path  "versions.yml"                       , emit: versions
+    path  "versions.yml"                       , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -13,7 +13,7 @@ process BEDTOOLS_INTERSECT {
 
     output:
     tuple val(meta), path("*.${extension}"), emit: intersect
-    path  "versions.yml"                   , emit: versions
+    path  "versions.yml"                   , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -17,7 +17,7 @@ process PARABRICKS_FQ2BAMMETH {
     path("qc_metrics")             , emit: qc_metrics,        optional:true
     path("*.table")                , emit: bqsr_table,        optional:true
     path("duplicate-metrics.txt")  , emit: duplicate_metrics, optional:true
-    path("versions.yml")           , emit: versions
+    path("versions.yml")           , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

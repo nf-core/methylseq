@@ -17,11 +17,10 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
 
     main:
 
-    ch_fasta         = Channel.empty()
-    ch_fasta_index   = Channel.empty()
-    ch_bismark_index = Channel.empty()
-    ch_bwameth_index = Channel.empty()
-    ch_versions      = Channel.empty()
+    ch_fasta         = channel.empty()
+    ch_fasta_index   = channel.empty()
+    ch_bismark_index = channel.empty()
+    ch_bwameth_index = channel.empty()
 
     // Check if fasta file is gzipped and decompress if needed
     fasta
@@ -36,7 +35,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
     )
 
     ch_fasta    = ch_fasta_branched.unzipped.mix(GUNZIP.out.gunzip)
-    ch_versions = ch_versions.mix(GUNZIP.out.versions)
 
     // Aligner: bismark or bismark_hisat
     if( aligner =~ /bismark/ ){
@@ -57,13 +55,11 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
             )
 
             ch_bismark_index = ch_bismark_index_branched.unzipped.mix(UNTAR.out.untar)
-            ch_versions      = ch_versions.mix(UNTAR.out.versions)
         } else {
             BISMARK_GENOMEPREPARATION (
                 ch_fasta
             )
             ch_bismark_index = BISMARK_GENOMEPREPARATION.out.index
-            ch_versions      = ch_versions.mix(BISMARK_GENOMEPREPARATION.out.versions)
         }
     }
 
@@ -86,7 +82,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
             )
 
             ch_bwameth_index = ch_bwameth_index_branched.unzipped.mix(UNTAR.out.untar)
-            ch_versions      = ch_versions.mix(UNTAR.out.versions)
         } else {
             if (use_mem2) {
                 BWAMETH_INDEX (
@@ -100,7 +95,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
                 )
             }
             ch_bwameth_index = BWAMETH_INDEX.out.index
-            ch_versions      = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }
     }
 
@@ -118,7 +112,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
                 false
             )
             ch_fasta_index = SAMTOOLS_FAIDX.out.fai
-            ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
 
@@ -127,5 +120,4 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
     fasta_index   = ch_fasta_index   // channel: [ val(meta), [ fasta index ] ]
     bismark_index = ch_bismark_index // channel: [ val(meta), [ bismark index ] ]
     bwameth_index = ch_bwameth_index // channel: [ val(meta), [ bwameth index ] ]
-    versions      = ch_versions      // channel: [ versions.yml ]
 }

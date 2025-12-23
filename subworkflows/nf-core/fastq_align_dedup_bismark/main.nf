@@ -17,20 +17,19 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     cytosine_report      // boolean: whether the run coverage2cytosine
 
     main:
-    ch_alignments                 = Channel.empty()
-    ch_alignment_reports          = Channel.empty()
-    ch_methylation_bedgraph       = Channel.empty()
-    ch_methylation_calls          = Channel.empty()
-    ch_methylation_coverage       = Channel.empty()
-    ch_methylation_report         = Channel.empty()
-    ch_methylation_mbias          = Channel.empty()
-    ch_coverage2cytosine_coverage = Channel.empty()
-    ch_coverage2cytosine_report   = Channel.empty()
-    ch_coverage2cytosine_summary  = Channel.empty()
-    ch_bismark_report             = Channel.empty()
-    ch_bismark_summary            = Channel.empty()
-    ch_multiqc_files              = Channel.empty()
-    ch_versions                   = Channel.empty()
+    ch_alignments                 = channel.empty()
+    ch_alignment_reports          = channel.empty()
+    ch_methylation_bedgraph       = channel.empty()
+    ch_methylation_calls          = channel.empty()
+    ch_methylation_coverage       = channel.empty()
+    ch_methylation_report         = channel.empty()
+    ch_methylation_mbias          = channel.empty()
+    ch_coverage2cytosine_coverage = channel.empty()
+    ch_coverage2cytosine_report   = channel.empty()
+    ch_coverage2cytosine_summary  = channel.empty()
+    ch_bismark_report             = channel.empty()
+    ch_bismark_summary            = channel.empty()
+    ch_multiqc_files              = channel.empty()
 
     /*
      * Align with bismark
@@ -42,7 +41,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     )
     ch_alignments        = BISMARK_ALIGN.out.bam
     ch_alignment_reports = BISMARK_ALIGN.out.report.map{ meta, report -> [ meta, report, [] ] }
-    ch_versions = ch_versions.mix(BISMARK_ALIGN.out.versions)
 
     if (!skip_deduplication) {
         /*
@@ -53,7 +51,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
         )
         ch_alignments        = BISMARK_DEDUPLICATE.out.bam
         ch_alignment_reports = BISMARK_ALIGN.out.report.join(BISMARK_DEDUPLICATE.out.report)
-        ch_versions          = ch_versions.mix(BISMARK_DEDUPLICATE.out.versions)
     }
 
     /*
@@ -63,7 +60,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
         ch_alignments,
         [[:],[]] // [ [meta], [fasta]]
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
      * MODULE: Run samtools index on aligned or deduplicated bam
@@ -71,7 +67,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     SAMTOOLS_INDEX (
         SAMTOOLS_SORT.out.bam
     )
-    ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions)
 
     /*
      * Run bismark_methylation_extractor
@@ -85,7 +80,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     ch_methylation_coverage = BISMARK_METHYLATIONEXTRACTOR.out.coverage
     ch_methylation_report   = BISMARK_METHYLATIONEXTRACTOR.out.report
     ch_methylation_mbias    = BISMARK_METHYLATIONEXTRACTOR.out.mbias
-    ch_versions             = ch_versions.mix(BISMARK_METHYLATIONEXTRACTOR.out.versions)
 
     /*
      * Run bismark coverage2cytosine
@@ -99,7 +93,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
         ch_coverage2cytosine_coverage = BISMARK_COVERAGE2CYTOSINE.out.coverage
         ch_coverage2cytosine_report   = BISMARK_COVERAGE2CYTOSINE.out.report
         ch_coverage2cytosine_summary  = BISMARK_COVERAGE2CYTOSINE.out.summary
-        ch_versions                   = ch_versions.mix(BISMARK_COVERAGE2CYTOSINE.out.versions)
     }
 
     /*
@@ -111,7 +104,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
             .join(ch_methylation_mbias)
     )
     ch_bismark_report = BISMARK_REPORT.out.report
-    ch_versions       = ch_versions.mix(BISMARK_REPORT.out.versions)
 
     /*
      * Generate bismark summary report
@@ -124,7 +116,6 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
         ch_methylation_mbias.collect{ meta, mbias -> mbias }
     )
     ch_bismark_summary = BISMARK_SUMMARY.out.summary
-    ch_versions        = ch_versions.mix(BISMARK_SUMMARY.out.versions)
 
     /*
      * Collect MultiQC inputs
@@ -150,5 +141,4 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     bismark_report             = ch_bismark_report             // channel: [ val(meta), [ report ] ]
     bismark_summary            = ch_bismark_summary            // channel: [ val(meta), [ summary ] ]
     multiqc                    = ch_multiqc_files              // path: *{html,txt}
-    versions                   = ch_versions                   // path: *.version.txt
 }

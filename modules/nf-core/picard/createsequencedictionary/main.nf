@@ -12,7 +12,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
     output:
     tuple val(meta), path("*.dict"), emit: reference_dict
-    path "versions.yml"            , emit: versions
+    path "versions.yml"            , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -15,7 +15,7 @@ process PICARD_COLLECTHSMETRICS {
 
     output:
     tuple val(meta), path("*_metrics")  , emit: metrics
-    path "versions.yml"                 , emit: versions
+    path "versions.yml"                 , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -14,7 +14,7 @@ process PICARD_BEDTOINTERVALLIST {
 
     output:
     tuple val(meta), path('*.intervallist'), emit: intervallist
-    path  "versions.yml"                   , emit: versions
+    path  "versions.yml"                   , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -24,8 +24,7 @@ workflow TARGETED_SEQUENCING {
 
     main:
 
-    ch_versions = Channel.empty()
-    ch_picard_metrics = Channel.empty()
+    ch_picard_metrics = channel.empty()
 
     /*
      * Intersect bedGraph files with target regions
@@ -40,7 +39,6 @@ workflow TARGETED_SEQUENCING {
         ch_bedgraphs_target,
         [[:], []]
     )
-    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
 
     /*
      * Run Picard CollectHSMetrics
@@ -56,7 +54,6 @@ workflow TARGETED_SEQUENCING {
          */
         PICARD_CREATESEQUENCEDICTIONARY(ch_fasta)
         ch_sequence_dictionary = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
-        ch_versions = ch_versions.mix(PICARD_CREATESEQUENCEDICTIONARY.out.versions)
 
         /*
          * Conversion of the covered targets BED file to an interval list
@@ -67,7 +64,6 @@ workflow TARGETED_SEQUENCING {
             []
         )
         ch_intervals = PICARD_BEDTOINTERVALLIST.out.intervallist.map { it[1] }
-        ch_versions = ch_versions.mix(PICARD_BEDTOINTERVALLIST.out.versions)
 
         /*
          * Generation of the metrics
@@ -94,11 +90,9 @@ workflow TARGETED_SEQUENCING {
             ch_picard_inputs.dict
         )
         ch_picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics
-        ch_versions = ch_versions.mix(PICARD_COLLECTHSMETRICS.out.versions)
     }
 
     emit:
     bedgraph_filtered = BEDTOOLS_INTERSECT.out.intersect  // channel: [ val(meta), path("*.bedGraph") ]
     picard_metrics    = ch_picard_metrics                 // channel: [ val(meta), path("*_metrics") ]
-    versions          = ch_versions                       // channel: path("*.version.txt")
 }

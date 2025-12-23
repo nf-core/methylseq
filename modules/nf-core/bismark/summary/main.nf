@@ -15,7 +15,7 @@ process BISMARK_SUMMARY {
 
     output:
     path("*report.{html,txt}"), emit: summary
-    path "versions.yml"       , emit: versions
+    path "versions.yml"       , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

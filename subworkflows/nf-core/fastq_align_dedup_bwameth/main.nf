@@ -21,16 +21,15 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
 
     main:
 
-    ch_alignment                     = Channel.empty()
-    ch_alignment_index               = Channel.empty()
-    ch_samtools_flagstat             = Channel.empty()
-    ch_samtools_stats                = Channel.empty()
-    ch_methydackel_extract_bedgraph  = Channel.empty()
-    ch_methydackel_extract_methylkit = Channel.empty()
-    ch_methydackel_mbias             = Channel.empty()
-    ch_picard_metrics                = Channel.empty()
-    ch_multiqc_files                 = Channel.empty()
-    ch_versions                      = Channel.empty()
+    ch_alignment                     = channel.empty()
+    ch_alignment_index               = channel.empty()
+    ch_samtools_flagstat             = channel.empty()
+    ch_samtools_stats                = channel.empty()
+    ch_methydackel_extract_bedgraph  = channel.empty()
+    ch_methydackel_extract_methylkit = channel.empty()
+    ch_methydackel_mbias             = channel.empty()
+    ch_picard_metrics                = channel.empty()
+    ch_multiqc_files                 = channel.empty()
 
     /*
      * Align with bwameth
@@ -46,7 +45,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
             [] // known sites
         )
         ch_alignment = PARABRICKS_FQ2BAMMETH.out.bam
-        ch_versions  = ch_versions.mix(PARABRICKS_FQ2BAMMETH.out.versions)
     } else {
         /*
         * Align with CPU version of bwameth
@@ -57,7 +55,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
             ch_bwameth_index
         )
         ch_alignment = BWAMETH_ALIGN.out.bam
-        ch_versions  = BWAMETH_ALIGN.out.versions
     }
 
     /*
@@ -68,7 +65,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         [[:],[]] // [ [meta], [fasta]]
     )
     ch_alignment = SAMTOOLS_SORT.out.bam
-    ch_versions  = ch_versions.mix(SAMTOOLS_SORT.out.versions)
 
     /*
      * Run samtools index on alignment
@@ -77,7 +73,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         ch_alignment
     )
     ch_alignment_index = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
-    ch_versions        = ch_versions.mix(SAMTOOLS_INDEX_ALIGNMENTS.out.versions)
 
     /*
      * Run samtools flagstat
@@ -86,7 +81,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         ch_alignment.join(ch_alignment_index)
     )
     ch_samtools_flagstat = SAMTOOLS_FLAGSTAT.out.flagstat
-    ch_versions          = ch_versions.mix(SAMTOOLS_FLAGSTAT.out.versions)
 
     /*
      * Run samtools stats
@@ -96,7 +90,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         [[:],[]] // [ [meta], [fasta]]
     )
     ch_samtools_stats = SAMTOOLS_STATS.out.stats
-    ch_versions       = ch_versions.mix(SAMTOOLS_STATS.out.versions)
 
     if (!skip_deduplication) {
         /*
@@ -116,8 +109,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         ch_alignment       = PICARD_MARKDUPLICATES.out.bam
         ch_alignment_index = SAMTOOLS_INDEX_DEDUPLICATED.out.bai
         ch_picard_metrics  = PICARD_MARKDUPLICATES.out.metrics
-        ch_versions        = ch_versions.mix(PICARD_MARKDUPLICATES.out.versions)
-        ch_versions        = ch_versions.mix(SAMTOOLS_INDEX_DEDUPLICATED.out.versions)
     }
 
     /*
@@ -131,7 +122,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     )
     ch_methydackel_extract_bedgraph  = METHYLDACKEL_EXTRACT.out.bedgraph
     ch_methydackel_extract_methylkit = METHYLDACKEL_EXTRACT.out.methylkit
-    ch_versions                      = ch_versions.mix(METHYLDACKEL_EXTRACT.out.versions)
 
     METHYLDACKEL_MBIAS (
         ch_alignment.join(ch_alignment_index),
@@ -139,7 +129,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         ch_fasta_index.map{ meta, fasta_index -> fasta_index }
     )
     ch_methydackel_mbias = METHYLDACKEL_MBIAS.out.txt
-    ch_versions          = ch_versions.mix(METHYLDACKEL_MBIAS.out.versions)
 
     /*
      * Collect MultiQC inputs
@@ -160,5 +149,4 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     methydackel_mbias             = ch_methydackel_mbias             // channel: [ val(meta), [ mbias ]     ]
     picard_metrics                = ch_picard_metrics                // channel: [ val(meta), [ metrics ]   ]
     multiqc                       = ch_multiqc_files                 // channel: [ *{html,txt}              ]
-    versions                      = ch_versions                      // channel: [ versions.yml             ]
 }

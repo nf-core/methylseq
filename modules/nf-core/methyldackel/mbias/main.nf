@@ -14,7 +14,7 @@ process METHYLDACKEL_MBIAS {
 
     output:
     tuple val(meta), path("*.mbias.txt"), emit: txt
-    path  "versions.yml"                , emit: versions
+    path  "versions.yml"                , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -13,7 +13,7 @@ process BISMARK_DEDUPLICATE {
     output:
     tuple val(meta), path("*.deduplicated.bam")        , emit: bam
     tuple val(meta), path("*.deduplication_report.txt"), emit: report
-    path  "versions.yml"                               , emit: versions
+    path  "versions.yml"                               , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

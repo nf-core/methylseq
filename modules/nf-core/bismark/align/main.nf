@@ -16,7 +16,7 @@ process BISMARK_ALIGN {
     tuple val(meta), path("*bam")       , emit: bam
     tuple val(meta), path("*report.txt"), emit: report
     tuple val(meta), path("*fq.gz")     , emit: unmapped, optional: true
-    path "versions.yml"                 , emit: versions
+    path "versions.yml"                 , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

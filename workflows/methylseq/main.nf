@@ -29,7 +29,6 @@ workflow METHYLSEQ {
 
     take:
     samplesheet        // channel: [ path(samplesheet.csv) ]
-    ch_versions        // channel: [ path(versions.yml)    ]
     ch_fasta           // channel: [ path(fasta)           ]
     ch_fasta_index     // channel: [ path(fasta index)     ]
     ch_bismark_index   // channel: [ path(bismark index)   ]
@@ -37,17 +36,17 @@ workflow METHYLSEQ {
 
     main:
 
-    ch_fastq         = Channel.empty()
-    ch_fastqc_html   = Channel.empty()
-    ch_fastqc_zip    = Channel.empty()
-    ch_reads         = Channel.empty()
-    ch_bam           = Channel.empty()
-    ch_bai           = Channel.empty()
-    ch_bedgraph      = Channel.empty()
-    ch_aligner_mqc   = Channel.empty()
-    ch_qualimap      = Channel.empty()
-    ch_preseq        = Channel.empty()
-    ch_multiqc_files = Channel.empty()
+    ch_fastq         = channel.empty()
+    ch_fastqc_html   = channel.empty()
+    ch_fastqc_zip    = channel.empty()
+    ch_reads         = channel.empty()
+    ch_bam           = channel.empty()
+    ch_bai           = channel.empty()
+    ch_bedgraph      = channel.empty()
+    ch_aligner_mqc   = channel.empty()
+    ch_qualimap      = channel.empty()
+    ch_preseq        = channel.empty()
+    ch_multiqc_files = channel.empty()
 
     //
     // Branch channels from input samplesheet channel
@@ -66,8 +65,7 @@ workflow METHYLSEQ {
     CAT_FASTQ (
         ch_samplesheet.multiple
     )
-    ch_fastq    = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
+    ch_fastq = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
 
     //
     // MODULE: Run FastQC
@@ -78,10 +76,9 @@ workflow METHYLSEQ {
         )
         ch_fastqc_html   = FASTQC.out.html
         ch_fastqc_zip    = FASTQC.out.zip
-        ch_versions      = ch_versions.mix(FASTQC.out.versions)
     } else {
-        ch_fastqc_html   = Channel.empty()
-        ch_fastqc_zip    = Channel.empty()
+        ch_fastqc_html   = channel.empty()
+        ch_fastqc_zip    = channel.empty()
     }
 
     //
@@ -92,7 +89,6 @@ workflow METHYLSEQ {
             ch_fastq
         )
         ch_reads    = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions)
     } else {
         ch_reads    = ch_fastq
     }
@@ -126,7 +122,6 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     // Aligner: bwameth
     else if ( params.aligner == 'bwameth' ){
@@ -154,7 +149,6 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
-        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
     else {
         error "ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', or 'bwameth'"
@@ -167,10 +161,9 @@ workflow METHYLSEQ {
     if(params.run_qualimap) {
         QUALIMAP_BAMQC (
             ch_bam,
-            params.bamqc_regions_file ? Channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
+            params.bamqc_regions_file ? channel.fromPath( params.bamqc_regions_file, checkIfExists: true ).toList() : []
         )
         ch_qualimap = QUALIMAP_BAMQC.out.results
-        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions)
     }
 
     //
@@ -183,14 +176,13 @@ workflow METHYLSEQ {
         }
         TARGETED_SEQUENCING (
             ch_bedgraph,
-            Channel.fromPath(params.target_regions_file, checkIfExists: true),
+            channel.fromPath(params.target_regions_file, checkIfExists: true),
             ch_fasta,
             ch_fasta_index,
             ch_bam,
             ch_bai,
             params.collecthsmetrics
         )
-        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }
 
     //
@@ -202,13 +194,12 @@ workflow METHYLSEQ {
             ch_bam
         )
         ch_preseq   = PRESEQ_LCEXTRAP.out.lc_extrap
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
     }
 
     //
     // Collate and save software versions
     //
-    ch_collated_versions = softwareVersionsToYAML(ch_versions)
+    ch_collated_versions = softwareVersionsToYAML( channel.topic('versions') )
                                 .collectFile(
                                     storeDir: "${params.outdir}/pipeline_info",
                                     name: 'nf_core_'  +  'methylseq_software_'  + 'mqc_'  + 'versions.yml',
@@ -220,21 +211,21 @@ workflow METHYLSEQ {
     // MODULE: MultiQC
     //
     if (!params.skip_multiqc) {
-        ch_multiqc_config        = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+        ch_multiqc_config        = channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
         ch_multiqc_custom_config = params.multiqc_config ?
-            Channel.fromPath(params.multiqc_config, checkIfExists: true) :
-            Channel.empty()
+            channel.fromPath(params.multiqc_config, checkIfExists: true) :
+            channel.empty()
         ch_multiqc_logo          = params.multiqc_logo ?
-            Channel.fromPath(params.multiqc_logo, checkIfExists: true) :
-            Channel.empty()
+            channel.fromPath(params.multiqc_logo, checkIfExists: true) :
+            channel.empty()
 
         summary_params           = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-        ch_workflow_summary      = Channel.value(paramsSummaryMultiqc(summary_params))
+        ch_workflow_summary      = channel.value(paramsSummaryMultiqc(summary_params))
 
         ch_multiqc_custom_methods_description = params.multiqc_methods_description ?
             file(params.multiqc_methods_description, checkIfExists: true) :
             file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
-        ch_methods_description                = Channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
+        ch_methods_description                = channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
 
         ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
         ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
@@ -274,7 +265,7 @@ workflow METHYLSEQ {
         )
         ch_multiqc_report = MULTIQC.out.report.toList()
     } else {
-        ch_multiqc_report = Channel.empty()
+        ch_multiqc_report = channel.empty()
     }
 
     emit:
@@ -283,7 +274,6 @@ workflow METHYLSEQ {
     qualimap       = ch_qualimap                 // channel: [ val(meta), path(qualimap) ]
     preseq         = ch_preseq                   // channel: [ val(meta), path(preseq) ]
     multiqc_report = ch_multiqc_report            // channel: [ path(multiqc_report.html )  ]
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
 }
 
 /*

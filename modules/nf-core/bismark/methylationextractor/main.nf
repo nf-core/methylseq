@@ -17,7 +17,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
     tuple val(meta), path("*.cov.gz")              , emit: coverage
     tuple val(meta), path("*_splitting_report.txt"), emit: report
     tuple val(meta), path("*.M-bias.txt")          , emit: mbias
-    path "versions.yml"                            , emit: versions
+    path "versions.yml"                            , topic: versions
 
     when:
     task.ext.when == null || task.ext.when

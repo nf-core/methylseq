@@ -17,7 +17,7 @@ process SAMTOOLS_FAIDX {
     tuple val(meta), path ("*.sizes")      , emit: sizes, optional: true
     tuple val(meta), path ("*.fai")        , emit: fai, optional: true
     tuple val(meta), path ("*.gzi")        , emit: gzi, optional: true
-    path "versions.yml"                    , emit: versions
+    path "versions.yml"                    , topic: versions
 
     when:
     task.ext.when == null || task.ext.when
