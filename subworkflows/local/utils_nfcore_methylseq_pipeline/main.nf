@@ -8,15 +8,20 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
-include { paramsSummaryMap          } from 'plugin/nf-schema'
-include { samplesheetToList         } from 'plugin/nf-schema'
-include { paramsHelp                } from 'plugin/nf-schema'
-include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
-include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
-include { imNotification            } from '../../nf-core/utils_nfcore_pipeline'
-include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
-include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
+include { checkCondaChannels   } from 'plugin/nf-core-utils'
+include { checkConfigProvided  } from 'plugin/nf-core-utils'
+include { checkProfileProvided } from 'plugin/nf-core-utils'
+include { completionEmail      } from 'plugin/nf-core-utils'
+include { completionSummary    } from 'plugin/nf-core-utils'
+include { dumpParametersToJSON } from 'plugin/nf-core-utils'
+include { getWorkflowVersion   } from 'plugin/nf-core-utils'
+include { imNotification       } from 'plugin/nf-core-utils'
+
+include { paramsHelp           } from 'plugin/nf-schema'
+include { paramsSummaryLog     } from 'plugin/nf-schema'
+include { paramsSummaryMap     } from 'plugin/nf-schema'
+include { samplesheetToList    } from 'plugin/nf-schema'
+include { validateParameters   } from 'plugin/nf-schema'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,7 +34,6 @@ workflow PIPELINE_INITIALISATION {
     take:
     version           // boolean: Display version and exit
     validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
-    monochrome_logs   // boolean: Do not use coloured log outputs
     nextflow_cli_args //   array: List of positional nextflow CLI args
     outdir            //  string: The output directory where the results will be saved
     input             //  string: Path to input samplesheet
@@ -44,13 +48,16 @@ workflow PIPELINE_INITIALISATION {
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
-    UTILS_NEXTFLOW_PIPELINE (
-        version,
-        true,
-        outdir,
-        workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1
-    )
+    if (version) {
+        log.info("${workflow.manifest.name} ${getWorkflowVersion()}")
+        System.exit(0)
+    }
 
+    dumpParametersToJSON(outdir, params)
+
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        checkCondaChannels()
+    }
 
     //
     // Validate parameters and generate parameter summary to stdout
@@ -74,25 +81,33 @@ workflow PIPELINE_INITIALISATION {
 """
     command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
 
-    UTILS_NFSCHEMA_PLUGIN (
-        workflow,
-        validate_params,
-        null,
-        help,
-        help_full,
-        show_hidden,
-        before_text,
-        after_text,
-        command
-    )
+    if (help || help_full) {
+        log.info paramsHelp(
+            [
+                beforeText: before_text,
+                afterText: after_text,
+                command: command,
+                showHidden: show_hidden,
+                fullHelp: help_full,
+            ],
+            params.help instanceof String ? params.help : "",
+        )
+        exit 0
+    }
 
+    log.info before_text
+    log.info paramsSummaryLog(workflow)
+    log.info after_text
+
+    if (validate_params) {
+        validateParameters()
+    }
 
     //
     // Check config provided to the pipeline
     //
-    UTILS_NFCORE_PIPELINE (
-        nextflow_cli_args
-    )
+    checkConfigProvided()
+    checkProfileProvided(nextflow_cli_args)
 
     //
     // Custom validation for pipeline parameters
