@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process GUNZIP {
     tag "${archive}"
     label 'process_single'
@@ -8,19 +10,18 @@ process GUNZIP {
         : 'community.wave.seqera.io/library/coreutils_grep_gzip_lbzip2_pruned:838ba80435a629f8'}"
 
     input:
-    tuple val(meta), path(archive)
+    archive: Path
 
     output:
-    tuple val(meta), path("${gunzip}"), emit: gunzip
-    path "versions.yml", topic: versions
+    file(gunzip)
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
-    def extension = (archive.toString() - '.gz').tokenize('.')[-1]
-    def name = archive.toString() - '.gz' - ".${extension}"
+    def extension = archive.name.replace('.gz', '').tokenize('.')[-1]
+    def name = archive.name.replace(".${extension}.gz", '')
     def prefix = task.ext.prefix ?: name
     gunzip = prefix + ".${extension}"
     """
@@ -41,8 +42,8 @@ process GUNZIP {
 
     stub:
     def args = task.ext.args ?: ''
-    def extension = (archive.toString() - '.gz').tokenize('.')[-1]
-    def name = archive.toString() - '.gz' - ".${extension}"
+    def extension = archive.name.replace('.gz', '').tokenize('.')[-1]
+    def name = archive.name.replace(".${extension}.gz", '')
     def prefix = task.ext.prefix ?: name
     gunzip = prefix + ".${extension}"
     """

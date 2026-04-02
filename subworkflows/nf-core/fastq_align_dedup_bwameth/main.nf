@@ -1,3 +1,6 @@
+
+nextflow.preview.types = true
+
 include { BWAMETH_ALIGN                                 } from '../../../modules/nf-core/bwameth/align/main'
 include { PARABRICKS_FQ2BAMMETH                         } from '../../../modules/nf-core/parabricks/fq2bammeth/main'
 include { SAMTOOLS_SORT                                 } from '../../../modules/nf-core/samtools/sort/main'
@@ -9,27 +12,19 @@ include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../../modules
 include { METHYLDACKEL_EXTRACT                          } from '../../../modules/nf-core/methyldackel/extract/main'
 include { METHYLDACKEL_MBIAS                            } from '../../../modules/nf-core/methyldackel/mbias/main'
 
+include { Sample } from '../../../utils/types.nf'
+
 workflow FASTQ_ALIGN_DEDUP_BWAMETH {
 
     take:
-    ch_reads             // channel: [ val(meta), [ reads ] ]
-    ch_fasta             // channel: [ val(meta), [ fasta ] ]
-    ch_fasta_index       // channel: [ val(meta), [ fasta index ] ]
-    ch_bwameth_index     // channel: [ val(meta), [ bwameth index ] ]
-    skip_deduplication   // boolean: whether to deduplicate alignments
-    use_gpu              // boolean: whether to use GPU or CPU for bwameth alignment
+    ch_reads: Channel<Sample>
+    val_fasta: Value<Path>
+    val_fasta_index: Value<Path>
+    val_bwameth_index: Value<Path>
+    skip_deduplication: Boolean
+    use_gpu: Boolean
 
     main:
-
-    ch_alignment                     = channel.empty()
-    ch_alignment_index               = channel.empty()
-    ch_samtools_flagstat             = channel.empty()
-    ch_samtools_stats                = channel.empty()
-    ch_methydackel_extract_bedgraph  = channel.empty()
-    ch_methydackel_extract_methylkit = channel.empty()
-    ch_methydackel_mbias             = channel.empty()
-    ch_picard_metrics                = channel.empty()
-    ch_multiqc_files                 = channel.empty()
 
     /*
      * Align with bwameth
@@ -38,115 +33,105 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         /*
         * Align with parabricks GPU enabled fq2bammeth implementation of bwameth
         */
-        PARABRICKS_FQ2BAMMETH (
-            ch_reads,
-            ch_fasta,
-            ch_bwameth_index,
-            [] // known sites
+        ch_alignment = PARABRICKS_FQ2BAMMETH (
+            ch_reads.combine(fasta: val_fasta, bwameth_index: val_bwameth_index)
         )
-        ch_alignment = PARABRICKS_FQ2BAMMETH.out.bam
     } else {
         /*
         * Align with CPU version of bwameth
         */
-        BWAMETH_ALIGN (
-            ch_reads,
-            ch_fasta,
-            ch_bwameth_index
+        ch_alignment = BWAMETH_ALIGN (
+            ch_reads.combine(fasta: val_fasta, bwameth_index: val_bwameth_index)
         )
-        ch_alignment = BWAMETH_ALIGN.out.bam
     }
 
     /*
      * Sort raw output BAM
      */
-    SAMTOOLS_SORT (
-        ch_alignment,
-        [[:],[]] // [ [meta], [fasta]]
-    )
-    ch_alignment = SAMTOOLS_SORT.out.bam
+    ch_alignment = SAMTOOLS_SORT( ch_alignment )
 
     /*
      * Run samtools index on alignment
      */
-    SAMTOOLS_INDEX_ALIGNMENTS (
-        ch_alignment
+    ch_alignment_index = SAMTOOLS_INDEX_ALIGNMENTS(
+        ch_alignment.map { r -> record(id: r.id, input: r.bam) }
     )
-    ch_alignment_index = SAMTOOLS_INDEX_ALIGNMENTS.out.bai
+    ch_alignment = ch_alignment.join(ch_alignment_index, by: 'id')
 
     /*
      * Run samtools flagstat
      */
-    SAMTOOLS_FLAGSTAT (
-        ch_alignment.join(ch_alignment_index)
-    )
-    ch_samtools_flagstat = SAMTOOLS_FLAGSTAT.out.flagstat
+    ch_samtools_flagstat = SAMTOOLS_FLAGSTAT( ch_alignment )
 
     /*
      * Run samtools stats
      */
-    SAMTOOLS_STATS (
-        ch_alignment.join(ch_alignment_index),
-        [[:],[]] // [ [meta], [fasta]]
+    ch_samtools_stats = SAMTOOLS_STATS(
+        ch_alignment.map { r -> record(id: r.id, input: r.bam, input_index: r.bai) }
     )
-    ch_samtools_stats = SAMTOOLS_STATS.out.stats
 
     if (!skip_deduplication) {
         /*
         * Run Picard MarkDuplicates
         */
-        PICARD_MARKDUPLICATES (
-            ch_alignment,
-            ch_fasta,
-            ch_fasta_index
+        ch_picard = PICARD_MARKDUPLICATES(
+            ch_alignment.combine(fasta: val_fasta, fasta_index: val_fasta_index)
         )
         /*
          * Run samtools index on deduplicated alignment
         */
-        SAMTOOLS_INDEX_DEDUPLICATED (
-            PICARD_MARKDUPLICATES.out.bam
+        ch_alignment_index_dedup = SAMTOOLS_INDEX_DEDUPLICATED(
+            ch_picard.map { r -> record(id: r.id, input: r.bam) }
         )
-        ch_alignment       = PICARD_MARKDUPLICATES.out.bam
-        ch_alignment_index = SAMTOOLS_INDEX_DEDUPLICATED.out.bai
-        ch_picard_metrics  = PICARD_MARKDUPLICATES.out.metrics
+        ch_alignment = ch_alignment
+            .join(ch_picard, by: 'id')
+            .join(ch_alignment_index_dedup, by: 'id')
     }
 
     /*
      * Extract per-base methylation and plot methylation bias
      */
 
-    METHYLDACKEL_EXTRACT (
-        ch_alignment.join(ch_alignment_index),
-        ch_fasta.map{ meta, fasta_file -> fasta_file },
-        ch_fasta_index.map{ meta, fasta_index -> fasta_index }
+    ch_methydackel_extract = METHYLDACKEL_EXTRACT (
+        ch_alignment.combine(fasta: val_fasta, fasta_index: val_fasta_index)
     )
-    ch_methydackel_extract_bedgraph  = METHYLDACKEL_EXTRACT.out.bedgraph
-    ch_methydackel_extract_methylkit = METHYLDACKEL_EXTRACT.out.methylkit
 
-    METHYLDACKEL_MBIAS (
-        ch_alignment.join(ch_alignment_index),
-        ch_fasta.map{ meta, fasta_file -> fasta_file },
-        ch_fasta_index.map{ meta, fasta_index -> fasta_index }
+    ch_methydackel_mbias = METHYLDACKEL_MBIAS (
+        ch_alignment.combine(fasta: val_fasta, fasta_index: val_fasta_index)
     )
-    ch_methydackel_mbias = METHYLDACKEL_MBIAS.out.txt
+
+    ch_results = ch_alignment
+        .join(ch_samtools_flagstat, by: 'id')
+        .join(ch_samtools_stats, by: 'id')
+        .join(ch_methydackel_extract, by: 'id')
+        .join(ch_methydackel_mbias, by: 'id')
+        .join(ch_picard, by: 'id', remainder: true)
 
     /*
      * Collect MultiQC inputs
      */
-    ch_multiqc_files = ch_picard_metrics.collect{ meta, metrics -> metrics }
-                        .mix(ch_samtools_flagstat.collect{ meta, flagstat -> flagstat })
-                        .mix(ch_samtools_stats.collect{ meta, stats -> stats  })
-                        .mix(ch_methydackel_extract_bedgraph.collect{ meta, bedgraph -> bedgraph  })
-                        .mix(ch_methydackel_mbias.collect{ meta, txt -> txt  })
+    ch_multiqc_files = channel.empty()
+        .mix( ch_picard.map { r -> r.picard_metrics } )
+        .mix( ch_samtools_flagstat.map { r -> r.samtools_flagstat } )
+        .mix( ch_samtools_stats.map { r -> r.samtools_stats } )
+        .mix( ch_methydackel_extract.map { r -> r.methydackel_bedgraph } )
+        .mix( ch_methydackel_mbias.map { r -> r.methyldackel_mbias } )
 
     emit:
-    bam                           = ch_alignment                     // channel: [ val(meta), [ bam ]       ]
-    bai                           = ch_alignment_index               // channel: [ val(meta), [ bai ]       ]
-    samtools_flagstat             = ch_samtools_flagstat             // channel: [ val(meta), [ flagstat ]  ]
-    samtools_stats                = ch_samtools_stats                // channel: [ val(meta), [ stats ]     ]
-    methydackel_extract_bedgraph  = ch_methydackel_extract_bedgraph  // channel: [ val(meta), [ bedgraph ]  ]
-    methydackel_extract_methylkit = ch_methydackel_extract_methylkit // channel: [ val(meta), [ methylkit ] ]
-    methydackel_mbias             = ch_methydackel_mbias             // channel: [ val(meta), [ mbias ]     ]
-    picard_metrics                = ch_picard_metrics                // channel: [ val(meta), [ metrics ]   ]
-    multiqc                       = ch_multiqc_files                 // channel: [ *{html,txt}              ]
+    results: Channel<BwamethResult> = ch_results
+    multiqc: Channel<Path> = ch_multiqc_files
+}
+
+
+record BwamethResult {
+    id: String
+    single_end: Boolean
+    bam: Path
+    bai: Path
+    samtools_flagstat: Path
+    samtools_stats: Path
+    methyldackel_extract_bedgraph: Path
+    methyldackel_extract_methylkit: Path
+    methyldackel_mbias: Path
+    picard_metrics: Path
 }

@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process SAMTOOLS_STATS {
     tag "$meta.id"
     label 'process_single'
@@ -8,15 +10,22 @@ process SAMTOOLS_STATS {
         'biocontainers/samtools:1.21--h50ea8bc_0' }"
 
     input:
-    tuple val(meta), path(input), path(input_index)
-    tuple val(meta2), path(fasta)
+    record(
+        meta: Record,
+        input: Path,
+        input_index: Path,
+        fasta: Path?
+    )
 
     output:
-    tuple val(meta), path("*.stats"), emit: stats
-    path  "versions.yml"            , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        samtools_stats: file("*.stats")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"

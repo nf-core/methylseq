@@ -28,18 +28,6 @@ workflow UTILS_NFSCHEMA_PLUGIN {
         log.info paramsSummaryLog(input_workflow)
     }
 
-    //
-    // Validate the parameters using nextflow_schema.json or the schema
-    // given via the validation.parametersSchema configuration option
-    //
-    if(validate_params) {
-        if(parameters_schema) {
-            validateParameters(parameters_schema:parameters_schema)
-        } else {
-            validateParameters()
-        }
-    }
-
     emit:
     dummy_emit = true
 }

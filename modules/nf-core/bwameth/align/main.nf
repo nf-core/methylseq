@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process BWAMETH_ALIGN {
     tag "${meta.id}"
     label 'process_high'
@@ -8,16 +10,22 @@ process BWAMETH_ALIGN {
         'biocontainers/bwameth:0.2.9--pyh7e72e81_0' }"
 
     input:
-    tuple val(meta), path(reads)
-    tuple val(meta2), path(fasta)
-    tuple val(meta3), path(index)
+    record(
+        meta: Record,
+        reads: Path,
+        fasta: Path,
+        index: Path
+    )
 
     output:
-    tuple val(meta), path("*.bam"), emit: bam
-    path  "versions.yml"          , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        bam: file("*.bam")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args       = task.ext.args ?: ''

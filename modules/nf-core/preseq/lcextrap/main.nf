@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process PRESEQ_LCEXTRAP {
     tag "$meta.id"
     label 'process_single'
@@ -9,19 +11,25 @@ process PRESEQ_LCEXTRAP {
         'biocontainers/preseq:3.2.0--hdcf5f25_6' }"
 
     input:
-    tuple val(meta), path(bam)
+    record(
+        meta: Record,
+        bam: Path
+    )
 
     output:
-    tuple val(meta), path("*.lc_extrap.txt"), emit: lc_extrap
-    tuple val(meta), path("*.log")          , emit: log
-    path  "versions.yml"                    , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        lc_extrap: file("*.lc_extrap.txt"),
+        lc_log: file("*.log")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
-    args = task.attempt > 1 ? args.join(' -defects') : args  // Disable testing for defects
+    args = task.attempt > 1 ? args + ' -defects' : args  // Disable testing for defects
     def prefix = task.ext.prefix ?: "${meta.id}"
     def paired_end = meta.single_end ? '' : '-pe'
     """

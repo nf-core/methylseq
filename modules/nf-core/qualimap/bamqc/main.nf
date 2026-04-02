@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process QUALIMAP_BAMQC {
     tag "$meta.id"
     label 'process_medium'
@@ -8,36 +10,41 @@ process QUALIMAP_BAMQC {
         'biocontainers/qualimap:2.3--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(bam)
-    path gff
+    record(
+        meta: Record,
+        strandedness: String?,
+        bam: Path,
+        gff: Path
+    )
 
     output:
-    tuple val(meta), path("${prefix}"), emit: results
-    path  "versions.yml"              , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        qualimap_bamqc: file("${prefix}")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args   ?: ''
     prefix   = task.ext.prefix ?: "${meta.id}"
 
     def collect_pairs = meta.single_end ? '' : '--collect-overlap-pairs'
-    def memory = (task.memory.mega*0.8).intValue() + 'M'
+    def memory = (task.memory.toMega() * 0.8).intValue()
     def regions = gff ? "--gff $gff" : ''
 
-    def strandedness = 'non-strand-specific'
-    if (meta.strandedness == 'forward') {
-        strandedness = 'strand-specific-forward'
-    } else if (meta.strandedness == 'reverse') {
-        strandedness = 'strand-specific-reverse'
-    }
+    strandedness = strandedness
+        ? "strand-specific-${strandedness}"
+        : 'non-strand-specific'
+
     """
     unset DISPLAY
     mkdir -p tmp
     export _JAVA_OPTIONS=-Djava.io.tmpdir=./tmp
     qualimap \\
-        --java-mem-size=$memory \\
+        --java-mem-size=${memory}M \\
         bamqc \\
         $args \\
         -bam $bam \\

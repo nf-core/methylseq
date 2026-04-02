@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process SAMTOOLS_SORT {
     tag "$meta.id"
     label 'process_medium'
@@ -8,18 +10,24 @@ process SAMTOOLS_SORT {
         'biocontainers/samtools:1.21--h50ea8bc_0' }"
 
     input:
-    tuple val(meta) , path(bam)
-    tuple val(meta2), path(fasta)
+    record(
+        meta: Record,
+        bam: Path,
+        fasta: Path?
+    )
 
     output:
-    tuple val(meta), path("*.bam"),  emit: bam,  optional: true
-    tuple val(meta), path("*.cram"), emit: cram, optional: true
-    tuple val(meta), path("*.crai"), emit: crai, optional: true
-    tuple val(meta), path("*.csi"),  emit: csi,  optional: true
-    path  "versions.yml",            topic: versions
+    record(
+        id   : meta.id,
+        meta : meta,
+        bam  : file("*.bam", optional: true),
+        cram : file("*.cram", optional: true),
+        crai : file("*.crai", optional: true),
+        csi  : file("*.csi", optional: true),
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

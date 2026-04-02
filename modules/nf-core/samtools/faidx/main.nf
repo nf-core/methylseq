@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process SAMTOOLS_FAIDX {
     tag "$fasta"
     label 'process_single'
@@ -8,19 +10,24 @@ process SAMTOOLS_FAIDX {
         'biocontainers/samtools:1.21--h50ea8bc_0' }"
 
     input:
-    tuple val(meta), path(fasta)
-    tuple val(meta2), path(fai)
-    val get_sizes
+    record(
+        meta: Record,
+        fasta: Path,
+        fai: Path?,
+        get_sizes: Boolean
+    )
 
     output:
-    tuple val(meta), path ("*.{fa,fasta}") , emit: fa, optional: true
-    tuple val(meta), path ("*.sizes")      , emit: sizes, optional: true
-    tuple val(meta), path ("*.fai")        , emit: fai, optional: true
-    tuple val(meta), path ("*.gzi")        , emit: gzi, optional: true
-    path "versions.yml"                    , topic: versions
+    record(
+        meta  : meta,
+        fa    : file("*.{fa,fasta}", optional: true),
+        sizes : file("*.sizes", optional: true),
+        fai   : file("*.fai", optional: true),
+        gzi   : file("*.gzi", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

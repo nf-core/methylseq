@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process METHYLDACKEL_MBIAS {
     tag "$meta.id"
     label 'process_low'
@@ -8,16 +10,23 @@ process METHYLDACKEL_MBIAS {
         'biocontainers/methyldackel:0.6.1--he4a0461_7' }"
 
     input:
-    tuple val(meta), path(bam), path(bai)
-    path fasta
-    path fai
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("*.mbias.txt"), emit: txt
-    path  "versions.yml"                , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        methyldackel_mbias: file("*.mbias.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

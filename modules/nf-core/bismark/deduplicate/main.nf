@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process BISMARK_DEDUPLICATE {
     tag "$meta.id"
     label 'process_high'
@@ -8,19 +10,25 @@ process BISMARK_DEDUPLICATE {
         'community.wave.seqera.io/library/bismark:0.25.1--1f50935de5d79c47' }"
 
     input:
-    tuple val(meta), path(bam)
+    record(
+        meta: Record,
+        bam: Path
+    )
 
     output:
-    tuple val(meta), path("*.deduplicated.bam")        , emit: bam
-    tuple val(meta), path("*.deduplication_report.txt"), emit: report
-    path  "versions.yml"                               , topic: versions
+    record(
+        id           : meta.id,
+        meta         : meta,
+        bam          : file("*.deduplicated.bam"),
+        dedup_report : file("*.deduplication_report.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
-    def args    = task.ext.args ?: ''
-    def prefix  = task.ext.prefix ?: "${meta.id}"
+    def args = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "${meta.id}"
     def seqtype = meta.single_end ? '-s' : '-p'
     """
     deduplicate_bismark \\

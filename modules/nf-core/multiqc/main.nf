@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process MULTIQC {
     label 'process_single'
 
@@ -7,21 +9,24 @@ process MULTIQC {
         'biocontainers/multiqc:1.30--pyhdfd78af_0' }"
 
     input:
-    path  multiqc_files, stageAs: "?/*"
-    path(multiqc_config)
-    path(extra_multiqc_config)
-    path(multiqc_logo)
-    path(replace_names)
-    path(sample_names)
+    record(
+        multiqc_files: Set<Path>,
+        multiqc_config: Path,
+        extra_multiqc_config: Path?,
+        multiqc_logo: Path?,
+        replace_names: Path?,
+        sample_names: Path?
+    )
+
+    stage:
+    stageAs multiqc_files, "?/*"
 
     output:
-    path "*multiqc_report.html", emit: report
-    path "*_data"              , emit: data
-    path "*_plots"             , optional:true, emit: plots
-    path "versions.yml"        , topic: versions
-
-    when:
-    task.ext.when == null || task.ext.when
+    record(
+        report: file("*multiqc_report.html"),
+        data:   file("*_data"),
+        plots:  file("*_plots", optional: true)
+    )
 
     script:
     def args = task.ext.args ?: ''

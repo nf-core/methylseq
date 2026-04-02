@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process BWAMETH_INDEX {
     tag "$fasta"
     label 'process_high'
@@ -8,15 +10,17 @@ process BWAMETH_INDEX {
         'biocontainers/bwameth:0.2.9--pyh7e72e81_0' }"
 
     input:
-    tuple val(meta), path(fasta, name:"BwamethIndex/")
-    val use_mem2
+    fasta: Path
+    use_mem2: Boolean
+
+    stage:
+    stageAs fasta, "BwamethIndex/"
 
     output:
-    tuple val(meta), path("BwamethIndex"), emit: index
-    path "versions.yml"                  , topic: versions
+    file("BwamethIndex")
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process SAMTOOLS_INDEX {
     tag "$meta.id"
     label 'process_low'
@@ -8,16 +10,22 @@ process SAMTOOLS_INDEX {
         'biocontainers/samtools:1.21--h50ea8bc_0' }"
 
     input:
-    tuple val(meta), path(input)
+    record(
+        meta: Record,
+        input: Path
+    )
 
     output:
-    tuple val(meta), path("*.bai") , optional:true, emit: bai
-    tuple val(meta), path("*.csi") , optional:true, emit: csi
-    tuple val(meta), path("*.crai"), optional:true, emit: crai
-    path  "versions.yml"           , topic: versions
+    record(
+        id   : meta.id,
+        meta : meta,
+        bai  : file("*.bai", optional: true),
+        csi  : file("*.csi", optional: true),
+        crai : file("*.crai", optional: true),
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -36,7 +44,7 @@ process SAMTOOLS_INDEX {
 
     stub:
     def args = task.ext.args ?: ''
-    def extension = file(input).getExtension() == 'cram' ?
+    def extension = input.getExtension() == 'cram' ?
                     "crai" : args.contains("-c") ?  "csi" : "bai"
     """
     touch ${input}.${extension}

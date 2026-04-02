@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process PICARD_MARKDUPLICATES {
     tag "$meta.id"
     label 'process_medium'
@@ -8,19 +10,25 @@ process PICARD_MARKDUPLICATES {
         'biocontainers/picard:3.3.0--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(reads)
-    tuple val(meta2), path(fasta)
-    tuple val(meta3), path(fai)
+    record(
+        meta: Record,
+        reads: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("*.bam") , emit: bam,  optional: true
-    tuple val(meta), path("*.bai") , emit: bai,  optional: true
-    tuple val(meta), path("*.cram"), emit: cram, optional: true
-    tuple val(meta), path("*.metrics.txt"), emit: metrics
-    path  "versions.yml"                  , topic: versions
+    record(
+        id             : meta.id,
+        meta           : meta,
+        bam            : file("*.bam", optional: true),
+        bai            : file("*.bai", optional: true),
+        cram           : file("*.cram", optional: true),
+        picard_metrics : file("*.metrics.txt"),
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -31,7 +39,7 @@ process PICARD_MARKDUPLICATES {
     if (!task.memory) {
         log.info '[Picard MarkDuplicates] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega() * 0.8).intValue()
     }
 
     if ("$reads" == "${prefix}.${suffix}") error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"

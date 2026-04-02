@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process BISMARK_SUMMARY {
     label 'process_low'
 
@@ -7,18 +9,22 @@ process BISMARK_SUMMARY {
         'community.wave.seqera.io/library/bismark:0.25.1--1f50935de5d79c47' }"
 
     input:
-    val(bam)
-    path(align_report)
-    path(dedup_report)
-    path(splitting_report)
-    path(mbias)
+    record(
+        bam: Set<String>,
+        align_report: Set<Path>,
+        dedup_report: Set<Path>,
+        methylation_report: Set<Path>,
+        methylation_mbias: Set<Path>
+    )
 
     output:
-    path("*report.{html,txt}"), emit: summary
-    path "versions.yml"       , topic: versions
+    record(
+        html: file("*report.html"),
+        txt: file("*report.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

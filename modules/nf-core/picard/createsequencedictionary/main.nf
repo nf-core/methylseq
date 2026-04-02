@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process PICARD_CREATESEQUENCEDICTIONARY {
     tag "$meta.id"
     label 'process_medium'
@@ -8,14 +10,20 @@ process PICARD_CREATESEQUENCEDICTIONARY {
         'biocontainers/picard:3.3.0--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(fasta)
+    record(
+        meta: Record,
+        fasta: Path
+    )
 
     output:
-    tuple val(meta), path("*.dict"), emit: reference_dict
-    path "versions.yml"            , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        reference_dict: file("*.dict")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -24,7 +32,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
     if (!task.memory) {
         log.info '[Picard CreateSequenceDictionary] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega() * 0.8).intValue()
     }
     """
     picard \\

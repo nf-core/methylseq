@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process PICARD_BEDTOINTERVALLIST {
     tag "$meta.id"
     label 'process_low'
@@ -8,16 +10,22 @@ process PICARD_BEDTOINTERVALLIST {
         'biocontainers/picard:3.3.0--hdfd78af_0' }"
 
     input:
-    tuple val(meta) , path(bed)
-    tuple val(meta2), path(dict)
-    file arguments_file
+    record(
+        meta: Record,
+        bed: Path,
+        reference_dict: Path,
+        arguments_file: Path?
+    )
 
     output:
-    tuple val(meta), path('*.intervallist'), emit: intervallist
-    path  "versions.yml"                   , topic: versions
+    record(
+        id: meta.id,
+        meta: meta,
+        intervallist: file('*.intervallist')
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args       = task.ext.args     ?: ''
@@ -27,7 +35,7 @@ process PICARD_BEDTOINTERVALLIST {
     if (!task.memory) {
         log.info '[Picard BedToIntervalList] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega() * 0.8).intValue()
     }
     """
     picard \\
@@ -35,7 +43,7 @@ process PICARD_BEDTOINTERVALLIST {
         BedToIntervalList \\
         --INPUT ${bed} \\
         --OUTPUT ${prefix}.intervallist \\
-        --SEQUENCE_DICTIONARY ${dict} \\
+        --SEQUENCE_DICTIONARY ${reference_dict} \\
         --TMP_DIR . \\
         ${args_file} \\
         ${args}
@@ -52,7 +60,7 @@ process PICARD_BEDTOINTERVALLIST {
     if (!task.memory) {
         log.info '[Picard BedToIntervalList] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega() * 0.8).intValue()
     }
     def args_file = arguments_file ? "--arguments_file ${arguments_file}" : ""
     """
@@ -61,7 +69,7 @@ process PICARD_BEDTOINTERVALLIST {
         BedToIntervalList \\
         --INPUT ${bed} \\
         --OUTPUT ${prefix}.intervallist \\
-        --SEQUENCE_DICTIONARY ${dict} \\
+        --SEQUENCE_DICTIONARY ${reference_dict} \\
         --TMP_DIR . \\
         ${args_file} \\
         ${args}"

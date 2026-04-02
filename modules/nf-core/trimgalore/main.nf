@@ -1,3 +1,5 @@
+nextflow.preview.types = true
+
 process TRIMGALORE {
     tag "${meta.id}"
     label 'process_high'
@@ -8,18 +10,24 @@ process TRIMGALORE {
         : 'community.wave.seqera.io/library/cutadapt_trim-galore_pigz:a98edd405b34582d'}"
 
     input:
-    tuple val(meta), path(reads)
+    record(
+        meta: Record,
+        reads: List<Path>
+    )
 
     output:
-    tuple val(meta), path("*{3prime,5prime,trimmed,val}{,_1,_2}.fq.gz"), emit: reads
-    tuple val(meta), path("*report.txt")                               , emit: log, optional: true
-    tuple val(meta), path("*unpaired{,_1,_2}.fq.gz")                  , emit: unpaired, optional: true
-    tuple val(meta), path("*.html")                                    , emit: html, optional: true
-    tuple val(meta), path("*.zip")                                     , emit: zip, optional: true
-    path "versions.yml"					                               , topic: versions
+    record(
+        id            : meta.id,
+        meta          : meta,
+        trim_reads    : files("*{3prime,5prime,trimmed,val}{,_1,_2}.fq.gz").toSorted(),
+        trim_log      : files("*report.txt", optional: true).toSorted(),
+        trim_unpaired : files("*unpaired{,_1,_2}.fq.gz", optional: true).toSorted(),
+        trim_html     : files("*.html", optional: true).toSorted(),
+        trim_zip      : files("*.zip", optional: true).toSorted(),
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    file("versions.yml") >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -46,7 +54,7 @@ process TRIMGALORE {
         def args_list = args.split("\\s(?=--)").toList()
         args_list.removeAll { it.toLowerCase().contains('_r2 ') }
         """
-        [ ! -f  ${prefix}.fastq.gz ] && ln -s ${reads} ${prefix}.fastq.gz
+        [ ! -f  ${prefix}.fastq.gz ] && ln -s ${reads[0]} ${prefix}.fastq.gz
         trim_galore \\
             ${args_list.join(' ')} \\
             --cores ${cores} \\

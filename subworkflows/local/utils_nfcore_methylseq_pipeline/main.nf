@@ -2,6 +2,8 @@
 // Subworkflow with functionality specific to the nf-core/methylseq pipeline
 //
 
+nextflow.preview.types = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS
@@ -26,11 +28,12 @@ include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 workflow PIPELINE_INITIALISATION {
 
     take:
-    version           // boolean: Display version and exit
-    validate_params   // boolean: Boolean whether to validate parameters against the schema at runtime
-    monochrome_logs   // boolean: Do not use coloured log outputs
-    nextflow_cli_args //   array: List of positional nextflow CLI args
-    outdir            //  string: The output directory where the results will be saved
+    input: String
+    version: Boolean                // Display version and exit
+    validate_params: Boolean        // Boolean whether to validate parameters against the schema at runtime
+    monochrome_logs: Boolean        // Do not use coloured log outputs
+    nextflow_cli_args: List<String> // List of positional nextflow CLI args
+    outdir: String                  //  string: The output directory where the results will be saved
 
     main:
 
@@ -72,22 +75,25 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
 
-    Channel
-        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
+    ch_samplesheet = channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
+        .map { row -> row as Tuple<Map,?,?,?> }
         .map {
             meta, fastq_1, fastq_2, genome ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
+                def single_end = !fastq_2
+                def reads = single_end ? [ fastq_1 ] : [ fastq_1, fastq_2 ]
+                def sample = record(
+                    id: meta.id,
+                    meta: record(meta) + record(single_end: single_end),
+                    reads: reads
+                )
+                tuple(sample.id, sample)
         }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
+        .groupBy()
+        .map { id, samples ->
+            validateInputSamplesheet(samples)
         }
-        .set { ch_samplesheet }
-    ch_samplesheet.dump(tag: "ch_samplesheet")
+
+    ch_samplesheet.view(tag: "ch_samplesheet")
 
     emit:
     samplesheet = ch_samplesheet
@@ -113,7 +119,6 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    def multiqc_reports = multiqc_report.toList()
 
     //
     // Completion email and summary
@@ -127,7 +132,7 @@ workflow PIPELINE_COMPLETION {
                 plaintext_email,
                 outdir,
                 monochrome_logs,
-                multiqc_reports.getVal(),
+                multiqc_report.getVal(),
             )
         }
 
@@ -157,21 +162,23 @@ def validateInputParameters() {
 //
 // Validate channels from input samplesheet
 //
-def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
+def validateInputSamplesheet(samples: Bag<Record>) -> Record {
+
+    def sample = samples.toList().first()
 
     // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
+    def endedness_ok = samples.collect{ r -> r.meta.single_end }.toUnique().size() == 1
     if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${sample.id}")
     }
 
-    return [ metas[0], fastqs ]
+    def reads = samples.collectMany { r -> r.reads }
+    return sample + record(reads: reads)
 }
 //
 // Get attribute from genome config file e.g. fasta
 //
-def getGenomeAttribute(attribute) {
+def getGenomeAttribute(attribute: String, params: Record) -> String? {
     if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
         if (params.genomes[ params.genome ].containsKey(attribute)) {
             return params.genomes[ params.genome ][ attribute ]

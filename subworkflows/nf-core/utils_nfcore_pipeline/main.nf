@@ -2,6 +2,8 @@
 // Subworkflow with utility functions specific to the nf-core pipeline template
 //
 
+nextflow.preview.types = true
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     SUBWORKFLOW DEFINITION
@@ -77,7 +79,7 @@ def getWorkflowVersion() {
 //
 // Get software versions for pipeline
 //
-def processVersionsFromYAML(yaml_file) {
+def processVersionsFromYAML(yaml_file: Path) -> String {
     def yaml = new org.yaml.snakeyaml.Yaml()
     def versions = yaml.load(yaml_file).collectEntries { k, v -> [k.tokenize(':')[-1], v] }
     return yaml.dumpAsMap(versions).trim()
@@ -97,8 +99,16 @@ def workflowVersionToYAML() {
 //
 // Get channel of software versions used in pipeline in YAML format
 //
-def softwareVersionsToYAML(ch_versions) {
-    return ch_versions.unique().map { version -> processVersionsFromYAML(version) }.unique().mix(channel.of(workflowVersionToYAML()))
+workflow softwareVersionsToYAML {
+    take:
+    ch_versions: Channel
+
+    emit:
+    ch_versions
+        .unique()
+        .map { version -> processVersionsFromYAML(version as Path) }
+        .unique()
+        .mix(channel.of(workflowVersionToYAML()))
 }
 
 //
