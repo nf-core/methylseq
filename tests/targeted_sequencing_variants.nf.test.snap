@@ -2,7 +2,7 @@
     "Params: bwameth with run_targeted_sequencing": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT": {
+                "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "BWAMETH_ALIGN": {
@@ -316,7 +316,7 @@
     "Params: bismark with run_targeted_sequencing and collecthsmetrics": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT": {
+                "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "BISMARK_DEDUPLICATE": {
@@ -716,7 +716,7 @@
     "Params: bismark with run_targeted_sequencing": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT": {
+                "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "BISMARK_DEDUPLICATE": {
@@ -1108,7 +1108,7 @@
     "Params: bwameth with run_targeted_sequencing and collecthsmetrics": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT": {
+                "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "BWAMETH_ALIGN": {
@@ -1430,7 +1430,7 @@
     "Params: bwameth with all_contexts and run_targeted_sequencing": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT": {
+                "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "BWAMETH_ALIGN": {
