@@ -6,7 +6,7 @@
  * HS Library Size, Percent Duplicates, and Percent Off Bait. This is relevant for methylome experiments with targeted seq.
  */
 
-include { BEDTOOLS_INTERSECT                           } from '../../../modules/nf-core/bedtools/intersect/main'
+include { FILTER_BEDGRAPH_TARGETS                      } from '../../../modules/local/filter_bedgraph_targets'
 include { BEDTOOLS_INTERSECT as BEDTOOLS_INTERSECT_COV } from '../../../modules/nf-core/bedtools/intersect/main'
 include { PICARD_CREATESEQUENCEDICTIONARY              } from '../../../modules/nf-core/picard/createsequencedictionary/main'
 include { PICARD_BEDTOINTERVALLIST                     } from '../../../modules/nf-core/picard/bedtointervallist/main'
@@ -30,19 +30,18 @@ workflow TARGETED_SEQUENCING {
     ch_picard_metrics = Channel.empty()
 
     /*
-     * Intersect bedGraph files with target regions
-     * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs
+     * Intersect bedGraph files with target regions (CpG-aware boundary handling)
+     * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs.
+     * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp before
+     * intersection so that CpGs straddling a target boundary are not lost.
      */
     ch_bedgraphs_target = ch_bedgraph
         .map { meta, bedgraphs -> tuple(meta, bedgraphs instanceof List ? bedgraphs : [bedgraphs]) }
         .flatMap { meta, bedgraphs -> bedgraphs.collect { bedgraph -> [meta, bedgraph] } }
         .combine(ch_target_regions)
 
-    BEDTOOLS_INTERSECT(
-        ch_bedgraphs_target,
-        [[:], []],
-    )
-    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT.out.versions)
+    FILTER_BEDGRAPH_TARGETS(ch_bedgraphs_target)
+    ch_versions = ch_versions.mix(FILTER_BEDGRAPH_TARGETS.out.versions)
 
     /*
      * Intersect Bismark coverage files with target regions
@@ -117,7 +116,7 @@ workflow TARGETED_SEQUENCING {
     }
 
     emit:
-    bedgraph_filtered = BEDTOOLS_INTERSECT.out.intersect // channel: [ val(meta), path("*.bedGraph") ]
+    bedgraph_filtered = FILTER_BEDGRAPH_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.bedGraph") ]
     coverage_filtered = BEDTOOLS_INTERSECT_COV.out.intersect // channel: [ val(meta), path("*.cov") ]
     picard_metrics    = ch_picard_metrics // channel: [ val(meta), path("*_metrics") ]
     versions          = ch_versions // channel: path("*.version.txt")
