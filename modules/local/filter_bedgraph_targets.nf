@@ -33,8 +33,9 @@ process FILTER_BEDGRAPH_TARGETS {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    # Extend end coordinate by 1 bp so the interval covers the full CpG dinucleotide
-    awk 'BEGIN{OFS="\\t"} {\$3=\$3+1; print}' ${bedgraph} > extended.bedGraph
+    # Decompress and extend end coordinate by 1 bp so the interval covers the full CpG dinucleotide
+    # Skip any track/header lines to avoid corrupting them
+    zcat ${bedgraph} | awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
 
     # Intersect with target regions (-wa: write original -a entry; -u: unique hits only)
     bedtools intersect \\
@@ -45,7 +46,7 @@ process FILTER_BEDGRAPH_TARGETS {
         > intersected.bedGraph
 
     # Restore original single-base end coordinates
-    awk 'BEGIN{OFS="\\t"} {\$3=\$3-1; print}' intersected.bedGraph \\
+    awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3-1; print}' intersected.bedGraph \\
         > ${prefix}.targeted.bedGraph
 
     cat <<-END_VERSIONS > versions.yml

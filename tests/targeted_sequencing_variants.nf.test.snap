@@ -2,17 +2,14 @@
     "Params: bwameth with run_targeted_sequencing": {
         "content": [
             {
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.9"
                 },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
-                },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -22,9 +19,6 @@
                 },
                 "METHYLDACKEL_MBIAS": {
                     "methyldackel": "0.6.1"
-                },
-                "MULTIQC": {
-                    "multiqc": 1.32
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -38,12 +32,6 @@
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
                     "samtools": "1.22.1"
                 },
-                "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
-                },
-                "SAMTOOLS_STATS": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -51,6 +39,18 @@
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": "1.22.1"
                 }
             },
             [
@@ -319,8 +319,8 @@
                 "BEDTOOLS_INTERSECT_COV": {
                     "bedtools": "2.31.1"
                 },
-                "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
                 },
                 "BISMARK_DEDUPLICATE": {
                     "bismark": "0.25.1"
@@ -337,17 +337,8 @@
                 "BISMARK_SUMMARY": {
                     "bismark": "0.25.1"
                 },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
-                },
                 "GUNZIP": {
                     "gunzip": 1.13
-                },
-                "MULTIQC": {
-                    "multiqc": 1.32
                 },
                 "PICARD_BEDTOINTERVALLIST": {
                     "picard": "3.4.0"
@@ -358,9 +349,6 @@
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.22.1"
                 },
-                "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -368,6 +356,18 @@
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BISMARK_ALIGN": {
+                    "bismark": "0.25.1"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
                 }
             },
             [
@@ -726,8 +726,8 @@
                 "BEDTOOLS_INTERSECT_COV": {
                     "bedtools": "2.31.1"
                 },
-                "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
                 },
                 "BISMARK_DEDUPLICATE": {
                     "bismark": "0.25.1"
@@ -744,22 +744,10 @@
                 "BISMARK_SUMMARY": {
                     "bismark": "0.25.1"
                 },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
-                },
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "MULTIQC": {
-                    "multiqc": 1.32
-                },
                 "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
-                "SAMTOOLS_SORT": {
                     "samtools": "1.22.1"
                 },
                 "TRIMGALORE": {
@@ -769,6 +757,18 @@
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BISMARK_ALIGN": {
+                    "bismark": "0.25.1"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
                 }
             },
             [
@@ -1122,17 +1122,14 @@
     "Params: bwameth with run_targeted_sequencing and collecthsmetrics": {
         "content": [
             {
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.9"
                 },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
-                },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -1142,9 +1139,6 @@
                 },
                 "METHYLDACKEL_MBIAS": {
                     "methyldackel": "0.6.1"
-                },
-                "MULTIQC": {
-                    "multiqc": 1.32
                 },
                 "PICARD_BEDTOINTERVALLIST": {
                     "picard": "3.4.0"
@@ -1164,12 +1158,6 @@
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
                     "samtools": "1.22.1"
                 },
-                "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
-                },
-                "SAMTOOLS_STATS": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -1177,6 +1165,18 @@
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": "1.22.1"
                 }
             },
             [
@@ -1444,17 +1444,14 @@
     "Params: bwameth with all_contexts and run_targeted_sequencing": {
         "content": [
             {
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
                 "BWAMETH_ALIGN": {
                     "bwameth": "0.2.9"
                 },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
-                },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -1464,9 +1461,6 @@
                 },
                 "METHYLDACKEL_MBIAS": {
                     "methyldackel": "0.6.1"
-                },
-                "MULTIQC": {
-                    "multiqc": 1.32
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -1480,12 +1474,6 @@
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
                     "samtools": "1.22.1"
                 },
-                "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
-                },
-                "SAMTOOLS_STATS": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -1493,6 +1481,18 @@
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": "1.22.1"
                 }
             },
             [
