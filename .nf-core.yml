@@ -3,8 +3,12 @@ lint:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
     - .github/workflows/ci.yml
+  files_unchanged:
+    - docs/images/nf-core-methylseq_logo_light.png
+    - docs/images/nf-core-methylseq_logo_dark.png
+    - assets/nf-core-methylseq_logo_light.png
   modules_config: false
-nf_core_version: 3.5.1
+nf_core_version: 4.0.2
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri
@@ -15,4 +19,4 @@ template:
   name: methylseq
   org: nf-core
   outdir: .
-  version: 4.2.0dev
+  version: 4.3.0dev
