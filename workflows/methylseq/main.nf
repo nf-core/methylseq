@@ -188,8 +188,6 @@ workflow METHYLSEQ {
                 bwamem_index: [ meta, bwamem_index ]
             }
 
-        ch_bwamem_inputs.reads.view { "BWAMEM input: ${it[0].id}" }
-
         FASTQ_ALIGN_DEDUP_BWAMEM (
             ch_bwamem_inputs.reads,
             ch_bwamem_inputs.fasta,

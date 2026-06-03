@@ -37,7 +37,7 @@ workflow BAM_TAPS_CONVERSION {
         ch_rastair_mbias
     )
     ch_rastair_mbiasparser = RASTAIR_MBIASPARSER.out.mbias_processed_str // channel: [ val(meta), nOT_clip, nOB_clip ]
-    ch_versions             = ch_versions.mix(RASTAIR_MBIASPARSER.out.versions)
+    ch_versions            = ch_versions.mix(RASTAIR_MBIASPARSER.out.versions)
 
     RASTAIR_CALL (
         ch_bam,
