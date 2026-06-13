@@ -45,11 +45,11 @@
                 }
             }
         ],
+        "timestamp": "2025-12-04T11:02:11.64102",
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T11:02:11.64102"
+        }
     },
     "Params: bismark_hisat with hisat2-index": {
         "content": [
@@ -97,11 +97,11 @@
                 }
             }
         ],
+        "timestamp": "2025-12-04T11:08:29.489122",
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T11:08:29.489122"
+        }
     },
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
@@ -149,11 +149,11 @@
                 }
             }
         ],
+        "timestamp": "2025-12-04T11:04:35.596818",
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T11:04:35.596818"
+        }
     },
     "Params: bwameth with bwameth-index": {
         "content": [
@@ -207,10 +207,68 @@
                 }
             }
         ],
+        "timestamp": "2025-12-04T11:06:00.333714",
         "meta": {
             "nf-test": "0.9.3",
             "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T11:06:00.333714"
+        }
+    },
+    "Params: bismark with run_methurator with bowtie2-index": {
+        "content": [
+            {
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "0.25.1"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "0.25.1"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "0.25.1"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "0.25.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.22.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.10",
+                    "cutadapt": 4.9,
+                    "pigz": 2.8
+                },
+                "UNTAR_BISMARK": {
+                    "untar": 1.34
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BISMARK_ALIGN": {
+                    "bismark": "0.25.1"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "METHURATOR_GTESTIMATOR": {
+                    "methurator": "2.1.1"
+                },
+                "METHURATOR_PLOT": {
+                    "methurator": "2.1.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.22.1"
+                }
+            }
+        ],
+        "timestamp": "2026-06-14T01:08:16.422121",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
+        }
     }
 }

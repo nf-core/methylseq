@@ -73,7 +73,8 @@ nextflow_pipeline {
             name: "bismark_run_methurator",
             description: "Params: bismark with run_methurator",
             params: [
-                run_methurator: true
+                run_methurator: true,
+                minimum_coverage: "1"
             ]
         ],
         [
