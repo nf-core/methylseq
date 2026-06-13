@@ -316,17 +316,18 @@ workflow METHYLSEQ {
         if (params.taps || params.aligner == 'bwamem') {
             error("ERROR: --run_methurator can't be running using TAPS workflow.")
         }
-
+        ch_methurator_inputs = ch_bam
+            .combine(ch_bai.map { meta, bai -> bai })
+            .combine(ch_fasta.map { meta, fasta -> fasta })
+            .combine(ch_fasta_index.map { meta, index -> index })
         METHURATOR_GTESTIMATOR(
-            ch_bam
+            ch_methurator_inputs
         )
         ch_methurator_gtestimator = METHURATOR_GTESTIMATOR.out.summary_report
-        ch_versions = ch_versions.mix(METHURATOR_GTESTIMATOR.out.versions_methurator)
 
         METHURATOR_PLOT(
             ch_methurator_gtestimator
         )
-        ch_versions = ch_versions.mix(METHURATOR_PLOT.out.versions_methurator)
     }
 
     //
