@@ -66,9 +66,11 @@ flowchart TD
         D1 --> J1["preseq (optional)"]
         D2 --> J1
         D3 --> J1
-        D1 --> J2["Qualimap (optional)"]
+        D1 --> J2["methurator (optional)"]
         D2 --> J2
-        D3 --> J2
+        D1 --> J3["Qualimap (optional)"]
+        D2 --> J3
+        D3 --> J3
     end
 
     subgraph Stage4[Final QC]
