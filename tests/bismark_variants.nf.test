@@ -70,6 +70,13 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bismark_run_methurator",
+            description: "Params: bismark with run_methurator",
+            params: [
+                run_methurator: true
+            ]
+        ],
+        [
             name: "bismark_run_qualimap",
             description: "Params: bismark with run_qualimap",
             params: [
