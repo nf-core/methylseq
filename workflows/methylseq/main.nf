@@ -317,7 +317,7 @@ workflow METHYLSEQ {
             error("ERROR: --run_methurator can't be running using TAPS workflow.")
         }
         ch_methurator_inputs = ch_bam
-            .combine(ch_bai.map { meta, bai -> bai })
+            .join(ch_bai)
             .combine(ch_fasta.map { meta, fasta -> fasta })
             .combine(ch_fasta_index.map { meta, index -> index })
         METHURATOR_GTESTIMATOR(
