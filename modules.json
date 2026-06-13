@@ -80,6 +80,16 @@
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
+                    "methurator/gtestimator": {
+                        "branch": "master",
+                        "git_sha": "85a3650c949d1146cdb576f986640e84775b7743",
+                        "installed_by": ["modules"]
+                    },
+                    "methurator/plot": {
+                        "branch": "master",
+                        "git_sha": "85a3650c949d1146cdb576f986640e84775b7743",
+                        "installed_by": ["modules"]
+                    },
                     "methyldackel/extract": {
                         "branch": "master",
                         "git_sha": "c8df5757c72362907a43de49a6b20bd4998907a0",

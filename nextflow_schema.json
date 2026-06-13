@@ -385,13 +385,6 @@
                 }
             }
         },
-        "bwameth_options": {
-            "title": "bwa-meth pipeline options",
-            "type": "object",
-            "description": "Parameters specific to BWA Meth aligning steps",
-            "default": "",
-            "properties": {}
-        },
         "methyldackel_options": {
             "title": "MethylDackel options",
             "type": "object",
@@ -431,13 +424,6 @@
             },
             "fa_icon": "far fa-circle"
         },
-        "bwamem_options": {
-            "title": "bwa-mem pipeline options for rastair",
-            "type": "object",
-            "description": "Parameters specific to BWA Mem aligning steps",
-            "default": "",
-            "properties": {}
-        },
         "rastair_options": {
             "title": "rastair options",
             "type": "object",
@@ -454,6 +440,29 @@
                     "type": "string",
                     "default": "0,0,10,0",
                     "description": "Nucleotides to exclude from methylation calling on Original Bottom (strand) reads, following this pattern: R1 start, R1 end, R2 start, R2 end"
+                }
+            }
+        },
+        "methurator_options": {
+            "title": "methurator options",
+            "type": "object",
+            "description": "Options for methurator tool",
+            "default": "",
+            "properties": {
+                "minimum_coverage": {
+                    "type": "string",
+                    "default": "1,10,15",
+                    "description": "Minimum CpGs coverage to consider for the saturation analysis. Can be a single integer or a list (e.g. 1,3,5)."
+                },
+                "compute_ci": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Compute confidence intervals using bootstrap replicates."
+                },
+                "t_max": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Maximum extrapolation factor."
                 }
             }
         },
@@ -541,6 +550,10 @@
                     "type": "boolean",
                     "description": "Run preseq/lcextrap tool",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "run_methurator": {
+                    "type": "boolean",
+                    "description": "Run methurator/gtestimator tool"
                 },
                 "run_qualimap": {
                     "type": "boolean",
@@ -736,16 +749,13 @@
             "$ref": "#/$defs/bismark_options"
         },
         {
-            "$ref": "#/$defs/bwameth_options"
-        },
-        {
             "$ref": "#/$defs/methyldackel_options"
         },
         {
-            "$ref": "#/$defs/bwamem_options"
+            "$ref": "#/$defs/rastair_options"
         },
         {
-            "$ref": "#/$defs/rastair_options"
+            "$ref": "#/$defs/methurator_options"
         },
         {
             "$ref": "#/$defs/qualimap_options"
@@ -760,10 +770,10 @@
             "$ref": "#/$defs/run_pipeline_steps"
         },
         {
-            "$ref": "#/$defs/generic_options"
+            "$ref": "#/$defs/institutional_config_options"
         },
         {
-            "$ref": "#/$defs/institutional_config_options"
+            "$ref": "#/$defs/generic_options"
         }
     ]
 }
