@@ -39,20 +39,21 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 
 Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--use_mem2`. The GPU pathway (Parabricks) requires `-profile gpu` and a container runtime (Docker, Singularity, or Podman); Conda/Mamba are not supported for the GPU module.
 
-| Step                                         | Bismark workflow         | bwa-meth workflow     | bwa-mem + TAPS workflow    |
-| -------------------------------------------- | ------------------------ | --------------------- | -------------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              | bwa index                  |
-| Merge re-sequenced FastQ files               | cat                      | cat                   | cat                        |
-| Raw data QC                                  | FastQC                   | FastQC                | FastQC                     |
-| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          | Trim Galore!               |
-| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              | bwa mem                    |
-| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates | Picard MarkDuplicates      |
-| Extract methylation calls                    | Bismark                  | MethylDackel          | TAPS subworkflow (rastair) |
-| Sample report                                | Bismark                  | -                     | -                          |
-| Summary Report                               | Bismark                  | -                     | -                          |
-| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_ | Qualimap _(optional)_      |
-| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_   | Preseq _(optional)_        |
-| Project Report                               | MultiQC                  | MultiQC               | MultiQC                    |
+| Step                                         | Bismark workflow         | bwa-meth workflow       | bwa-mem + TAPS workflow    |
+| -------------------------------------------- | ------------------------ | ----------------------- | -------------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth                | bwa index                  |
+| Merge re-sequenced FastQ files               | cat                      | cat                     | cat                        |
+| Raw data QC                                  | FastQC                   | FastQC                  | FastQC                     |
+| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               |
+| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    |
+| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      |
+| Extract methylation calls                    | Bismark                  | MethylDackel            | TAPS subworkflow (rastair) |
+| Sample report                                | Bismark                  | -                       | -                          |
+| Summary Report                               | Bismark                  | -                       | -                          |
+| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      |
+| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        |
+| CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | methurator _(optional)_    |
+| Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    |
 
 Optional targeted sequencing analysis is available via `--run_targeted_sequencing` and `--target_regions_file`; see the [usage documentation](https://nf-co.re/methylseq/usage) for details.
 
