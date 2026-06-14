@@ -17,7 +17,6 @@ workflow FASTA_INDEX_METHYLSEQ {
     bwamem_index     // channel: [ val(meta), [ bwamem index ] ]
     aligner          // string: bismark, bismark_hisat, bwameth or bwamem
     collecthsmetrics // boolean: whether to run picard collecthsmetrics
-    methurator       // boolean: whether to run methurator
     use_mem2         // boolean: generate mem2 index if no index provided, and bwameth is selected
 
     main:
@@ -145,7 +144,7 @@ workflow FASTA_INDEX_METHYLSEQ {
     /*
     * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool or methurator tool
     */
-    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics || methurator) {
+    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics || params.run_methurator) {
         // already existing fasta index
         if (fasta_index) {
             ch_fasta_index = fasta_index
