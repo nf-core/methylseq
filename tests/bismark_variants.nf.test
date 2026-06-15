@@ -142,11 +142,15 @@ nextflow_pipeline {
             }
 
             then {
+                def snapshotArgs = getStandardAssertionData(params.outdir)
+                if (scenario.name == "bismark_run_methurator") {
+                    snapshotArgs += getAllFilesFromDir(params.outdir, include: ['methurator/summaries/*.yml'])
+                        .collect { file -> [file.getName(), path(file.toString()).readLines()[3..10].join('\n').md5() ] }
+                }
+
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(
-                        *getStandardAssertionData(params.outdir)
-                    ).match() }
+                    { assert snapshot(*snapshotArgs).match() }
                 )
             }
         }
