@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug fixes & refactoring
 
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))
+- 🐛 Remove the `aws_batch` profile, which referenced a deleted config file and broke config parsing (and linting) on recent Nextflow versions ([#610](https://github.com/nf-core/methylseq/pull/610))
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
