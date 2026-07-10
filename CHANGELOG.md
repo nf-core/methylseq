@@ -3,6 +3,18 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v4.3.0dev
+
+### Pipeline Updates
+
+- 🔧 Update Bismark to v3.0.0 and refresh the bismark, samtools, bwa, bwameth, methyldackel and parabricks nf-core modules and alignment subworkflows to their latest versions ([#PRNUM](https://github.com/nf-core/methylseq/pull/PRNUM))
+  - Migrated module version reporting to Nextflow topic channels
+  - Threaded a combined `[ meta, fasta, fai ]` channel through the alignment subworkflows
+
+### Bug fixes & refactoring
+
+- 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#PRNUM](https://github.com/nf-core/methylseq/pull/PRNUM))
+
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
 ### Bug fixes & refactoring

@@ -2,27 +2,6 @@
     "-profile test": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -32,16 +11,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -374,10 +374,10 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:11:47.138958229",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T11:49:52.927847"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     }
 }

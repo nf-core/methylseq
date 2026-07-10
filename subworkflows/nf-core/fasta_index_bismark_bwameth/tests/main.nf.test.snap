@@ -1,17 +1,8 @@
 {
     "Params: bismark | download bismark index (bowtie2)": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                
-            ],
+            null,
+            null,
             [
                 [
                     {
@@ -45,35 +36,20 @@
             [
                 
             ],
-            [
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:27:37.313870495",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:02.373370438"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | download bwameth index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -93,36 +69,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:28:52.513449088",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:01.040540079"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | download bwameth mem2 index | collecthsmetrics": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -141,36 +101,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:29:59.641982406",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:50.272086432"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | download bwameth mem2 index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -189,36 +133,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:29:04.164153726",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:10.414304675"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | generate bwameth index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -237,31 +165,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df",
-                "versions.yml:md5,fa4262de5fe8c39d1eb747d28e3944ca"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:29:16.596666623",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:19.811023291"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bismark_hisat | generate bismark index (hisat2)": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                
-            ],
+            null,
+            null,
             [
                 [
                     {
@@ -299,35 +216,20 @@
             [
                 
             ],
-            [
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:28:17.152770538",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:34.192475798"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | download bwameth index | collecthsmetrics": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -347,31 +249,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:29:48.019829302",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:40.846954695"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bismark_hisat | download bismark index (hisat2)": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                
-            ],
+            null,
+            null,
             [
                 [
                     {
@@ -409,35 +300,20 @@
             [
                 
             ],
-            [
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:28:06.011875799",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:25.457288112"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | download fasta index | download bwameth index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "/nf-core/test-datasets/raw/methylseq/reference/genome.fa.fai"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -457,35 +333,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:28:29.830612935",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:42.903892085"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | download fasta index | download bwameth mem2 index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "/nf-core/test-datasets/raw/methylseq/reference/genome.fa.fai"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -504,35 +365,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,b0160273bd1b3b049a2748c02496c6d1",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:28:41.09305092",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:51.574638251"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bwameth | generate fasta index | generate bwameth mem2 index": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa.fai:md5,84f5b44c25877ac58b154706cc8bc451"
-                ]
-            ],
+            null,
+            null,
             [
                 
             ],
@@ -551,31 +397,20 @@
                     ]
                 ]
             ],
-            [
-                "versions.yml:md5,0e0ec89210890a2b420067fc3e2e46d4",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df",
-                "versions.yml:md5,fa4262de5fe8c39d1eb747d28e3944ca"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:29:29.21670275",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:27:31.257988906"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     },
     "Params: bismark | generate bismark index (bowtie2)": {
         "content": [
-            [
-                [
-                    {
-                        
-                    },
-                    "genome.fa:md5,923a0a268ad29fee3c3437d00f9970de"
-                ]
-            ],
-            [
-                
-            ],
+            null,
+            null,
             [
                 [
                     {
@@ -609,15 +444,14 @@
             [
                 
             ],
-            [
-                "versions.yml:md5,20f07613bc6412906de30e067722926c",
-                "versions.yml:md5,dfb3bc1adbc94d00aec14dad16eee3df"
-            ]
+            {
+                
+            }
         ],
+        "timestamp": "2026-03-14T09:27:54.226213003",
         "meta": {
-            "nf-test": "0.9.2",
-            "nextflow": "24.10.5"
-        },
-        "timestamp": "2025-10-21T22:26:16.850524514"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.3"
+        }
     }
 }
