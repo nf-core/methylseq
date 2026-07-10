@@ -15,7 +15,7 @@ process FILTER_BEDGRAPH_TARGETS {
     tag "${meta.id}"
     label 'process_single'
 
-    conda "bioconda::bedtools=2.31.1"
+    conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
         ? 'https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_0'
         : 'biocontainers/bedtools:2.31.1--hf5e1c6e_0'}"
