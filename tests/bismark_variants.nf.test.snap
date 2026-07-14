@@ -2,29 +2,8 @@
     "Params: bismark with run_qualimap": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
                 },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
@@ -35,16 +14,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -631,39 +631,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:00:47.970440164",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:45:58.276703"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with nomeseq": {
         "content": [
             {
-                "BISMARK_COVERAGE2CYTOSINE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -673,16 +649,40 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_COVERAGE2CYTOSINE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -1059,36 +1059,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:58:32.15805515",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:38:18.781605"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with skip_multiqc": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -1098,13 +1077,34 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -1279,36 +1279,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:01:19.843600418",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:48:19.267681"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark (default)": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -1318,16 +1297,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -1660,39 +1660,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:54:20.004907724",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:22:54.806971"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with cytosine_report": {
         "content": [
             {
-                "BISMARK_COVERAGE2CYTOSINE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -1702,16 +1678,40 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_COVERAGE2CYTOSINE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -2064,36 +2064,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:56:19.42864735",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:30:26.772126"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with em_seq and clip_r1": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -2103,16 +2082,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -2445,50 +2445,50 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:57:48.176679354",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:35:29.168628"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with skip_trimming": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -2782,33 +2782,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:54:55.223783297",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:25:09.468578"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with skip_deduplication": {
         "content": [
             {
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -2818,16 +2800,34 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -3164,33 +3164,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:55:37.262992414",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T09:29:11.294598"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with rrbs": {
         "content": [
             {
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -3200,16 +3182,34 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -3546,36 +3546,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:57:02.780338451",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:32:58.731579"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with save_reference and save_align_intermeds": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -3585,16 +3564,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -3982,50 +3982,50 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:59:15.817696372",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:40:49.377659"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication": {
         "content": [
             {
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
                 "CAT_FASTQ": {
                     "cat": 9.5
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -4256,36 +4256,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:02:34.003093894",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-04T10:25:14.441173"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with run_preseq": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -4295,16 +4274,37 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -4637,36 +4637,15 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T14:59:59.915051953",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:43:18.505941"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     },
     "Params: bismark with skip_fastqc": {
         "content": [
             {
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "0.25.1"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "0.25.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
-                "SAMTOOLS_INDEX": {
-                    "samtools": "1.22.1"
-                },
                 "TRIMGALORE": {
                     "trimgalore": "0.6.10",
                     "cutadapt": 4.9,
@@ -4676,13 +4655,34 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "0.25.1"
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.0.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.0.0"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
                 },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -4947,10 +4947,10 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:01:57.017198454",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T10:50:36.291567"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     }
 }

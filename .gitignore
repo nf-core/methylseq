@@ -9,3 +9,4 @@ testing*
 null/
 .nf-test.log
 .nf-test/
+setup-nextflow/
