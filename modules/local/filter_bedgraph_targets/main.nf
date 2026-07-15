@@ -15,7 +15,7 @@ process FILTER_BEDGRAPH_TARGETS {
     tag "${meta.id}"
     label 'process_single'
 
-    conda "bioconda::bedtools=2.31.1"
+    conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container
         ? 'https://depot.galaxyproject.org/singularity/bedtools:2.31.1--hf5e1c6e_0'
         : 'biocontainers/bedtools:2.31.1--hf5e1c6e_0'}"
@@ -33,9 +33,14 @@ process FILTER_BEDGRAPH_TARGETS {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    # Decompress and extend end coordinate by 1 bp so the interval covers the full CpG dinucleotide
+    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) and extend the end
+    # coordinate by 1 bp so the interval covers the full CpG dinucleotide.
     # Skip any track/header lines to avoid corrupting them
-    zcat ${bedgraph} | awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
+    case "${bedgraph}" in
+        *.gz) zcat ${bedgraph} ;;
+        *) cat ${bedgraph} ;;
+    esac \\
+        | awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
 
     # Intersect with target regions (-wa: write original -a entry; -u: unique hits only)
     bedtools intersect \\
