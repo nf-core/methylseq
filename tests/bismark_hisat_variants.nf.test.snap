@@ -11,19 +11,19 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_GENOMEPREPARATION_HISAT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -393,22 +393,22 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_GENOMEPREPARATION_HISAT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -837,22 +837,22 @@
                     "nf-core/methylseq": "v4.3.0dev"
                 },
                 "BISMARK_ALIGN": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_GENOMEPREPARATION_HISAT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.0.0"
+                    "bismark": "3.1.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"

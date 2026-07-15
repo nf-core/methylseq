@@ -12,37 +12,37 @@
                     },
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/deduplicate": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "9089c2afa0daf7dfd2bea23b972d7d3b8c66cd4c",
+                        "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bwa/index": {
