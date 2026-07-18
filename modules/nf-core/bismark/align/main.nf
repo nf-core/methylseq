@@ -28,8 +28,19 @@ process BISMARK_ALIGN {
     }
     def fastq = meta.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
 
+    // Resource model. Two mutually exclusive paths:
+    //  - Combined-index mode (--combined_index): a single-instance alignment. bismark
+    //    rejects --multicore here (forked chunking would reload the large combined index
+    //    per chunk), so parallelise with Bowtie 2/HISAT2 intra-instance threads (-p, >= 2).
+    //    Deterministic via --reorder, so output is thread-count-invariant.
+    //  - Classic mode: the faithful per-strand fork model (--multicore), unchanged.
+    if(args.contains('--combined_index')){
+        if(task.cpus && (task.cpus as int) >= 2 && !(args =~ /(?:^|\s)-p\s/)){
+            args += " -p ${task.cpus}"
+        }
+    }
     // Try to assign sensible bismark --multicore if not already set
-    if(!args.contains('--multicore') && task.cpus){
+    else if(!args.contains('--multicore') && task.cpus){
 
         // Numbers based on recommendation by Felix for a typical mouse genome
         def ccore = 1

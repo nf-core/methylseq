@@ -1,0 +1,69 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bismark combined-index alignment"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Opt-in --combined_index alignment. These are own-genome runs (no --bismark_index),
+    // so genome prep builds the combined CT+GA reference (Bisulfite_Genome/Combined/) and
+    // the aligner uses --combined_index (directional) / --combined_index --combined_index_sequential
+    // (non-directional), driven by -p rather than --multicore. Output is concordance-gated
+    // (NOT byte-identical) versus the classic per-strand model, so these are new snapshots;
+    // numerical correctness of combined alignment is inherited from Bismark's upstream
+    // concordance gate — this test asserts the run completes and the outputs are stable.
+    def testScenarios = [
+        [
+            name: "bismark_combined_index_directional",
+            description: "Params: bismark with combined_index (directional)",
+            params: [
+                combined_index: true
+            ]
+        ],
+        [
+            name: "bismark_combined_index_non_directional",
+            description: "Params: bismark with combined_index and non_directional",
+            params: [
+                combined_index: true,
+                non_directional: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
+- ✨ Add opt-in Bismark combined-index alignment via `--combined_index` (directional/PBAT use `--combined_index`, non-directional adds `--combined_index_sequential`; parallelised with Bowtie 2/HISAT2 `-p` instead of `--multicore`). Off by default, so the default alignment output is unchanged. Requires an index built with `bismark_genome_preparation --combined_genome` (built automatically when the pipeline generates the index; not compatible with pre-built/iGenomes indexes). Results are concordance-gated — not byte-identical — versus the classic per-strand model. ([#615](https://github.com/nf-core/methylseq/issues/615))
 - 🔧 Update Bismark to v3.1.0 ([#614](https://github.com/nf-core/methylseq/pull/614))
 - 🔧 Update Bismark to v3.0.0 and refresh the bismark, samtools, bwa, bwameth, methyldackel and parabricks nf-core modules and alignment subworkflows to their latest versions ([#610](https://github.com/nf-core/methylseq/pull/610))
   - Migrated module version reporting to Nextflow topic channels
