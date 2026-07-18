@@ -2,11 +2,6 @@
     "Params: default with bowtie2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -40,25 +35,23 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:13:13.21908233",
+        "timestamp": "2026-07-18T18:50:42.006015607",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark_hisat with hisat2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -94,23 +87,21 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:15:26.659051274",
+        "timestamp": "2026-07-18T18:52:36.791155894",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -144,25 +135,23 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:13:55.606693655",
+        "timestamp": "2026-07-18T18:51:20.384462014",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bwameth with bwameth-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -202,15 +191,18 @@
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BWAMETH": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:14:45.804488445",
+        "timestamp": "2026-07-18T18:52:00.108596237",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     }
 }
