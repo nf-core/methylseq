@@ -14,11 +14,6 @@
                 "RASTAIR_METHYLKIT": {
                     "rastair": "rastair 0.8.2"
                 },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -57,6 +52,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -261,7 +259,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,78cc0f4521878c6c4beaf54ad968e411",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
                 "multiqc_picard_dups.txt:md5,d55cf05658f0502ffbe45fa497627b73",
                 "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -304,10 +302,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T15:03:38.755690653",
+        "timestamp": "2026-07-18T18:27:13.287705067",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     }
 }
