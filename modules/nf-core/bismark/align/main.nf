@@ -34,7 +34,7 @@ process BISMARK_ALIGN {
     //    per chunk), so parallelise with Bowtie 2/HISAT2 intra-instance threads (-p, >= 2).
     //    Deterministic via --reorder, so output is thread-count-invariant.
     //  - Classic mode: the faithful per-strand fork model (--multicore), unchanged.
-    if(args.contains('--combined_index')){
+    if(args =~ /--combined_index(?!_)/){
         if(task.cpus && (task.cpus as int) >= 2 && !(args =~ /(?:^|\s)-p\s/)){
             args += " -p ${task.cpus}"
         }
