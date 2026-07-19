@@ -158,7 +158,8 @@
                     "rastair/mbiasparser": {
                         "branch": "master",
                         "git_sha": "a4f1768a3026017b92a7e5d1c8b0fb9ac3efa3a9",
-                        "installed_by": ["bam_taps_conversion"]
+                        "installed_by": ["bam_taps_conversion"],
+                        "patch": "modules/nf-core/rastair/mbiasparser/rastair-mbiasparser.diff"
                     },
                     "rastair/methylkit": {
                         "branch": "master",
