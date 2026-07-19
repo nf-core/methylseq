@@ -32,7 +32,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -182,6 +182,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -209,6 +210,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bismark_hisat/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -236,6 +238,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bismark_hisat/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -375,7 +378,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:52:55.429983261",
+        "timestamp": "2026-07-19T18:13:35.284365316",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -417,7 +420,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -601,6 +604,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -630,6 +634,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bismark_hisat/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -659,6 +664,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bismark_hisat/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -819,7 +825,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:53:37.903546677",
+        "timestamp": "2026-07-19T18:14:12.512184666",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -861,7 +867,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -1017,6 +1023,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bismark_hisat/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -1046,6 +1053,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bismark_hisat/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bismark_hisat/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -1075,6 +1083,7 @@
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bismark_hisat/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bismark_hisat/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -1200,7 +1209,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:52:13.497844254",
+        "timestamp": "2026-07-19T18:13:00.488593326",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"

@@ -32,7 +32,7 @@
                     "methyldackel": "0.6.1"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -150,6 +150,7 @@
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -173,6 +174,7 @@
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bwameth/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -196,6 +198,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bwameth/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -307,7 +310,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:47:23.538121837",
+        "timestamp": "2026-07-19T18:24:40.673609969",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -361,7 +364,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -527,6 +530,7 @@
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bismark/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -556,6 +560,7 @@
                 "multiqc/bismark/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bismark/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bismark/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bismark/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -585,6 +590,7 @@
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bismark/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -718,7 +724,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:49:52.844626716",
+        "timestamp": "2026-07-19T18:26:53.465214403",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -766,7 +772,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -930,6 +936,7 @@
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bismark/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bismark/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -959,6 +966,7 @@
                 "multiqc/bismark/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bismark/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bismark/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bismark/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bismark/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -988,6 +996,7 @@
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bismark/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bismark/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bismark/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -1121,7 +1130,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:46:31.06004547",
+        "timestamp": "2026-07-19T18:23:55.470483401",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -1166,7 +1175,7 @@
                     "methyldackel": "0.6.1"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -1286,6 +1295,7 @@
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -1309,6 +1319,7 @@
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bwameth/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -1332,6 +1343,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bwameth/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -1443,7 +1455,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:49:09.498606246",
+        "timestamp": "2026-07-19T18:26:13.749547317",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -1482,7 +1494,7 @@
                     "methyldackel": "0.6.1"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -1616,6 +1628,7 @@
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
@@ -1639,6 +1652,7 @@
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bwameth/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_adapter_content_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
@@ -1662,6 +1676,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bwameth/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
@@ -1789,7 +1804,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:48:15.813960611",
+        "timestamp": "2026-07-19T18:25:28.27874717",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
