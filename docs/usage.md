@@ -4,44 +4,206 @@
 
 > _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
 
+## Table of contents
+
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Workflow: Bismark](#workflow-bismark)
+- [Workflow: BWA-Meth](#workflow-bwa-meth)
+- [Workflow: BWA-MEM + TAPS](#workflow-bwa-mem-taps-tet-assisted-pyridine-borane-sequencing)
+- [Targeted sequencing (optional)](#targeted-sequencing-optional)
+- [Samplesheet input](#samplesheet-input)
+- [Running the pipeline](#running-the-pipeline)
+- [Updating the pipeline](#updating-the-pipeline)
+- [Reproducibility](#reproducibility)
+
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+The nf-core/methylseq pipeline provides three distinct workflows for DNA methylation analysis. These workflows support different aligners and cater to a range of computational requirements.
+
+> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](usage/bs-seq-primer.md)
+
+### Requirements
+
+- Nextflow >= 24.10.5
+- Container runtime: Docker, Singularity, Podman, Charliecloud, or Apptainer. Conda is also supported for CPU workflows, but the Parabricks GPU pathway does not support Conda/Mamba.
+
+```mermaid
+flowchart TD
+    subgraph Stage1[Pre-processing]
+        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+    end
+
+    subgraph Stage2[Genome Alignment + Deduplication]
+        C --> D1["bwa-meth align - GPU or CPU<br/>+ Picard MarkDuplicates"]
+        C --> D2["Bismark align - Bowtie2/HISAT2<br/>+ Bismark deduplicate"]
+        C --> D3["BWA-MEM align (TAPS)<br/>+ Picard MarkDuplicates"]
+    end
+
+    subgraph Stage3[Methylation Calling]
+        D1 --> E1["MethylDackel extract/M-bias<br/>(Bisulfite data)"]
+        D1 --> E2["Rastair TAPS conversion<br/>(TAPS data)"]
+
+        D2 --> F1["Bismark methylation extractor"]
+        F1 --> F2["Bismark coverage2cytosine"]
+        F2 --> F3["Bismark report"]
+        F3 --> F4["Bismark Summary"]
+
+        D3 --> E3["MethylDackel extract/M-bias<br/>(Bisulfite data)"]
+        D3 --> E4["Rastair TAPS conversion<br/>(TAPS data)"]
+    end
+
+    subgraph Stage3b[Targeted Sequencing - Optional]
+        E1 --> I1["Targeted Sequencing<br/>(bedGraph filtering)"]
+        E2 --> I1
+        E3 --> I1
+        E4 --> I1
+        F2 --> I1
+        I1 --> I2["Picard CollectHsMetrics<br/>(optional)"]
+    end
+
+    subgraph Stage3c[Optional QC]
+        D1 --> J1["preseq (optional)"]
+        D2 --> J1
+        D3 --> J1
+        D1 --> J2["Qualimap (optional)"]
+        D2 --> J2
+        D3 --> J2
+    end
+
+    subgraph Stage4[Final QC]
+        E1 --> H1["MultiQC"]
+        E2 --> H1
+        E3 --> H1
+        E4 --> H1
+        F4 --> H1
+        I1 --> H1
+        I2 --> H1
+        J1 --> H1
+        J2 --> H1
+    end
+
+    %% Styling for TAPS workflows
+    classDef tapsStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    class D3,E2,E4 tapsStyle
+```
+
+### Workflow: Bismark
+
+By default, the nf-core/methylseq pipeline uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as the alignment tool. This configuration is optimized for most DNA methylation workflows and will run unless an alternative aligner is specified.
+
+Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as an alternative aligner. To activate this option, use the command-line flag `--aligner bismark_hisat`.
+
+> HISAT2 offers splice-aware alignment, making it suitable for RNA-based analyses (e.g., [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments). For such cases, you can supply a file with known splice sites using the `--known_splices` parameter.
+
+### Workflow: BWA-Meth
+
+The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) as the alignment tool and [MethylDackel](https://github.com/dpryan79/methyldackel) for post-processing.
+
+bwa-meth aligner options:
+
+- Standard `bwa-meth` (CPU-based): This option can be invoked via `--aligner bwameth` and uses the traditional BWA-Meth aligner and runs on CPU processors. By default, this uses the standard BWA-MEM algorithm.
+
+- BWA-MEM2 algorithm: For improved performance, you can enable the BWA-MEM2 algorithm by adding `--use_mem2` to your command. BWA-MEM2 is a drop-in replacement for BWA-MEM that is generally faster and more accurate. This applies to both CPU and GPU modes.
+
+Examples:
+
+```bash
+# Use BWA-Meth with BWA-MEM2 algorithm (CPU)
+nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --input samplesheet.csv --genome GRCh38
+
+# Use BWA-Meth with BWA-MEM2 algorithm (GPU)
+nextflow run nf-core/methylseq --aligner bwameth --use_mem2 --profile gpu --input samplesheet.csv --genome GRCh38
+```
+
+- `Parabricks/FQ2BAMMETH` (GPU-based): For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile (as in `--profile gpu`) along with `--aligner bwameth`.
+
+### Workflow: BWA-MEM + TAPS (TET-Assisted Pyridine borane Sequencing)
+
+The pipeline supports **TAPS data analysis**, which uses a different approach to detect DNA methylation compared to traditional bisulfite sequencing. TAPS preserves the original DNA sequence while converting methylated cytosines to thymine, making it compatible with standard aligners.
+
+#### TAPS vs Bisulfite Sequencing
+
+| Feature                   | Bisulfite Sequencing              | TAPS                              |
+| ------------------------- | --------------------------------- | --------------------------------- |
+| **DNA Conversion**        | C→T (unmethylated cytosines)      | 5mC→T (methylated cytosines)      |
+| **DNA Degradation**       | High (harsh chemical treatment)   | Minimal (enzymatic treatment)     |
+| **Sequence Complexity**   | Reduced (C→T conversion)          | Preserved (original sequence)     |
+| **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
+
+> [!NOTE]
+> We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data.
+
+#### Automatic Parameter Configuration
+
+When `--taps` is specified, the pipeline automatically:
+
+- Uses Rastair for methylation calling (TAPS conversion analysis)
+- Validates aligner compatibility (prevents using Bismark with TAPS data)
+- Configures appropriate deduplication (Picard MarkDuplicates for TAPS)
+
+> [!NOTE]
+> When using `--aligner bwamem`, Rastair is automatically used for methylation calling even without the `--taps` flag, as bwamem is optimized for TAPS data.
+
+### Targeted sequencing (optional)
+
+To run region-focused analysis and optional hybrid-capture metrics:
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --genome GRCh38 \
+  --aligner bismark \
+  --run_targeted_sequencing \
+  --target_regions_file genome_target_regions.bed \
+  --collecthsmetrics
+```
+
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets.
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+Before running the pipeline, you must create a samplesheet containing information about the samples to be analyzed. Use the appropriate parameter to specify the location of this file.
+
+The samplesheet must be a comma-separated file (CSV) with four columns and a header row, formatted as shown in the examples below:
 
 ```bash
 --input '[path to samplesheet file]'
 ```
 
+```csv title="header.csv"
+sample,fastq_1,fastq_2,genome
+```
+
 ### Multiple runs of the same sample
 
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
+When a `sample` has been re-sequenced multiple times (e.g., to increase sequencing depth), the sample identifiers must remain the same across all runs. This ensures that the pipeline concatenates the raw reads from all runs before proceeding with downstream analysis.
+
+Below is an example where the same sample (single-end) has been sequenced across three lanes:
 
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
+sample,fastq_1,fastq_2,genome
+SRR389222,SRR389222_sub1.fastq.gz,,
+SRR389222,SRR389222_sub2.fastq.gz,,
+SRR389222,SRR389222_sub3.fastq.gz,,
+Ecoli_10K_methylated,Ecoli_10K_methylated_R1.fastq.gz,Ecoli_10K_methylated_R2.fastq.gz,
 ```
 
 ### Full samplesheet
 
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
+The pipeline automatically detects whether a sample is single- or paired-end based on the information provided in the samplesheet. While additional columns can be included for metadata or other purposes, the first three columns must strictly adhere to the format described in the table below.
 
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
+A completed samplesheet containing both single- and paired-end data might look like the example below. In this case, the sheet includes six samples, with `TREATMENT_REP3 `sequenced twice:
 
 ```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
+sample,fastq_1,fastq_2,genome
+CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz,
+CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz,
+CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz,
+TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,,
+TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,,
+TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,,
+TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 ```
 
 | Column    | Description                                                                                                                                                                            |
@@ -49,15 +211,34 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
 | `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
 | `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+| `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
+
+## Parameters
+
+Check out the full list of parameters required, available for multiple aligners on [nf-core/methylseq pipeline parameters page](https://nf-co.re/methylseq/parameters/).
+
+- [Input/output options](https://nf-co.re/methylseq/parameters/#input-output-options)
+- [Save intermediate files](https://nf-co.re/methylseq/parameters/#save-intermediate-files)
+- [Reference genome options](https://nf-co.re/methylseq/parameters/#reference-genome-options)
+- [Alignment options](https://nf-co.re/methylseq/parameters/#alignment-options)
+- [Special library types](https://nf-co.re/methylseq/parameters/#special-library-types)
+- [Adapter Trimming](https://nf-co.re/methylseq/parameters/#adapter-trimming)
+- [Bismark options](https://nf-co.re/methylseq/parameters/#bismark-options)
+- [bwa-meth options](https://nf-co.re/methylseq/parameters/#bwa-meth-options)
+- [Qualimap Options](https://nf-co.re/methylseq/parameters/#qualimap-options)
+- [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
+- [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
+
+> It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
 
 ## Running the pipeline
 
 The typical command for running the pipeline is as follows:
 
 ```bash
-nextflow run nf-core/methylseq --input ./samplesheet.csv --outdir ./results --genome GRCh37 -profile docker
+nextflow run nf-core/methylseq --input ./samplesheet.csv --outdir ./results --genome GRCh38 -profile docker
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -95,6 +276,36 @@ genome: 'GRCh37'
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
+### Providing `ext.args` to Tools
+
+Additional arguments can be appended to a command in a module by specifying them within the module's custom configuration. The configurations for modules and subworkflows used in the pipeline can be found in `conf/modules` or `conf/subworkflows`. A module's publishDir path can also be customized in these configurations.
+
+For example, users working with unfinished genomes containing tens or even hundreds of thousands of scaffolds, contigs, or chromosomes often encounter errors when pre-sorting reads into individual chromosome files.
+
+These errors are typically caused by the operating system's limit on the number of file handles that can be open simultaneously (usually 1024; to find out this limit on Linux, use the command: ulimit -a).
+
+To bypass this limitation, the `--scaffolds` option can be added as an additional `ext.args` in `conf/modules/bismark_methylationextractor.config`.
+
+This prevents methylation calls from being pre-sorted into individual chromosome files.
+
+Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+
+For a detailed list of different options available, please refer to the official docs of:
+
+- [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
+- [bwa-meth](https://github.com/brentp/bwa-meth)
+- [bwa-mem](https://github.com/lh3/bwa)
+
+### Running the `test` profile
+
+Every nf-core pipeline comes with test data than can be run using `-profile test`. This test profile is useful for testing whether a user's environment is properly setup.
+
+```bash
+nextflow run nf-core/methylseq \
+  --outdir <OUTDIR> \
+  -profile test,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
+
 ### Updating the pipeline
 
 When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
@@ -103,7 +314,7 @@ When you run the above command, Nextflow automatically pulls the pipeline code f
 nextflow pull nf-core/methylseq
 ```
 
-### Reproducibility
+## Reproducibility
 
 It is a good idea to specify the pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
@@ -165,7 +376,7 @@ You can also supply a run name to resume a specific run: `-resume [run-name]`. U
 
 ### `-c`
 
-Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/usage/configuration) for more information.
+Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/docs/usage/configuration) for more information.
 
 ## Custom configuration
 
@@ -186,6 +397,115 @@ To use a different container from the default container or conda environment spe
 A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
 
 To learn how to provide additional arguments to a particular tool of the pipeline, please see the [customising tool arguments](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#modifying-tool-arguments) section of the nf-core website.
+
+```console
+Command error:
+    .command.sh: line 9:  30 Killed    STAR --genomeDir star --readFilesIn WT_REP1_trimmed.fq.gz --runThreadN 2 --outFileNamePrefix WT_REP1. <TRUNCATED>
+Work dir:
+    /home/pipelinetest/work/9d/172ca5881234073e8d76f2a19c88fb
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+```
+
+#### Resource Limits
+
+In addition to the executor, you may find that pipeline runs occasionally fail due to a particular step of the pipeline requesting more resources than you have on your system.
+
+To avoid these failures, you can tell Nextflow to set a cap pipeline-step resource requests against a list called `resourceLimits` specified in Nextflow config file. These should represent the maximum possible resources of a machine or node.
+
+Specify the maximum resources that can be used (cpus, memory, time) for all processes by default or for a specific process using `withName` or `withLabel` selectors as shown below:
+
+> Global resource limits
+
+```
+process {
+    resourceLimits = [
+        cpus: 4,
+        memory: '15.GB',
+        time: '1.h'
+    ]
+}
+```
+
+> Process-specific resource limits
+
+```
+process {
+  withName: 'BISMARK_ALIGN' {
+    resourceLimits = [
+        cpus: 4,
+        memory: '15.GB',
+        time: '1.h'
+    ]
+  }
+}
+```
+
+#### Advanced option on process level
+
+We have standardised the structure of Nextflow DSL2 pipelines such that all module files will be present in the `modules/` directory and so, based on the search results, the file we want is `modules/nf-core/bismark/align/main.nf`.
+
+In the module `main.nf`, you will notice that there is a `label` directive at the top of the module that is set to `label process_high`.
+
+The [Nextflow `label`](https://www.nextflow.io/docs/latest/process.html#label) directive allows us to organize workflow processes in separate groups which can be referenced in a configuration file to select and configure subset of processes having similar computing requirements.
+
+The default values for the `process_high` label are set in the pipeline's [`base.config`](https://github.com/nf-core/methylseq/blob/master/conf/base.config) which in this case is defined as `72.GB`.
+
+Providing you haven't set any other standard nf-core parameters to **cap** the [resource limits](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits) used by the pipeline then we can try and bypass the `BISMARK_ALIGN` process failure by creating a custom config file that sets at least `72.GB` of memory, in this case increased to `100.GB`.
+
+The custom config below can then be provided to the pipeline via the [`-c`](#-c) parameter as highlighted in previous sections.
+
+```nextflow
+process {
+  withName: 'BISMARK_ALIGN' {
+    memory = 100.GB
+  }
+}
+```
+
+### Updating containers (advanced users)
+
+The [Nextflow DSL2](https://www.nextflow.io/docs/latest/dsl2.html) implementation of this pipeline uses one container per process which makes it much easier to maintain and update software dependencies.
+
+If for some reason you need to use a different version of a particular tool with the pipeline then you just need to identify the `process` name and override the Nextflow `container` definition for that process using the `withName` declaration. For example, in the [nf-core/viralrecon](https://nf-co.re/viralrecon) pipeline a tool called [Pangolin](https://github.com/cov-lineages/pangolin) has been used during the COVID-19 pandemic to assign lineages to SARS-CoV-2 genome sequenced samples. Given that the lineage assignments change quite frequently it doesn't make sense to re-release the nf-core/viralrecon every time a new version of Pangolin has been released. However, you can override the default container used by the pipeline by creating a custom config file and passing it as a command-line argument via `-c custom.config`.
+
+1. Check the default version used by the pipeline in the module file for [Pangolin](https://github.com/nf-core/viralrecon/blob/a85d5969f9025409e3618d6c280ef15ce417df65/modules/nf-core/software/pangolin/main.nf#L14-L19)
+
+2. Find the latest version of the Biocontainer available on [Quay.io](https://quay.io/repository/biocontainers/pangolin?tag=latest&tab=tags)
+
+3. Create the custom config accordingly:
+
+- For Docker:
+
+  ```nextflow
+  process {
+      withName: PANGOLIN {
+          container = 'quay.io/biocontainers/pangolin:3.0.5--pyhdfd78af_0'
+      }
+  }
+  ```
+
+- For Singularity:
+
+  ```nextflow
+  process {
+      withName: PANGOLIN {
+          container = 'https://depot.galaxyproject.org/singularity/pangolin:3.0.5--pyhdfd78af_0'
+      }
+  }
+  ```
+
+- For Conda:
+
+  ```nextflow
+  process {
+      withName: PANGOLIN {
+          conda = 'bioconda::pangolin=3.0.5'
+      }
+  }
+  ```
+
+> **NB:** If you wish to periodically update individual tool-specific results (e.g. Pangolin) generated by the pipeline then you must ensure to keep the `work/` directory otherwise the `-resume` ability of the pipeline will be compromised and it will restart from scratch.
 
 ### nf-core/configs
 
@@ -212,3 +532,35 @@ We recommend adding the following line to your environment to limit this (typica
 ```bash
 NXF_OPTS='-Xms1g -Xmx4g'
 ```
+
+## Nextflow edge releases
+
+Stable releases will be becoming more infrequent as Nextflow shifts its development model to becoming more dynamic via the usage of plugins. This will allow functionality to be added as an extension to the core codebase with a release cycle that could potentially be independent to that of Nextflow itself. As a result of the reduction in stable releases, some pipelines may be required to use Nextflow `edge` releases in order to be able to exploit cutting "edge" features e.g. version 3.0 of the nf-core/rnaseq pipeline requires Nextflow `>=20.11.0-edge` in order to be able to directly download Singularity containers over `http` (see [nf-core/rnaseq#496](https://github.com/nf-core/rnaseq/issues/496)).
+
+There are a number of ways you can install Nextflow `edge` releases, the main difference with stable releases being that you have to `export` the version you would like to install before issuing the appropriate installation/execution commands as highlighted below.
+
+- If you have Nextflow installed already, you can issue the version you would like to use on the same line as the pipeline command and it will be fetched if required before the pipeline execution.
+
+```bash
+NXF_VER="20.11.0-edge" nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+- If you have Nextflow installed already, another alternative to the option above is to `export` it as an environment variable before you run the pipeline command:
+
+```bash
+export NXF_VER="20.11.0-edge"
+nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+- If you would like to download and install a Nextflow `edge` release from scratch with minimal fuss:
+
+```bash
+export NXF_VER="20.11.0-edge"
+wget -qO- get.nextflow.io | bash
+sudo mv nextflow /usr/local/bin/
+nextflow run nf-core/rnaseq -profile test,docker -r 3.0
+```
+
+> Note if you don't have `sudo` privileges required for the last command above then you can move the `nextflow` binary to somewhere else and export that directory to `$PATH` instead. One way of doing that on Linux would be to add `export PATH=$PATH:/path/to/nextflow/binary/` to your `~/.bashrc` file so that it is available every time you login to your system.
+
+- Manually download and install Nextflow from the available [assets](https://github.com/nextflow-io/nextflow/releases) on Github. See [Nextflow installation docs](https://www.nextflow.io/docs/latest/getstarted.html#installation).

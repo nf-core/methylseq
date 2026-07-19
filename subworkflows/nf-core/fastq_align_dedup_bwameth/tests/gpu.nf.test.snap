@@ -1,0 +1,83 @@
+{
+    "Params: parabricks/fq2bammeth single-end | use_gpu": {
+        "content": [
+            [
+                "a7f7ca7b5eb503ab58790d64a0273ed6"
+            ],
+            [
+                "test.sorted.md.bam.bai"
+            ],
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.flagstat:md5,897d500a710a56a7098172167fa71108"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.stats:md5,8e2d01b60192eaa8abe0e2fcb1aded96"
+                ]
+            ],
+            [
+                "test.sorted.md.metrics.txt"
+            ],
+            [
+                "test.flagstat",
+                "test.sorted.md.metrics.txt",
+                "test.stats"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2026-04-30T11:11:35.981680654"
+    },
+    "Params: parabricks/fq2bammeth single-end | use_gpu | skip_deduplication": {
+        "content": [
+            [
+                "a7f7ca7b5eb503ab58790d64a0273ed6"
+            ],
+            [
+                "test.sorted.bam.bai"
+            ],
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.flagstat:md5,897d500a710a56a7098172167fa71108"
+                ]
+            ],
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.stats:md5,8e2d01b60192eaa8abe0e2fcb1aded96"
+                ]
+            ],
+            [
+                
+            ],
+            [
+                "test.flagstat",
+                "test.stats"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.2"
+        },
+        "timestamp": "2026-04-30T11:12:28.491332509"
+    }
+}
