@@ -2,16 +2,6 @@
     "Params: bwamem | taps": {
         "content": [
             {
-                "BWA_INDEX": {
-                    "bwa": "0.7.19-r1273"
-                },
-                "BWA_MEM": {
-                    "bwa": "0.7.19-r1273",
-                    "samtools": "1.22.1"
-                },
-                "GUNZIP": {
-                    "gunzip": 1.13
-                },
                 "RASTAIR_CALL": {
                     "rastair": "rastair 0.8.2"
                 },
@@ -30,19 +20,43 @@
                     "pigz": 2.8
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.2.0"
+                    "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BWA_INDEX": {
+                    "bwa": "0.7.19-r1273"
+                },
+                "BWA_MEM": {
+                    "samtools": "1.22.1"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
                 "MULTIQC": {
                     "multiqc": 1.32
                 },
+                "PICARD_ADDORREPLACEREADGROUPS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.4.0"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -71,10 +85,10 @@
                 "bwamem/deduplicated/SRR389222_sub3.markdup.sorted.bam",
                 "bwamem/deduplicated/SRR389222_sub3.markdup.sorted.bam.bai",
                 "bwamem/deduplicated/picard_metrics",
-                "bwamem/deduplicated/picard_metrics/Ecoli_10K_methylated.markdup.sorted.MarkDuplicates.metrics.txt",
-                "bwamem/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.MarkDuplicates.metrics.txt",
-                "bwamem/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.MarkDuplicates.metrics.txt",
-                "bwamem/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.MarkDuplicates.metrics.txt",
+                "bwamem/deduplicated/picard_metrics/Ecoli_10K_methylated.markdup.sorted.metrics.txt",
+                "bwamem/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.metrics.txt",
+                "bwamem/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.metrics.txt",
+                "bwamem/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.metrics.txt",
                 "fastqc",
                 "fastqc/Ecoli_10K_methylated_1_fastqc.html",
                 "fastqc/Ecoli_10K_methylated_2_fastqc.html",
@@ -112,9 +126,6 @@
                 "multiqc/bwamem/multiqc_data/multiqc_fastqc.txt",
                 "multiqc/bwamem/multiqc_data/multiqc_general_stats.txt",
                 "multiqc/bwamem/multiqc_data/multiqc_picard_dups.txt",
-                "multiqc/bwamem/multiqc_data/multiqc_samtools_flagstat.txt",
-                "multiqc/bwamem/multiqc_data/multiqc_samtools_idxstats.txt",
-                "multiqc/bwamem/multiqc_data/multiqc_samtools_stats.txt",
                 "multiqc/bwamem/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/bwamem/multiqc_data/multiqc_sources.txt",
                 "multiqc/bwamem/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
@@ -122,13 +133,6 @@
                 "multiqc/bwamem/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
                 "multiqc/bwamem/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
                 "multiqc/bwamem/multiqc_data/picard_deduplication.txt",
-                "multiqc/bwamem/multiqc_data/samtools-flagstat-pct-table.txt",
-                "multiqc/bwamem/multiqc_data/samtools-flagstat-table.txt",
-                "multiqc/bwamem/multiqc_data/samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt",
-                "multiqc/bwamem/multiqc_data/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt",
-                "multiqc/bwamem/multiqc_data/samtools-idxstats-mapped-reads-plot_Raw_Counts.txt",
-                "multiqc/bwamem/multiqc_data/samtools-stats-dp.txt",
-                "multiqc/bwamem/multiqc_data/samtools_alignment_plot.txt",
                 "multiqc/bwamem/multiqc_plots",
                 "multiqc/bwamem/multiqc_plots/pdf",
                 "multiqc/bwamem/multiqc_plots/pdf/cutadapt_filtered_reads_plot-cnt.pdf",
@@ -148,17 +152,6 @@
                 "multiqc/bwamem/multiqc_plots/pdf/fastqc_top_overrepresented_sequences_table.pdf",
                 "multiqc/bwamem/multiqc_plots/pdf/picard_deduplication-cnt.pdf",
                 "multiqc/bwamem/multiqc_plots/pdf/picard_deduplication-pct.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-flagstat-pct-table.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-flagstat-table.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Normalised_Counts-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Normalised_Counts-log.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-log.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Raw_Counts-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-idxstats-mapped-reads-plot_Raw_Counts-log.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools-stats-dp.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools_alignment_plot-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/samtools_alignment_plot-pct.pdf",
                 "multiqc/bwamem/multiqc_plots/png",
                 "multiqc/bwamem/multiqc_plots/png/cutadapt_filtered_reads_plot-cnt.png",
                 "multiqc/bwamem/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
@@ -177,17 +170,6 @@
                 "multiqc/bwamem/multiqc_plots/png/fastqc_top_overrepresented_sequences_table.png",
                 "multiqc/bwamem/multiqc_plots/png/picard_deduplication-cnt.png",
                 "multiqc/bwamem/multiqc_plots/png/picard_deduplication-pct.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-flagstat-pct-table.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-flagstat-table.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Normalised_Counts-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Normalised_Counts-log.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-log.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Raw_Counts-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-idxstats-mapped-reads-plot_Raw_Counts-log.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools-stats-dp.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools_alignment_plot-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/samtools_alignment_plot-pct.png",
                 "multiqc/bwamem/multiqc_plots/svg",
                 "multiqc/bwamem/multiqc_plots/svg/cutadapt_filtered_reads_plot-cnt.svg",
                 "multiqc/bwamem/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
@@ -206,17 +188,6 @@
                 "multiqc/bwamem/multiqc_plots/svg/fastqc_top_overrepresented_sequences_table.svg",
                 "multiqc/bwamem/multiqc_plots/svg/picard_deduplication-cnt.svg",
                 "multiqc/bwamem/multiqc_plots/svg/picard_deduplication-pct.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-flagstat-pct-table.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-flagstat-table.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Normalised_Counts-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Normalised_Counts-log.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts-log.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Raw_Counts-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-idxstats-mapped-reads-plot_Raw_Counts-log.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools-stats-dp.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools_alignment_plot-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/samtools_alignment_plot-pct.svg",
                 "multiqc/bwamem/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
@@ -265,16 +236,16 @@
             [
                 "Ecoli_10K_methylated.flagstat:md5,6875b2d49eec4f8b199bceda4f3ab148",
                 "Ecoli_10K_methylated.idxstats:md5,bfccbb1237079763a8b6625821423ed0",
-                "Ecoli_10K_methylated.stats:md5,d0cdfe71937342f869ad66a55b3ef369",
+                "Ecoli_10K_methylated.stats:md5,965d7d335a6f918ee8ec6d359afc5651",
                 "SRR389222_sub1.flagstat:md5,fbfec3e5592cbb11f050ed06983f2bbd",
                 "SRR389222_sub1.idxstats:md5,47eaa730cb2000975476b03df209a5e8",
-                "SRR389222_sub1.stats:md5,f498a01fafd4a576a787ac846a5a4730",
+                "SRR389222_sub1.stats:md5,78965287ea508ee7b387cf9614de7de2",
                 "SRR389222_sub2.flagstat:md5,0ad57bb4ef7b258fc23d9b3ab7ed26b4",
                 "SRR389222_sub2.idxstats:md5,766288f18a1767e4b95c7383005161e8",
-                "SRR389222_sub2.stats:md5,3d6efc44145295bbfd793e89f6e46acd",
+                "SRR389222_sub2.stats:md5,3622a00daee1b2dbe01fcabb6f130c01",
                 "SRR389222_sub3.flagstat:md5,c6e3f93f66e47ff2138f640eaebd1c3b",
                 "SRR389222_sub3.idxstats:md5,59fa8ca802e25072377a7527a6801f9b",
-                "SRR389222_sub3.stats:md5,e109c00d56f1cf2866106cccc45706b9",
+                "SRR389222_sub3.stats:md5,8c80eeb3baf1fcbaf02cbdff40ab22ae",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -289,24 +260,14 @@
                 "fastqc_sequence_counts_plot.txt:md5,58eeeb06bc9dcc1764c7daf0847d6bbf",
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
-                "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
+                "multiqc_citations.txt:md5,78cc0f4521878c6c4beaf54ad968e411",
                 "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
                 "multiqc_picard_dups.txt:md5,d55cf05658f0502ffbe45fa497627b73",
-                "multiqc_samtools_flagstat.txt:md5,0d63d64b2505227942e242ea7161784f",
-                "multiqc_samtools_idxstats.txt:md5,dc18fb4da0d25d75a9b4fbecc0ec023b",
-                "multiqc_samtools_stats.txt:md5,14a5c75559585110bb9804edb8dcedcc",
                 "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_MeanQualityByCycle_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_deduplication.txt:md5,1cf872a93c4e7c5dfa9bcaba5e5c9609",
-                "samtools-flagstat-pct-table.txt:md5,e791dcd246ed65ee26c77d8e51cc6eff",
-                "samtools-flagstat-table.txt:md5,16819a66667e73cf53cafd3319767452",
-                "samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt:md5,7e6d6ed99de572d894d4fe8387882e73",
-                "samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt:md5,7e6d6ed99de572d894d4fe8387882e73",
-                "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,474c4c51b3f330261d1b8a9c9995e4d8",
-                "samtools-stats-dp.txt:md5,ee0270689f78b57905ebd812bb87891b",
-                "samtools_alignment_plot.txt:md5,3a748a90ccfbb3e55811b71bcb1eece8",
                 "Ecoli_10K_methylated.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "SRR389222_sub1.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "SRR389222_sub2.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
@@ -343,10 +304,10 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-10T15:03:38.755690653",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.10.0"
-        },
-        "timestamp": "2025-12-07T11:47:22.138798"
+            "nf-test": "0.9.5",
+            "nextflow": "25.04.0"
+        }
     }
 }
