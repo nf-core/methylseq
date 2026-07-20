@@ -102,7 +102,6 @@ workflow METHYLSEQ {
             ch_fastq
         )
         ch_reads = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions)
     }
     else {
         ch_reads = ch_fastq

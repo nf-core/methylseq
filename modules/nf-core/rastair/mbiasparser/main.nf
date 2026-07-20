@@ -12,7 +12,7 @@ process RASTAIR_MBIASPARSER {
     output:
     tuple val(meta), path("*.rastair_mbias_processed.pdf"),         emit: mbias_processed_pdf, optional: true
     tuple val(meta), path("*.rastair_mbias_processed.csv"),         emit: mbias_processed_csv
-    tuple val(meta), env(trim_OT), env(trim_OB),                    emit: mbias_processed_str
+    tuple val(meta), env('trim_OT'), env('trim_OB'),                emit: mbias_processed_str
     path "versions.yml",                                            emit: versions
 
     when:
