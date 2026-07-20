@@ -2,11 +2,6 @@
     "-profile test": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -42,6 +37,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -353,7 +351,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -374,10 +372,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T15:11:47.138958229",
+        "timestamp": "2026-07-18T18:10:43.769319093",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     }
 }
