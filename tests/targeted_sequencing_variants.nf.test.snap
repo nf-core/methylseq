@@ -5,11 +5,6 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -51,6 +46,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -277,7 +275,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,edac97e95c57ea6276d3b3801ed732a8",
@@ -310,7 +308,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:24:40.673609969",
+        "timestamp": "2026-07-20T19:27:41.082059818",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -331,11 +329,6 @@
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
                 },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -371,6 +364,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -703,7 +699,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -724,7 +720,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:26:53.465214403",
+        "timestamp": "2026-07-20T19:30:00.164307069",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -738,11 +734,6 @@
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
-                },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -779,6 +770,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1109,7 +1103,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -1130,7 +1124,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:23:55.470483401",
+        "timestamp": "2026-07-20T19:26:39.235852041",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -1147,11 +1141,6 @@
                 },
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
-                },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1194,6 +1183,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1422,7 +1414,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,edac97e95c57ea6276d3b3801ed732a8",
@@ -1455,7 +1447,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:26:13.749547317",
+        "timestamp": "2026-07-20T19:29:20.015101173",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -1466,11 +1458,6 @@
             {
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
-                },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1513,6 +1500,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1771,7 +1761,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,edac97e95c57ea6276d3b3801ed732a8",
@@ -1804,7 +1794,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:25:28.27874717",
+        "timestamp": "2026-07-20T19:28:32.454762599",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
