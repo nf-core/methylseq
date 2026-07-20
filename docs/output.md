@@ -364,7 +364,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 - `summaries/sample.yml`
   - This file contains metadata, model parameters, and extrapolation results per sample analysed.
 - `plots/sample.html`
-  - This folder contains one interactive, HTML file per sample analysed.
+  - This interactive, HTML file contains a saturation curve per sample analysed.
 
 ### MultiQC
 
