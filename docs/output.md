@@ -362,7 +362,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 **Output directory: `results/methurator`**
 
 - `summaries/sample.yml`
-  - This file contains metadata, model parameters, and extrapolation results for each
+  - This file contains metadata, model parameters, and extrapolation results per sample analysed.
 - `plots/sample.html`
   - This folder contains one interactive, HTML file per sample analysed.
 
