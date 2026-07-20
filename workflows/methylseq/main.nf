@@ -306,7 +306,7 @@ workflow METHYLSEQ {
     //
     if (params.run_methurator) {
         if (params.taps || params.aligner == 'bwamem') {
-            error("ERROR: --run_methurator can't be running using TAPS workflow.")
+            error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
         }
         ch_methurator_inputs = ch_bam
             .join(ch_bai)
