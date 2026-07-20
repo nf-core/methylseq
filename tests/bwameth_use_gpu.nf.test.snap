@@ -2,8 +2,19 @@
     "Params: PARABRICKS_FQ2BAMMETH - GPU Profile": {
         "content": [
             {
+                "TRIMGALORE": {
+                    "trimgalore": "0.6.10",
+                    "cutadapt": 4.9,
+                    "pigz": 2.8
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -14,40 +25,29 @@
                 "METHYLDACKEL_MBIAS": {
                     "methyldackel": "0.6.1"
                 },
+                "MULTIQC": {
+                    "multiqc": 1.32
+                },
                 "PARABRICKS_FQ2BAMMETH": {
-                    "pbrun": "4.6.0-1"
+                    "parabricks": "4.6.0-1"
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.22.1"
-                },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
-                "MULTIQC": {
-                    "multiqc": 1.32
+                    "samtools": "1.23.1"
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.22.1"
+                    "samtools": "1.23.1"
                 }
             },
             [
@@ -68,9 +68,9 @@
                 "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam",
                 "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam.bai",
                 "bwameth/deduplicated/picard_metrics",
-                "bwameth/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.MarkDuplicates.metrics.txt",
-                "bwameth/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.MarkDuplicates.metrics.txt",
-                "bwameth/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.MarkDuplicates.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.metrics.txt",
                 "fastqc",
                 "fastqc/SRR389222_sub1_fastqc.html",
                 "fastqc/SRR389222_sub2_fastqc.html",
@@ -204,11 +204,11 @@
             ],
             [
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,638e03d7a02d8e7ce8694aab73f1e163",
+                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,43352aa3930321f587adf80b38d25cef",
+                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,470b6040d2b5832bd34989837c47a3e6",
+                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
                 "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
@@ -258,8 +258,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.10.2"
+            "nextflow": "25.04.0"
         },
-        "timestamp": "2025-12-07T18:50:19.538801925"
+        "timestamp": "2026-07-10T15:57:55.32124461"
     }
 }

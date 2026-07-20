@@ -6,7 +6,7 @@
  * HS Library Size, Percent Duplicates, and Percent Off Bait. This is relevant for methylome experiments with targeted seq.
  */
 
-include { FILTER_BEDGRAPH_TARGETS                      } from '../../../modules/local/filter_bedgraph_targets'
+include { FILTER_BEDGRAPH_TARGETS                      } from '../../../modules/local/filter_bedgraph_targets/main'
 include { BEDTOOLS_INTERSECT as BEDTOOLS_INTERSECT_COV } from '../../../modules/nf-core/bedtools/intersect/main'
 include { PICARD_CREATESEQUENCEDICTIONARY              } from '../../../modules/nf-core/picard/createsequencedictionary/main'
 include { PICARD_BEDTOINTERVALLIST                     } from '../../../modules/nf-core/picard/bedtointervallist/main'

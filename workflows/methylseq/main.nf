@@ -128,23 +128,22 @@ workflow METHYLSEQ {
             .combine(ch_bismark_index)
             .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
                 reads: [meta, reads]
-                fasta: [meta_fasta, fasta]
+                fasta_fai: [meta_fasta, fasta, []]
                 bismark_index: [meta_bismark, bismark_index]
             }
 
         FASTQ_ALIGN_DEDUP_BISMARK(
             ch_bismark_inputs.reads,
-            ch_bismark_inputs.fasta,
+            ch_bismark_inputs.fasta_fai,
             ch_bismark_inputs.bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
+        ch_bai = FASTQ_ALIGN_DEDUP_BISMARK.out.index
         ch_bedgraph = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_coverage = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_coverage
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
-        ch_versions = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     else if (params.aligner == 'bwameth') {
 
@@ -152,17 +151,15 @@ workflow METHYLSEQ {
             .combine(ch_fasta)
             .combine(ch_fasta_index)
             .combine(ch_bwameth_index)
-            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwameth, bwameth_index ->
+            .multiMap { meta, reads, meta_fasta, fasta, _meta_fasta_index, fasta_index, meta_bwameth, bwameth_index ->
                 reads: [meta, reads]
-                fasta: [meta_fasta, fasta]
-                fasta_index: [meta_fasta_index, fasta_index]
+                fasta_fai: [meta_fasta, fasta, fasta_index]
                 bwameth_index: [meta_bwameth, bwameth_index]
             }
 
         FASTQ_ALIGN_DEDUP_BWAMETH(
             ch_bwameth_inputs.reads,
-            ch_bwameth_inputs.fasta,
-            ch_bwameth_inputs.fasta_index,
+            ch_bwameth_inputs.fasta_fai,
             ch_bwameth_inputs.bwameth_index,
             params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
@@ -170,7 +167,6 @@ workflow METHYLSEQ {
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
         ch_bai = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
-        ch_versions = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
     else if (params.aligner == 'bwamem') {
 
@@ -178,25 +174,26 @@ workflow METHYLSEQ {
             .combine(ch_fasta)
             .combine(ch_fasta_index)
             .combine(ch_bwamem_index)
-            .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
+            .multiMap { meta, reads, meta_fasta, fasta, _meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
                 reads: [meta, reads]
-                fasta: [meta_fasta, fasta]
-                fasta_index: [meta_fasta_index, fasta_index]
+                fasta_fai: [meta_fasta, fasta, fasta_index]
                 bwamem_index: [meta_bwamem, bwamem_index]
             }
 
         FASTQ_ALIGN_DEDUP_BWAMEM(
             ch_bwamem_inputs.reads,
-            ch_bwamem_inputs.fasta,
-            ch_bwamem_inputs.fasta_index,
+            ch_bwamem_inputs.fasta_fai,
             ch_bwamem_inputs.bwamem_index,
             params.skip_deduplication,
+            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
+            'bam',
+            [[:], []],
+            [[:], []],
         )
 
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.bai
+        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.index
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
-        ch_versions = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMEM.out.versions.unique { it.baseName })
     }
     else {
         error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth' or 'bwamem'.")
@@ -237,17 +234,13 @@ workflow METHYLSEQ {
             .combine(ch_fasta)
             .combine(ch_fasta_index)
             .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
-                bam: [meta, bam]
-                bai: [meta, bai]
-                fasta: [meta, fasta]
-                fasta_index: [meta, fai]
+                bam: [meta, bam, bai]
+                fasta: [meta, fasta, fai]
             }
 
         BAM_METHYLDACKEL(
             ch_methyldackel_inputs.bam,
-            ch_methyldackel_inputs.bai,
             ch_methyldackel_inputs.fasta,
-            ch_methyldackel_inputs.fasta_index,
         )
         ch_bedgraph = BAM_METHYLDACKEL.out.methydackel_extract_bedgraph
         // channel: [ val(meta), [ bedgraph ]  ]
@@ -255,7 +248,6 @@ workflow METHYLSEQ {
         // channel: [ val(meta), [ methylkit ] ]
         ch_mbias = BAM_METHYLDACKEL.out.methydackel_mbias
         // channel: [ val(meta), [ mbias ] ]
-        ch_versions = ch_versions.mix(BAM_METHYLDACKEL.out.versions)
     }
 
     //

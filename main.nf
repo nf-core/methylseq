@@ -74,7 +74,6 @@ workflow NFCORE_METHYLSEQ {
         params.run_methurator,
         params.use_mem2
     )
-    ch_versions = ch_versions.mix(FASTA_INDEX_METHYLSEQ.out.versions)
 
     //
     // WORKFLOW: Run pipeline
