@@ -27,7 +27,7 @@ nextflow_pipeline {
             params: [
                 bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz",
                 run_methurator: true,
-                minimum_coverage: "1"
+                methurator_minimum_coverage: "1"
             ]
         ],
         [
