@@ -21,7 +21,7 @@
                     "methyldackel": "0.6.1"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "PARABRICKS_FQ2BAMMETH": {
                     "parabricks": "4.6.0-1"
@@ -127,6 +127,7 @@
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
+                "multiqc/bwameth/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
                 "multiqc/bwameth/multiqc_plots/pdf/fastqc_per_base_sequence_quality_plot.pdf",
@@ -147,6 +148,7 @@
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
                 "multiqc/bwameth/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
+                "multiqc/bwameth/multiqc_plots/png/fastqc-status-check-heatmap.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
                 "multiqc/bwameth/multiqc_plots/png/fastqc_per_base_sequence_quality_plot.png",
@@ -167,6 +169,7 @@
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
                 "multiqc/bwameth/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
+                "multiqc/bwameth/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
                 "multiqc/bwameth/multiqc_plots/svg/fastqc_per_base_sequence_quality_plot.svg",
@@ -254,10 +257,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-18T18:59:22.952768805",
         "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "26.04.3"
-        }
+            "nf-test": "0.9.3",
+            "nextflow": "25.04.0"
+        },
+        "timestamp": "2026-07-20T19:50:12.365714943"
     }
 }

@@ -7,8 +7,9 @@ lint:
     - docs/images/nf-core-methylseq_logo_light.png
     - docs/images/nf-core-methylseq_logo_dark.png
     - assets/nf-core-methylseq_logo_light.png
+    - .gitignore
   modules_config: false
-nf_core_version: 3.5.1
+nf_core_version: 4.0.2
 repository_type: pipeline
 template:
   author: Phil Ewels, Sateesh Peri

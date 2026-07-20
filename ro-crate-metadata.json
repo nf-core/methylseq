@@ -1,6 +1,6 @@
 {
     "@context": [
-        "https://w3id.org/ro/crate/1.1/context",
+        "https://w3id.org/ro/crate/1.2/context",
         {
             "GithubService": "https://w3id.org/ro/terms/test#GithubService",
             "JenkinsService": "https://w3id.org/ro/terms/test#JenkinsService",
@@ -22,8 +22,8 @@
             "@id": "./",
             "@type": "Dataset",
             "creativeWorkStatus": "InProgress",
-            "datePublished": "2025-12-12T10:54:03+00:00",
-            "description": "<h1>\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"docs/images/nf-core-methylseq_logo_dark.png\">\n    <img alt=\"nf-core/methylseq\" src=\"docs/images/nf-core-methylseq_logo_light.png\">\n  </picture>\n</h1>\n\n[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-core/methylseq)\n[![GitHub Actions CI Status](https://github.com/nf-core/methylseq/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/nf-test.yml)\n[![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/methylseq/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.1343417-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.1343417)\n[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)\n\n[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.04.0-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)\n[![nf-core template version](https://img.shields.io/badge/nf--core_template-3.5.1-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/3.5.1)\n[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)\n[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)\n[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)\n[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/methylseq)\n\n[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23methylseq-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/methylseq)[![Follow on Bluesky](https://img.shields.io/badge/bluesky-%40nf__core-1185fe?labelColor=000000&logo=bluesky)](https://bsky.app/profile/nf-co.re)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)\n\n## Introduction\n\n**nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.\n\n![nf-core/methylseq metro map](docs/images/4.2.0_metromap.png)\n\nThe pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity / Podman / Charliecloud / Apptainer containers making installation trivial and results highly reproducible.\n\nOn release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/methylseq/results).\n\n> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](docs/usage/bs-seq-primer.md)\n\n## Pipeline Summary\n\nThe pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark), [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel) or [BWA-Mem](https://github.com/lh3/bwa) plus [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/) for TAPS data processing. rastair can also be used with bwa-meth aligned reads by setting the aligner to `--aligner bwameth` and adding the flag `--taps`.\n\nChoose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat`, `--aligner bwameth` or `--aligner bwamem`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html) and the [Parabricks implementation of bwa-mem (fq2bammemh)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implement the baseline tools `bwa-meth` and `bwa-mem`. To use this option, include the `gpu` profile along with `--aligner bwameth` or `--aligner bwamem`.\n\nNote: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--use_mem2`. The GPU pathway (Parabricks) requires `-profile gpu` and a container runtime (Docker, Singularity, or Podman); Conda/Mamba are not supported for the GPU module.\n\n| Step                                         | Bismark workflow         | bwa-meth workflow     | bwa-mem + TAPS workflow    |\n| -------------------------------------------- | ------------------------ | --------------------- | -------------------------- |\n| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              | bwa index                  |\n| Merge re-sequenced FastQ files               | cat                      | cat                   | cat                        |\n| Raw data QC                                  | FastQC                   | FastQC                | FastQC                     |\n| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          | Trim Galore!               |\n| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              | bwa mem                    |\n| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates | Picard MarkDuplicates      |\n| Extract methylation calls                    | Bismark                  | MethylDackel          | TAPS subworkflow (rastair) |\n| Sample report                                | Bismark                  | -                     | -                          |\n| Summary Report                               | Bismark                  | -                     | -                          |\n| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_ | Qualimap _(optional)_      |\n| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_   | Preseq _(optional)_        |\n| Project Report                               | MultiQC                  | MultiQC               | MultiQC                    |\n\nOptional targeted sequencing analysis is available via `--run_targeted_sequencing` and `--target_regions_file`; see the [usage documentation](https://nf-co.re/methylseq/usage) for details.\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,fastq_1,fastq_2,genome\nSRR389222_sub1,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz,,\nSRR389222_sub2,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub2.fastq.gz,,\nSRR389222_sub3,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub3.fastq.gz,,\nEcoli_10K_methylated,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R1.fastq.gz,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R2.fastq.gz,\n```\n\n> Each row represents a fastq file (single-end) or a pair of fastq files (paired end).\n\nNow, you can run the pipeline using default parameters as:\n\n```bash\nnextflow run nf-core/methylseq --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/usage/getting_started/configuration#custom-configuration-files).\n\nFor more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/usage) and the [parameter documentation](https://nf-co.re/methylseq/parameters).\n\n## Pipeline output\n\nTo see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.\nFor more details about the output files and reports, please refer to the [output documentation](https://nf-co.re/methylseq/output).\n\n## Credits\n\nnf-core/methylseq was originally written by Phil Ewels ([@ewels](https://github.com/ewels)), and Sateesh Peri ([@sateeshperi](https://github.com/sateeshperi)) is its active maintainer.\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n- Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))\n- Edmund Miller ([@EMiller88](https://github.com/emiller88))\n- Rickard Hammar\u00e9n ([@Hammarn](https://github.com/Hammarn/))\n- Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))\n- Patrick H\u00fcther ([@phue](https://github.com/phue/))\n- Maxime U Garcia ([@maxulysse](https://github.com/maxulysse/))\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](.github/CONTRIBUTING.md).\n\nFor further information or help, don't hesitate to get in touch on the [Slack `#methylseq` channel](https://nfcore.slack.com/channels/methylseq) (you can join with [this invite](https://nf-co.re/join/slack)).\n\n## Citations\n\nIf you use nf-core/methylseq for your analysis, please cite it using the following doi: [10.5281/zenodo.1343417](https://doi.org/10.5281/zenodo.1343417)\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nYou can cite the `nf-core` publication as follows:\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
+            "datePublished": "2026-07-19T16:27:37+00:00",
+            "description": "<h1>\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"docs/images/nf-core-methylseq_logo_dark.png\">\n    <img alt=\"nf-core/methylseq\" src=\"docs/images/nf-core-methylseq_logo_light.png\">\n  </picture>\n</h1>\n\n[![Open in GitHub Codespaces](https://img.shields.io/badge/Open_In_GitHub_Codespaces-black?labelColor=grey&logo=github)](https://github.com/codespaces/new/nf-core/methylseq)\n[![GitHub Actions CI Status](https://github.com/nf-core/methylseq/actions/workflows/nf-test.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/nf-test.yml)\n[![GitHub Actions Linting Status](https://github.com/nf-core/methylseq/actions/workflows/linting.yml/badge.svg)](https://github.com/nf-core/methylseq/actions/workflows/linting.yml)[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/methylseq/results)[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.1343417-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.1343417)\n[![nf-test](https://img.shields.io/badge/unit_tests-nf--test-337ab7.svg)](https://www.nf-test.com)\n\n[![Nextflow](https://img.shields.io/badge/version-%E2%89%A525.04.0-green?style=flat&logo=nextflow&logoColor=white&color=%230DC09D&link=https%3A%2F%2Fnextflow.io)](https://www.nextflow.io/)\n[![nf-core template version](https://img.shields.io/badge/nf--core_template-4.0.2-green?style=flat&logo=nfcore&logoColor=white&color=%2324B064&link=https%3A%2F%2Fnf-co.re)](https://github.com/nf-core/tools/releases/tag/4.0.2)\n[![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)\n[![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)\n[![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)\n[![Launch on Seqera Platform](https://img.shields.io/badge/Launch%20%F0%9F%9A%80-Seqera%20Platform-%234256e7)](https://cloud.seqera.io/launch?pipeline=https://github.com/nf-core/methylseq)\n\n[![Get help on Slack](http://img.shields.io/badge/slack-nf--core%20%23methylseq-4A154B?labelColor=000000&logo=slack)](https://nfcore.slack.com/channels/methylseq)[![Follow on Bluesky](https://img.shields.io/badge/bluesky-%40nf__core-1185fe?labelColor=000000&logo=bluesky)](https://bsky.app/profile/nf-co.re)[![Follow on Mastodon](https://img.shields.io/badge/mastodon-nf__core-6364ff?labelColor=FFFFFF&logo=mastodon)](https://mstdn.science/@nf_core)[![Watch on YouTube](http://img.shields.io/badge/youtube-nf--core-FF0000?labelColor=000000&logo=youtube)](https://www.youtube.com/c/nf-core)\n\n## Introduction\n\n**nf-core/methylseq** is a bioinformatics analysis pipeline used for Methylation (Bisulfite) sequencing data. It pre-processes raw data from FastQ inputs, aligns the reads and performs extensive quality-control on the results.\n\n![nf-core/methylseq metro map](docs/images/4.2.0_metromap.png)\n\nThe pipeline is built using [Nextflow](https://www.nextflow.io), a workflow tool to run tasks across multiple compute infrastructures in a very portable manner. It uses Docker / Singularity / Podman / Charliecloud / Apptainer containers making installation trivial and results highly reproducible.\n\nOn release, automated continuous integration tests run the pipeline on a full-sized dataset on the AWS cloud infrastructure. This ensures that the pipeline runs on AWS, has sensible resource allocation defaults set to run on real-world datasets, and permits the persistent storage of results to benchmark between pipeline releases and other analysis sources.The results obtained from the full-sized test can be viewed on the [nf-core website](https://nf-co.re/methylseq/results).\n\n> Read more about **Bisulfite Sequencing & Three-Base Aligners** used in this pipeline [here](docs/usage/bs-seq-primer.md)\n\n## Pipeline Summary\n\nThe pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark), [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel) or [BWA-Mem](https://github.com/lh3/bwa) plus [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/) for TAPS data processing. rastair can also be used with bwa-meth aligned reads by setting the aligner to `--aligner bwameth` and adding the flag `--taps`.\n\nChoose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat`, `--aligner bwameth` or `--aligner bwamem`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html) and the [Parabricks implementation of bwa-mem (fq2bammemh)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implement the baseline tools `bwa-meth` and `bwa-mem`. To use this option, include the `gpu` profile along with `--aligner bwameth` or `--aligner bwamem`.\n\nNote: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--use_mem2`. The GPU pathway (Parabricks) requires `-profile gpu` and a container runtime (Docker, Singularity, or Podman); Conda/Mamba are not supported for the GPU module.\n\n| Step                                         | Bismark workflow         | bwa-meth workflow     | bwa-mem + TAPS workflow    |\n| -------------------------------------------- | ------------------------ | --------------------- | -------------------------- |\n| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              | bwa index                  |\n| Merge re-sequenced FastQ files               | cat                      | cat                   | cat                        |\n| Raw data QC                                  | FastQC                   | FastQC                | FastQC                     |\n| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          | Trim Galore!               |\n| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              | bwa mem                    |\n| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates | Picard MarkDuplicates      |\n| Extract methylation calls                    | Bismark                  | MethylDackel          | TAPS subworkflow (rastair) |\n| Sample report                                | Bismark                  | -                     | -                          |\n| Summary Report                               | Bismark                  | -                     | -                          |\n| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_ | Qualimap _(optional)_      |\n| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_   | Preseq _(optional)_        |\n| Project Report                               | MultiQC                  | MultiQC               | MultiQC                    |\n\nOptional targeted sequencing analysis is available via `--run_targeted_sequencing` and `--target_regions_file`; see the [usage documentation](https://nf-co.re/methylseq/usage) for details.\n\n## Usage\n\n> [!NOTE]\n> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.\n\nFirst, prepare a samplesheet with your input data that looks as follows:\n\n`samplesheet.csv`:\n\n```csv\nsample,fastq_1,fastq_2,genome\nSRR389222_sub1,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz,,\nSRR389222_sub2,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub2.fastq.gz,,\nSRR389222_sub3,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub3.fastq.gz,,\nEcoli_10K_methylated,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R1.fastq.gz,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R2.fastq.gz,\n```\n\n> Each row represents a fastq file (single-end) or a pair of fastq files (paired end).\n\nNow, you can run the pipeline using default parameters as:\n\n```bash\nnextflow run nf-core/methylseq --input samplesheet.csv --outdir <OUTDIR> --genome GRCh37 -profile <docker/singularity/podman/shifter/charliecloud/conda/institute>\n```\n\n> [!WARNING]\n> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).\n\nFor more details and further functionality, please refer to the [usage documentation](https://nf-co.re/methylseq/usage) and the [parameter documentation](https://nf-co.re/methylseq/parameters).\n\n## Pipeline output\n\nTo see the results of an example test run with a full size dataset refer to the [results](https://nf-co.re/methylseq/results) tab on the nf-core website pipeline page.\nFor more details about the output files and reports, please refer to the [output documentation](https://nf-co.re/methylseq/output).\n\n## Credits\n\nnf-core/methylseq was originally written by Phil Ewels ([@ewels](https://github.com/ewels)), and Sateesh Peri ([@sateeshperi](https://github.com/sateeshperi)) is its active maintainer.\n\nWe thank the following people for their extensive assistance in the development of this pipeline:\n\n- Felix Krueger ([@FelixKrueger](https://github.com/FelixKrueger))\n- Edmund Miller ([@EMiller88](https://github.com/emiller88))\n- Rickard Hammarén ([@Hammarn](https://github.com/Hammarn/))\n- Alexander Peltzer ([@apeltzer](https://github.com/apeltzer/))\n- Patrick Hüther ([@phue](https://github.com/phue/))\n- Maxime U Garcia ([@maxulysse](https://github.com/maxulysse/))\n\n## Contributions and Support\n\nIf you would like to contribute to this pipeline, please see the [contributing guidelines](docs/CONTRIBUTING.md).\n\nFor further information or help, don't hesitate to get in touch on the [Slack `#methylseq` channel](https://nfcore.slack.com/channels/methylseq) (you can join with [this invite](https://nf-co.re/join/slack)).\n\n## Citations\n\nIf you use nf-core/methylseq for your analysis, please cite it using the following doi: [10.5281/zenodo.1343417](https://doi.org/10.5281/zenodo.1343417)\n\nAn extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.\n\nYou can cite the `nf-core` publication as follows:\n\n> **The nf-core framework for community-curated bioinformatics pipelines.**\n>\n> Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.\n>\n> _Nat Biotechnol._ 2020 Feb 13. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x).\n",
             "hasPart": [
                 {
                     "@id": "main.nf"
@@ -42,6 +42,9 @@
                 },
                 {
                     "@id": "modules/"
+                },
+                {
+                    "@id": "modules/local/"
                 },
                 {
                     "@id": "modules/nf-core/"
@@ -99,7 +102,7 @@
             },
             "mentions": [
                 {
-                    "@id": "#08a234ff-f206-4e67-8da6-a63a1c58d37e"
+                    "@id": "#c4fe94fc-0e80-4e60-8035-21350d5b37d0"
                 }
             ],
             "name": "nf-core/methylseq"
@@ -112,7 +115,7 @@
             },
             "conformsTo": [
                 {
-                    "@id": "https://w3id.org/ro/crate/1.1"
+                    "@id": "https://w3id.org/ro/crate/1.2"
                 },
                 {
                     "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
@@ -126,22 +129,48 @@
                 "SoftwareSourceCode",
                 "ComputationalWorkflow"
             ],
-            "creator": [
+            "author": [
                 {
-                    "@id": "#max.u.garcia@gmail.com"
+                    "@id": "https://orcid.org/0000-0003-4101-2502"
                 },
                 {
-                    "@id": "#phil.ewels@seqera.io"
+                    "@id": "https://orcid.org/0000-0002-9879-9070"
+                }
+            ],
+            "contributor": [
+                {
+                    "@id": "https://orcid.org/0000-0003-4101-2502"
                 },
                 {
-                    "@id": "#edmund.miller@seqera.io"
+                    "@id": "https://orcid.org/0000-0002-5513-3324"
                 },
                 {
-                    "@id": "#fkrueger@altoslabs.com"
+                    "@id": "https://orcid.org/0000-0002-2398-0334"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0001-9017-591X"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-6503-2180"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-3315-2484"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0003-2827-9261"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-1261-6836"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-9571-2582"
+                },
+                {
+                    "@id": "https://orcid.org/0000-0002-6001-1276"
                 }
             ],
             "dateCreated": "",
-            "dateModified": "2025-12-12T16:24:03Z",
+            "dateModified": "2026-07-19T16:27:37Z",
             "dct:conformsTo": "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE/",
             "keywords": [
                 "nf-core",
@@ -153,23 +182,25 @@
                 "epigenomics",
                 "methyl-seq",
                 "pbat",
-                "rrbs"
+                "rastair",
+                "rrbs",
+                "taps"
             ],
             "license": [
                 "MIT"
             ],
             "maintainer": [
                 {
-                    "@id": "#max.u.garcia@gmail.com"
+                    "@id": "https://orcid.org/0000-0002-9879-9070"
                 },
                 {
-                    "@id": "#phil.ewels@seqera.io"
+                    "@id": "https://orcid.org/0000-0002-5513-3324"
                 },
                 {
-                    "@id": "#edmund.miller@seqera.io"
+                    "@id": "https://orcid.org/0000-0002-2398-0334"
                 },
                 {
-                    "@id": "#fkrueger@altoslabs.com"
+                    "@id": "https://orcid.org/0000-0002-6001-1276"
                 }
             ],
             "name": [
@@ -202,11 +233,11 @@
             "version": "!>=25.04.0"
         },
         {
-            "@id": "#08a234ff-f206-4e67-8da6-a63a1c58d37e",
+            "@id": "#c4fe94fc-0e80-4e60-8035-21350d5b37d0",
             "@type": "TestSuite",
             "instance": [
                 {
-                    "@id": "#8503be2d-86df-426f-b87e-847476e1ee5e"
+                    "@id": "#5b297134-5219-4064-a91a-ed64153f3119"
                 }
             ],
             "mainEntity": {
@@ -215,7 +246,7 @@
             "name": "Test suite for nf-core/methylseq"
         },
         {
-            "@id": "#8503be2d-86df-426f-b87e-847476e1ee5e",
+            "@id": "#5b297134-5219-4064-a91a-ed64153f3119",
             "@type": "TestInstance",
             "name": "GitHub Actions workflow for testing nf-core/methylseq",
             "resource": "repos/nf-core/methylseq/actions/workflows/nf-test.yml",
@@ -256,6 +287,11 @@
             "@id": "modules/",
             "@type": "Dataset",
             "description": "Modules used by the pipeline"
+        },
+        {
+            "@id": "modules/local/",
+            "@type": "Dataset",
+            "description": "Pipeline-specific modules"
         },
         {
             "@id": "modules/nf-core/",
@@ -344,28 +380,90 @@
             "url": "https://nf-co.re/"
         },
         {
-            "@id": "#max.u.garcia@gmail.com",
+            "@id": "https://orcid.org/0000-0003-4101-2502",
             "@type": "Person",
-            "email": "max.u.garcia@gmail.com",
-            "name": "Maxime U Garcia"
-        },
-        {
-            "@id": "#phil.ewels@seqera.io",
-            "@type": "Person",
+            "affiliation": "Seqera",
             "email": "phil.ewels@seqera.io",
-            "name": "Phil Ewels"
+            "name": "Phil Ewels",
+            "url": "https://github.com/ewels"
         },
         {
-            "@id": "#edmund.miller@seqera.io",
+            "@id": "https://orcid.org/0000-0002-9879-9070",
             "@type": "Person",
-            "email": "edmund.miller@seqera.io",
-            "name": "Edmund Miller"
+            "affiliation": "PeriMatrixIT",
+            "email": "perisateesh@gmail.com",
+            "name": "Sateesh Peri",
+            "url": "https://github.com/sateeshperi"
         },
         {
-            "@id": "#fkrueger@altoslabs.com",
+            "@id": "https://orcid.org/0000-0002-5513-3324",
             "@type": "Person",
+            "affiliation": "Altos Lab",
             "email": "fkrueger@altoslabs.com",
-            "name": "Felix Krueger"
+            "name": "Felix Krueger",
+            "url": "https://github.com/FelixKrueger"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-2398-0334",
+            "@type": "Person",
+            "affiliation": "Department of Biological Sciences and Center for Systems Biology, University of Texas at Dallas, Texas, USA",
+            "email": "nf-core@edmundmiller.dev",
+            "name": "Edmund Miller",
+            "url": "https://github.com/edmundmiller"
+        },
+        {
+            "@id": "https://orcid.org/0000-0001-9017-591X",
+            "@type": "Person",
+            "email": "rickard.hammaren@scilifelab.se",
+            "name": "Rickard Hammarén",
+            "url": "https://github.com/Hammarn"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-6503-2180",
+            "@type": "Person",
+            "affiliation": "Boehringer Ingelheim Pharma GmBh & Co KG",
+            "email": "alex.peltzer@gmail.com",
+            "name": "Alexander Peltzer",
+            "url": "https://github.com/apeltzer"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-3315-2484",
+            "@type": "Person",
+            "email": "patrick.huether@gmail.com",
+            "name": "Patrick Hüther",
+            "url": "https://github.com/phue"
+        },
+        {
+            "@id": "https://orcid.org/0000-0003-2827-9261",
+            "@type": "Person",
+            "affiliation": "Seqera",
+            "email": "maxime.garcia@seqera.io",
+            "name": "Maxime U Garcia",
+            "url": "https://github.com/maxulysse"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-1261-6836",
+            "@type": "Person",
+            "affiliation": "Human Technopole",
+            "email": "daniel.carrillo@fht.org",
+            "name": "Daniel Carrillo Bautista",
+            "url": "https://github.com/dcarrillox"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-9571-2582",
+            "@type": "Person",
+            "affiliation": "Human Technopole",
+            "email": "luigi.lamparelli@fht.org",
+            "name": "Luigi Antonio Lamparelli",
+            "url": "https://github.com/luigilamparelli"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-6001-1276",
+            "@type": "Person",
+            "affiliation": "Watchmaker Genomics",
+            "email": "eduard.casas@watchmakergenomics.com",
+            "name": "Eduard Casas",
+            "url": "https://github.com/eduard-watchmaker"
         }
     ]
 }
