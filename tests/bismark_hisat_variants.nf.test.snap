@@ -2,11 +2,6 @@
     "Params: bismark_hisat with rrbs": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -39,6 +34,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -338,7 +336,7 @@
                 "multiqc_bismark_alignment.txt:md5,3a53587ae3dbd351028bcc783f1403c4",
                 "multiqc_bismark_methextract.txt:md5,49c773a9e0f10291974cf55ea095208c",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,8752cce2e7320f49516e897c60487831"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -375,20 +373,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:52:55.429983261",
+        "timestamp": "2026-07-18T18:15:23.007060472",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark_hisat with save_reference and save_align_intermeds": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -424,6 +417,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -782,7 +778,7 @@
                 "multiqc_bismark_dedup.txt:md5,5e58032548eda3c39384495cf0cfaa3d",
                 "multiqc_bismark_methextract.txt:md5,208b2ab329054fb8c664831747573fbb",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -819,20 +815,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:53:37.903546677",
+        "timestamp": "2026-07-18T18:16:03.01345335",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark_hisat": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -868,6 +859,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1179,7 +1173,7 @@
                 "multiqc_bismark_dedup.txt:md5,5e58032548eda3c39384495cf0cfaa3d",
                 "multiqc_bismark_methextract.txt:md5,208b2ab329054fb8c664831747573fbb",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -1200,10 +1194,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:52:13.497844254",
+        "timestamp": "2026-07-18T18:14:45.826117518",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     }
 }

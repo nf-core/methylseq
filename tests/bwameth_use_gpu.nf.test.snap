@@ -2,11 +2,6 @@
     "Params: PARABRICKS_FQ2BAMMETH - GPU Profile": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -48,6 +43,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -229,7 +227,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,b86ac1b21d5f9adb7875640ddef95b5a",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,36b233534f727b98041df8c987e05b9e",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
-                "multiqc_cutadapt.txt:md5,8562f9a4488d847dd6457a95b983b808",
+                "multiqc_cutadapt.txt:md5,51b7d662dd00b4bc2cac5252ff14632e",
                 "multiqc_samtools_flagstat.txt:md5,082795eb003adb27217832b56fbda0d3",
                 "multiqc_samtools_stats.txt:md5,8ce3aebd6baaf0d197db5a517f9f5671",
                 "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
@@ -256,10 +254,10 @@
                 ]
             ]
         ],
+        "timestamp": "2026-07-18T18:59:22.952768805",
         "meta": {
-            "nf-test": "0.9.3",
-            "nextflow": "25.04.0"
-        },
-        "timestamp": "2026-07-10T15:57:55.32124461"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
+        }
     }
 }

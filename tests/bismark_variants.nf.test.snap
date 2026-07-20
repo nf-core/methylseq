@@ -5,11 +5,6 @@
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
                 },
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -45,6 +40,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -606,7 +604,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,b9d42869faad581bd963d3d3bb490026",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732",
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
                 "qualimap_coverage_histogram.txt:md5,7cd194077fe839edf034b44cc73dd024",
                 "qualimap_gc_content.txt:md5,4f6ec70d9fb71ffe5f2f99f44fe5ef0c",
                 "qualimap_genome_fraction.txt:md5,3e528946a376ae752b57adaaa73f5cdf",
@@ -631,20 +629,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T15:00:47.970440164",
+        "timestamp": "2026-07-18T18:23:32.717768947",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with nomeseq": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -683,6 +676,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1038,7 +1034,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -1059,20 +1055,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:58:32.15805515",
+        "timestamp": "2026-07-18T18:20:30.242121848",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with skip_multiqc": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -1105,6 +1096,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1279,20 +1273,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T15:01:19.843600418",
+        "timestamp": "2026-07-18T18:24:03.739774052",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark (default)": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -1328,6 +1317,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -1639,7 +1631,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -1660,20 +1652,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:54:20.004907724",
+        "timestamp": "2026-07-18T18:16:41.439460113",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with cytosine_report": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -1712,6 +1699,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -2043,7 +2033,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -2064,20 +2054,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:56:19.42864735",
+        "timestamp": "2026-07-18T18:18:32.501033786",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with em_seq and clip_r1": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -2113,6 +2098,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -2424,7 +2412,7 @@
                 "multiqc_bismark_dedup.txt:md5,16e464f5bf2f1851a571ec87cbc1a0d9",
                 "multiqc_bismark_methextract.txt:md5,7706d3d9e4490eeb449d14dce92ada68",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -2445,10 +2433,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:57:48.176679354",
+        "timestamp": "2026-07-18T18:19:48.116274419",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with skip_trimming": {
@@ -2791,11 +2779,6 @@
     "Params: bismark with skip_deduplication": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -2828,6 +2811,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -3127,7 +3113,7 @@
                 "multiqc_bismark_alignment.txt:md5,8ee2e88d6b5c1411b4665b02f82ae1b7",
                 "multiqc_bismark_methextract.txt:md5,59ae6807dd32e01f9793335997217b0a",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -3164,20 +3150,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:55:37.262992414",
+        "timestamp": "2026-07-18T18:17:52.528548034",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with rrbs": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -3210,6 +3191,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -3509,7 +3493,7 @@
                 "multiqc_bismark_alignment.txt:md5,715120445eec068fb944e5458bbe45a9",
                 "multiqc_bismark_methextract.txt:md5,a29d6abb8cd7e56180fd9553d5019e2d",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,8752cce2e7320f49516e897c60487831"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -3546,20 +3530,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:57:02.780338451",
+        "timestamp": "2026-07-18T18:19:08.75082939",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with save_reference and save_align_intermeds": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -3595,6 +3574,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -3945,7 +3927,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -3982,10 +3964,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:59:15.817696372",
+        "timestamp": "2026-07-18T18:21:12.041359243",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication": {
@@ -4265,11 +4247,6 @@
     "Params: bismark with run_preseq": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -4305,6 +4282,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -4616,7 +4596,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -4637,20 +4617,15 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T14:59:59.915051953",
+        "timestamp": "2026-07-18T18:21:52.318927557",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with skip_fastqc": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -4683,6 +4658,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             },
             [
@@ -4926,7 +4904,7 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,883891ac4901385102be053212068732"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
             [
                 [
@@ -4947,10 +4925,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-10T15:01:57.017198454",
+        "timestamp": "2026-07-18T18:24:40.560091579",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "26.04.3"
         }
     }
 }
