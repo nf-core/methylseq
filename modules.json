@@ -82,12 +82,12 @@
                     },
                     "methurator/gtestimator": {
                         "branch": "master",
-                        "git_sha": "85a3650c949d1146cdb576f986640e84775b7743",
+                        "git_sha": "2789ce924a0745bc3d8c8929dc2a6be8a11920e6",
                         "installed_by": ["modules"]
                     },
                     "methurator/plot": {
                         "branch": "master",
-                        "git_sha": "85a3650c949d1146cdb576f986640e84775b7743",
+                        "git_sha": "2789ce924a0745bc3d8c8929dc2a6be8a11920e6",
                         "installed_by": ["modules"]
                     },
                     "methyldackel/extract": {
