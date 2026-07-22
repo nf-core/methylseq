@@ -93,10 +93,10 @@
                 }
             }
         ],
-        "timestamp": "2026-07-20T19:15:27.330319888",
+        "timestamp": "2026-07-22T15:21:39.90353",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.0"
         }
     },
     "Params: bismark with run_preseq with bowtie2-index": {
@@ -208,11 +208,6 @@
     "Params: bismark with run_methurator with bowtie2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -244,7 +239,7 @@
                     "methurator": "2.2.0"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -252,12 +247,15 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-22T09:59:40.942724",
+        "timestamp": "2026-07-22T14:49:08.685976",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.0"
