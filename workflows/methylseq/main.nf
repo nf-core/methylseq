@@ -104,7 +104,6 @@ workflow METHYLSEQ {
             ch_fastq
         )
         ch_reads = TRIMGALORE.out.reads
-        ch_versions = ch_versions.mix(TRIMGALORE.out.versions)
     }
     else {
         ch_reads = ch_fastq
@@ -247,7 +246,6 @@ workflow METHYLSEQ {
         ch_methylkit = BAM_METHYLDACKEL.out.methydackel_extract_methylkit
         // channel: [ val(meta), [ methylkit ] ]
         ch_mbias = BAM_METHYLDACKEL.out.methydackel_mbias
-        // channel: [ val(meta), [ mbias ] ]
     }
 
     //
@@ -335,35 +333,17 @@ workflow METHYLSEQ {
         .set { ch_collated_versions }
 
     //
-    // Topic channel versions - written separately to avoid blocking MULTIQC
-    // These will be merged into the main versions file on workflow completion
+    // Topic channel versions - collected below (after MULTIQC) and written to a
+    // separate file, then merged into the main versions file on workflow completion.
+    // MULTIQC's own version is mixed in explicitly because the nf-core module no
+    // longer publishes to the `versions` topic (avoids a self-dependency hang).
     //
-    channel.topic("versions")
-        .distinct()
-        .filter { entry -> !(entry instanceof Path) }
-        .map { process, tool, version ->
-            def processName = process[process.lastIndexOf(':') + 1..-1]
-            "${processName}:\n  ${tool}: ${version}"
-        }
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_methylseq_topic_versions.yml',
-            sort: true,
-            newLine: true,
-        )
+    ch_topic_versions = channel.topic("versions")
 
     //
     // MODULE: MultiQC
     //
     if (!params.skip_multiqc) {
-        ch_multiqc_config = channel.fromPath("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)
-        ch_multiqc_custom_config = params.multiqc_config
-            ? channel.fromPath(params.multiqc_config, checkIfExists: true)
-            : channel.empty()
-        ch_multiqc_logo = params.multiqc_logo
-            ? channel.fromPath(params.multiqc_logo, checkIfExists: true)
-            : channel.empty()
-
         summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
         ch_workflow_summary = channel.value(paramsSummaryMultiqc(summary_params))
 
@@ -400,19 +380,45 @@ workflow METHYLSEQ {
             ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect { it[1] }.ifEmpty([]))
         }
 
+        // New nf-core MULTIQC (v4.0.2 template): single meta-based tuple input,
+        // config passed as a list, logo/replace/sample resolved as values.
         MULTIQC(
-            ch_multiqc_files.collect(),
-            ch_multiqc_config.toList(),
-            ch_multiqc_custom_config.toList(),
-            ch_multiqc_logo.toList(),
-            [],
-            [],
+            ch_multiqc_files.flatten().collect().map { files ->
+                [
+                    [id: 'multiqc'],
+                    files,
+                    [file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)] + (params.multiqc_config ? [file(params.multiqc_config, checkIfExists: true)] : []),
+                    params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
+                    [],
+                    [],
+                ]
+            }
         )
-        ch_multiqc_report = MULTIQC.out.report.toList()
+        // Keep the report path UNWRAPPED (flat) — PIPELINE_COMPLETION consumes it via getVal().
+        ch_multiqc_report = MULTIQC.out.report.map { _meta, report -> report }.toList()
+        // MULTIQC now emits its version via `emit: versions` (topic-shaped tuple); fold it into the topic file.
+        ch_topic_versions = ch_topic_versions.mix(MULTIQC.out.versions)
     }
     else {
         ch_multiqc_report = channel.empty()
     }
+
+    //
+    // Collate topic-channel versions (including MULTIQC) into a separate file.
+    //
+    ch_topic_versions
+        .distinct()
+        .filter { entry -> !(entry instanceof Path) }
+        .map { process, tool, version ->
+            def processName = process[process.lastIndexOf(':') + 1..-1]
+            "${processName}:\n  ${tool}: ${version}"
+        }
+        .collectFile(
+            storeDir: "${params.outdir}/pipeline_info",
+            name: 'nf_core_methylseq_topic_versions.yml',
+            sort: true,
+            newLine: true,
+        )
 
     emit:
     bam            = ch_bam // channel: [ val(meta), path(bam) ]

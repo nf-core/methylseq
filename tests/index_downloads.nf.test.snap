@@ -2,11 +2,6 @@
     "Params: default with bowtie2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -32,7 +27,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -40,12 +35,15 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-20T14:36:23.084678",
+        "timestamp": "2026-07-20T19:12:51.939144355",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.0"
@@ -54,11 +52,6 @@
     "Params: bismark_hisat with hisat2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -87,17 +80,20 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:15:26.659051274",
+        "timestamp": "2026-07-20T19:15:27.330319888",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
@@ -106,11 +102,6 @@
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -136,7 +127,7 @@
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -144,12 +135,15 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-20T14:38:29.004384",
+        "timestamp": "2026-07-20T19:13:28.811076397",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.0"
@@ -158,11 +152,6 @@
     "Params: bwameth with bwameth-index": {
         "content": [
             {
-                "TRIMGALORE": {
-                    "trimgalore": "0.6.10",
-                    "cutadapt": 4.9,
-                    "pigz": 2.8
-                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 },
@@ -182,7 +171,7 @@
                     "methyldackel": "0.6.1"
                 },
                 "MULTIQC": {
-                    "multiqc": 1.32
+                    "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
@@ -202,12 +191,15 @@
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
                 },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
                 "UNTAR_BWAMETH": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-07-10T15:14:45.804488445",
+        "timestamp": "2026-07-20T19:14:49.256172434",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"

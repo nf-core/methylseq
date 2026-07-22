@@ -7,16 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
+- 🔧 Update Trim Galore to v2.3.0 (the Rust rewrite: faster, single static binary, Cutadapt-free with bundled FastQC). Trimming (and FastQC) outputs change versus 0.6.10 — the Rust engine plus the v2.3.0 R2 3' poly-G fix — so downstream alignment/methylation and MultiQC results shift accordingly.
 - 🔧 Update Bismark to v3.1.0 ([#614](https://github.com/nf-core/methylseq/pull/614))
 - 🔧 Update Bismark to v3.0.0 and refresh the bismark, samtools, bwa, bwameth, methyldackel and parabricks nf-core modules and alignment subworkflows to their latest versions ([#610](https://github.com/nf-core/methylseq/pull/610))
   - Migrated module version reporting to Nextflow topic channels
   - Threaded a combined `[ meta, fasta, fai ]` channel through the alignment subworkflows
 - 🔧 Add [methurator](https://vibtobilab.github.io/methurator/latest/) as an additional QC tool for both the Bismark and bwa-meth subworkflows.
+- 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
 
 ### Bug fixes & refactoring
 
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))
 - 🐛 Remove the `aws_batch` profile, which referenced a deleted config file and broke config parsing (and linting) on recent Nextflow versions ([#610](https://github.com/nf-core/methylseq/pull/610))
+- 🐛 Fix `RASTAIR_MBIASPARSER` strict-parser error by quoting the `env('trim_OT')`/`env('trim_OB')` output declarations (local nf-core module patch); the pipeline now lints cleanly under Nextflow's strict parser (≥25.10)
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
