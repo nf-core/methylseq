@@ -358,6 +358,12 @@
                     "help_text": "Specify to run Bismark with the `--local` flag to allow soft-clipping of reads. This should only be used with care in certain single-cell applications or PBAT libraries, which may produce chimeric read pairs. (See [Wu et al.](https://doi.org/10.1093/bioinformatics/btz125)).",
                     "fa_icon": "fas fa-search"
                 },
+                "combined_index": {
+                    "type": "boolean",
+                    "description": "Align against a single combined (CT+GA) Bismark index instead of the classic per-strand model.",
+                    "help_text": "Runs Bismark 3.1.0+ combined-index alignment: directional/PBAT use `--combined_index`, non-directional adds `--combined_index_sequential`. Parallelism is driven by Bowtie 2/HISAT2 threads (`-p`) rather than `--multicore`. Generally faster and lighter (one index load). Results are concordance-gated (not byte-identical) to the classic model. **Requires an index built with `bismark_genome_preparation --combined_genome`** — the pipeline builds this automatically when it generates the index, but pre-built indexes (e.g. AWS iGenomes via `--genome`, or a `--bismark_index` that lacks a `Bisulfite_Genome/Combined/` directory) are not compatible and the run will fail with a clear message. Applies to the `bismark` and `bismark_hisat` aligners only (ignored for bwameth/bwamem). Ignored when `--local_alignment` is set.",
+                    "fa_icon": "fas fa-layer-group"
+                },
                 "minins": {
                     "type": "integer",
                     "fa_icon": "fas fa-compress-alt",

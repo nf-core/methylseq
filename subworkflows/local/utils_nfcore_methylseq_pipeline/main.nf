@@ -190,6 +190,19 @@ workflow PIPELINE_COMPLETION {
 //
 def validateInputParameters() {
     genomeExistsError()
+
+    // --combined_index (opt-in, nf-core/methylseq#615) launch-time sanity warnings.
+    if (params.combined_index) {
+        if (!params.aligner.startsWith('bismark')) {
+            log.warn("--combined_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}.")
+        }
+        else if (params.local_alignment) {
+            log.warn("--combined_index is ignored when --local_alignment is set (combined-index alignment does not support soft-clipping); using the faithful per-strand path.")
+        }
+        else if (params.bismark_index) {
+            log.warn("--combined_index with a pre-built --bismark_index: the index must have been built with 'bismark_genome_preparation --combined_genome', otherwise alignment will fail (pre-built iGenomes indexes are not compatible).")
+        }
+    }
 }
 
 //

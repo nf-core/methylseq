@@ -13,7 +13,8 @@
                     "bismark/align": {
                         "branch": "master",
                         "git_sha": "7d264419ee98edd5a0886d3782fb87553628272b",
-                        "installed_by": ["fastq_align_dedup_bismark"]
+                        "installed_by": ["fastq_align_dedup_bismark"],
+                        "patch": "modules/nf-core/bismark/align/bismark-align.diff"
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",

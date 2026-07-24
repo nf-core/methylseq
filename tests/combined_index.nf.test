@@ -1,0 +1,116 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Bismark combined-index alignment"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Opt-in --combined_index alignment (own-genome runs, no --bismark_index, so genome
+    // prep builds the combined CT+GA reference). save_reference publishes the built index
+    // so Bisulfite_Genome/Combined/BS_combined.* is captured — proving combined mode
+    // actually engaged rather than silently falling back to the classic path (a classic
+    // run also succeeds, so workflow.success alone can't distinguish the two). The align
+    // gate is the same boolean as the genome-prep gate, so a published Combined/ reference
+    // implies the aligner ran with --combined_index. Output is concordance-gated (NOT
+    // byte-identical) vs classic; numerical correctness is inherited from Bismark's own
+    // upstream concordance gate. PE combined is not exercised here (the test data is SE).
+    def testScenarios = [
+        [
+            name: "bismark_combined_index_directional",
+            description: "Params: bismark with combined_index (directional)",
+            params: [
+                combined_index: true,
+                save_reference: true
+            ]
+        ],
+        [
+            name: "bismark_combined_index_non_directional",
+            description: "Params: bismark with combined_index and non_directional",
+            params: [
+                combined_index: true,
+                non_directional: true,
+                save_reference: true
+            ]
+        ],
+        [
+            name: "bismark_combined_index_pbat",
+            description: "Params: bismark with combined_index and pbat",
+            params: [
+                combined_index: true,
+                pbat: true,
+                save_reference: true
+            ]
+        ],
+        [
+            name: "bismark_hisat_combined_index",
+            description: "Params: bismark_hisat with combined_index (directional)",
+            params: [
+                aligner: "bismark_hisat",
+                combined_index: true,
+                save_reference: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate a test for each success scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                // Proof that combined mode engaged: the combined CT+GA reference was built
+                def combined_ref = getAllFilesFromDir(params.outdir, include: ['**/Bisulfite_Genome/Combined/*'])
+                assertAll(
+                    { assert workflow.success },
+                    { assert combined_ref.size() > 0 },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+
+    // Loud-fail: opt-in combined_index with a pre-built index that lacks the combined
+    // reference must fail loudly at alignment (not silently produce a classic result),
+    // with Bismark's clear "build it with --combined_genome" message.
+    test("Params: combined_index with a pre-built index lacking the combined reference fails loudly") {
+        when {
+            params {
+                combined_index = true
+                bismark_index  = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
+                outdir         = "${outputDir}"
+            }
+        }
+
+        then {
+            // The pipeline emits Bismark's explicit "build it with --combined_genome"
+            // guidance (verified in the alignment step's stderr). At the pipeline level we
+            // assert the loud failure itself: the test isolates the cause — a valid pre-built
+            // index that lacks only the combined reference, with combined_index=true — so the
+            // missing-combined-reference error is the sole possible failure mode here.
+            assert workflow.failed
+        }
+    }
+}

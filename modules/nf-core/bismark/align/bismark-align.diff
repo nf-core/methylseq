@@ -1,0 +1,34 @@
+Changes in component 'nf-core/bismark/align'
+'modules/nf-core/bismark/align/environment.yml' is unchanged
+'modules/nf-core/bismark/align/meta.yml' is unchanged
+Changes in 'bismark/align/main.nf':
+--- modules/nf-core/bismark/align/main.nf
++++ modules/nf-core/bismark/align/main.nf
+@@ -28,8 +28,19 @@
+     }
+     def fastq = meta.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
+ 
++    // Resource model. Two mutually exclusive paths:
++    //  - Combined-index mode (--combined_index): a single-instance alignment. bismark
++    //    rejects --multicore here (forked chunking would reload the large combined index
++    //    per chunk), so parallelise with Bowtie 2/HISAT2 intra-instance threads (-p, >= 2).
++    //    Deterministic via --reorder, so output is thread-count-invariant.
++    //  - Classic mode: the faithful per-strand fork model (--multicore), unchanged.
++    if(args =~ /--combined_index(?!_)/){
++        if(task.cpus && (task.cpus as int) >= 2 && !(args =~ /(?:^|\s)-p\s/)){
++            args += " -p ${task.cpus}"
++        }
++    }
+     // Try to assign sensible bismark --multicore if not already set
+-    if(!args.contains('--multicore') && task.cpus){
++    else if(!args.contains('--multicore') && task.cpus){
+ 
+         // Numbers based on recommendation by Felix for a typical mouse genome
+         def ccore = 1
+
+'modules/nf-core/bismark/align/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/bismark/align/tests/nextflow.config' is unchanged
+'modules/nf-core/bismark/align/tests/main.nf.test' is unchanged
+'modules/nf-core/bismark/align/.conda-lock/linux_arm64-bd-f83bc6617fa3cadd_1.txt' is unchanged
+'modules/nf-core/bismark/align/.conda-lock/linux_amd64-bd-9557d6ab108a83e4_1.txt' is unchanged
+************************************************************
