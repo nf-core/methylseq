@@ -70,6 +70,15 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bismark_run_methurator",
+            description: "Params: bismark with run_methurator",
+            params: [
+                run_methurator: true,
+                methurator_minimum_coverage: "1",
+                methurator_compute_ci: false
+            ]
+        ],
+        [
             name: "bismark_run_qualimap",
             description: "Params: bismark with run_qualimap",
             params: [
@@ -134,11 +143,15 @@ nextflow_pipeline {
             }
 
             then {
+                def snapshotArgs = getStandardAssertionData(params.outdir)
+                if (scenario.name == "bismark_run_methurator") {
+                    snapshotArgs += getAllFilesFromDir(params.outdir, include: ['methurator/summaries/*.yml'])
+                        .collect { file -> [file.getName(), path(file.toString()).readLines()[3..10].join('\n').md5() ] }
+                }
+
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(
-                        *getStandardAssertionData(params.outdir)
-                    ).match() }
+                    { assert snapshot(*snapshotArgs).match() }
                 )
             }
         }

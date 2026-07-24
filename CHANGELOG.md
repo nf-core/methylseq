@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Update Bismark to v3.0.0 and refresh the bismark, samtools, bwa, bwameth, methyldackel and parabricks nf-core modules and alignment subworkflows to their latest versions ([#610](https://github.com/nf-core/methylseq/pull/610))
   - Migrated module version reporting to Nextflow topic channels
   - Threaded a combined `[ meta, fasta, fai ]` channel through the alignment subworkflows
+- 🔧 Add [methurator](https://vibtobilab.github.io/methurator/latest/) as an additional QC tool for both the Bismark and bwa-meth subworkflows.
 - 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
 
 ### Bug fixes & refactoring

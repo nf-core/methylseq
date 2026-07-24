@@ -46,7 +46,7 @@
         "timestamp": "2026-07-20T19:12:51.939144355",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.0"
         }
     },
     "Params: bismark_hisat with hisat2-index": {
@@ -93,10 +93,10 @@
                 }
             }
         ],
-        "timestamp": "2026-07-20T19:15:27.330319888",
+        "timestamp": "2026-07-22T15:21:39.90353",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.0"
         }
     },
     "Params: bismark with run_preseq with bowtie2-index": {
@@ -146,7 +146,7 @@
         "timestamp": "2026-07-20T19:13:28.811076397",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.0"
         }
     },
     "Params: bwameth with bwameth-index": {
@@ -203,6 +203,62 @@
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.04.0"
+        }
+    },
+    "Params: bismark with run_methurator with bowtie2-index": {
+        "content": [
+            {
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BISMARK_ALIGN": {
+                    "bismark": "3.1.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.1.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.1.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.1.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.1.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHURATOR_GTESTIMATOR": {
+                    "methurator": "2.2.0"
+                },
+                "METHURATOR_PLOT": {
+                    "methurator": "2.2.0"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.34
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
+                "UNTAR_BISMARK": {
+                    "untar": 1.34
+                }
+            }
+        ],
+        "timestamp": "2026-07-22T14:49:08.685976",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.0"
         }
     }
 }

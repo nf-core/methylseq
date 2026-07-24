@@ -71,6 +71,7 @@ workflow NFCORE_METHYLSEQ {
         ch_or_val_bwamem_index,
         params.aligner,
         params.collecthsmetrics,
+        params.run_methurator,
         params.use_mem2
     )
 

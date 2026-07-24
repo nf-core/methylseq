@@ -8,6 +8,8 @@
 */qualimap/bamqc/*/qualimapReport.html
 */qualimap/bamqc/**/*.{pdf,png,svg}
 enrichment_metrics/*
+methurator/summaries/*
+methurator/plots/*
 fastqc/*.html
 fastqc/zips/*.zip
 multiqc/*/multiqc_data/*.{log,json}

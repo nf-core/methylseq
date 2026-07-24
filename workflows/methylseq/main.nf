@@ -24,6 +24,8 @@ include { validateInputSamplesheet      } from '../../subworkflows/local/utils_n
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
+include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -294,6 +296,28 @@ workflow METHYLSEQ {
         )
         ch_preseq = PRESEQ_LCEXTRAP.out.lc_extrap
         ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
+    }
+
+    //
+    // MODULE: methurator gtestimator
+    // skipped by default. to use run with `--run_methurator` param.
+    //
+    if (params.run_methurator) {
+        if (params.taps || params.aligner == 'bwamem') {
+            error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
+        }
+        ch_methurator_inputs = ch_bam
+            .join(ch_bai)
+            .combine(ch_fasta.map { meta, fasta -> fasta })
+            .combine(ch_fasta_index.map { meta, index -> index })
+        METHURATOR_GTESTIMATOR(
+            ch_methurator_inputs
+        )
+        ch_methurator_gtestimator = METHURATOR_GTESTIMATOR.out.summary_report
+
+        METHURATOR_PLOT(
+            ch_methurator_gtestimator
+        )
     }
 
     //
