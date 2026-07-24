@@ -461,7 +461,7 @@
                 },
                 "methurator_compute_ci": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "Compute confidence intervals using bootstrap replicates."
                 },
                 "methurator_t_max": {
