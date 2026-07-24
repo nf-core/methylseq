@@ -96,6 +96,14 @@ Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb
 
 > HISAT2 offers splice-aware alignment, making it suitable for RNA-based analyses (e.g., [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments). For such cases, you can supply a file with known splice sites using the `--known_splices` parameter.
 
+#### Combined-index alignment (`--combined_index`)
+
+By default Bismark aligns each read against separate C→T- and G→A-converted genome indices (the classic per-strand model, parallelised with `--multicore`). Bismark `v3.1.0`+ can instead align against a single **combined** CT+GA index with `--combined_index`, which is generally faster and lighter — it loads the index once and is parallelised with Bowtie 2/HISAT2 threads (`-p`) rather than the fork-based `--multicore`. Directional and PBAT libraries use `--combined_index`; non-directional libraries additionally use `--combined_index_sequential` (the leanest execution model). It applies to the `bismark` and `bismark_hisat` aligners.
+
+Combined-index results are **concordance-gated, not byte-identical** to the classic per-strand model (roughly 1 read in 10⁴ is placed differently but equally validly). The option is **off by default**, so default runs are unchanged.
+
+> **`--combined_index` requires a genome index built with `--combined_genome`.** When the pipeline builds the index itself (i.e. you do not pass `--bismark_index`), it does this automatically. **Pre-built indexes are not compatible** — including AWS iGenomes (`--genome`) and any `--bismark_index` that lacks a `Bisulfite_Genome/Combined/` directory. Such runs fail with a clear message; rebuild your own genome, or omit `--combined_index`. The option is ignored when `--local_alignment` is set (combined-index alignment does not support soft-clipping).
+
 ### Workflow: BWA-Meth
 
 The second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) as the alignment tool and [MethylDackel](https://github.com/dpryan79/methyldackel) for post-processing.
