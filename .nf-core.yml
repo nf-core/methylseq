@@ -3,10 +3,13 @@ lint:
     - lib/nfcore_external_java_deps.jar
     - conf/modules.config
     - .github/workflows/ci.yml
+    - .github/workflows/linting_comment.yml
   files_unchanged:
     - docs/images/nf-core-methylseq_logo_light.png
     - docs/images/nf-core-methylseq_logo_dark.png
     - assets/nf-core-methylseq_logo_light.png
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
   modules_config: false
 nf_core_version: 3.5.1
 repository_type: pipeline
