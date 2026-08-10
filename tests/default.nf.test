@@ -2,32 +2,51 @@ nextflow_pipeline {
 
     name "Test pipeline"
     script "../main.nf"
+    config "./nextflow.config"
     tag "pipeline"
+    tag "cpu"
 
     test("-profile test") {
-
         when {
             params {
-                outdir = "$outputDir"
+                outdir = "${outputDir}"
             }
         }
 
         then {
-            // stable_path: All files + folders in ${params.outdir}/ with a stable path (including file name)
-            def stable_path = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
-            // stable_content: All files in ${params.outdir}/ with stable content
-            def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
-            assert workflow.success
+            // stable_name: All files + folders in ${params.outdir}/ with a stable name
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            // stable_path: All files in ${params.outdir}/ with stable content
+            def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            // bam_files: All bam files
+            def bam_files  = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
+                { assert workflow.success},
                 { assert snapshot(
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     // All stable path name, with a relative path
-                    stable_path,
+                    stable_name,
                     // All files with stable contents
-                    stable_content
+                    stable_path,
+                    // All bam files
+                    bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
                 ).match() }
             )
         }
     }
+
+    test("Params: default with bowtie2-index") {
+        when {
+            params {
+                bismark_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz"
+                outdir        = "${outputDir}"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+    }
+
 }

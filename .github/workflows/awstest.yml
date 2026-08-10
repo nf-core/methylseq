@@ -9,6 +9,9 @@ jobs:
     name: Run AWS tests
     if: github.repository == 'nf-core/methylseq'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        aligner: ["bismark", "bismark_hisat", "bwameth"]
     steps:
       # Launch workflow using Seqera Platform CLI tool action
       - name: Launch workflow via Seqera Platform

@@ -15,21 +15,23 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { METHYLSEQ  } from './workflows/methylseq'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { getGenomeAttribute      } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { FASTA_INDEX_METHYLSEQ     } from './subworkflows/nf-core/fasta_index_methylseq/main'
+include { BWA_INDEX                 } from './modules/nf-core/bwa/index/main'
+include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { METHYLSEQ                 } from './workflows/methylseq/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     GENOME PARAMETER VALUES
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
-// TODO nf-core: Remove this line if you don't need a FASTA file
-//   This is an example of how to use getGenomeAttribute() to fetch parameters
-//   from igenomes.config using `--genome`
-params.fasta = getGenomeAttribute('fasta')
+params.fasta         = getGenomeAttribute('fasta')
+params.fasta_index   = getGenomeAttribute('fasta_index')
+params.bwameth_index = getGenomeAttribute('bwameth')
+params.bwamem_index  = getGenomeAttribute('bwa')
+params.bismark_index = params.aligner == 'bismark_hisat' ? getGenomeAttribute('bismark_hisat2') : getGenomeAttribute('bismark')
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,18 +49,51 @@ workflow NFCORE_METHYLSEQ {
 
     main:
 
+    ch_versions = channel.empty()
+
+    //
+    // Initialize file channels or values based on params
+    //
+    ch_fasta                = params.fasta         ? channel.fromPath(params.fasta).map{ it -> [ [id:it.baseName], it ] } : channel.empty()
+    ch_or_val_fasta_index   = params.fasta_index   ? channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bismark_index = params.bismark_index ? channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwameth_index = params.bwameth_index ? channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwamem_index  = params.bwamem_index  ? channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : []
+
+    //
+    // SUBWORKFLOW: Prepare any required reference genome indices
+    //
+    FASTA_INDEX_METHYLSEQ(
+        ch_fasta,
+        ch_or_val_fasta_index,
+        ch_or_val_bismark_index,
+        ch_or_val_bwameth_index,
+        ch_or_val_bwamem_index,
+        params.aligner,
+        params.collecthsmetrics,
+        params.run_methurator,
+        params.use_mem2
+    )
+
     //
     // WORKFLOW: Run pipeline
     //
+
     METHYLSEQ (
         samplesheet,
-        params.multiqc_config,
-        params.multiqc_logo,
-        params.multiqc_methods_description,
-        params.outdir,
+        ch_versions,
+        FASTA_INDEX_METHYLSEQ.out.fasta,
+        FASTA_INDEX_METHYLSEQ.out.fasta_index,
+        FASTA_INDEX_METHYLSEQ.out.bismark_index,
+        FASTA_INDEX_METHYLSEQ.out.bwameth_index,
+        FASTA_INDEX_METHYLSEQ.out.bwamem_index,
     )
+    ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
+
     emit:
-    multiqc_report = METHYLSEQ.out.multiqc_report // channel: /path/to/multiqc_report.html
+    multiqc_report = METHYLSEQ.out.multiqc_report // channel: [ path(multiqc_report.html )  ]
+    versions       = ch_versions                  // channel: [ path(versions.yml) ]
+
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
