@@ -20,8 +20,12 @@ nextflow_pipeline {
             def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             // bam_files: All bam files
             def bam_files  = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // 4 cpus / 2 strand instances -> -p 2 (size guard: every{} is vacuous on an empty list)
+            def align_reports = getAllFilesFromDir(params.outdir, include: ['**/alignments/logs/*_report.txt'])
             assertAll(
                 { assert workflow.success},
+                { assert align_reports.size() > 0 },
+                { assert align_reports.every { report -> report.text.contains('-p 2 --reorder') } },
                 { assert snapshot(
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
