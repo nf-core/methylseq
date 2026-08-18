@@ -4,6 +4,7 @@
 */deduplicated/logs/*.txt
 */deduplicated/picard_metrics/*.txt
 */{reports,summary}/*.{html,txt}
+*/reference_genome/BismarkIndex/Bisulfite_Genome/*/*.1.ht2
 */qualimap/bamqc/*/css/*
 */qualimap/bamqc/*/qualimapReport.html
 */qualimap/bamqc/**/*.{pdf,png,svg}
