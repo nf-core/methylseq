@@ -9,11 +9,9 @@ include { SAMTOOLS_STATS                                } from '../../../modules
 include { PICARD_MARKDUPLICATES                         } from '../../../modules/nf-core/picard/markduplicates/main'
 include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_DEDUPLICATED } from '../../../modules/nf-core/samtools/index/main'
 
-include { Sample } from '../../../utils/types.nf'
-
 workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     take:
-    ch_reads: Channel<Sample>
+    ch_reads: Channel<BwamethReads>
     val_fasta: Value<Path>
     val_fasta_index: Value<Path>
     val_bwameth_index: Value<Path>
@@ -21,6 +19,10 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     use_gpu: Boolean            // whether to use GPU or CPU for bwameth alignment
 
     main:
+
+    // sample metadata and per-sample args, joined back by id where needed
+    ch_meta = ch_reads.map { r -> record(id: r.id, single_end: r.single_end) }
+    ch_args = ch_reads.map { r -> record(id: r.id, bwameth_args: r.bwameth_args) }
 
     ch_align_inputs = ch_reads.combine(fasta: val_fasta, bwameth_index: val_bwameth_index)
 
@@ -31,21 +33,26 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         /*
         * Align with parabricks GPU enabled fq2bammeth implementation of bwameth
         */
-        ch_alignment = PARABRICKS_FQ2BAMMETH(ch_align_inputs, [])
-            .map { r -> record(id: r.id, meta: r.meta, bam: r.bam) }
+        ch_alignment = PARABRICKS_FQ2BAMMETH(ch_align_inputs.map { r -> r + record(args: r.bwameth_args?.fq2bammeth) }, [])
+            .map { r -> record(id: r.id, bam: r.bam) }
     }
     else {
         /*
         * Align with CPU version of bwameth
         */
-        ch_alignment = BWAMETH_ALIGN(ch_align_inputs)
+        ch_alignment = BWAMETH_ALIGN(ch_align_inputs.map { r -> r + record(args: r.bwameth_args?.align) })
     }
 
     /*
      * Sort raw output BAM
      */
-    ch_sorted = SAMTOOLS_SORT(ch_alignment.combine(fasta: val_fasta, fai: val_fasta_index), '')
-        .map { r -> record(id: r.id, meta: r.meta, bam: r.bam) }
+    ch_sorted = SAMTOOLS_SORT(
+        ch_alignment
+            .combine(fasta: val_fasta, fai: val_fasta_index)
+            .map { r -> r + record(prefix: "${r.id}.sorted") },
+        ''
+    )
+        .map { r -> record(id: r.id, bam: r.bam) }
 
     /*
      * Run samtools index on alignment
@@ -66,8 +73,13 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         /*
         * Run Picard MarkDuplicates
         */
-        ch_markdup = PICARD_MARKDUPLICATES(ch_sorted.combine(fasta: val_fasta, fai: val_fasta_index))
-            .map { r -> record(id: r.id, meta: r.meta, bam: r.bam, picard_metrics: r.picard_metrics) }
+        ch_markdup = PICARD_MARKDUPLICATES(
+            ch_sorted
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .join(ch_args, by: 'id')
+                .map { r -> r + record(args: r.bwameth_args?.markduplicates, prefix: "${r.id}.markdup.sorted") }
+        )
+            .map { r -> record(id: r.id, bam: r.bam, picard_metrics: r.picard_metrics) }
 
         /*
          * Run samtools index on deduplicated alignment
@@ -82,7 +94,8 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         .map { r -> record(id: r.id, align_bam: r.bam) }
         .join(ch_sorted_bai.map { r -> record(id: r.id, sorted_bam: r.bam, sorted_bai: r.bai) }, by: 'id')
 
-    ch_results = ch_intermediates
+    ch_results = ch_meta
+        .join(ch_intermediates, by: 'id')
         .join(ch_alignment_final, by: 'id')
         .join(ch_samtools_flagstat, by: 'id')
         .join(ch_samtools_stats, by: 'id')
@@ -98,9 +111,22 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     multiqc : Channel<Path>          = ch_multiqc_files
 }
 
+record BwamethReads {
+    id: String
+    single_end: Boolean
+    reads: List<Path>
+    bwameth_args: BwamethArgs?
+}
+
+record BwamethArgs {
+    align: String?
+    fq2bammeth: String?
+    markduplicates: String?
+}
+
 record BwamethResult {
     id: String
-    meta: Record
+    single_end: Boolean
     bam: Path
     bai: Path
     align_bam: Path

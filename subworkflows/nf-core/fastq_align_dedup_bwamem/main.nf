@@ -7,11 +7,9 @@ include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/
 include { PARABRICKS_FQ2BAM             } from '../../../modules/nf-core/parabricks/fq2bam/main'
 include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index/main'
 
-include { Sample } from '../../../utils/types.nf'
-
 workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     take:
-    ch_reads: Channel<Sample>
+    ch_reads: Channel<BwamemReads>
     val_fasta: Value<Path>
     val_fasta_index: Value<Path>
     val_bwamem_index: Value<Path>
@@ -22,12 +20,18 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     known_sites: List<Path>
 
     main:
+    // sample metadata and per-sample args, joined back by id where needed
+    ch_meta = ch_reads.map { r -> record(id: r.id, single_end: r.single_end) }
+    ch_args = ch_reads.map { r -> record(id: r.id, bwamem_args: r.bwamem_args) }
+
     /*
     Align with parabricks GPU enabled fq2bam implementation of bwa-mem
     */
     if (use_gpu) {
         ch_fq2bam = PARABRICKS_FQ2BAM(
-            ch_reads.combine(fasta: val_fasta, bwa_index: val_bwamem_index),
+            ch_reads
+                .combine(fasta: val_fasta, bwa_index: val_bwamem_index)
+                .map { r -> r + record(args: r.bwamem_args?.fq2bam) },
             interval_file,
             known_sites,
             output_fmt,
@@ -35,7 +39,13 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
         ch_alignment = BAM_SORT_STATS_SAMTOOLS(ch_fq2bam, val_fasta, val_fasta_index)
     }
     else {
-        ch_alignment = FASTQ_ALIGN_BWA(ch_reads, val_bwamem_index, true, val_fasta, val_fasta_index)
+        ch_alignment = FASTQ_ALIGN_BWA(
+            ch_reads.map { r -> r + record(bwa_mem_args: r.bwamem_args?.align) },
+            val_bwamem_index,
+            true,
+            val_fasta,
+            val_fasta_index
+        )
     }
 
     if (!skip_deduplication) {
@@ -43,24 +53,34 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
          * Run Picard AddOrReplaceReadGroups to add read group (RG) to reads in bam file
          */
         ch_readgroups = PICARD_ADDORREPLACEREADGROUPS(
-            ch_alignment.map { r -> record(id: r.id, meta: r.meta, bam: r.bam) }.combine(fasta: val_fasta, fai: val_fasta_index)
+            ch_alignment
+                .map { r -> record(id: r.id, bam: r.bam) }
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .join(ch_args, by: 'id')
+                .map { r -> r + record(args: r.bwamem_args?.addorreplacereadgroups) }
         )
         /*
          * Run Picard MarkDuplicates to mark duplicates
          */
         ch_markdup = PICARD_MARKDUPLICATES(
-            ch_readgroups.combine(fasta: val_fasta, fai: val_fasta_index)
+            ch_readgroups
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .join(ch_args, by: 'id')
+                .map { r -> r + record(args: r.bwamem_args?.markduplicates, prefix: "${r.id}.markdup.sorted") }
         )
-            .map { r -> record(id: r.id, meta: r.meta, bam: r.bam, picard_metrics: r.picard_metrics) }
+            .map { r -> record(id: r.id, bam: r.bam, picard_metrics: r.picard_metrics) }
         /*
          * Run samtools index on deduplicated alignment
          */
-        ch_results = ch_alignment
+        ch_results = ch_meta
+            .join(ch_alignment, by: 'id')
             .join(ch_markdup, by: 'id')
             .join(SAMTOOLS_INDEX(ch_markdup), by: 'id')
     }
     else {
-        ch_results = ch_alignment.map { r -> r + record(picard_metrics: null) }
+        ch_results = ch_meta
+            .join(ch_alignment, by: 'id')
+            .map { r -> r + record(picard_metrics: null) }
     }
 
     /*
@@ -74,9 +94,23 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     multiqc : Channel<Path>         = ch_multiqc_files
 }
 
+record BwamemReads {
+    id: String
+    single_end: Boolean
+    reads: List<Path>
+    bwamem_args: BwamemArgs?
+}
+
+record BwamemArgs {
+    align: String?
+    fq2bam: String?
+    addorreplacereadgroups: String?
+    markduplicates: String?
+}
+
 record BwamemResult {
     id: String
-    meta: Record
+    single_end: Boolean
     bam: Path
     bai: Path
     align_bam: Path?

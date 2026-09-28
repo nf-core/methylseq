@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process SAMTOOLS_STATS {
-    tag "${meta.id}"
+    tag id
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,18 @@ process SAMTOOLS_STATS {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id             : meta.id,
-        meta           : meta,
+        id             : id,
         samtools_stats : file("*.stats")
     )
 
@@ -29,8 +30,8 @@ process SAMTOOLS_STATS {
     tuple(task.process, 'samtools', eval('samtools version | sed "1!d;s/.* //"')) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     def reference = fasta ? "--reference ${fasta}" : ""
     """
     samtools \\
@@ -43,7 +44,7 @@ process SAMTOOLS_STATS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.stats
     """

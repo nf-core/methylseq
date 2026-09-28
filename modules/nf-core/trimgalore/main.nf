@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process TRIMGALORE {
-    tag "${meta.id}"
+    tag id
     label 'process_medium'
     label 'process_low_memory'
 
@@ -12,14 +12,16 @@ process TRIMGALORE {
 
     input:
     record(
-        meta: Record,
-        reads: List<Path>
+        id: String,
+        single_end: Boolean,
+        reads: List<Path>,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id            : meta.id,
-        meta          : meta,
+        id            : id,
         trim_reads    : files("*{3prime,5prime,trimmed,val}{,_1,_2}.fq.gz").toSorted(),
         trim_log      : files("*report.txt", optional: true).toSorted(),
         trim_unpaired : files("*unpaired{,_1,_2}.fq.gz", optional: true).toSorted(),
@@ -31,14 +33,14 @@ process TRIMGALORE {
     tuple(task.process, 'trimgalore', eval('trim_galore --version | grep -Eo "[0-9]+(\\.[0-9]+)+"')) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     // Calculate number of --cores for TrimGalore based on value of task.cpus
     // See: https://github.com/FelixKrueger/TrimGalore/blob/master/CHANGELOG.md#version-060-release-on-1-mar-2019
     // See: https://github.com/nf-core/atacseq/pull/65
     def cores = 1
     if (task.cpus) {
         cores = (task.cpus as int) - 4
-        if (meta.single_end) {
+        if (single_end) {
             cores = (task.cpus as int) - 3
         }
         if (cores < 1) {
@@ -50,8 +52,8 @@ process TRIMGALORE {
     }
 
     // Added soft-links to original fastqs for consistent naming in MultiQC
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    if (meta.single_end) {
+    prefix = prefix ?: "${id}"
+    if (single_end) {
         def args_se = args.replaceAll(/(?i)--\S*_r2\s+\S+/, '').trim()
         """
         [ ! -f  ${prefix}.fastq.gz ] && ln -s ${reads[0]} ${prefix}.fastq.gz
@@ -77,8 +79,8 @@ process TRIMGALORE {
     }
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    if (meta.single_end) {
+    prefix = prefix ?: "${id}"
+    if (single_end) {
         output_command = "echo '' | gzip > ${prefix}_trimmed.fq.gz ;"
         output_command += "touch ${prefix}.fastq.gz_trimming_report.txt"
     }

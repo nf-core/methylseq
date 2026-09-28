@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process METHURATOR_GTESTIMATOR {
-    tag "${meta.id}"
+    tag id
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,18 @@ process METHURATOR_GTESTIMATOR {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id                 : meta.id,
-        meta               : meta,
+        id                 : id,
         methurator_summary : file("${prefix}.yml")
     )
 
@@ -29,8 +30,8 @@ process METHURATOR_GTESTIMATOR {
     tuple(task.process, 'methurator', eval("methurator --version | sed 's/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     """
     methurator gt-estimator \\
         ${bam} \\
@@ -43,7 +44,7 @@ process METHURATOR_GTESTIMATOR {
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.yml
 

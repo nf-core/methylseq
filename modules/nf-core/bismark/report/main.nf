@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BISMARK_REPORT {
-    tag "$meta.id"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,18 @@ process BISMARK_REPORT {
 
     input:
     record(
-        meta: Record,
+        id: String,
         align_report: Path,
         dedup_report: Path?,
         methylation_report: Path,
-        methylation_mbias: Path
+        methylation_mbias: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id             : meta.id,
-        meta           : meta,
+        id             : id,
         bismark_report : files("*report.{html,txt}")
     )
 
@@ -29,13 +30,13 @@ process BISMARK_REPORT {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     """
     bismark2report ${args}
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.report.txt
     touch ${prefix}.report.html

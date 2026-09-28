@@ -33,6 +33,14 @@
                 "exists": true,
                 "pattern": "^[a-zA-Z0-9._-]+$",
                 "errorMessage": "Invalid reference genome name"
+            },
+            "trimgalore_args": {
+                "type": "string",
+                "description": "Override trimgalore args for this sample"
+            },
+            "bismark_align_args": {
+                "type": "string",
+                "description": "Override bismark_align args for this sample"
             }
         },
         "required": ["sample", "fastq_1"]

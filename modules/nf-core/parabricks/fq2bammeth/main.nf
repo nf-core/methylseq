@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process PARABRICKS_FQ2BAMMETH {
-    tag "${meta.id}"
+    tag id
     label 'process_high'
     label 'process_gpu'
     // needed by the module to work properly can be removed when fixed upstream - see: https://github.com/nf-core/modules/issues/7226
@@ -11,17 +11,19 @@ process PARABRICKS_FQ2BAMMETH {
 
     input:
     record(
-        meta: Record,
+        id: String,
+        single_end: Boolean,
         reads: List<Path>,
         fasta: Path,
-        bwameth_index: Path
+        bwameth_index: Path,
+        args: String?,
+        prefix: String?
     )
     known_sites: List<Path>
 
     output:
     record(
-        id                : meta.id,
-        meta              : meta,
+        id                : id,
         bam               : file("*.bam"),
         bai               : file("*.bai"),
         qc_metrics        : file("qc_metrics", optional: true),
@@ -37,9 +39,9 @@ process PARABRICKS_FQ2BAMMETH {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args                = task.ext.args ?: ''
-    def prefix              = task.ext.prefix ?: "${meta.id}"
-    def in_fq_command       = meta.single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
+    def in_fq_command       = single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
     def known_sites_command = known_sites.collect { knownSite ->  "--knownSites ${knownSite}" }.join(' ')
     def known_sites_output  = known_sites ? "--out-recal-file ${prefix}.table" : ""
     def num_gpus            = task.accelerator ? "--num-gpus ${task.accelerator.request}" : ''
@@ -66,7 +68,7 @@ process PARABRICKS_FQ2BAMMETH {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.bam
     touch ${prefix}.bam.bai

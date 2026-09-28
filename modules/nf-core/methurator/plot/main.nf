@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process METHURATOR_PLOT {
-    tag "${meta.id}"
+    tag id
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -11,14 +11,14 @@ process METHURATOR_PLOT {
 
     input:
     record(
-        meta: Record,
-        methurator_summary: Path
+        id: String,
+        methurator_summary: Path,
+        prefix: String?
     )
 
     output:
     record(
-        id               : meta.id,
-        meta             : meta,
+        id               : id,
         methurator_plots : files("plots/*.html")
     )
 
@@ -34,7 +34,7 @@ process METHURATOR_PLOT {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     mkdir plots/
     touch plots/${prefix}.html

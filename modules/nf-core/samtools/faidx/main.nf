@@ -13,6 +13,7 @@ process SAMTOOLS_FAIDX {
     fasta: Path
     fai: Path?
     get_sizes: Boolean
+    args: String?
 
     output:
     record(
@@ -26,7 +27,7 @@ process SAMTOOLS_FAIDX {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     def get_sizes_command = get_sizes ? "cut -f 1,2 ${fasta}.fai > ${fasta}.sizes" : ''
     """
     samtools \\
@@ -38,7 +39,7 @@ process SAMTOOLS_FAIDX {
     """
 
     stub:
-    def match = (task.ext.args =~ /-o(?:utput)?\s(.*)\s?/).findAll()
+    def match = (args =~ /-o(?:utput)?\s(.*)\s?/).findAll()
     def fastacmd = match[0] ? "touch ${match[0][1]}" : ''
     def get_sizes_command = get_sizes ? "touch ${fasta}.sizes" : ''
     """

@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process PRESEQ_LCEXTRAP {
-    tag "$meta.id"
+    tag id
     label 'process_single'
     label 'error_retry'
 
@@ -12,14 +12,16 @@ process PRESEQ_LCEXTRAP {
 
     input:
     record(
-        meta: Record,
-        bam: Path
+        id: String,
+        single_end: Boolean,
+        bam: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id        : meta.id,
-        meta      : meta,
+        id        : id,
         lc_extrap : file("*.lc_extrap.txt"),
         lc_log    : file("*.log")
     )
@@ -28,10 +30,10 @@ process PRESEQ_LCEXTRAP {
     tuple(task.process, 'preseq', eval("preseq 2>&1 | sed -n 's/Version: //p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     args = task.attempt > 1 ? args + ' -defects' : args  // Disable testing for defects
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def paired_end = meta.single_end ? '' : '-pe'
+    prefix = prefix ?: "${id}"
+    def paired_end = single_end ? '' : '-pe'
     """
     preseq \\
         lc_extrap \\
@@ -43,7 +45,7 @@ process PRESEQ_LCEXTRAP {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.lc_extrap.txt
     touch ${prefix}.command.log

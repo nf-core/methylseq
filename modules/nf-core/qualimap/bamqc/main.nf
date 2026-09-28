@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process QUALIMAP_BAMQC {
-    tag "$meta.id"
+    tag id
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -11,15 +11,19 @@ process QUALIMAP_BAMQC {
 
     input:
     record(
-        meta: Record,
+        id: String,
+        single_end: Boolean,
+        strandedness: String?,
         bam: Path,
-        gff: Path?
+        gff: Path?,
+        args: String?,
+        prefix: String?,
+        suffix: String?
     )
 
     output:
     record(
-        id             : meta.id,
-        meta           : meta,
+        id             : id,
         qualimap_bamqc : file("${prefix}")
     )
 
@@ -27,18 +31,18 @@ process QUALIMAP_BAMQC {
     tuple(task.process, 'qualimap', eval("qualimap -h | sed -n 's/^QualiMap v.//p'")) >> 'versions'
 
     script:
-    def args = task.ext.args   ?: ''
-    prefix   = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
 
-    def collect_pairs = meta.single_end ? '' : '--collect-overlap-pairs'
+    def collect_pairs = single_end ? '' : '--collect-overlap-pairs'
     def memory = "${(task.memory.toMega()*0.8).intValue()}M"
     def regions = gff ? "--gff $gff" : ''
 
-    def strandedness = 'non-strand-specific'
-    if (meta.strandedness == 'forward') {
-        strandedness = 'strand-specific-forward'
-    } else if (meta.strandedness == 'reverse') {
-        strandedness = 'strand-specific-reverse'
+    def strand = 'non-strand-specific'
+    if (strandedness == 'forward') {
+        strand = 'strand-specific-forward'
+    } else if (strandedness == 'reverse') {
+        strand = 'strand-specific-reverse'
     }
     """
     unset DISPLAY
@@ -50,14 +54,14 @@ process QUALIMAP_BAMQC {
         $args \\
         -bam $bam \\
         $regions \\
-        -p $strandedness \\
+        -p $strand \\
         $collect_pairs \\
         -outdir $prefix \\
         -nt $task.cpus
     """
 
     stub:
-    prefix = task.ext.suffix ? "${meta.id}${task.ext.suffix}" : "${meta.id}"
+    prefix = suffix ? "${id}${suffix}" : "${id}"
     """
     mkdir -p $prefix/css
     mkdir $prefix/images_qualimapReport

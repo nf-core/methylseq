@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BISMARK_ALIGN {
-    tag "${meta.id}"
+    tag id
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,10 +11,13 @@ process BISMARK_ALIGN {
 
     input:
     record(
-        meta: Record,
+        id: String,
+        single_end: Boolean,
         reads: List<Path>,
         fasta: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -22,8 +25,7 @@ process BISMARK_ALIGN {
 
     output:
     record(
-        id           : meta.id,
-        meta         : meta,
+        id           : id,
         bam          : file("*bam"),
         align_report : file("*report.txt"),
         unmapped     : files("*fq.gz", optional: true)
@@ -33,11 +35,11 @@ process BISMARK_ALIGN {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    if (task.ext.prefix) {
-        args += " --prefix ${task.ext.prefix}"
+    args = args ?: ''
+    if (prefix) {
+        args += " --prefix ${prefix}"
     }
-    def fastq = meta.single_end ? reads.join(' ') : "-1 ${reads[0]} -2 ${reads[1]}"
+    def fastq = single_end ? reads.join(' ') : "-1 ${reads[0]} -2 ${reads[1]}"
 
     // Give each strand instance `-p = cpus / n_instances` threads (one index load per strand,
     // byte-identical) instead of forking N --multicore chunks that each re-load the index.
@@ -99,7 +101,7 @@ process BISMARK_ALIGN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.bam
     touch ${prefix}.report.txt

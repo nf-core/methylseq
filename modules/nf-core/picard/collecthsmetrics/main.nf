@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process PICARD_COLLECTHSMETRICS {
-    tag "$meta.id"
+    tag id
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -11,7 +11,7 @@ process PICARD_COLLECTHSMETRICS {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         bait_intervals: Path,
@@ -19,7 +19,9 @@ process PICARD_COLLECTHSMETRICS {
         ref: Path?,
         ref_fai: Path?,
         ref_dict: Path?,
-        ref_gzi: Path? // ref_gzi only required if reference is gzipped
+        ref_gzi: Path?, // ref_gzi only required if reference is gzipped
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -28,8 +30,7 @@ process PICARD_COLLECTHSMETRICS {
 
     output:
     record(
-        id               : meta.id,
-        meta             : meta,
+        id               : id,
         picard_hsmetrics : file("*_metrics")
     )
 
@@ -37,8 +38,8 @@ process PICARD_COLLECTHSMETRICS {
     tuple(task.process, 'picard', eval("picard CollectHsMetrics --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     def reference = ref ? "--REFERENCE_SEQUENCE ${ref}" : ""
 
     def avail_mem = 3072
@@ -81,7 +82,7 @@ process PICARD_COLLECTHSMETRICS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.CollectHsMetrics.coverage_metrics
     """

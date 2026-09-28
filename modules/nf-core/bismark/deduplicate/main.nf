@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BISMARK_DEDUPLICATE {
-    tag "$meta.id"
+    tag id
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,14 +11,16 @@ process BISMARK_DEDUPLICATE {
 
     input:
     record(
-        meta: Record,
-        bam: Path
+        id: String,
+        single_end: Boolean,
+        bam: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id           : meta.id,
-        meta         : meta,
+        id           : id,
         bam          : file("*.deduplicated.bam"),
         dedup_report : file("*.deduplication_report.txt")
     )
@@ -27,8 +29,8 @@ process BISMARK_DEDUPLICATE {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args    = task.ext.args ?: ''
-    def seqtype = meta.single_end ? '-s' : '-p'
+    args = args ?: ''
+    def seqtype = single_end ? '-s' : '-p'
     """
     deduplicate_bismark \\
         ${args} \\
@@ -37,7 +39,7 @@ process BISMARK_DEDUPLICATE {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.deduplicated.bam
     touch ${prefix}.deduplication_report.txt

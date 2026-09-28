@@ -14,7 +14,8 @@ process MULTIQC {
         multiqc_config: List<Path>,
         multiqc_logo: Path?,
         replace_names: Path?,
-        sample_names: Path?
+        sample_names: Path?,
+        args: String?
     )
 
     stage:
@@ -30,8 +31,7 @@ process MULTIQC {
 
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ? "--filename ${task.ext.prefix}.html" : ''
+    args = args ?: ''
     def config = multiqc_config ? "--config ${multiqc_config.join(' --config ')}" : ""
     def logo = multiqc_logo ? "--cl-config 'custom_logo: \"${multiqc_logo}\"'" : ''
     def replace = replace_names ? "--replace-names ${replace_names}" : ''
@@ -41,7 +41,6 @@ process MULTIQC {
         --force \\
         ${args} \\
         ${config} \\
-        ${prefix} \\
         ${logo} \\
         ${replace} \\
         ${samples} \\

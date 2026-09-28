@@ -14,7 +14,7 @@ nextflow.enable.types = true
  * original single-base coordinates.
  */
 process FILTER_BEDGRAPH_TARGETS {
-    tag "${meta.id}"
+    tag id
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -24,15 +24,15 @@ process FILTER_BEDGRAPH_TARGETS {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bedgraph: Path,
-        targets: Path
+        targets: Path,
+        prefix: String?
     )
 
     output:
     record(
-        id                 : meta.id,
-        meta               : meta,
+        id                 : id,
         bedgraph_intersect : file("*.targeted.bedGraph")
     )
 
@@ -40,7 +40,7 @@ process FILTER_BEDGRAPH_TARGETS {
     tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) and extend the end
     # coordinate by 1 bp so the interval covers the full CpG dinucleotide.

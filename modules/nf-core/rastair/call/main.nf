@@ -10,19 +10,19 @@ process RASTAIR_CALL {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         fasta: Path,
         fai: Path,
         trim_OT: String,
-        trim_OB: String
+        trim_OB: String,
+        prefix: String?
     )
 
     output:
     record(
-        id           : meta.id,
-        meta         : meta,
+        id           : id,
         rastair_call : file("*.rastair_call.txt")
     )
 
@@ -30,9 +30,9 @@ process RASTAIR_CALL {
     tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def nt_OT_to_trim = meta.trim_OT ?: trim_OT
-    def nt_OB_to_trim = meta.trim_OB ?: trim_OB
+    prefix = prefix ?: "${id}"
+    def nt_OT_to_trim = trim_OT
+    def nt_OB_to_trim = trim_OB
 
     """
     rastair call \\
@@ -44,7 +44,7 @@ process RASTAIR_CALL {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.rastair_call.txt
     """

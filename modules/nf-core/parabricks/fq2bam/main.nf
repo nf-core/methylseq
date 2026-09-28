@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process PARABRICKS_FQ2BAM {
-    tag "${meta.id}"
+    tag id
     label 'process_high'
     label 'process_gpu'
     // needed by the module to run on a cluster because we need to copy the fasta reference, see https://github.com/nf-core/modules/issues/9230
@@ -11,10 +11,13 @@ process PARABRICKS_FQ2BAM {
 
     input:
     record(
-        meta: Record,
+        id: String,
+        single_end: Boolean,
         reads: List<Path>,
         fasta: Path,
-        bwa_index: Path
+        bwa_index: Path,
+        args: String?,
+        prefix: String?
     )
     intervals: List<Path>
     known_sites: List<Path>
@@ -22,8 +25,7 @@ process PARABRICKS_FQ2BAM {
 
     output:
     record(
-        id                : meta.id,
-        meta              : meta,
+        id                : id,
         bam               : file("*.bam", optional: true),
         bai               : file("*.bai", optional: true),
         cram              : file("*.cram", optional: true),
@@ -41,10 +43,10 @@ process PARABRICKS_FQ2BAM {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
 
-    def in_fq_command = meta.single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
+    def in_fq_command = single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
     def extension = "${output_fmt}"
 
     def known_sites_command = known_sites.collect { knownSite -> "--knownSites ${knownSite}" }.join(' ')
@@ -75,8 +77,8 @@ process PARABRICKS_FQ2BAM {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     def extension = "${output_fmt}"
     def extension_index = "${output_fmt}" == "cram" ? "crai" : "bai"
     def known_sites_output = known_sites ? "touch ${prefix}.table" : ""

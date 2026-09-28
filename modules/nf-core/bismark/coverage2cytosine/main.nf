@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BISMARK_COVERAGE2CYTOSINE {
-    tag "$meta.id"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,10 +11,12 @@ process BISMARK_COVERAGE2CYTOSINE {
 
     input:
     record(
-        meta: Record,
+        id: String,
         methylation_coverage: Path,
         fasta: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -22,8 +24,7 @@ process BISMARK_COVERAGE2CYTOSINE {
 
     output:
     record(
-        id                         : meta.id,
-        meta                       : meta,
+        id                         : id,
         coverage2cytosine_coverage : file("*.cov.gz", optional: true),
         coverage2cytosine_report   : file("*report.txt.gz"),
         coverage2cytosine_summary  : file("*cytosine_context_summary.txt")
@@ -33,8 +34,8 @@ process BISMARK_COVERAGE2CYTOSINE {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     """
     coverage2cytosine \\
         ${methylation_coverage} \\
@@ -45,7 +46,7 @@ process BISMARK_COVERAGE2CYTOSINE {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     echo "" | gzip > ${prefix}.cov.gz
     echo "" | gzip > ${prefix}.report.txt.gz
