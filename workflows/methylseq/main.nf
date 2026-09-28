@@ -4,23 +4,22 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { paramsSummaryMap              } from 'plugin/nf-schema'
+nextflow.enable.types = true
+
 include { FASTQC                        } from '../../modules/nf-core/fastqc/main'
 include { TRIMGALORE                    } from '../../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC                } from '../../modules/nf-core/qualimap/bamqc/main'
 include { PRESEQ_LCEXTRAP               } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                       } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                     } from '../../modules/nf-core/cat/fastq/main'
+include { WRITE_FILE                    } from '../../modules/local/writefile/main'
+include { WRITE_FILE as WRITE_FILE_MULTIQC } from '../../modules/local/writefile/main'
 include { FASTQ_ALIGN_DEDUP_BISMARK     } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH     } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { FASTQ_ALIGN_DEDUP_BWAMEM      } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
-include { PICARD_MARKDUPLICATES         } from '../../modules/nf-core/picard/markduplicates/main'
-include { PICARD_ADDORREPLACEREADGROUPS } from '../../modules/nf-core/picard/addorreplacereadgroups/main'
-include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
-include { paramsSummaryMultiqc          } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { workflowSummaryMultiqc        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
@@ -35,75 +34,49 @@ include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator
 
 workflow METHYLSEQ {
     take:
-    samplesheet // channel: [ path(samplesheet.csv) ]
-    ch_fasta // channel: [ path(fasta)           ]
-    ch_fasta_index // channel: [ path(fasta index)     ]
-    ch_bismark_index // channel: [ path(bismark index)   ]
-    ch_bwameth_index // channel: [ path(bwameth index)   ]
-    ch_bwamem_index // channel: [ path(bwamem_index)    ]
+    ch_samples: Channel<Sample>
+    val_fasta: Value<Path>
+    val_fasta_index: Value<Path>?
+    val_bismark_index: Value<Path>?
+    val_bwameth_index: Value<Path>?
+    val_bwamem_index: Value<Path>?
+    params: MethylseqParams
 
     main:
-    ch_fastq = channel.empty()
-    ch_fastqc_html = channel.empty()
-    ch_fastqc_zip = channel.empty()
-    ch_reads = channel.empty()
-    ch_bam = channel.empty()
-    ch_bai = channel.empty()
-    ch_gzi = channel.empty()
-    ch_bedgraph = channel.empty()
-    ch_coverage = channel.empty()
-    ch_aligner_mqc = channel.empty()
-    ch_rastair_mbias = channel.empty()
-    ch_rastair_call = channel.empty()
-    ch_methylkit = channel.empty()
-    ch_mbias = channel.empty()
-    ch_qualimap = channel.empty()
-    ch_preseq = channel.empty()
+    def ch_alignment: Channel<MethylseqResult> = channel.empty()
+    def ch_aligner_mqc: Channel<Path> = channel.empty()
+    def ch_bedgraph: Channel<SampleBedgraph> = channel.empty()
+    def ch_methylation: Channel<SampleResult> = channel.empty()
     ch_multiqc_files = channel.empty()
-
-    //
-    // Branch channels from input samplesheet channel
-    //
-    ch_samplesheet = samplesheet.branch { meta, fastqs ->
-        single: fastqs.size() == 1
-        return [meta, fastqs.flatten()]
-        multiple: fastqs.size() > 1
-        return [meta, fastqs.flatten()]
-    }
+    val_bismark_summary = null
 
     //
     // MODULE: Concatenate FastQ files from same sample if required
     //
-    CAT_FASTQ(
-        ch_samplesheet.multiple
-    )
-    ch_fastq = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
+    ch_samples_multiple = ch_samples.filter { s -> s.reads.size() > (s.meta.single_end ? 1 : 2) }
+    ch_samples_single = ch_samples.filter { s -> s.reads.size() <= (s.meta.single_end ? 1 : 2) }
+
+    ch_fastq = CAT_FASTQ(ch_samples_multiple).mix(ch_samples_single)
 
     //
     // MODULE: Run FastQC
     //
     if (!params.skip_fastqc) {
-        FASTQC(
-            ch_fastq
-        )
-        ch_fastqc_html = FASTQC.out.html
-        ch_fastqc_zip = FASTQC.out.zip
+        ch_fastqc = FASTQC(ch_fastq)
     }
     else {
-        ch_fastqc_html = channel.empty()
-        ch_fastqc_zip = channel.empty()
+        ch_fastqc = channel.empty()
     }
 
     //
     // MODULE: Run TrimGalore!
     //
     if (!params.skip_trimming) {
-        TRIMGALORE(
-            ch_fastq
-        )
-        ch_reads = TRIMGALORE.out.reads
+        ch_trimmed = TRIMGALORE(ch_fastq)
+        ch_reads = ch_trimmed.map { r -> record(meta: r.meta, reads: r.trim_reads) }
     }
     else {
+        ch_trimmed = channel.empty()
         ch_reads = ch_fastq
     }
 
@@ -115,82 +88,51 @@ workflow METHYLSEQ {
         log.info("TAPS protocol detected and aligner is not 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data.")
     }
 
+    def use_gpu = workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
+
     // Aligner: bismark or bismark_hisat
-    if (params.aligner =~ /bismark/) {
+    if (params.aligner =~ /bismark/ && val_bismark_index) {
         //
         // Run Bismark alignment + downstream processing
         //
-        ch_bismark_inputs = ch_reads
-            .combine(ch_fasta)
-            .combine(ch_bismark_index)
-            .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
-                reads: [meta, reads]
-                fasta_fai: [meta_fasta, fasta, []]
-                bismark_index: [meta_bismark, bismark_index]
-            }
-
-        FASTQ_ALIGN_DEDUP_BISMARK(
-            ch_bismark_inputs.reads,
-            ch_bismark_inputs.fasta_fai,
-            ch_bismark_inputs.bismark_index,
+        bismark = FASTQ_ALIGN_DEDUP_BISMARK(
+            ch_reads,
+            val_fasta,
+            val_bismark_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
         )
-        ch_bam = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BISMARK.out.index
-        ch_bedgraph = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
-        ch_coverage = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_coverage
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
+        ch_alignment = bismark.results
+        ch_bedgraph = bismark.results.map { r -> record(meta: r.meta, bedgraphs: [r.methylation_bedgraph], coverage: r.methylation_coverage) }
+        ch_aligner_mqc = bismark.multiqc
+        val_bismark_summary = bismark.bismark_summary
     }
-    else if (params.aligner == 'bwameth') {
-
-        ch_bwameth_inputs = ch_reads
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .combine(ch_bwameth_index)
-            .multiMap { meta, reads, meta_fasta, fasta, _meta_fasta_index, fasta_index, meta_bwameth, bwameth_index ->
-                reads: [meta, reads]
-                fasta_fai: [meta_fasta, fasta, fasta_index]
-                bwameth_index: [meta_bwameth, bwameth_index]
-            }
-
-        FASTQ_ALIGN_DEDUP_BWAMETH(
-            ch_bwameth_inputs.reads,
-            ch_bwameth_inputs.fasta_fai,
-            ch_bwameth_inputs.bwameth_index,
+    else if (params.aligner == 'bwameth' && val_fasta_index && val_bwameth_index) {
+        bwameth = FASTQ_ALIGN_DEDUP_BWAMETH(
+            ch_reads,
+            val_fasta,
+            val_fasta_index,
+            val_bwameth_index,
             params.skip_deduplication || params.rrbs,
-            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
+            use_gpu,
         )
-        ch_bam = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
+        ch_alignment = bwameth.results
+        ch_aligner_mqc = bwameth.multiqc
     }
-    else if (params.aligner == 'bwamem') {
-
-        ch_bwamem_inputs = ch_reads
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .combine(ch_bwamem_index)
-            .multiMap { meta, reads, meta_fasta, fasta, _meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
-                reads: [meta, reads]
-                fasta_fai: [meta_fasta, fasta, fasta_index]
-                bwamem_index: [meta_bwamem, bwamem_index]
-            }
-
-        FASTQ_ALIGN_DEDUP_BWAMEM(
-            ch_bwamem_inputs.reads,
-            ch_bwamem_inputs.fasta_fai,
-            ch_bwamem_inputs.bwamem_index,
+    else if (params.aligner == 'bwamem' && val_fasta_index && val_bwamem_index) {
+        bwamem = FASTQ_ALIGN_DEDUP_BWAMEM(
+            ch_reads,
+            val_fasta,
+            val_fasta_index,
+            val_bwamem_index,
             params.skip_deduplication,
-            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
+            use_gpu,
             'bam',
-            [[:], []],
-            [[:], []],
+            [],
+            [],
         )
-
-        ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.index
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
+        ch_alignment = bwamem.results
+        ch_aligner_mqc = bwamem.multiqc
     }
     else {
         error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth' or 'bwamem'.")
@@ -199,50 +141,13 @@ workflow METHYLSEQ {
     //
     // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
     //
-    if (params.taps || params.aligner == 'bwamem') {
-
-        ch_bam_bai = ch_bam.join(ch_bai)
-        ch_taps_inputs = ch_bam_bai
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
-                bam: [meta, bam]
-                bai: [meta, bai]
-                fasta: [meta, fasta]
-                fasta_index: [meta, fai]
-            }
-
-        BAM_TAPS_CONVERSION(
-            ch_taps_inputs.bam,
-            ch_taps_inputs.bai,
-            ch_taps_inputs.fasta,
-            ch_taps_inputs.fasta_index,
-        )
-        ch_rastair_mbias = BAM_TAPS_CONVERSION.out.mbias
-        // channel: [ val(meta), [ txt ] ]
-        ch_rastair_call = BAM_TAPS_CONVERSION.out.call
-        // channel: [ val(meta), [ txt ] ]
+    if ((params.taps || params.aligner == 'bwamem') && val_fasta_index) {
+        ch_methylation = BAM_TAPS_CONVERSION(ch_alignment, val_fasta, val_fasta_index)
     }
-    else if (!params.taps && params.aligner == 'bwameth') {
-
-        ch_bam_bai = ch_bam.join(ch_bai)
-        ch_methyldackel_inputs = ch_bam_bai
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
-                bam: [meta, bam, bai]
-                fasta: [meta, fasta, fai]
-            }
-
-        BAM_METHYLDACKEL(
-            ch_methyldackel_inputs.bam,
-            ch_methyldackel_inputs.fasta,
-        )
-        ch_bedgraph = BAM_METHYLDACKEL.out.methydackel_extract_bedgraph
-        // channel: [ val(meta), [ bedgraph ]  ]
-        ch_methylkit = BAM_METHYLDACKEL.out.methydackel_extract_methylkit
-        // channel: [ val(meta), [ methylkit ] ]
-        ch_mbias = BAM_METHYLDACKEL.out.methydackel_mbias
+    else if (!params.taps && params.aligner == 'bwameth' && val_fasta_index) {
+        methyldackel = BAM_METHYLDACKEL(ch_alignment, val_fasta, val_fasta_index)
+        ch_methylation = methyldackel.results
+        ch_bedgraph = methyldackel.results.map { r -> record(meta: r.meta, bedgraphs: r.methyldackel_bedgraph.toList(), coverage: null) }
     }
 
     //
@@ -250,35 +155,40 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_qualimap` param.
     //
     if (params.run_qualimap) {
-        QUALIMAP_BAMQC(
-            ch_bam,
-            params.bamqc_regions_file ? channel.fromPath(params.bamqc_regions_file, checkIfExists: true).toList() : [],
+        ch_qualimap = QUALIMAP_BAMQC(
+            ch_alignment.map { r -> record(meta: r.meta, bam: r.bam, gff: params.bamqc_regions_file) }
         )
-        ch_qualimap = QUALIMAP_BAMQC.out.results
+    }
+    else {
+        ch_qualimap = channel.empty()
     }
 
     //
     // MODULE: Targeted sequencing analysis
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
-    if (params.run_targeted_sequencing) {
+    val_reference_dict = null
+    val_intervallist = null
+    if (params.run_targeted_sequencing && params.target_regions_file && val_fasta_index) {
         if (params.taps || params.aligner == 'bwamem') {
             error("ERROR: --run_targeted_sequencing can't be running using rastair (methylation caller for TAPS) ")
         }
-        if (!params.target_regions_file) {
-            error("ERROR: --target_regions_file must be specified when using --run_targeted_sequencing")
-        }
-        TARGETED_SEQUENCING(
-            ch_bedgraph,
-            ch_coverage,
-            channel.fromPath(params.target_regions_file, checkIfExists: true),
-            ch_fasta,
-            ch_fasta_index,
-            ch_bam,
-            ch_bai,
-            ch_gzi,
+        targeted_sequencing = TARGETED_SEQUENCING(
+            ch_alignment.join(ch_bedgraph, by: 'meta'),
+            channel.value(params.target_regions_file),
+            val_fasta,
+            val_fasta_index,
             params.collecthsmetrics,
         )
+        ch_targeted_sequencing = targeted_sequencing.results
+        val_reference_dict = targeted_sequencing.reference_dict
+        val_intervallist = targeted_sequencing.intervallist
+    }
+    else if (params.run_targeted_sequencing) {
+        error("ERROR: --target_regions_file must be specified when using --run_targeted_sequencing")
+    }
+    else {
+        ch_targeted_sequencing = channel.empty()
     }
 
     //
@@ -286,116 +196,210 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_preseq` param.
     //
     if (params.run_preseq) {
-        PRESEQ_LCEXTRAP(
-            ch_bam
-        )
-        ch_preseq = PRESEQ_LCEXTRAP.out.lc_extrap
+        ch_preseq = PRESEQ_LCEXTRAP(ch_alignment)
+    }
+    else {
+        ch_preseq = channel.empty()
     }
 
     //
     // MODULE: methurator gtestimator
     // skipped by default. to use run with `--run_methurator` param.
     //
-    if (params.run_methurator) {
+    if (params.run_methurator && val_fasta_index) {
         if (params.taps || params.aligner == 'bwamem') {
             error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
         }
-        ch_methurator_inputs = ch_bam
-            .join(ch_bai)
-            .combine(ch_fasta.map { _meta, fasta -> fasta })
-            .combine(ch_fasta_index.map { _meta, index -> index })
-        METHURATOR_GTESTIMATOR(
-            ch_methurator_inputs
+        ch_methurator_gtestimator = METHURATOR_GTESTIMATOR(
+            ch_alignment.combine(fasta: val_fasta, fai: val_fasta_index)
         )
-        ch_methurator_gtestimator = METHURATOR_GTESTIMATOR.out.summary_report
-
-        METHURATOR_PLOT(
-            ch_methurator_gtestimator
-        )
+        ch_methurator = ch_methurator_gtestimator.join(METHURATOR_PLOT(ch_methurator_gtestimator), by: 'meta')
     }
+    else {
+        ch_methurator = channel.empty()
+    }
+
+    //
+    // Collect per-sample results
+    //
+    ch_results = ch_alignment
+        .join(ch_fastqc, by: 'meta', remainder: true)
+        .join(ch_trimmed, by: 'meta', remainder: true)
+        .join(ch_methylation, by: 'meta', remainder: true)
+        .join(ch_qualimap, by: 'meta', remainder: true)
+        .join(ch_targeted_sequencing, by: 'meta', remainder: true)
+        .join(ch_preseq, by: 'meta', remainder: true)
+        .join(ch_methurator, by: 'meta', remainder: true)
 
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(channel.topic('versions'))
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_' + 'methylseq_software_' + 'mqc_' + 'versions.yml',
-            sort: true,
-            newLine: true,
-        )
-        .set { ch_collated_versions }
+    val_versions = softwareVersionsToYAML(channel.topic('versions'))
+        .collect()
+        .map { items ->
+            record(name: 'nf_core_methylseq_software_mqc_versions.yml', items: items.toSorted(), newLine: true)
+        }
+    val_collated_versions = WRITE_FILE(val_versions)
 
     //
     // MODULE: MultiQC
     //
     if (!params.skip_multiqc) {
-        summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-        ch_workflow_summary = channel.value(paramsSummaryMultiqc(summary_params))
-
-        ch_multiqc_custom_methods_description = params.multiqc_methods_description
-            ? file(params.multiqc_methods_description, checkIfExists: true)
-            : file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true)
-        ch_methods_description = channel.value(methodsDescriptionText(ch_multiqc_custom_methods_description))
-
-        ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
-        ch_multiqc_files = ch_multiqc_files.mix(
-            ch_methods_description.collectFile(
-                name: 'methods_description_mqc.yaml',
-                sort: true,
-            )
+        workflow_summary = record(
+            name: 'workflow_summary_mqc.yaml',
+            items: [workflowSummaryMultiqc()]
         )
 
-        if (params.run_qualimap) {
-            ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect { _meta, f -> f }.ifEmpty([]))
-        }
-        if (params.run_preseq) {
-            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { _meta, f -> f }.ifEmpty([]))
-        }
-        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
-        if (!params.skip_trimming) {
-            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { _meta, f -> f })
-        }
-        if (params.run_targeted_sequencing) {
-            if (params.collecthsmetrics) {
-                ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect { _meta, f -> f }.ifEmpty([]))
-            }
-        }
-        if (!params.skip_fastqc) {
-            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect { _meta, f -> f }.ifEmpty([]))
-        }
-
-        // New nf-core MULTIQC (v4.0.2 template): single meta-based tuple input,
-        // config passed as a list, logo/replace/sample resolved as values.
-        MULTIQC(
-            ch_multiqc_files.flatten().collect().map { files ->
-                [
-                    [id: 'multiqc'],
-                    files,
-                    [file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)] + (params.multiqc_config ? [file(params.multiqc_config, checkIfExists: true)] : []),
-                    params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
-                    [],
-                    [],
-                ]
-            }
+        multiqc_custom_methods_description = params.multiqc_methods_description
+            ?: file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true)
+        methods_description = record(
+            name: 'methods_description_mqc.yaml',
+            items: [methodsDescriptionText(multiqc_custom_methods_description)]
         )
-        // Keep the report path UNWRAPPED (flat) — PIPELINE_COMPLETION consumes it via getVal().
-        ch_multiqc_report = MULTIQC.out.report.map { _meta, report -> report }.toList()
+
+        ch_multiqc_files = ch_multiqc_files.mix(WRITE_FILE_MULTIQC(channel.of(workflow_summary, methods_description)))
+        ch_multiqc_files = ch_multiqc_files.mix(val_collated_versions)
+        ch_multiqc_files = ch_multiqc_files.mix(ch_qualimap.map { r -> r.qualimap_bamqc })
+        ch_multiqc_files = ch_multiqc_files.mix(ch_preseq.map { r -> r.lc_log })
+        ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc)
+        ch_multiqc_files = ch_multiqc_files.mix(ch_trimmed.flatMap { r -> r.trim_log })
+        ch_multiqc_files = ch_multiqc_files.mix(ch_targeted_sequencing.map { r -> r.picard_hsmetrics }.filter { f -> f != null })
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc.flatMap { r -> r.fastqc_zip })
+
+        multiqc_default_config = file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)
+        multiqc_config = params.multiqc_config
+            ? [multiqc_default_config, params.multiqc_config]
+            : [multiqc_default_config]
+
+        val_multiqc_inputs = ch_multiqc_files
+            .collect()
+            .map { files ->
+                record(
+                    multiqc_files: files.toSet(),
+                    multiqc_config: multiqc_config,
+                    multiqc_logo: params.multiqc_logo
+                )
+            }
+        val_multiqc_report = MULTIQC(val_multiqc_inputs).map { r -> r.report }
     }
     else {
-        ch_multiqc_report = channel.empty()
+        val_multiqc_report = null
     }
 
     emit:
-    bam            = ch_bam // channel: [ val(meta), path(bam) ]
-    bai            = ch_bai // channel: [ val(meta), path(bai) ]
-    rastair_mbias  = ch_rastair_mbias // channel: [ val(meta), path(rastair_mbias) ]
-    rastair_call   = ch_rastair_call // channel: [ val(meta), path(rastair_call) ]
-    methylkit      = ch_methylkit // channel: [ val(meta), path(methylkit) ]
-    mbias          = ch_mbias // channel: [ val(meta), path(mbias) ]
-    bedgraph       = ch_bedgraph // channel: [ val(meta), path(bedgraph) ]
-    qualimap       = ch_qualimap // channel: [ val(meta), path(qualimap) ]
-    preseq         = ch_preseq // channel: [ val(meta), path(preseq) ]
-    multiqc_report = ch_multiqc_report // channel: [ path(multiqc_report.html )  ]
+    results         : Channel<MethylseqResult> = ch_results
+    bismark_summary : Value<Set<Path>>?        = val_bismark_summary
+    reference_dict  : Value<Path>?             = val_reference_dict
+    intervallist    : Value<Path>?             = val_intervallist
+    multiqc_report  : Value<Path>?             = val_multiqc_report
 }
+
+record Sample {
+    meta: Record
+    reads: List<Path>
+}
+
+record MethylseqParams {
+    aligner: String
+    taps: Boolean
+    skip_fastqc: Boolean
+    skip_trimming: Boolean
+    skip_deduplication: Boolean
+    rrbs: Boolean
+    cytosine_report: Boolean
+    nomeseq: Boolean
+    run_qualimap: Boolean
+    bamqc_regions_file: Path?
+    run_targeted_sequencing: Boolean
+    target_regions_file: Path?
+    collecthsmetrics: Boolean
+    run_preseq: Boolean
+    run_methurator: Boolean
+    skip_multiqc: Boolean
+    multiqc_config: Path?
+    multiqc_logo: Path?
+    multiqc_methods_description: Path?
+}
+
+record SampleResult {
+    meta: Record
+}
+
+record SampleBedgraph {
+    meta: Record
+    bedgraphs: List<Path>
+    coverage: Path?
+}
+
+record MethylseqResult {
+    meta: Record
+
+    // alignment (bismark / bwameth / bwamem)
+    bam: Path
+    bai: Path
+
+    // fastqc
+    fastqc_html: Set<Path>?
+    fastqc_zip: Set<Path>?
+
+    // trimgalore
+    trim_reads: List<Path>?
+    trim_log: List<Path>?
+    trim_unpaired: List<Path>?
+    trim_html: List<Path>?
+    trim_zip: List<Path>?
+
+    // bismark
+    align_report: Path?
+    unmapped: Set<Path>?
+    dedup_report: Path?
+    methylation_bedgraph: Path?
+    methylation_calls: Set<Path>?
+    methylation_coverage: Path?
+    methylation_report: Path?
+    methylation_mbias: Path?
+    coverage2cytosine_coverage: Path?
+    coverage2cytosine_report: Path?
+    coverage2cytosine_summary: Path?
+    bismark_report: Set<Path>?
+
+    // bwameth / bwamem
+    samtools_flagstat: Path?
+    samtools_stats: Path?
+    samtools_idxstats: Path?
+    picard_metrics: Path?
+
+    // methyldackel
+    methyldackel_bedgraph: Set<Path>?
+    methyldackel_methylkit: Set<Path>?
+    methyldackel_mbias: Path?
+
+    // rastair (taps)
+    rastair_mbias: Path?
+    rastair_mbias_pdf: Path?
+    rastair_mbias_csv: Path?
+    rastair_call: Path?
+    rastair_methylkit: Path?
+
+    // qualimap
+    qualimap_bamqc: Path?
+
+    // targeted sequencing
+    bedgraph_intersect: Bag<Path>?
+    coverage_intersect: Path?
+    picard_hsmetrics: Path?
+
+    // preseq
+    lc_extrap: Path?
+    lc_log: Path?
+
+    // methurator
+    methurator_summary: Path?
+    methurator_plots: Set<Path>?
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    THE END
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/

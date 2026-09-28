@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BISMARK_DEDUPLICATE {
     tag "$meta.id"
     label 'process_high'
@@ -8,15 +10,20 @@ process BISMARK_DEDUPLICATE {
         'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4' }"
 
     input:
-    tuple val(meta), path(bam)
+    record(
+        meta: Record,
+        bam: Path
+    )
 
     output:
-    tuple val(meta), path("*.deduplicated.bam")        , emit: bam
-    tuple val(meta), path("*.deduplication_report.txt"), emit: report
-    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
+    record(
+        meta         : meta,
+        bam          : file("*.deduplicated.bam"),
+        dedup_report : file("*.deduplication_report.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
     def args    = task.ext.args ?: ''

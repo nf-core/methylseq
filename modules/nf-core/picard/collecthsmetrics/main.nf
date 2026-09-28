@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process PICARD_COLLECTHSMETRICS {
     tag "$meta.id"
     label 'process_single'
@@ -8,18 +10,30 @@ process PICARD_COLLECTHSMETRICS {
         'community.wave.seqera.io/library/picard:3.4.0--e9963040df0a9bf6' }"
 
     input:
-    tuple val(meta), path(bam), path(bai), path(bait_intervals, stageAs: "baits/*"), path(target_intervals, stageAs: 'targets/*')
-    tuple val(meta2), path(ref)
-    tuple val(meta3), path(ref_fai)
-    tuple val(meta4), path(ref_dict)
-    tuple val(meta5), path(ref_gzi) // ref_gzi only required if reference is gzipped
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        bait_intervals: Path,
+        target_intervals: Path,
+        ref: Path?,
+        ref_fai: Path?,
+        ref_dict: Path?,
+        ref_gzi: Path? // ref_gzi only required if reference is gzipped
+    )
+
+    stage:
+    stageAs bait_intervals, "baits/*"
+    stageAs target_intervals, 'targets/*'
 
     output:
-    tuple val(meta), path("*_metrics")  , emit: metrics
-    tuple val("${task.process}"), val('picard'), eval("picard CollectHsMetrics --version 2>&1 | sed -n 's/.*Version://p'"), topic: versions, emit: versions_picard
+    record(
+        meta             : meta,
+        picard_hsmetrics : file("*_metrics")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'picard', eval("picard CollectHsMetrics --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -30,20 +44,20 @@ process PICARD_COLLECTHSMETRICS {
     if (!task.memory) {
         log.info '[Picard CollectHsMetrics] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega()*0.8).intValue()
     }
 
-    def bait_interval_list = bait_intervals
+    def bait_interval_list = "${bait_intervals}"
     def bait_intervallist_cmd = ""
-    if (bait_intervals =~ /.(bed|bed.gz)$/){
-        bait_interval_list = bait_intervals.toString().replaceAll(/.(bed|bed.gz)$/, ".interval_list")
+    if (bait_intervals.name =~ /.(bed|bed.gz)$/){
+        bait_interval_list = bait_intervals.name.replaceAll(/.(bed|bed.gz)$/, ".interval_list")
         bait_intervallist_cmd = "picard -Xmx${avail_mem}M BedToIntervalList --INPUT ${bait_intervals} --OUTPUT ${bait_interval_list} --SEQUENCE_DICTIONARY ${ref_dict} --TMP_DIR ."
     }
 
-    def target_interval_list = target_intervals
+    def target_interval_list = "${target_intervals}"
     def target_intervallist_cmd = ""
-    if (target_intervals =~ /.(bed|bed.gz)$/){
-        target_interval_list = target_intervals.toString().replaceAll(/.(bed|bed.gz)$/, ".interval_list")
+    if (target_intervals.name =~ /.(bed|bed.gz)$/){
+        target_interval_list = target_intervals.name.replaceAll(/.(bed|bed.gz)$/, ".interval_list")
         target_intervallist_cmd = "picard -Xmx${avail_mem}M BedToIntervalList --INPUT ${target_intervals} --OUTPUT ${target_interval_list} --SEQUENCE_DICTIONARY ${ref_dict} --TMP_DIR ."
     }
 

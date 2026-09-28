@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BISMARK_ALIGN {
     tag "${meta.id}"
     label 'process_high'
@@ -8,26 +10,33 @@ process BISMARK_ALIGN {
         : 'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4'}"
 
     input:
-    tuple val(meta), path(reads)
-    tuple val(meta2), path(fasta, stageAs: 'tmp/*')
-    // This change mounts as directory containing the FASTA file to prevent nested symlinks
-    tuple val(meta3), path(index)
+    record(
+        meta: Record,
+        reads: List<Path>,
+        fasta: Path,
+        bismark_index: Path
+    )
+
+    stage:
+    stageAs fasta, 'tmp/*' // This change mounts as directory containing the FASTA file to prevent nested symlinks
 
     output:
-    tuple val(meta), path("*bam"), emit: bam
-    tuple val(meta), path("*report.txt"), emit: report
-    tuple val(meta), path("*fq.gz"), emit: unmapped, optional: true
-    tuple val("${task.process}"), val("bismark"), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), topic: versions, emit: versions_bismark
+    record(
+        meta         : meta,
+        bam          : file("*bam"),
+        align_report : file("*report.txt"),
+        unmapped     : files("*fq.gz", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
     if (task.ext.prefix) {
         args += " --prefix ${task.ext.prefix}"
     }
-    def fastq = meta.single_end ? reads : "-1 ${reads[0]} -2 ${reads[1]}"
+    def fastq = meta.single_end ? reads.join(' ') : "-1 ${reads[0]} -2 ${reads[1]}"
 
     // Give each strand instance `-p = cpus / n_instances` threads (one index load per strand,
     // byte-identical) instead of forking N --multicore chunks that each re-load the index.
@@ -48,11 +57,11 @@ process BISMARK_ALIGN {
             }
 
             // How many multicore splits can we afford with the cpus we have?
-            ccore = ((task.cpus as int) / cpu_per_multicore) as int
+            ccore = task.cpus.intdiv(cpu_per_multicore)
 
             // Check that we have enough memory
             if (task.memory) {
-                def mcore = (task.memory.toBytes() / mem_per_multicore) as int
+                def mcore = task.memory.toBytes().intdiv(mem_per_multicore)
                 ccore = Math.min(ccore, mcore)
             }
             else {
@@ -75,7 +84,7 @@ process BISMARK_ALIGN {
         }
 
         // bismark requires -p >= 2, so omit it below that (one thread per instance).
-        def pthreads = ((task.cpus as int) / n_instances) as int
+        def pthreads = task.cpus.intdiv(n_instances)
         if (pthreads >= 2) {
             args += " -p ${pthreads}"
         }
@@ -83,7 +92,7 @@ process BISMARK_ALIGN {
     """
     bismark \\
         ${fastq} \\
-        --genome ${index} \\
+        --genome ${bismark_index} \\
         --bam \\
         ${args}
     """

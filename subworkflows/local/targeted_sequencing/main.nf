@@ -6,6 +6,8 @@
  * HS Library Size, Percent Duplicates, and Percent Off Bait. This is relevant for methylome experiments with targeted seq.
  */
 
+nextflow.enable.types = true
+
 include { FILTER_BEDGRAPH_TARGETS                      } from '../../../modules/local/filter_bedgraph_targets/main'
 include { BEDTOOLS_INTERSECT as BEDTOOLS_INTERSECT_COV } from '../../../modules/nf-core/bedtools/intersect/main'
 include { PICARD_CREATESEQUENCEDICTIONARY              } from '../../../modules/nf-core/picard/createsequencedictionary/main'
@@ -14,103 +16,96 @@ include { PICARD_COLLECTHSMETRICS                      } from '../../../modules/
 
 workflow TARGETED_SEQUENCING {
     take:
-    ch_bedgraph // channel: [ val(meta), [ bedGraph(s) ]] when bwameth, [ val(meta), bedGraph ] when bismark
-    ch_coverage // channel: [ val(meta), cov.gz ] from Bismark methylation extractor (empty for bwameth)
-    ch_target_regions // channel: path(target_regions.bed)
-    ch_fasta // channel: [ [:], /path/to/genome.fa]
-    ch_fasta_index // channel: [ val(meta), /path/to/genome.fa.fai]
-    ch_bam // channel: [ val(meta), [ bam ] ] ## BAM from alignment
-    ch_bai // channel: [ val(meta), [ bai ] ] ## BAI from alignment
-    ch_gzi // channel: [ val(meta), [ gzi ] ] ## GZI from fasta
-    collecthsmetrics // boolean: whether to run Picard CollectHsMetrics
+    ch_inputs: Channel<TargetedSequencingInput>
+    val_target_regions: Value<Path>
+    val_fasta: Value<Path>
+    val_fasta_index: Value<Path>
+    collecthsmetrics: Boolean // whether to run Picard CollectHsMetrics
 
     main:
 
-    ch_picard_metrics = channel.empty()
-
     /*
      * Intersect bedGraph files with target regions (CpG-aware boundary handling)
-     * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs.
+     * Split the bedGraph file(s) of each sample into individual bedGraphs.
      * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp before
      * intersection so that CpGs straddling a target boundary are not lost.
      */
-    ch_bedgraphs_target = ch_bedgraph
-        .map { meta, bedgraphs -> tuple(meta, bedgraphs instanceof List ? bedgraphs : [bedgraphs]) }
-        .flatMap { meta, bedgraphs -> bedgraphs.collect { bedgraph -> [meta, bedgraph] } }
-        .combine(ch_target_regions)
+    ch_bedgraphs_target = ch_inputs
+        .flatMap { r -> r.bedgraphs.collect { bedgraph -> record(meta: r.meta, bedgraph: bedgraph) } }
+        .combine(targets: val_target_regions)
 
-    FILTER_BEDGRAPH_TARGETS(ch_bedgraphs_target)
+    ch_bedgraph_intersect = FILTER_BEDGRAPH_TARGETS(ch_bedgraphs_target)
+        .map { r -> tuple(r.meta, r.bedgraph_intersect) }
+        .groupBy()
+        .map { meta, bedgraphs -> record(meta: meta, bedgraph_intersect: bedgraphs) }
 
     /*
      * Intersect Bismark coverage files with target regions
      * The .cov.gz files are filtered the same way as bedGraph files so that
      * downstream tools (methylKit, bsseq, DSS) receive only on-target CpGs.
      */
-    ch_coverage_target = ch_coverage.combine(ch_target_regions)
+    ch_coverage_target = ch_inputs
+        .filter { r -> r.coverage != null }
+        .map { r -> record(meta: r.meta, intervals1: r.coverage) }
+        .combine(intervals2: val_target_regions)
 
-    BEDTOOLS_INTERSECT_COV(
-        ch_coverage_target,
-        [[:], []],
-    )
+    ch_coverage_intersect = BEDTOOLS_INTERSECT_COV(ch_coverage_target, null)
+
+    ch_results = ch_bedgraph_intersect
+        .join(ch_coverage_intersect, by: 'meta', remainder: true)
 
     /*
      * Run Picard CollectHSMetrics
      */
     if (collecthsmetrics) {
-        // Create target regions with meta for Picard tools
-        target_regions_with_meta = ch_target_regions.map { target_file ->
-            tuple(["id": file(target_file).baseName], target_file)
-        }
-
         /*
          * Creation of a dictionary for the reference genome
          */
-        PICARD_CREATESEQUENCEDICTIONARY(ch_fasta)
-        ch_sequence_dictionary = PICARD_CREATESEQUENCEDICTIONARY.out.reference_dict
+        val_reference_dict = PICARD_CREATESEQUENCEDICTIONARY(val_fasta)
 
         /*
          * Conversion of the covered targets BED file to an interval list
          */
-        PICARD_BEDTOINTERVALLIST(
-            target_regions_with_meta,
-            ch_sequence_dictionary,
-            [],
-        )
-        ch_intervals = PICARD_BEDTOINTERVALLIST.out.intervallist.map { _meta, intervallist -> intervallist }
+        val_intervallist = PICARD_BEDTOINTERVALLIST(val_target_regions, val_reference_dict)
 
         /*
          * Generation of the metrics
          * Note: Using the same intervals for both target and bait as they are typically
          * the same for targeted methylation sequencing experiments
          */
-        ch_picard_inputs = ch_bam
-            .join(ch_bai)
-            .combine(ch_intervals)
-            .combine(ch_intervals)
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .combine(ch_sequence_dictionary)
-            .combine(ch_gzi)
-            .multiMap { meta, bam, bai, intervals1, intervals2, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_dict, dict, meta_gzi, gzi ->
-                bam_etc: [meta, bam, bai, intervals1, intervals2]
-                fasta: [meta_fasta, fasta]
-                fasta_index: [meta_fasta_index, fasta_index]
-                dict: [meta_dict, dict]
-                gzi: [meta_gzi, gzi]
-            }
-
-        PICARD_COLLECTHSMETRICS(
-            ch_picard_inputs.bam_etc,
-            ch_picard_inputs.fasta,
-            ch_picard_inputs.fasta_index,
-            ch_picard_inputs.dict,
-            ch_picard_inputs.gzi,
+        ch_picard_hsmetrics = PICARD_COLLECTHSMETRICS(
+            ch_inputs.combine(
+                bait_intervals: val_intervallist,
+                target_intervals: val_intervallist,
+                ref: val_fasta,
+                ref_fai: val_fasta_index,
+                ref_dict: val_reference_dict
+            )
         )
-        ch_picard_metrics = PICARD_COLLECTHSMETRICS.out.metrics
+        ch_results = ch_results.join(ch_picard_hsmetrics, by: 'meta')
+    }
+    else {
+        val_reference_dict = null
+        val_intervallist = null
     }
 
     emit:
-    bedgraph_filtered = FILTER_BEDGRAPH_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.bedGraph") ]
-    coverage_filtered = BEDTOOLS_INTERSECT_COV.out.intersect // channel: [ val(meta), path("*.cov") ]
-    picard_metrics    = ch_picard_metrics // channel: [ val(meta), path("*_metrics") ]
+    results        : Channel<TargetedSequencingResult> = ch_results
+    reference_dict : Value<Path>? = val_reference_dict
+    intervallist   : Value<Path>? = val_intervallist
+}
+
+record TargetedSequencingInput {
+    meta: Record
+    bam: Path
+    bai: Path
+    bedgraphs: List<Path>
+    coverage: Path?
+}
+
+record TargetedSequencingResult {
+    meta: Record
+    bedgraph_intersect: Bag<Path>
+    coverage_intersect: Path?
+    picard_hsmetrics: Path?
 }

@@ -1,5 +1,7 @@
+nextflow.enable.types = true
+
 process PICARD_CREATESEQUENCEDICTIONARY {
-    tag "$meta.id"
+    tag "$fasta"
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -8,23 +10,22 @@ process PICARD_CREATESEQUENCEDICTIONARY {
         'community.wave.seqera.io/library/picard:3.4.0--e9963040df0a9bf6' }"
 
     input:
-    tuple val(meta), path(fasta)
+    fasta: Path
 
     output:
-    tuple val(meta), path("*.dict"), emit: reference_dict
-    tuple val("${task.process}"), val('picard'), eval("picard CreateSequenceDictionary --version 2>&1 | sed -n 's/.*Version://p'"), topic: versions, emit: versions_picard
+    file("*.dict")
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'picard', eval("picard CreateSequenceDictionary --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${fasta.baseName}"
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard CreateSequenceDictionary] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
     } else {
-        avail_mem = (task.memory.mega*0.8).intValue()
+        avail_mem = (task.memory.toMega()*0.8).intValue()
     }
     """
     picard \\
@@ -36,7 +37,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${fasta.baseName}"
     """
     touch ${prefix}.dict
     """

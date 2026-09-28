@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process RASTAIR_MBIASPARSER {
     label 'process_low'
 
@@ -7,22 +9,28 @@ process RASTAIR_MBIASPARSER {
         'community.wave.seqera.io/library/rastair:0.8.2--bf70eeab4121509c' }"
 
     input:
-    tuple val(meta), path(rastair_mbias_txt)
+    record(
+        meta: Record,
+        rastair_mbias: Path
+    )
 
     output:
-    tuple val(meta), path("*.rastair_mbias_processed.pdf"),         emit: mbias_processed_pdf, optional: true
-    tuple val(meta), path("*.rastair_mbias_processed.csv"),         emit: mbias_processed_csv
-    tuple val(meta), env('trim_OT'), env('trim_OB'),                emit: mbias_processed_str
-    tuple val("${task.process}"), val('rastair'), eval("rastair --version | sed 's/rastair //'"), topic: versions, emit: versions_rastair
+    record(
+        meta              : meta,
+        rastair_mbias_pdf : file("*.rastair_mbias_processed.pdf", optional: true),
+        rastair_mbias_csv : file("*.rastair_mbias_processed.csv"),
+        trim_OT           : env('trim_OT'),
+        trim_OB           : env('trim_OB')
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    plot_mbias.R --pdf -o ${prefix}.rastair_mbias_processed.pdf ${rastair_mbias_txt} > ${prefix}.rastair_mbias_processed.txt
+    plot_mbias.R --pdf -o ${prefix}.rastair_mbias_processed.pdf ${rastair_mbias} > ${prefix}.rastair_mbias_processed.txt
 
     parse_mbias.R ${prefix}.rastair_mbias_processed.txt ${prefix}.rastair_mbias_processed.csv
     trim_OT=\$(head -n 1 ${prefix}.rastair_mbias_processed.csv)

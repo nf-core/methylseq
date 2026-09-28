@@ -14,6 +14,7 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 include { paramsHelp              } from 'plugin/nf-schema'
 include { completionEmail         } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary       } from '../../nf-core/utils_nfcore_pipeline'
+include { paramsSummaryMultiqc    } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
 include { UTILS_NFCORE_PIPELINE   } from '../../nf-core/utils_nfcore_pipeline'
 
@@ -108,12 +109,8 @@ workflow PIPELINE_INITIALISATION {
 
     channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
         .map { meta, fastq_1, fastq_2, _genome ->
-            if (!fastq_2) {
-                return [meta.id, meta + [single_end: true], [fastq_1]]
-            }
-            else {
-                return [meta.id, meta + [single_end: false], [fastq_1, fastq_2]]
-            }
+            def single_end = !fastq_2
+            return [meta.id, meta + [single_end: single_end], single_end ? [fastq_1] : [fastq_1, fastq_2]]
         }
         .groupTuple()
         .map { samplesheet ->
@@ -143,7 +140,7 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    def multiqc_reports = multiqc_report.toList()
+    def multiqc_reports = (multiqc_report ?: channel.empty()).toList()
 
     //
     // Completion email and summary
@@ -206,7 +203,8 @@ def validateInputSamplesheet(input) {
         error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
     }
 
-    return [metas[0], fastqs]
+    def meta = metas[0]
+    return record(meta: record(meta), reads: fastqs.flatten())
 }
 //
 // Get attribute from genome config file e.g. fasta
@@ -229,6 +227,13 @@ def genomeExistsError() {
         error(error_string)
     }
 }
+//
+// Generate workflow summary for MultiQC
+//
+def workflowSummaryMultiqc() {
+    return paramsSummaryMultiqc(paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json"))
+}
+
 //
 // Generate methods description for MultiQC
 //

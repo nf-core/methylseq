@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process RASTAIR_METHYLKIT {
     label 'process_low'
 
@@ -7,20 +9,25 @@ process RASTAIR_METHYLKIT {
         'community.wave.seqera.io/library/rastair:0.8.2--bf70eeab4121509c' }"
 
     input:
-    tuple val(meta), path(rastair_call_txt)
+    record(
+        meta: Record,
+        rastair_call: Path
+    )
 
     output:
-    tuple val(meta), path("*methylkit.txt.gz"), emit: methylkit
-    tuple val("${task.process}"), val('rastair'), eval("rastair --version | sed 's/rastair //'"), topic: versions, emit: versions_rastair
+    record(
+        meta              : meta,
+        rastair_methylkit : file("*methylkit.txt.gz")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
-    cat ${rastair_call_txt} | rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
+    cat ${rastair_call} | rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
     """
 
     stub:
