@@ -23,6 +23,8 @@ include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_me
 include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { METHYLSEQ                 } from './workflows/methylseq/'
 include { MethylseqParams           } from './workflows/methylseq/'
+include { MethylseqResult           } from './workflows/methylseq/'
+include { MultiqcResult             } from './workflows/methylseq/'
 include { Sample                    } from './utils/types.nf'
 
 /*
@@ -367,7 +369,16 @@ workflow NFCORE_METHYLSEQ {
     )
 
     emit:
-    methylseq.multiqc_report
+    fasta_index     = indices.fasta_index
+    bismark_index   = indices.bismark_index
+    bwameth_index   = indices.bwameth_index
+    bwamem_index    = indices.bwamem_index
+    samples         = methylseq.results
+    bismark_summary = methylseq.bismark_summary
+    reference_dict  = methylseq.reference_dict
+    intervallist    = methylseq.intervallist
+    multiqc         = methylseq.multiqc
+    versions        = methylseq.versions
 }
 
 record IndexParams {
@@ -377,6 +388,17 @@ record IndexParams {
     bwameth_index: Path?
     bwamem_index: Path?
     use_mem2: Boolean
+}
+
+def isDeduplicated(params: DedupParams) -> Boolean {
+    // bwamem deduplicates RRBS libraries, the other aligners do not
+    return !(params.skip_deduplication || (params.rrbs && params.aligner != 'bwamem'))
+}
+
+record DedupParams {
+    aligner: String
+    skip_deduplication: Boolean
+    rrbs: Boolean
 }
 
 def genomeFile(attribute: String) -> Path? {
@@ -411,7 +433,7 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    val_multiqc_report = NFCORE_METHYLSEQ(
+    methylseq = NFCORE_METHYLSEQ(
         ch_samples,
         params,
         params
@@ -426,8 +448,141 @@ workflow {
         params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        val_multiqc_report
+        methylseq.multiqc?.map { r -> r.report }
     )
+
+    publish:
+    fasta_index     = methylseq.fasta_index
+    bismark_index   = methylseq.bismark_index
+    bwameth_index   = methylseq.bwameth_index
+    bwamem_index    = methylseq.bwamem_index
+    samples         = methylseq.samples
+    bismark_summary = methylseq.bismark_summary
+    reference_dict  = methylseq.reference_dict
+    intervallist    = methylseq.intervallist
+    multiqc         = methylseq.multiqc
+    versions        = methylseq.versions
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    WORKFLOW OUTPUTS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+output {
+    fasta_index: Path {
+        path "${params.aligner}/reference_genome"
+        enabled params.save_reference
+    }
+
+    bismark_index: Path {
+        path "${params.aligner}/reference_genome"
+        enabled params.save_reference
+    }
+
+    bwameth_index: Path {
+        path "${params.aligner}/reference_genome"
+        enabled params.save_reference
+    }
+
+    bwamem_index: Path {
+        path "${params.aligner}/reference_genome"
+        enabled params.save_reference
+    }
+
+    samples: Channel<MethylseqResult> {
+        path { r ->
+            // fastqc
+            r.fastqc_html >> "fastqc/"
+            r.fastqc_zip  >> "fastqc/zips/"
+
+            // trimgalore
+            r.trim_reads    >> (params.save_trimmed ? "trimgalore/" : null)
+            r.trim_unpaired >> (params.save_trimmed ? "trimgalore/" : null)
+            r.trim_log      >> "trimgalore/logs/"
+            r.trim_html     >> "trimgalore/fastqc/"
+            r.trim_zip      >> "trimgalore/fastqc/zips/"
+
+            // alignment
+            r.align_bam  >> (params.save_align_intermeds || (params.aligner =~ /bismark/ && !isDeduplicated(params)) ? "${params.aligner}/alignments/" : null)
+            r.sorted_bam >> (params.save_align_intermeds && isDeduplicated(params) ? "${params.aligner}/alignments/" : null)
+            r.sorted_bai >> (params.save_align_intermeds && isDeduplicated(params) ? "${params.aligner}/alignments/" : null)
+            r.bam        >> (isDeduplicated(params) ? "${params.aligner}/deduplicated/" : "${params.aligner}/alignments/")
+            r.bai        >> (isDeduplicated(params) ? "${params.aligner}/deduplicated/" : "${params.aligner}/alignments/")
+
+            // bismark
+            r.align_report         >> "${params.aligner}/alignments/logs/"
+            r.unmapped             >> (params.unmapped ? "${params.aligner}/alignments/unmapped/" : null)
+            r.dedup_report         >> "${params.aligner}/deduplicated/logs/"
+            r.methylation_bedgraph >> "${params.aligner}/methylation_calls/bedGraph/"
+            r.methylation_calls    >> "${params.aligner}/methylation_calls/methylation_calls/"
+            r.methylation_coverage >> "${params.aligner}/methylation_calls/methylation_coverage/"
+            r.methylation_report   >> "${params.aligner}/methylation_calls/splitting_report/"
+            r.methylation_mbias    >> "${params.aligner}/methylation_calls/mbias/"
+            r.bismark_report?.findAll { f -> f.name.endsWith('.html') } >> "${params.aligner}/reports/"
+
+            // bismark coverage2cytosine
+            r.coverage2cytosine_coverage >> "bismark/coverage2cytosine/coverage/"
+            r.coverage2cytosine_report   >> "bismark/coverage2cytosine/reports/"
+            r.coverage2cytosine_summary  >> "bismark/coverage2cytosine/summaries/"
+
+            // bwameth / bwamem
+            r.samtools_flagstat >> "${params.aligner}/alignments/samtools_stats/"
+            r.samtools_stats    >> "${params.aligner}/alignments/samtools_stats/"
+            r.samtools_idxstats >> "${params.aligner}/alignments/samtools_stats/"
+            r.picard_metrics    >> "${params.aligner}/deduplicated/picard_metrics/"
+
+            // methyldackel
+            r.methyldackel_bedgraph  >> "methyldackel/"
+            r.methyldackel_methylkit >> "methyldackel/"
+            r.methyldackel_mbias     >> "methyldackel/mbias/"
+
+            // rastair (taps)
+            r.rastair_mbias     >> "rastair/mbias/"
+            r.rastair_mbias_pdf >> "rastair/mbiasparser/"
+            r.rastair_mbias_csv >> "rastair/mbiasparser/"
+            r.rastair_call      >> "rastair/call/"
+            r.rastair_methylkit >> "rastair/methylkit/"
+
+            // qualimap
+            r.qualimap_bamqc >> "${params.aligner}/qualimap/bamqc/"
+
+            // targeted sequencing
+            r.bedgraph_intersect >> (params.aligner == 'bismark' ? "bismark/methylation_calls/bedGraph/" : "methyldackel/")
+            r.coverage_intersect >> "bismark/methylation_calls/methylation_coverage/"
+            r.picard_hsmetrics   >> "enrichment_metrics/"
+
+            // preseq
+            r.lc_extrap >> "${params.aligner}/preseq/"
+            r.lc_log    >> "${params.aligner}/preseq/log/"
+
+            // methurator
+            r.methurator_summary >> "methurator/summaries/"
+            r.methurator_plots   >> "methurator/plots/"
+        }
+    }
+
+    bismark_summary: Set<Path> {
+        path "${params.aligner}/summary"
+    }
+
+    reference_dict: Path {
+        path "${params.aligner}/reference_genome"
+        enabled params.save_reference
+    }
+
+    intervallist: Path {
+        path "enrichment_metrics"
+    }
+
+    multiqc: MultiqcResult {
+        path "multiqc/${params.aligner}"
+    }
+
+    versions: Channel<Path> {
+        path "pipeline_info"
+    }
 }
 
 /*

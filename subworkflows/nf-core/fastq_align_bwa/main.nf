@@ -27,7 +27,9 @@ workflow FASTQ_ALIGN_BWA {
     //
     // Sort, index BAM file and run samtools stats, flagstat and idxstats
     //
-    ch_results = BAM_SORT_STATS_SAMTOOLS(ch_bam, val_fasta, val_fasta_index)
+    ch_results = ch_bam
+        .map { r -> record(id: r.id, align_bam: r.bam) }
+        .join(BAM_SORT_STATS_SAMTOOLS(ch_bam, val_fasta, val_fasta_index), by: 'id')
 
     emit:
     ch_results

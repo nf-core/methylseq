@@ -282,10 +282,10 @@ workflow METHYLSEQ {
                     multiqc_logo: params.multiqc_logo
                 )
             }
-        val_multiqc_report = MULTIQC(val_multiqc_inputs).map { r -> r.report }
+        val_multiqc = MULTIQC(val_multiqc_inputs)
     }
     else {
-        val_multiqc_report = null
+        val_multiqc = null
     }
 
     emit:
@@ -293,7 +293,8 @@ workflow METHYLSEQ {
     bismark_summary : Value<Set<Path>>?        = val_bismark_summary
     reference_dict  : Value<Path>?             = val_reference_dict
     intervallist    : Value<Path>?             = val_intervallist
-    multiqc_report  : Value<Path>?             = val_multiqc_report
+    multiqc         : Value<MultiqcResult>?    = val_multiqc
+    versions        : Channel<Path>            = val_collated_versions
 }
 
 record MethylseqParams {
@@ -318,6 +319,12 @@ record MethylseqParams {
     multiqc_methods_description: Path?
 }
 
+record MultiqcResult {
+    report: Path
+    data: Path
+    plots: Path?
+}
+
 record SampleResult {
     id: String
 }
@@ -335,6 +342,9 @@ record MethylseqResult {
     // alignment (bismark / bwameth / bwamem)
     bam: Path
     bai: Path
+    align_bam: Path?
+    sorted_bam: Path?
+    sorted_bai: Path?
 
     // fastqc
     fastqc_html: Set<Path>?
