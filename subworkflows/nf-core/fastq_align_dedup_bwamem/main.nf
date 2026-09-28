@@ -76,6 +76,7 @@ record BwamemResult {
     meta: Record
     bam: Path
     bai: Path
+    align_bam: Path?
     samtools_flagstat: Path
     samtools_stats: Path
     samtools_idxstats: Path

@@ -76,7 +76,12 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         ch_alignment_final = ch_sorted_bai.map { r -> r + record(picard_metrics: null) }
     }
 
-    ch_results = ch_alignment_final
+    ch_intermediates = ch_alignment
+        .map { r -> record(meta: r.meta, align_bam: r.bam) }
+        .join(ch_sorted_bai.map { r -> record(meta: r.meta, sorted_bam: r.bam, sorted_bai: r.bai) }, by: 'meta')
+
+    ch_results = ch_intermediates
+        .join(ch_alignment_final, by: 'meta')
         .join(ch_samtools_flagstat, by: 'meta')
         .join(ch_samtools_stats, by: 'meta')
 
@@ -95,6 +100,9 @@ record BwamethResult {
     meta: Record
     bam: Path
     bai: Path
+    align_bam: Path
+    sorted_bam: Path
+    sorted_bai: Path
     samtools_flagstat: Path
     samtools_stats: Path
     picard_metrics: Path?

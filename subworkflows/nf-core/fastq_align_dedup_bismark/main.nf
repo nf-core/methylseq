@@ -25,6 +25,7 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     ch_alignment = BISMARK_ALIGN(
         ch_reads.combine(fasta: val_fasta, bismark_index: val_bismark_index)
     )
+        .map { r -> r + record(align_bam: r.bam) }
 
     if (!skip_deduplication) {
         /*
@@ -121,6 +122,7 @@ record BismarkResult {
     meta: Record
     bam: Path
     bai: Path
+    align_bam: Path
     align_report: Path
     unmapped: Set<Path>
     dedup_report: Path?
