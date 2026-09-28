@@ -26,8 +26,8 @@ workflow TARGETED_SEQUENCING {
 
     main:
 
-    ch_versions = Channel.empty()
-    ch_picard_metrics = Channel.empty()
+    ch_versions = channel.empty()
+    ch_picard_metrics = channel.empty()
 
     /*
      * Intersect bedGraph files with target regions (CpG-aware boundary handling)
@@ -80,7 +80,7 @@ workflow TARGETED_SEQUENCING {
             ch_sequence_dictionary,
             [],
         )
-        ch_intervals = PICARD_BEDTOINTERVALLIST.out.intervallist.map { it[1] }
+        ch_intervals = PICARD_BEDTOINTERVALLIST.out.intervallist.map { _meta, intervallist -> intervallist }
         ch_versions = ch_versions.mix(PICARD_BEDTOINTERVALLIST.out.versions)
 
         /*

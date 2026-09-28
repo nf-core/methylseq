@@ -308,8 +308,8 @@ workflow METHYLSEQ {
         }
         ch_methurator_inputs = ch_bam
             .join(ch_bai)
-            .combine(ch_fasta.map { meta, fasta -> fasta })
-            .combine(ch_fasta_index.map { meta, index -> index })
+            .combine(ch_fasta.map { _meta, fasta -> fasta })
+            .combine(ch_fasta_index.map { _meta, index -> index })
         METHURATOR_GTESTIMATOR(
             ch_methurator_inputs
         )
@@ -362,22 +362,22 @@ workflow METHYLSEQ {
         )
 
         if (params.run_qualimap) {
-            ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect { it[1] }.ifEmpty([]))
+            ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect { _meta, f -> f }.ifEmpty([]))
         }
         if (params.run_preseq) {
-            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { it[1] }.ifEmpty([]))
+            ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { _meta, f -> f }.ifEmpty([]))
         }
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         if (!params.skip_trimming) {
-            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { it[1] })
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { _meta, f -> f })
         }
         if (params.run_targeted_sequencing) {
             if (params.collecthsmetrics) {
-                ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect { it[1] }.ifEmpty([]))
+                ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect { _meta, f -> f }.ifEmpty([]))
             }
         }
         if (!params.skip_fastqc) {
-            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect { it[1] }.ifEmpty([]))
+            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect { _meta, f -> f }.ifEmpty([]))
         }
 
         // New nf-core MULTIQC (v4.0.2 template): single meta-based tuple input,

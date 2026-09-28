@@ -109,7 +109,7 @@ workflow PIPELINE_INITIALISATION {
     //
 
     channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, fastq_1, fastq_2, genome ->
+        .map { meta, fastq_1, fastq_2, _genome ->
             if (!fastq_2) {
                 return [meta.id, meta + [single_end: true], [fastq_1]]
             }
@@ -245,7 +245,7 @@ def genomeExistsError() {
 //
 def toolCitationText() {
     // FIXME Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-    def citation_text = ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].join(' ').trim()
+    return ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].join(' ').trim()
 }
 
 def toolBibliographyText() {
