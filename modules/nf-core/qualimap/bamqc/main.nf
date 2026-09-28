@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process QUALIMAP_BAMQC {
     tag "$meta.id"
     label 'process_medium'
@@ -8,22 +10,28 @@ process QUALIMAP_BAMQC {
         'biocontainers/qualimap:2.3--hdfd78af_0' }"
 
     input:
-    tuple val(meta), path(bam)
-    path gff
+    record(
+        meta: Record,
+        bam: Path,
+        gff: Path?
+    )
 
     output:
-    tuple val(meta), path("${prefix}"), emit: results
-    tuple val("${task.process}"), val('qualimap'), eval("qualimap -h | sed -n 's/^QualiMap v.//p'"), topic: versions, emit: versions_qualimap
+    record(
+        id             : meta.id,
+        meta           : meta,
+        qualimap_bamqc : file("${prefix}")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'qualimap', eval("qualimap -h | sed -n 's/^QualiMap v.//p'")) >> 'versions'
 
     script:
     def args = task.ext.args   ?: ''
     prefix   = task.ext.prefix ?: "${meta.id}"
 
     def collect_pairs = meta.single_end ? '' : '--collect-overlap-pairs'
-    def memory = (task.memory.mega*0.8).intValue() + 'M'
+    def memory = "${(task.memory.toMega()*0.8).intValue()}M"
     def regions = gff ? "--gff $gff" : ''
 
     def strandedness = 'non-strand-specific'

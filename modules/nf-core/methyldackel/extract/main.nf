@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process METHYLDACKEL_EXTRACT {
     tag "$meta.id"
     label 'process_medium'
@@ -8,16 +10,24 @@ process METHYLDACKEL_EXTRACT {
         'quay.io/biocontainers/methyldackel:0.6.1--he4a0461_7' }"
 
     input:
-    tuple val(meta), path(bam), path(bai)
-    tuple val(meta2), path(fasta), path(fai)
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("*.bedGraph") , optional: true, emit: bedgraph
-    tuple val(meta), path("*.methylKit"), optional: true, emit: methylkit
-    tuple val("${task.process}"), val('methyldackel'), eval("MethylDackel --version 2>&1 | cut -f1 -d' '"), emit: versions_methyldackel, topic: versions
+    record(
+        id                     : meta.id,
+        meta                   : meta,
+        methyldackel_bedgraph  : files("*.bedGraph", optional: true),
+        methyldackel_methylkit : files("*.methylKit", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'methyldackel', eval("MethylDackel --version 2>&1 | cut -f1 -d' '")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

@@ -2,30 +2,28 @@
 // Sort, index BAM file and run samtools stats, flagstat and idxstats
 //
 
+nextflow.enable.types = true
+
 include { SAMTOOLS_SORT      } from '../../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_INDEX     } from '../../../modules/nf-core/samtools/index/main'
 include { BAM_STATS_SAMTOOLS } from '../bam_stats_samtools/main'
 
+include { Alignment } from '../../../utils/types.nf'
+
 workflow BAM_SORT_STATS_SAMTOOLS {
     take:
-    ch_bam // channel: [ val(meta), [ bam ] ]
-    ch_fasta_fai // channel: [ val(meta), path(fasta), path(fai) ]
+    ch_bam: Channel<Alignment>
+    val_fasta: Value<Path>
+    val_fasta_index: Value<Path>
 
     main:
-    SAMTOOLS_SORT(ch_bam, ch_fasta_fai, '')
+    ch_sorted = SAMTOOLS_SORT(ch_bam.combine(fasta: val_fasta, fai: val_fasta_index), '')
+        .map { r -> record(id: r.id, meta: r.meta, bam: r.bam) }
 
-    SAMTOOLS_INDEX(SAMTOOLS_SORT.out.bam)
+    ch_bam_bai = ch_sorted.join(SAMTOOLS_INDEX(ch_sorted), by: 'id')
 
-    SAMTOOLS_SORT.out.bam
-        .join(SAMTOOLS_INDEX.out.index, by: [0])
-        .set { ch_bam_bai }
-
-    BAM_STATS_SAMTOOLS(ch_bam_bai, ch_fasta_fai)
+    ch_stats = BAM_STATS_SAMTOOLS(ch_bam_bai, val_fasta, val_fasta_index)
 
     emit:
-    bam      = SAMTOOLS_SORT.out.bam // channel: [ val(meta), [ bam ] ]
-    index    = SAMTOOLS_INDEX.out.index // channel: [ val(meta), [ index ] ]
-    stats    = BAM_STATS_SAMTOOLS.out.stats // channel: [ val(meta), [ stats ] ]
-    flagstat = BAM_STATS_SAMTOOLS.out.flagstat // channel: [ val(meta), [ flagstat ] ]
-    idxstats = BAM_STATS_SAMTOOLS.out.idxstats // channel: [ val(meta), [ idxstats ] ]
+    ch_bam_bai.join(ch_stats, by: 'id')
 }

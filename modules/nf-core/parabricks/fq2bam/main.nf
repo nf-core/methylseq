@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process PARABRICKS_FQ2BAM {
     tag "${meta.id}"
     label 'process_high'
@@ -8,26 +10,31 @@ process PARABRICKS_FQ2BAM {
     container "nvcr.io/nvidia/clara/clara-parabricks:4.6.0-1"
 
     input:
-    tuple val(meta), path(reads)
-    tuple val(meta2), path(fasta)
-    tuple val(meta3), path(index)
-    tuple val(meta4), path(intervals)
-    tuple val(meta5), path(known_sites)
-    val output_fmt
+    record(
+        meta: Record,
+        reads: List<Path>,
+        fasta: Path,
+        bwa_index: Path
+    )
+    intervals: List<Path>
+    known_sites: List<Path>
+    output_fmt: String
 
     output:
-    tuple val(meta), path("*.bam"), emit: bam, optional: true
-    tuple val(meta), path("*.bai"), emit: bai, optional: true
-    tuple val(meta), path("*.cram"), emit: cram, optional: true
-    tuple val(meta), path("*.crai"), emit: crai, optional: true
-    tuple val(meta), path("*.table"), emit: bqsr_table, optional: true
-    tuple val(meta), path("*_qc_metrics"), emit: qc_metrics, optional: true
-    tuple val(meta), path("*.duplicate-metrics.txt"), emit: duplicate_metrics, optional: true
-    path "compatible_versions.yml", emit: compatible_versions, optional: true
-    tuple val("${task.process}"), val('parabricks'), eval("pbrun version | grep -m1 '^pbrun:' | sed 's/^pbrun:[[:space:]]*//'"), topic: versions, emit: versions_parabricks
+    record(
+        id                : meta.id,
+        meta              : meta,
+        bam               : file("*.bam", optional: true),
+        bai               : file("*.bai", optional: true),
+        cram              : file("*.cram", optional: true),
+        crai              : file("*.crai", optional: true),
+        bqsr_table        : file("*.table", optional: true),
+        qc_metrics        : file("*_qc_metrics", optional: true),
+        duplicate_metrics : file("*.duplicate-metrics.txt", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'parabricks', eval("pbrun version | grep -m1 '^pbrun:' | sed 's/^pbrun:[[:space:]]*//'")) >> 'versions'
 
     script:
     // Exit if running this module with -profile conda / -profile mamba
@@ -37,12 +44,12 @@ process PARABRICKS_FQ2BAM {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
-    def in_fq_command = meta.single_end ? "--in-se-fq ${reads}" : "--in-fq ${reads}"
+    def in_fq_command = meta.single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
     def extension = "${output_fmt}"
 
-    def known_sites_command = known_sites ? (known_sites instanceof List ? known_sites.collect { knownSite -> "--knownSites ${knownSite}" }.join(' ') : "--knownSites ${known_sites}") : ""
+    def known_sites_command = known_sites.collect { knownSite -> "--knownSites ${knownSite}" }.join(' ')
     def known_sites_output_cmd = known_sites ? "--out-recal-file ${prefix}.table" : ""
-    def intervals_command = intervals ? (intervals instanceof List ? intervals.collect { interval -> "--interval-file ${interval}" }.join(' ') : "--interval-file ${intervals}") : ""
+    def intervals_command = intervals.collect { interval -> "--interval-file ${interval}" }.join(' ')
 
     def num_gpus = task.accelerator ? "--num-gpus ${task.accelerator.request}" : ''
     """

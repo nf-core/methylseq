@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process RASTAIR_MBIAS {
     label 'process_medium'
 
@@ -7,17 +9,23 @@ process RASTAIR_MBIAS {
         'community.wave.seqera.io/library/rastair:0.8.2--bf70eeab4121509c' }"
 
     input:
-    tuple val(meta), path(bam)
-    tuple val(meta2), path(bai)
-    tuple val(meta3), path(fasta)
-    tuple val(meta4), path(fai)
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("*.rastair_mbias.txt"),   emit: txt
-    tuple val("${task.process}"), val('rastair'), eval("rastair --version | sed 's/rastair //'"), topic: versions, emit: versions_rastair
+    record(
+        id            : meta.id,
+        meta          : meta,
+        rastair_mbias : file("*.rastair_mbias.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"

@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process CAT_FASTQ {
     tag "${meta.id}"
     label 'process_single'
@@ -8,20 +10,29 @@ process CAT_FASTQ {
         : 'community.wave.seqera.io/library/coreutils_grep_gzip_lbzip2_pruned:838ba80435a629f8'}"
 
     input:
-    tuple val(meta), path(reads, stageAs: "input*/*")
+    record(
+        meta: Record,
+        reads: List<Path>
+    )
+
+    stage:
+    stageAs reads, "input*/*"
 
     output:
-    tuple val(meta), path("*.merged.fastq.gz"), emit: reads
-    tuple val("${task.process}"), val("cat"), eval("cat --version 2>&1 | head -n 1 | sed 's/^.*coreutils) //; s/ .*\$//'"), emit: versions_cat, topic: versions
+    record(
+        id    : meta.id,
+        meta  : meta,
+        reads : files("*.merged.fastq.gz").toSorted()
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'cat', eval("cat --version 2>&1 | head -n 1 | sed 's/^.*coreutils) //; s/ .*\$//'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def readList = reads instanceof List ? reads.collect { r -> r.toString() } : [reads.toString()]
+    def readList = reads
     if (meta.single_end) {
-        if (readList.size >= 1) {
+        if (readList.size() >= 1) {
             """
             cat ${readList.join(' ')} > ${prefix}.merged.fastq.gz
             """
@@ -30,10 +41,9 @@ process CAT_FASTQ {
         }
     }
     else {
-        if (readList.size >= 2) {
-            def read1 = []
-            def read2 = []
-            readList.eachWithIndex { v, ix -> (ix & 1 ? read2 : read1) << v }
+        if (readList.size() >= 2) {
+            def read1 = readList.collate(2).collect { pair -> pair[0] }
+            def read2 = readList.collate(2).collect { pair -> pair[1] }
             """
             cat ${read1.join(' ')} > ${prefix}_1.merged.fastq.gz
             cat ${read2.join(' ')} > ${prefix}_2.merged.fastq.gz
@@ -45,9 +55,9 @@ process CAT_FASTQ {
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def readList = reads instanceof List ? reads.collect { r -> r.toString() } : [reads.toString()]
+    def readList = reads
     if (meta.single_end) {
-        if (readList.size >= 1) {
+        if (readList.size() >= 1) {
             """
             echo '' | gzip > ${prefix}.merged.fastq.gz
             """
@@ -56,7 +66,7 @@ process CAT_FASTQ {
         }
     }
     else {
-        if (readList.size >= 2) {
+        if (readList.size() >= 2) {
             """
             echo '' | gzip > ${prefix}_1.merged.fastq.gz
             echo '' | gzip > ${prefix}_2.merged.fastq.gz

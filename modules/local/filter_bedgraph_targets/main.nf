@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 /*
  * Filter bedGraph files against target regions with CpG-aware boundary handling.
  *
@@ -21,14 +23,21 @@ process FILTER_BEDGRAPH_TARGETS {
         : 'biocontainers/bedtools:2.31.1--hf5e1c6e_0'}"
 
     input:
-    tuple val(meta), path(bedgraph), path(targets)
+    record(
+        meta: Record,
+        bedgraph: Path,
+        targets: Path
+    )
 
     output:
-    tuple val(meta), path("*.targeted.bedGraph"), emit: intersect
-    tuple val("${task.process}"), val('bedtools'), eval("bedtools --version | sed -e 's/bedtools v//g'"), topic: versions, emit: versions_bedtools
+    record(
+        id                 : meta.id,
+        meta               : meta,
+        bedgraph_intersect : file("*.targeted.bedGraph")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"

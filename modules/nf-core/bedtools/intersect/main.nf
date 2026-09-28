@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BEDTOOLS_INTERSECT {
     tag "$meta.id"
     label 'process_single'
@@ -8,15 +10,22 @@ process BEDTOOLS_INTERSECT {
         'biocontainers/bedtools:2.31.1--hf5e1c6e_0' }"
 
     input:
-    tuple val(meta), path(intervals1), path(intervals2)
-    tuple val(meta2), path(chrom_sizes)
+    record(
+        meta: Record,
+        intervals1: Path,
+        intervals2: Path
+    )
+    chrom_sizes: Path?
 
     output:
-    tuple val(meta), path("*.${extension}"), emit: intersect
-    tuple val("${task.process}"), val('bedtools'), eval("bedtools --version | sed -e 's/bedtools v//g'"), topic: versions, emit: versions_bedtools
+    record(
+        id                 : meta.id,
+        meta               : meta,
+        coverage_intersect : file("*.${extension}")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

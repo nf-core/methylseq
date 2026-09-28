@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process RASTAIR_CALL {
     label 'process_medium'
 
@@ -7,24 +9,30 @@ process RASTAIR_CALL {
         'community.wave.seqera.io/library/rastair:0.8.2--bf70eeab4121509c' }"
 
     input:
-    tuple val(meta), path(bam)
-    tuple val(meta2), path(bai)
-    tuple val(meta3), path(fasta)
-    tuple val(meta4), path(fai)
-    tuple val(meta5), val(parsed_trim_OT)
-    tuple val(meta6), val(parsed_trim_OB)
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path,
+        trim_OT: String,
+        trim_OB: String
+    )
 
     output:
-    tuple val(meta), path("*.rastair_call.txt"),    emit: txt
-    tuple val("${task.process}"), val('rastair'), eval("rastair --version | sed 's/rastair //'"), topic: versions, emit: versions_rastair
+    record(
+        id           : meta.id,
+        meta         : meta,
+        rastair_call : file("*.rastair_call.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def nt_OT_to_trim = meta.trim_OT ?: parsed_trim_OT
-    def nt_OB_to_trim = meta.trim_OB ?: parsed_trim_OB
+    def nt_OT_to_trim = meta.trim_OT ?: trim_OT
+    def nt_OB_to_trim = meta.trim_OB ?: trim_OB
 
     """
     rastair call \\
