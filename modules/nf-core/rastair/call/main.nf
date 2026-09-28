@@ -16,7 +16,7 @@ process RASTAIR_CALL {
 
     output:
     tuple val(meta), path("*.rastair_call.txt"),    emit: txt
-    path "versions.yml",                            emit: versions
+    tuple val("${task.process}"), val('rastair'), eval("rastair --version | sed 's/rastair //'"), topic: versions, emit: versions_rastair
 
     when:
     task.ext.when == null || task.ext.when
@@ -33,21 +33,11 @@ process RASTAIR_CALL {
         --nOB ${nt_OB_to_trim} \\
         --fasta-file ${fasta} \\
         ${bam} > ${prefix}.rastair_call.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        rastair: \$(rastair --version)
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.rastair_call.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        rastair: \$(rastair --version 2>&1 || echo "stub")
-    END_VERSIONS
     """
 }

@@ -12,7 +12,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
     output:
     tuple val(meta), path("*.dict"), emit: reference_dict
-    path "versions.yml"            , emit: versions
+    tuple val("${task.process}"), val('picard'), eval("picard CreateSequenceDictionary --version 2>&1 | sed -n 's/.*Version://p'"), topic: versions, emit: versions_picard
 
     when:
     task.ext.when == null || task.ext.when
@@ -33,22 +33,12 @@ process PICARD_CREATESEQUENCEDICTIONARY {
         $args \\
         --REFERENCE $fasta \\
         --OUTPUT ${prefix}.dict
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(picard CreateSequenceDictionary --version 2>&1 | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.dict
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(echo \$(picard CreateSequenceDictionary --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
     """
 
 }

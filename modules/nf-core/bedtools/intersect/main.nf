@@ -13,7 +13,7 @@ process BEDTOOLS_INTERSECT {
 
     output:
     tuple val(meta), path("*.${extension}"), emit: intersect
-    path  "versions.yml"                   , emit: versions
+    tuple val("${task.process}"), val('bedtools'), eval("bedtools --version | sed -e 's/bedtools v//g'"), topic: versions, emit: versions_bedtools
 
     when:
     task.ext.when == null || task.ext.when
@@ -35,11 +35,6 @@ process BEDTOOLS_INTERSECT {
         $args \\
         $sizes \\
         > ${prefix}.${extension}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
     """
 
     stub:
@@ -50,10 +45,5 @@ process BEDTOOLS_INTERSECT {
         error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
     touch ${prefix}.${extension}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
     """
 }

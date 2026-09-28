@@ -36,7 +36,6 @@ include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator
 workflow METHYLSEQ {
     take:
     samplesheet // channel: [ path(samplesheet.csv) ]
-    ch_versions // channel: [ path(versions.yml)    ]
     ch_fasta // channel: [ path(fasta)           ]
     ch_fasta_index // channel: [ path(fasta index)     ]
     ch_bismark_index // channel: [ path(bismark index)   ]
@@ -79,7 +78,6 @@ workflow METHYLSEQ {
         ch_samplesheet.multiple
     )
     ch_fastq = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
-    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC
@@ -224,7 +222,6 @@ workflow METHYLSEQ {
         // channel: [ val(meta), [ txt ] ]
         ch_rastair_call = BAM_TAPS_CONVERSION.out.call
         // channel: [ val(meta), [ txt ] ]
-        ch_versions = ch_versions.mix(BAM_TAPS_CONVERSION.out.versions)
     }
     else if (!params.taps && params.aligner == 'bwameth') {
 
@@ -258,7 +255,6 @@ workflow METHYLSEQ {
             params.bamqc_regions_file ? channel.fromPath(params.bamqc_regions_file, checkIfExists: true).toList() : [],
         )
         ch_qualimap = QUALIMAP_BAMQC.out.results
-        ch_versions = ch_versions.mix(QUALIMAP_BAMQC.out.versions)
     }
 
     //
@@ -283,7 +279,6 @@ workflow METHYLSEQ {
             ch_gzi,
             params.collecthsmetrics,
         )
-        ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }
 
     //
@@ -295,7 +290,6 @@ workflow METHYLSEQ {
             ch_bam
         )
         ch_preseq = PRESEQ_LCEXTRAP.out.lc_extrap
-        ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
     }
 
     //
@@ -323,7 +317,7 @@ workflow METHYLSEQ {
     //
     // Collate and save software versions
     //
-    softwareVersionsToYAML(ch_versions)
+    softwareVersionsToYAML(channel.topic('versions'))
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",
             name: 'nf_core_' + 'methylseq_software_' + 'mqc_' + 'versions.yml',
@@ -331,14 +325,6 @@ workflow METHYLSEQ {
             newLine: true,
         )
         .set { ch_collated_versions }
-
-    //
-    // Topic channel versions - collected below (after MULTIQC) and written to a
-    // separate file, then merged into the main versions file on workflow completion.
-    // MULTIQC's own version is mixed in explicitly because the nf-core module no
-    // longer publishes to the `versions` topic (avoids a self-dependency hang).
-    //
-    ch_topic_versions = channel.topic("versions")
 
     //
     // MODULE: MultiQC
@@ -396,29 +382,10 @@ workflow METHYLSEQ {
         )
         // Keep the report path UNWRAPPED (flat) — PIPELINE_COMPLETION consumes it via getVal().
         ch_multiqc_report = MULTIQC.out.report.map { _meta, report -> report }.toList()
-        // MULTIQC now emits its version via `emit: versions` (topic-shaped tuple); fold it into the topic file.
-        ch_topic_versions = ch_topic_versions.mix(MULTIQC.out.versions)
     }
     else {
         ch_multiqc_report = channel.empty()
     }
-
-    //
-    // Collate topic-channel versions (including MULTIQC) into a separate file.
-    //
-    ch_topic_versions
-        .distinct()
-        .filter { entry -> !(entry instanceof Path) }
-        .map { process, tool, version ->
-            def processName = process[process.lastIndexOf(':') + 1..-1]
-            "${processName}:\n  ${tool}: ${version}"
-        }
-        .collectFile(
-            storeDir: "${params.outdir}/pipeline_info",
-            name: 'nf_core_methylseq_topic_versions.yml',
-            sort: true,
-            newLine: true,
-        )
 
     emit:
     bam            = ch_bam // channel: [ val(meta), path(bam) ]
@@ -431,5 +398,4 @@ workflow METHYLSEQ {
     qualimap       = ch_qualimap // channel: [ val(meta), path(qualimap) ]
     preseq         = ch_preseq // channel: [ val(meta), path(preseq) ]
     multiqc_report = ch_multiqc_report // channel: [ path(multiqc_report.html )  ]
-    versions       = ch_versions // channel: [ path(versions.yml) ]
 }

@@ -49,8 +49,6 @@ workflow NFCORE_METHYLSEQ {
 
     main:
 
-    ch_versions = channel.empty()
-
     //
     // Initialize file channels or values based on params
     //
@@ -81,18 +79,15 @@ workflow NFCORE_METHYLSEQ {
 
     METHYLSEQ (
         samplesheet,
-        ch_versions,
         FASTA_INDEX_METHYLSEQ.out.fasta,
         FASTA_INDEX_METHYLSEQ.out.fasta_index,
         FASTA_INDEX_METHYLSEQ.out.bismark_index,
         FASTA_INDEX_METHYLSEQ.out.bwameth_index,
         FASTA_INDEX_METHYLSEQ.out.bwamem_index,
     )
-    ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 
     emit:
     multiqc_report = METHYLSEQ.out.multiqc_report // channel: [ path(multiqc_report.html )  ]
-    versions       = ch_versions                  // channel: [ path(versions.yml) ]
 
 }
 /*

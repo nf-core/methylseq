@@ -37,8 +37,6 @@ workflow PIPELINE_INITIALISATION {
 
     main:
 
-    ch_versions = channel.empty()
-
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
     //
@@ -126,7 +124,6 @@ workflow PIPELINE_INITIALISATION {
 
     emit:
     samplesheet = ch_samplesheet
-    versions    = ch_versions
 }
 
 /*
@@ -165,14 +162,6 @@ workflow PIPELINE_COMPLETION {
         }
 
         completionSummary(monochrome_logs)
-
-        // Merge topic channel versions into the main versions file
-        // This is a workaround until all modules use topic channels
-        def mqcVersionsFile = file("${outdir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
-        def topicVersionsFile = file("${outdir}/pipeline_info/nf_core_methylseq_topic_versions.yml")
-        if (topicVersionsFile.exists() && mqcVersionsFile.exists()) {
-            mqcVersionsFile.append(topicVersionsFile.text)
-        }
     }
 
     workflow.onError {

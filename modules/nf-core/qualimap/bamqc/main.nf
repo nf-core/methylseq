@@ -13,7 +13,7 @@ process QUALIMAP_BAMQC {
 
     output:
     tuple val(meta), path("${prefix}"), emit: results
-    path  "versions.yml"              , emit: versions
+    tuple val("${task.process}"), val('qualimap'), eval("qualimap -h | sed -n 's/^QualiMap v.//p'"), topic: versions, emit: versions_qualimap
 
     when:
     task.ext.when == null || task.ext.when
@@ -46,11 +46,6 @@ process QUALIMAP_BAMQC {
         $collect_pairs \\
         -outdir $prefix \\
         -nt $task.cpus
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        qualimap: \$(echo \$(qualimap 2>&1) | sed 's/^.*QualiMap v.//; s/Built.*\$//')
-    END_VERSIONS
     """
 
     stub:
@@ -114,10 +109,5 @@ process QUALIMAP_BAMQC {
     touch genome_results.txt
     touch qualimapReport.html
     cd ../
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        qualimap: \$(echo \$(qualimap 2>&1) | sed 's/^.*QualiMap v.//; s/Built.*\$//')
-    END_VERSIONS
     """
 }

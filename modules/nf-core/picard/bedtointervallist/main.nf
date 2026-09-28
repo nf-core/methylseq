@@ -14,7 +14,7 @@ process PICARD_BEDTOINTERVALLIST {
 
     output:
     tuple val(meta), path('*.intervallist'), emit: intervallist
-    path  "versions.yml"                   , emit: versions
+    tuple val("${task.process}"), val('picard'), eval("picard BedToIntervalList --version 2>&1 | sed -n 's/.*Version://p'"), topic: versions, emit: versions_picard
 
     when:
     task.ext.when == null || task.ext.when
@@ -39,11 +39,6 @@ process PICARD_BEDTOINTERVALLIST {
         --TMP_DIR . \\
         ${args_file} \\
         ${args}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(echo \$(picard BedToIntervalList --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
     """
 
     stub:
@@ -67,10 +62,5 @@ process PICARD_BEDTOINTERVALLIST {
         ${args}"
 
     touch ${prefix}.intervallist
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        picard: \$(echo \$(picard BedToIntervalList --version 2>&1) | grep -o 'Version:.*' | cut -f2- -d:)
-    END_VERSIONS
     """
 }
