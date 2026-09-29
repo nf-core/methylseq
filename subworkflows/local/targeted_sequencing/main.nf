@@ -21,6 +21,8 @@ workflow TARGETED_SEQUENCING {
     val_fasta: Value<Path>
     val_fasta_index: Value<Path>
     collecthsmetrics: Boolean // whether to run Picard CollectHsMetrics
+    dict_args: String         // args for picard createsequencedictionary
+    intervallist_args: String // args for picard bedtointervallist
 
     main:
 
@@ -31,7 +33,7 @@ workflow TARGETED_SEQUENCING {
      * intersection so that CpGs straddling a target boundary are not lost.
      */
     ch_bedgraphs_target = ch_inputs
-        .flatMap { r -> r.bedgraphs.collect { bedgraph -> record(id: r.id, meta: r.meta, bedgraph: bedgraph) } }
+        .flatMap { r -> r.bedgraphs.collect { bedgraph -> record(id: r.id, bedgraph: bedgraph, prefix: bedgraph.baseName) } }
         .combine(targets: val_target_regions)
 
     ch_bedgraph_intersect = FILTER_BEDGRAPH_TARGETS(ch_bedgraphs_target)
@@ -46,7 +48,15 @@ workflow TARGETED_SEQUENCING {
      */
     ch_coverage_target = ch_inputs
         .filter { r -> r.coverage != null }
-        .map { r -> record(id: r.id, meta: r.meta, intervals1: r.coverage) }
+        .map { r ->
+            record(
+                id: r.id,
+                intervals1: r.coverage,
+                args: r.targeted_args?.intersect_cov ?: '',
+                prefix: r.coverage.baseName,
+                suffix: 'targeted.cov'
+            )
+        }
         .combine(intervals2: val_target_regions)
 
     ch_coverage_intersect = BEDTOOLS_INTERSECT_COV(ch_coverage_target, null)
@@ -61,12 +71,12 @@ workflow TARGETED_SEQUENCING {
         /*
          * Creation of a dictionary for the reference genome
          */
-        val_reference_dict = PICARD_CREATESEQUENCEDICTIONARY(val_fasta)
+        val_reference_dict = PICARD_CREATESEQUENCEDICTIONARY(val_fasta, dict_args)
 
         /*
          * Conversion of the covered targets BED file to an interval list
          */
-        val_intervallist = PICARD_BEDTOINTERVALLIST(val_target_regions, val_reference_dict)
+        val_intervallist = PICARD_BEDTOINTERVALLIST(val_target_regions, val_reference_dict, intervallist_args)
 
         /*
          * Generation of the metrics
@@ -74,13 +84,15 @@ workflow TARGETED_SEQUENCING {
          * the same for targeted methylation sequencing experiments
          */
         ch_picard_hsmetrics = PICARD_COLLECTHSMETRICS(
-            ch_inputs.combine(
-                bait_intervals: val_intervallist,
-                target_intervals: val_intervallist,
-                ref: val_fasta,
-                ref_fai: val_fasta_index,
-                ref_dict: val_reference_dict
-            )
+            ch_inputs
+                .combine(
+                    bait_intervals: val_intervallist,
+                    target_intervals: val_intervallist,
+                    ref: val_fasta,
+                    ref_fai: val_fasta_index,
+                    ref_dict: val_reference_dict
+                )
+                .map { r -> r + record(args: r.targeted_args?.collecthsmetrics) }
         )
         ch_results = ch_results.join(ch_picard_hsmetrics, by: 'id')
     }
@@ -97,11 +109,16 @@ workflow TARGETED_SEQUENCING {
 
 record TargetedSequencingInput {
     id: String
-    meta: Record
     bam: Path
     bai: Path
     bedgraphs: List<Path>
     coverage: Path?
+    targeted_args: TargetedSequencingArgs?
+}
+
+record TargetedSequencingArgs {
+    intersect_cov: String?
+    collecthsmetrics: String?
 }
 
 record TargetedSequencingResult {

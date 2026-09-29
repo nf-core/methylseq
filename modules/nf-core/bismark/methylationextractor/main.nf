@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BISMARK_METHYLATIONEXTRACTOR {
-    tag "$meta.id"
+    tag id
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,15 +11,17 @@ process BISMARK_METHYLATIONEXTRACTOR {
 
     input:
     record(
-        meta: Record,
+        id: String,
+        single_end: Boolean,
         bam: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id                   : meta.id,
-        meta                 : meta,
+        id                   : id,
         methylation_bedgraph : file("*.bedGraph.gz"),
         methylation_calls    : files("*.txt.gz"),
         methylation_coverage : file("*.cov.gz"),
@@ -31,7 +33,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     // Assign sensible numbers for multicore and buffer_size based on bismark docs
     if(!args.contains('--multicore') && task.cpus >= 6){
         args += " --multicore ${task.cpus.intdiv(3)}"
@@ -41,7 +43,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
         args += " --buffer_size ${task.memory.toGiga() - 2}G"
     }
 
-    def seqtype  = meta.single_end ? '-s' : '-p'
+    def seqtype  = single_end ? '-s' : '-p'
     """
     bismark_methylation_extractor \\
         ${bam} \\
@@ -54,7 +56,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     echo "" | gzip > ${prefix}.bedGraph.gz
     echo "" | gzip > ${prefix}.txt.gz

@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process PICARD_ADDORREPLACEREADGROUPS {
-    tag "${meta.id}"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,16 +11,18 @@ process PICARD_ADDORREPLACEREADGROUPS {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?,
+        suffix: String?
     )
 
     output:
     record(
-        id   : meta.id,
-        meta : meta,
+        id   : id,
         bam  : file("*.bam", optional: true),
         bai  : file("*.bai", optional: true),
         cram : file("*.cram", optional: true)
@@ -30,9 +32,9 @@ process PICARD_ADDORREPLACEREADGROUPS {
     tuple(task.process, 'picard', eval("picard AddOrReplaceReadGroups --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = task.ext.suffix ?: "${bam.getExtension()}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
+    suffix = suffix ?: "${bam.getExtension()}"
     def reference = fasta ? "--REFERENCE_SEQUENCE ${fasta}" : ""
     def avail_mem = 3072
     if (!task.memory) {
@@ -43,7 +45,7 @@ process PICARD_ADDORREPLACEREADGROUPS {
     }
 
     if ("${bam}" == "${prefix}.${suffix}") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     """
     picard \\
@@ -56,10 +58,10 @@ process PICARD_ADDORREPLACEREADGROUPS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = task.ext.suffix ?: "${bam.getExtension()}"
+    prefix = prefix ?: "${id}"
+    suffix = suffix ?: "${bam.getExtension()}"
     if ("${bam}" == "${prefix}.${suffix}") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     """
     touch ${prefix}.${suffix}

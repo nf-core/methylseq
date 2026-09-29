@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process METHYLDACKEL_EXTRACT {
-    tag "$meta.id"
+    tag id
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,17 @@ process METHYLDACKEL_EXTRACT {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        args: String?
     )
 
     output:
     record(
-        id                     : meta.id,
-        meta                   : meta,
+        id                     : id,
         methyldackel_bedgraph  : files("*.bedGraph", optional: true),
         methyldackel_methylkit : files("*.methylKit", optional: true)
     )
@@ -30,7 +30,7 @@ process METHYLDACKEL_EXTRACT {
     tuple(task.process, 'methyldackel', eval("MethylDackel --version 2>&1 | cut -f1 -d' '")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     """
     MethylDackel extract \\
         ${args} \\
@@ -39,7 +39,7 @@ process METHYLDACKEL_EXTRACT {
     """
 
     stub:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     def out_extension = args.contains('--methylKit') ? 'methylKit' : 'bedGraph'
     """
     touch ${bam.baseName}_CpG.${out_extension}

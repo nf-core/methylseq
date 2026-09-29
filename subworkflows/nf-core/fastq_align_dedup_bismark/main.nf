@@ -9,11 +9,9 @@ include { BISMARK_COVERAGE2CYTOSINE    } from '../../../modules/nf-core/bismark/
 include { BISMARK_REPORT               } from '../../../modules/nf-core/bismark/report/main'
 include { BISMARK_SUMMARY              } from '../../../modules/nf-core/bismark/summary/main'
 
-include { Sample } from '../../../utils/types.nf'
-
 workflow FASTQ_ALIGN_DEDUP_BISMARK {
     take:
-    ch_reads: Channel<Sample>
+    ch_reads: Channel<BismarkReads>
     val_fasta: Value<Path>
     val_bismark_index: Value<Path>
     skip_deduplication: Boolean // whether to deduplicate alignments
@@ -21,19 +19,30 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
 
     main:
 
+    // sample metadata and per-sample args, joined back by id where needed
+    ch_meta = ch_reads.map { r -> record(id: r.id, single_end: r.single_end) }
+    ch_args = ch_reads.map { r -> record(id: r.id, bismark_args: r.bismark_args) }
+
     /*
      * Align with bismark
      */
-    ch_alignment = BISMARK_ALIGN(
-        ch_reads.combine(fasta: val_fasta, bismark_index: val_bismark_index)
+    ch_bismark_align = BISMARK_ALIGN(
+        ch_reads
+            .combine(fasta: val_fasta, bismark_index: val_bismark_index)
+            .map { r -> r + record(args: r.bismark_args?.align) }
     )
+    ch_alignment = ch_meta
+        .join(ch_bismark_align, by: 'id')
         .map { r -> r + record(align_bam: r.bam) }
 
     if (!skip_deduplication) {
         /*
         * Run deduplicate_bismark
         */
-        ch_alignment_dedup = ch_alignment.join(BISMARK_DEDUPLICATE(ch_alignment), by: 'id')
+        ch_bismark_dedup = BISMARK_DEDUPLICATE(
+            ch_alignment.join(ch_args, by: 'id').map { r -> r + record(args: r.bismark_args?.deduplicate) }
+        )
+        ch_alignment_dedup = ch_alignment.join(ch_bismark_dedup, by: 'id')
     }
     else {
         ch_alignment_dedup = ch_alignment.map { r -> r + record(dedup_report: null) }
@@ -42,7 +51,12 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     /*
      * MODULE: Run samtools sort on aligned or deduplicated bam
      */
-    ch_bam = SAMTOOLS_SORT(ch_alignment_dedup.combine(fasta: val_fasta), '')
+    ch_bam = SAMTOOLS_SORT(
+        ch_alignment_dedup
+            .combine(fasta: val_fasta)
+            .map { r -> r + record(prefix: skip_deduplication ? "${r.id}.sorted" : "${r.id}.deduplicated.sorted") },
+        ''
+    )
 
     /*
      * MODULE: Run samtools index on aligned or deduplicated bam
@@ -53,7 +67,10 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
      * Run bismark_methylation_extractor
      */
     ch_methylation = BISMARK_METHYLATIONEXTRACTOR(
-        ch_alignment_dedup.combine(bismark_index: val_bismark_index)
+        ch_alignment_dedup
+            .combine(bismark_index: val_bismark_index)
+            .join(ch_args, by: 'id')
+            .map { r -> r + record(args: r.bismark_args?.methylation_extractor) }
     )
 
     /*
@@ -61,7 +78,10 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
      */
     if (cytosine_report) {
         ch_coverage2cytosine = BISMARK_COVERAGE2CYTOSINE(
-            ch_methylation.combine(fasta: val_fasta, bismark_index: val_bismark_index)
+            ch_methylation
+                .combine(fasta: val_fasta, bismark_index: val_bismark_index)
+                .join(ch_args, by: 'id')
+                .map { r -> r + record(args: r.bismark_args?.coverage2cytosine) }
         )
     }
     else {
@@ -72,7 +92,10 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
      * Generate bismark sample reports
      */
     ch_bismark_report = BISMARK_REPORT(
-        ch_alignment_dedup.join(ch_methylation, by: 'id')
+        ch_alignment_dedup
+            .join(ch_methylation, by: 'id')
+            .join(ch_args, by: 'id')
+            .map { r -> r + record(args: r.bismark_args?.report) }
     )
 
     /*
@@ -120,9 +143,24 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     multiqc         : Channel<Path>          = ch_multiqc_files
 }
 
+record BismarkReads {
+    id: String
+    single_end: Boolean
+    reads: List<Path>
+    bismark_args: BismarkArgs?
+}
+
+record BismarkArgs {
+    align: String?
+    deduplicate: String?
+    methylation_extractor: String?
+    coverage2cytosine: String?
+    report: String?
+}
+
 record BismarkResult {
     id: String
-    meta: Record
+    single_end: Boolean
     bam: Path
     bai: Path
     align_bam: Path

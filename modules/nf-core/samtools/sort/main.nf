@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process SAMTOOLS_SORT {
-    tag "${meta.id}"
+    tag id
     label 'process_medium'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,18 @@ process SAMTOOLS_SORT {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?
     )
     index_format: String
 
     output:
     record(
-        id    : meta.id,
-        meta  : meta,
+        id    : id,
         bam   : file("${prefix}.bam", optional: true),
         cram  : file("${prefix}.cram", optional: true),
         sam   : file("${prefix}.sam", optional: true),
@@ -32,8 +33,8 @@ process SAMTOOLS_SORT {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     extension = args.contains("--output-fmt sam")
         ? "sam"
         : args.contains("--output-fmt cram")
@@ -59,10 +60,10 @@ process SAMTOOLS_SORT {
         }
     }
     if ("${bam}" == "${prefix}.bam") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     if ("${bam}" == "${prefix}.bam") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
 
     def input_source = is_sam ? "${bam}" : "-"
@@ -80,8 +81,8 @@ process SAMTOOLS_SORT {
     """
 
     stub:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     extension = args.contains("--output-fmt sam")
         ? "sam"
         : args.contains("--output-fmt cram")

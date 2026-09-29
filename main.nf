@@ -25,6 +25,8 @@ include { METHYLSEQ                 } from './workflows/methylseq/'
 include { MethylseqParams           } from './workflows/methylseq/'
 include { MethylseqResult           } from './workflows/methylseq/'
 include { MultiqcResult             } from './workflows/methylseq/'
+include { bismarkGenomePreparationArgs } from './workflows/methylseq/args'
+include { runArgs                   } from './workflows/methylseq/args'
 include { Sample                    } from './utils/types.nf'
 
 /*
@@ -34,6 +36,8 @@ include { Sample                    } from './utils/types.nf'
 */
 
 params {
+    // Per-option tool args overrides, merged into the pipeline defaults, e.g. --opts.trimgalore.quality=30
+    opts: Map<String,Map<String,?>> = [:]
 
     /// Input/output options
 
@@ -352,7 +356,9 @@ workflow NFCORE_METHYLSEQ {
         params_methylseq.aligner,
         params_methylseq.collecthsmetrics,
         params_methylseq.run_methurator,
-        params_index.use_mem2
+        params_index.use_mem2,
+        bismarkGenomePreparationArgs(params_methylseq),
+        runArgs('samtools_faidx', params_methylseq.opts, [:])
     )
 
     //

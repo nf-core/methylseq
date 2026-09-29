@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BWAMETH_ALIGN {
-    tag "${meta.id}"
+    tag id
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,16 +11,18 @@ process BWAMETH_ALIGN {
 
     input:
     record(
-        meta: Record,
+        id: String,
         reads: List<Path>,
         fasta: Path,
-        bwameth_index: Path
+        bwameth_index: Path,
+        args: String?,
+        args2: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id   : meta.id,
-        meta : meta,
+        id   : id,
         bam  : file("*.bam")
     )
 
@@ -29,9 +31,9 @@ process BWAMETH_ALIGN {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args       = task.ext.args ?: ''
-    def args2      = task.ext.args2 ?: ''
-    def prefix     = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    args2 = args2 ?: ''
+    prefix = prefix ?: "${id}"
     """
     export BWA_METH_SKIP_TIME_CHECKS=1
     ln -sf \$(readlink ${fasta}) ${bwameth_index}/${fasta}
@@ -45,7 +47,7 @@ process BWAMETH_ALIGN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.bam
     """

@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process FASTQC {
-    tag "${meta.id}"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,8 +11,10 @@ process FASTQC {
 
     input:
     record(
-        meta: Record,
-        reads: List<Path>
+        id: String,
+        reads: List<Path>,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -20,8 +22,7 @@ process FASTQC {
 
     output:
     record(
-        id          : meta.id,
-        meta        : meta,
+        id          : id,
         fastqc_html : files("*.html"),
         fastqc_zip  : files("*.zip")
     )
@@ -30,8 +31,8 @@ process FASTQC {
     tuple(task.process, 'fastqc', eval("fastqc --version | sed \"/FastQC v/!d; s/.*v//\"")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     // Make list of old name and new name pairs to use for renaming in the bash while loop
     def new_names = reads.withIndex().collect { entry, index -> reads.size() == 1 ? "${prefix}.${entry.extension}" : "${prefix}_${index + 1}.${entry.extension}" }
     def rename_to = reads.withIndex().collect { entry, index -> "${entry} ${new_names[index]}" }.join(' ')
@@ -60,7 +61,7 @@ process FASTQC {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.html
     touch ${prefix}.zip

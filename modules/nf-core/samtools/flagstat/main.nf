@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process SAMTOOLS_FLAGSTAT {
-    tag "${meta.id}"
+    tag id
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -11,15 +11,15 @@ process SAMTOOLS_FLAGSTAT {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
-        bai: Path
+        bai: Path,
+        prefix: String?
     )
 
     output:
     record(
-        id                : meta.id,
-        meta              : meta,
+        id                : id,
         samtools_flagstat : file("*.flagstat")
     )
 
@@ -27,7 +27,7 @@ process SAMTOOLS_FLAGSTAT {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     samtools \\
         flagstat \\
@@ -37,7 +37,7 @@ process SAMTOOLS_FLAGSTAT {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     cat <<-END_FLAGSTAT > ${prefix}.flagstat
     1000000 + 0 in total (QC-passed reads + QC-failed reads)

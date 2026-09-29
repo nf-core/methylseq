@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process METHYLDACKEL_MBIAS {
-    tag "$meta.id"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,18 @@ process METHYLDACKEL_MBIAS {
 
     input:
     record(
-        meta: Record,
+        id: String,
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
     record(
-        id                 : meta.id,
-        meta               : meta,
+        id                 : id,
         methyldackel_mbias : file("*.mbias.txt")
     )
 
@@ -29,8 +30,8 @@ process METHYLDACKEL_MBIAS {
     tuple(task.process, 'methyldackel', eval("MethylDackel --version 2>&1 | cut -f1 -d' '")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    prefix = prefix ?: "${id}"
     """
     MethylDackel mbias \\
         ${args} \\
@@ -42,7 +43,7 @@ process METHYLDACKEL_MBIAS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     """
     touch ${prefix}.mbias.txt
     """

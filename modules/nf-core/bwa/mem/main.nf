@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process BWA_MEM {
-    tag "$meta.id"
+    tag id
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
@@ -11,17 +11,19 @@ process BWA_MEM {
 
     input:
     record(
-        meta: Record,
+        id: String,
         reads: List<Path>,
         bwa_index: Path,
-        fasta: Path?
+        fasta: Path?,
+        args: String?,
+        args2: String?,
+        prefix: String?
     )
     sort_bam: Boolean
 
     output:
     record(
-        id   : meta.id,
-        meta : meta,
+        id   : id,
         bam  : file("*.bam", optional: true),
         cram : file("*.cram", optional: true),
         sam  : file("*.sam", optional: true),
@@ -34,9 +36,9 @@ process BWA_MEM {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = args ?: ''
+    args2 = args2 ?: ''
+    prefix = prefix ?: "${id}"
     def samtools_command = sort_bam ? 'sort' : 'view'
     def extension = args2.contains("--output-fmt sam")   ? "sam" :
                     args2.contains("--output-fmt cram")  ? "cram":
@@ -66,8 +68,8 @@ process BWA_MEM {
     """
 
     stub:
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args2 = args2 ?: ''
+    prefix = prefix ?: "${id}"
     def extension = args2.contains("--output-fmt sam")   ? "sam" :
                     args2.contains("--output-fmt cram")  ? "cram":
                     sort_bam && args2.contains("-O cram")? "cram":

@@ -7,11 +7,9 @@ nextflow.enable.types = true
 include { BWA_MEM                 } from '../../../modules/nf-core/bwa/mem/main'
 include { BAM_SORT_STATS_SAMTOOLS } from '../bam_sort_stats_samtools/main'
 
-include { Sample } from '../../../utils/types.nf'
-
 workflow FASTQ_ALIGN_BWA {
     take:
-    ch_reads: Channel<Sample>
+    ch_reads: Channel<BwaReads>
     val_index: Value<Path>
     sort_bam: Boolean
     val_fasta: Value<Path>
@@ -22,7 +20,12 @@ workflow FASTQ_ALIGN_BWA {
     //
     // Map reads with BWA
     //
-    ch_bam = BWA_MEM(ch_reads.combine(bwa_index: val_index, fasta: val_fasta), sort_bam)
+    ch_bam = BWA_MEM(
+        ch_reads
+            .combine(bwa_index: val_index, fasta: val_fasta)
+            .map { r -> r + record(args: r.bwa_mem_args) },
+        sort_bam
+    )
 
     //
     // Sort, index BAM file and run samtools stats, flagstat and idxstats
@@ -33,4 +36,10 @@ workflow FASTQ_ALIGN_BWA {
 
     emit:
     ch_results
+}
+
+record BwaReads {
+    id: String
+    reads: List<Path>
+    bwa_mem_args: String?
 }

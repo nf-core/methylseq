@@ -108,9 +108,10 @@ workflow PIPELINE_INITIALISATION {
     //
 
     channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, fastq_1, fastq_2, _genome ->
+        .map { meta, fastq_1, fastq_2, _genome, trimgalore_args, bismark_align_args ->
             def single_end = !fastq_2
-            return [meta.id, meta + [single_end: single_end], single_end ? [fastq_1] : [fastq_1, fastq_2]]
+            def tool_args = [trimgalore: trimgalore_args, bismark_align: bismark_align_args].findAll { _tool, v -> v }
+            return [meta.id, meta + [single_end: single_end], single_end ? [fastq_1] : [fastq_1, fastq_2], tool_args]
         }
         .groupTuple()
         .map { samplesheet ->
@@ -195,7 +196,7 @@ def validateInputParameters() {
 // Validate channels from input samplesheet
 //
 def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
+    def (metas, fastqs, tool_args) = input[1..3]
 
     // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
     def endedness_ok = metas.collect { meta -> meta.single_end }.unique().size == 1
@@ -204,7 +205,7 @@ def validateInputSamplesheet(input) {
     }
 
     def meta = metas[0]
-    return record(id: meta.id, meta: record(meta), reads: fastqs.flatten())
+    return record(id: meta.id, single_end: meta.single_end, reads: fastqs.flatten(), tool_args: tool_args[0])
 }
 //
 // Get attribute from genome config file e.g. fasta

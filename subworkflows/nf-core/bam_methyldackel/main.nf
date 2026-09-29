@@ -3,12 +3,10 @@ nextflow.enable.types = true
 include { METHYLDACKEL_EXTRACT } from '../../../modules/nf-core/methyldackel/extract/main'
 include { METHYLDACKEL_MBIAS   } from '../../../modules/nf-core/methyldackel/mbias/main'
 
-include { AlignedSample } from '../../../utils/types.nf'
-
 workflow BAM_METHYLDACKEL {
 
     take:
-    ch_bam: Channel<AlignedSample>
+    ch_bam: Channel<MethyldackelInput>
     val_fasta: Value<Path>
     val_fasta_index: Value<Path>
 
@@ -19,9 +17,9 @@ workflow BAM_METHYLDACKEL {
      */
     ch_inputs = ch_bam.combine(fasta: val_fasta, fai: val_fasta_index)
 
-    ch_extract = METHYLDACKEL_EXTRACT(ch_inputs)
+    ch_extract = METHYLDACKEL_EXTRACT(ch_inputs.map { r -> r + record(args: r.methyldackel_args?.extract) })
 
-    ch_mbias = METHYLDACKEL_MBIAS(ch_inputs)
+    ch_mbias = METHYLDACKEL_MBIAS(ch_inputs.map { r -> r + record(args: r.methyldackel_args?.mbias) })
 
     ch_results = ch_extract.join(ch_mbias, by: 'id')
 
@@ -33,6 +31,18 @@ workflow BAM_METHYLDACKEL {
     emit:
     results : Channel<MethyldackelResult> = ch_results
     multiqc : Channel<Path>               = ch_multiqc_files
+}
+
+record MethyldackelInput {
+    id: String
+    bam: Path
+    bai: Path
+    methyldackel_args: MethyldackelArgs?
+}
+
+record MethyldackelArgs {
+    extract: String?
+    mbias: String?
 }
 
 record MethyldackelResult {

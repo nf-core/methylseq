@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process SAMTOOLS_INDEX {
-    tag "${meta.id}"
+    tag id
     label 'process_low'
 
     conda "${moduleDir}/environment.yml"
@@ -11,14 +11,14 @@ process SAMTOOLS_INDEX {
 
     input:
     record(
-        meta: Record,
-        bam: Path
+        id: String,
+        bam: Path,
+        args: String?
     )
 
     output:
     record(
-        id   : meta.id,
-        meta : meta,
+        id   : id,
         bai  : file("*.{bai,csi,crai}")
     )
 
@@ -26,7 +26,7 @@ process SAMTOOLS_INDEX {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     """
     samtools \\
         index \\
@@ -36,7 +36,7 @@ process SAMTOOLS_INDEX {
     """
 
     stub:
-    def args = task.ext.args ?: ''
+    args = args ?: ''
     def extension = bam.getExtension() == 'cram'
         ? "crai"
         : args.contains("-c") ? "csi" : "bai"

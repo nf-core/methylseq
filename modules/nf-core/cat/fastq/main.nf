@@ -1,7 +1,7 @@
 nextflow.enable.types = true
 
 process CAT_FASTQ {
-    tag "${meta.id}"
+    tag id
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
@@ -11,8 +11,10 @@ process CAT_FASTQ {
 
     input:
     record(
-        meta: Record,
-        reads: List<Path>
+        id: String,
+        single_end: Boolean,
+        reads: List<Path>,
+        prefix: String?
     )
 
     stage:
@@ -20,8 +22,7 @@ process CAT_FASTQ {
 
     output:
     record(
-        id    : meta.id,
-        meta  : meta,
+        id    : id,
         reads : files("*.merged.fastq.gz").toSorted()
     )
 
@@ -29,9 +30,9 @@ process CAT_FASTQ {
     tuple(task.process, 'cat', eval("cat --version 2>&1 | head -n 1 | sed 's/^.*coreutils) //; s/ .*\$//'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     def readList = reads
-    if (meta.single_end) {
+    if (single_end) {
         if (readList.size() >= 1) {
             """
             cat ${readList.join(' ')} > ${prefix}.merged.fastq.gz
@@ -54,9 +55,9 @@ process CAT_FASTQ {
     }
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = prefix ?: "${id}"
     def readList = reads
-    if (meta.single_end) {
+    if (single_end) {
         if (readList.size() >= 1) {
             """
             echo '' | gzip > ${prefix}.merged.fastq.gz
