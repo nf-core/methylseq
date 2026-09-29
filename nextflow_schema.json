@@ -721,12 +721,12 @@
                     "type": "boolean",
                     "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 },
-                "args": {
+                "opts": {
                     "type": "object",
-                    "description": "Per-tool args overrides, e.g. `--args.trimgalore='--quality 30'`.",
-                    "help_text": "Replaces the pipeline default args for a tool. Per-sample samplesheet columns (`trimgalore_args`, `bismark_align_args`) take precedence. Supported tools: bedtools_intersect_cov, bismark_align, bismark_coverage2cytosine, bismark_deduplicate, bismark_genomepreparation, bismark_methylationextractor, bismark_report, bwa_mem, bwameth_align, fastqc, methurator_gtestimator, methyldackel_extract, methyldackel_mbias, multiqc, parabricks_fq2bam, parabricks_fq2bammeth, picard_addorreplacereadgroups, picard_bedtointervallist, picard_collecthsmetrics, picard_createsequencedictionary, picard_markduplicates, preseq_lcextrap, qualimap_bamqc, samtools_faidx, trimgalore.",
+                    "description": "Per-option tool args overrides, e.g. `--opts.trimgalore.quality=30`.",
+                    "help_text": "Merged into the pipeline default args for a tool: `--opts.<tool>.<option>=<value>` sets an option, `=true` or no value adds a bare flag, `=false` removes a default flag. Options need not be pre-defined. A 1-char option renders as `-k value`, longer as `--key value`, or as is if it starts with `-` (e.g. `--opts.preseq_lcextrap.-seg_len=100000`). Per-sample samplesheet columns (`trimgalore_args`, `bismark_align_args`) replace the whole args string and take precedence. Supported tools: bedtools_intersect_cov, bismark_align, bismark_coverage2cytosine, bismark_deduplicate, bismark_genomepreparation, bismark_methylationextractor, bismark_report, bwa_mem, bwameth_align, fastqc, methurator_gtestimator, methyldackel_extract, methyldackel_mbias, multiqc, parabricks_fq2bam, parabricks_fq2bammeth, picard_addorreplacereadgroups, picard_bedtointervallist, picard_collecthsmetrics, picard_createsequencedictionary, picard_markduplicates, preseq_lcextrap, qualimap_bamqc, samtools_faidx, trimgalore.",
                     "additionalProperties": {
-                        "type": "string"
+                        "type": "object"
                     },
                     "fa_icon": "fas fa-terminal"
                 }

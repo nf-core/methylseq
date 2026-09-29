@@ -9,200 +9,187 @@ include { TargetedSequencingArgs } from '../../subworkflows/local/targeted_seque
 
 /*
  * Resolve tool args:
- * `<tool>_args` samplesheet column > `--args.<tool>` > pipeline default
+ * `<tool>_args` samplesheet column > pipeline defaults merged with `--opts.<tool>.<option>`
  */
-def toolArgs(tool: String, s: SampleMeta, args: Map<String,String>, fallback: String) -> String {
-    return s.tool_args[tool] ?: args[tool] ?: fallback
+def toolArgs(tool: String, s: SampleMeta, opts: Map<String,Map<String,?>>, defaults: Map<String,?>) -> String {
+    return s.tool_args[tool] ?: runArgs(tool, opts, defaults)
 }
 
 /*
- * Resolve args for a run-level tool (not per sample): `--args.<tool>` > pipeline default
+ * Resolve args for a run-level tool (not per sample): pipeline defaults merged with `--opts.<tool>.<option>`
  */
-def runArgs(tool: String, args: Map<String,String>, fallback: String) -> String {
-    return args[tool] ?: fallback
+def runArgs(tool: String, opts: Map<String,Map<String,?>>, defaults: Map<String,?>) -> String {
+    return cli(defaults + cliOpts(opts[tool] ?: [:]))
 }
 
-def trimgaloreArgs(s: SampleMeta, p: TrimgaloreParams) -> String {
+/*
+ * Render tool options as CLI args. Boolean -> bare flag or omitted, null -> omitted,
+ * any other value -> `<flag> <value>`. The flag is `-k` for a 1-char key, `--key` otherwise,
+ * or the key itself if it starts with `-`.
+ */
+def cli(opts: Map<String,?>) -> String {
+    return opts.keySet()
+        .collect { k ->
+            def v = opts[k]
+            def flag = k.startsWith('-') ? k : (k.length() == 1 ? "-${k}" : "--${k}")
+            v instanceof Boolean ? (v ? flag : '') : v != null ? "${flag} ${v}" : ''
+        }
+        .findAll { a -> a != '' }
+        .join(' ')
+}
+
+// CLI values arrive as strings: 'true'/'false' mean flag on/off
+def cliOpts(opts: Map<String,?>) -> Map<String,?> {
+    return opts.keySet().inject([:]) { acc, k ->
+        def v = "${opts[k]}"
+        acc + [(k): opts[k]] + (v == 'true' ? [(k): true] : v == 'false' ? [(k): false] : [:])
+    }
+}
+
+def trimgaloreOpts(s: SampleMeta, p: TrimgaloreParams) -> Map<String,?> {
+    // Clip presets per protocol: [clip_r1, clip_r2, three_prime_clip_r1, three_prime_clip_r2], 0 = none
+    def preset: List<Integer> =
+        p.skip_trimming_presets ? [0, 0, 0, 0] :
+        p.pbat                  ? [8, 8, 8, 8] :
+        p.single_cell           ? [6, 6, 6, 6] :
+        p.zymo || p.em_seq      ? [10, 10, 10, 10] :
+        p.accel                 ? [10, 15, 10, 10] :
+                                  [0, 0, 0, 0]
     return [
-        // Static args
-        '--fastqc',
-
-        // Special flags
-        p.rrbs ? '--rrbs' : '',
-        p.nextseq_trim > 0 ? "--nextseq ${p.nextseq_trim}" : '',
-        p.length_trim ? "--length ${p.length_trim}" : '',
-
-        // Trimming - R1
-        p.clip_r1 > 0 ? "--clip_r1 ${p.clip_r1}" : (
-            p.skip_trimming_presets ? '' : (
-                p.pbat ? "--clip_r1 8" : (
-                    p.single_cell ? "--clip_r1 6" : (
-                        (p.accel || p.zymo || p.em_seq) ? "--clip_r1 10" : ''
-                    )
-                )
-            )
-        ),
-
-        // Trimming - R2
-        s.single_end ? '' : (
-            p.clip_r2 > 0 ? "--clip_r2 ${p.clip_r2}" : (
-                p.skip_trimming_presets ? '' : (
-                    p.pbat ? "--clip_r2 8" : (
-                        p.single_cell ? "--clip_r2 6" : (
-                            (p.zymo || p.em_seq) ? "--clip_r2 10" : (
-                                p.accel ? "--clip_r2 15" : ''
-                            )
-                        )
-                    )
-                )
-            )
-        ),
-
-        // Trimming - 3' R1
-        p.three_prime_clip_r1 > 0 ? "--three_prime_clip_r1 ${p.three_prime_clip_r1}" : (
-            p.skip_trimming_presets ? '' : (
-                p.pbat ? "--three_prime_clip_r1 8" : (
-                    p.single_cell ? "--three_prime_clip_r1 6" : (
-                        (p.accel || p.zymo || p.em_seq) ? "--three_prime_clip_r1 10" : ''
-                    )
-                )
-            )
-        ),
-
-        // Trimming - 3' R2
-        s.single_end ? '' : (
-            p.three_prime_clip_r2 > 0 ? "--three_prime_clip_r2 ${p.three_prime_clip_r2}" : (
-                p.skip_trimming_presets ? '' : (
-                    p.pbat ? "--three_prime_clip_r2 8" : (
-                        p.single_cell ? "--three_prime_clip_r2 6" : (
-                            (p.accel || p.zymo || p.em_seq) ? "--three_prime_clip_r2 10" : ''
-                        )
-                    )
-                )
-            )
-        ),
-    ].join(' ').trim()
+        fastqc: true,
+        rrbs: p.rrbs,
+        nextseq: p.nextseq_trim > 0 ? p.nextseq_trim : null,
+        length: p.length_trim ?: null,
+        clip_r1: p.clip_r1 > 0 ? p.clip_r1 : preset[0] ?: null,
+        clip_r2: s.single_end ? null : p.clip_r2 > 0 ? p.clip_r2 : preset[1] ?: null,
+        three_prime_clip_r1: p.three_prime_clip_r1 > 0 ? p.three_prime_clip_r1 : preset[2] ?: null,
+        three_prime_clip_r2: s.single_end ? null : p.three_prime_clip_r2 > 0 ? p.three_prime_clip_r2 : preset[3] ?: null
+    ]
 }
 
 def bismarkArgs(s: SampleMeta, p: BismarkParams) -> BismarkArgs {
     return record(
-        align: toolArgs('bismark_align', s, p.args, bismarkAlignArgs(s, p)),
-        deduplicate: toolArgs('bismark_deduplicate', s, p.args, ''),
-        methylation_extractor: toolArgs('bismark_methylationextractor', s, p.args, bismarkMethylationExtractorArgs(s, p)),
-        coverage2cytosine: toolArgs('bismark_coverage2cytosine', s, p.args, p.nomeseq ? "--nome-seq" : ""),
-        report: toolArgs('bismark_report', s, p.args, '')
+        align: toolArgs('bismark_align', s, p.opts, bismarkAlignOpts(s, p)),
+        deduplicate: toolArgs('bismark_deduplicate', s, p.opts, [:]),
+        methylation_extractor: toolArgs('bismark_methylationextractor', s, p.opts, bismarkMethylationExtractorOpts(s, p)),
+        coverage2cytosine: toolArgs('bismark_coverage2cytosine', s, p.opts, ['nome-seq': p.nomeseq]),
+        report: toolArgs('bismark_report', s, p.opts, [:])
     )
 }
 
-def bismarkAlignArgs(s: SampleMeta, p: BismarkParams) -> String {
+def bismarkAlignOpts(s: SampleMeta, p: BismarkParams) -> Map<String,?> {
     // Combined-index alignment is incompatible with --local_alignment, so gated off there
+    def hisat = p.aligner == 'bismark_hisat'
     def non_directional = p.single_cell || p.non_directional || p.zymo
     def use_combined = p.aligner.startsWith('bismark') && p.combined_index && !p.local_alignment
     return [
-        (p.aligner == 'bismark_hisat') ? ' --hisat2' : ' --bowtie2',
-        (p.aligner == 'bismark_hisat' && p.known_splices) ? " --known-splicesite-infile <(hisat2_extract_splice_sites.py ${p.known_splices})" : '',
-        p.pbat ? ' --pbat' : '',
-        non_directional ? ' --non_directional' : '',
-        use_combined ? ' --combined_index' : '',
-        (use_combined && non_directional) ? ' --combined_index_sequential' : '',
-        p.unmapped ? ' --unmapped' : '',
-        p.relax_mismatches ? " --score_min L,0,-${p.num_mismatches}" : '',
-        p.local_alignment ? " --local" : '',
-        !s.single_end && p.minins ? " --minins ${p.minins}" : '',
-        s.single_end ? '' : (
-            p.maxins ? " --maxins ${p.maxins}" : (
-                p.em_seq ? " --maxins 1000" : ''
-            )
-        )
-    ].join(' ').trim()
+        hisat2: hisat,
+        bowtie2: !hisat,
+        'known-splicesite-infile': hisat && p.known_splices ? "<(hisat2_extract_splice_sites.py ${p.known_splices})" : null,
+        pbat: p.pbat,
+        non_directional: non_directional,
+        combined_index: use_combined,
+        combined_index_sequential: use_combined && non_directional,
+        unmapped: p.unmapped,
+        score_min: p.relax_mismatches ? "L,0,-${p.num_mismatches}" : null,
+        local: p.local_alignment,
+        minins: s.single_end ? null : p.minins,
+        maxins: s.single_end ? null : p.maxins ?: (p.em_seq ? 1000 : null)
+    ]
 }
 
-def bismarkMethylationExtractorArgs(s: SampleMeta, p: BismarkParams) -> String {
+def bismarkMethylationExtractorOpts(s: SampleMeta, p: BismarkParams) -> Map<String,?> {
+    def pe = !s.single_end
     return [
-        p.comprehensive   ? ' --comprehensive' : '',
-        p.meth_cutoff     ? " --cutoff ${p.meth_cutoff}" : '',
-        p.nomeseq         ? '--CX' : '',
-        p.ignore_r1 > 0   ? "--ignore ${p.ignore_r1}" : '',
-        p.ignore_3prime_r1 > 0   ? "--ignore_3prime ${p.ignore_3prime_r1}" : '',
-        s.single_end ? '' : (p.no_overlap           ? ' --no_overlap'                         : '--include_overlap'),
-        s.single_end ? '' : (p.ignore_r2        > 0 ? "--ignore_r2 ${p.ignore_r2}"       : ""),
-        s.single_end ? '' : (p.ignore_3prime_r2 > 0 ? "--ignore_3prime_r2 ${p.ignore_3prime_r2}": "")
-    ].join(' ').trim()
+        comprehensive: p.comprehensive,
+        cutoff: p.meth_cutoff,
+        CX: p.nomeseq,
+        ignore: p.ignore_r1 > 0 ? p.ignore_r1 : null,
+        ignore_3prime: p.ignore_3prime_r1 > 0 ? p.ignore_3prime_r1 : null,
+        no_overlap: pe && p.no_overlap,
+        include_overlap: pe && !p.no_overlap,
+        ignore_r2: pe && p.ignore_r2 > 0 ? p.ignore_r2 : null,
+        ignore_3prime_r2: pe && p.ignore_3prime_r2 > 0 ? p.ignore_3prime_r2 : null
+    ]
 }
 
 def bismarkGenomePreparationArgs(p: BismarkParams) -> String {
-    return runArgs('bismark_genomepreparation', p.args, [
-        (p.aligner == 'bismark_hisat') ? ' --hisat2' : ' --bowtie2',
-        p.slamseq ? ' --slam' : '',
+    def hisat = p.aligner == 'bismark_hisat'
+    return runArgs('bismark_genomepreparation', p.opts, [
+        hisat2: hisat,
+        bowtie2: !hisat,
+        slam: p.slamseq,
         // Combined-index build is skipped for --local_alignment (combined rejects --local)
-        (p.combined_index && !p.local_alignment && p.aligner.startsWith('bismark')) ? ' --combined_genome' : ''
-    ].join(' ').trim())
+        combined_genome: p.combined_index && !p.local_alignment && p.aligner.startsWith('bismark')
+    ])
 }
 
-def bwamethArgs(s: SampleMeta, args: Map<String,String>) -> BwamethArgs {
+def bwamethArgs(s: SampleMeta, opts: Map<String,Map<String,?>>) -> BwamethArgs {
     return record(
-        align: toolArgs('bwameth_align', s, args, ''),
-        fq2bammeth: toolArgs('parabricks_fq2bammeth', s, args, '--low-memory'),
-        markduplicates: toolArgs('picard_markduplicates', s, args, markduplicatesArgs())
+        align: toolArgs('bwameth_align', s, opts, [:]),
+        fq2bammeth: toolArgs('parabricks_fq2bammeth', s, opts, ['low-memory': true]),
+        markduplicates: toolArgs('picard_markduplicates', s, opts, markduplicatesOpts())
     )
 }
 
-def bwamemArgs(s: SampleMeta, args: Map<String,String>) -> BwamemArgs {
+def bwamemArgs(s: SampleMeta, opts: Map<String,Map<String,?>>) -> BwamemArgs {
     return record(
-        align: toolArgs('bwa_mem', s, args, ''),
-        fq2bam: toolArgs('parabricks_fq2bam', s, args, ''),
-        addorreplacereadgroups: toolArgs('picard_addorreplacereadgroups', s, args, "--RGID 1 --RGLB lib1 --RGPL illumina --RGPU unit1 --RGSM sample1"),
-        markduplicates: toolArgs('picard_markduplicates', s, args, markduplicatesArgs())
+        align: toolArgs('bwa_mem', s, opts, [:]),
+        fq2bam: toolArgs('parabricks_fq2bam', s, opts, [:]),
+        addorreplacereadgroups: toolArgs('picard_addorreplacereadgroups', s, opts, [RGID: 1, RGLB: 'lib1', RGPL: 'illumina', RGPU: 'unit1', RGSM: 'sample1']),
+        markduplicates: toolArgs('picard_markduplicates', s, opts, markduplicatesOpts())
     )
 }
 
-def markduplicatesArgs() -> String {
-    return "--ASSUME_SORTED true --REMOVE_DUPLICATES false --VALIDATION_STRINGENCY LENIENT --PROGRAM_RECORD_ID 'null' --TMP_DIR tmp"
+// Picard takes boolean values as strings
+def markduplicatesOpts() -> Map<String,?> {
+    return [ASSUME_SORTED: 'true', REMOVE_DUPLICATES: 'false', VALIDATION_STRINGENCY: 'LENIENT', PROGRAM_RECORD_ID: "'null'", TMP_DIR: 'tmp']
 }
 
 def methyldackelArgs(s: SampleMeta, p: MethyldackelParams) -> MethyldackelArgs {
-    def extract = [
-        p.all_contexts ? ' --CHG --CHH' : '',
-        p.merge_context ? ' --mergeContext' : '',
-        p.ignore_flags ? " --ignoreFlags" : '',
-        p.methyl_kit ? " --methylKit" : '',
-        p.min_depth > 0 ? " --minDepth ${p.min_depth}" : ''
-    ].join(" ").trim()
-    def mbias = [
-        p.all_contexts ? ' --CHG --CHH' : '',
-        p.ignore_flags ? " --ignoreFlags" : ''
-    ].join(" ").trim()
+    def extract: Map<String,?> = [
+        CHG: p.all_contexts,
+        CHH: p.all_contexts,
+        mergeContext: p.merge_context,
+        ignoreFlags: p.ignore_flags,
+        methylKit: p.methyl_kit,
+        minDepth: p.min_depth > 0 ? p.min_depth : null
+    ]
+    def mbias: Map<String,?> = [
+        CHG: p.all_contexts,
+        CHH: p.all_contexts,
+        ignoreFlags: p.ignore_flags
+    ]
     return record(
-        extract: toolArgs('methyldackel_extract', s, p.args, extract),
-        mbias: toolArgs('methyldackel_mbias', s, p.args, mbias)
+        extract: toolArgs('methyldackel_extract', s, p.opts, extract),
+        mbias: toolArgs('methyldackel_mbias', s, p.opts, mbias)
     )
 }
 
-def targetedSequencingArgs(s: SampleMeta, args: Map<String,String>) -> TargetedSequencingArgs {
+def targetedSequencingArgs(s: SampleMeta, opts: Map<String,Map<String,?>>) -> TargetedSequencingArgs {
     return record(
-        intersect_cov: toolArgs('bedtools_intersect_cov', s, args, ''),
-        collecthsmetrics: toolArgs('picard_collecthsmetrics', s, args, "--MINIMUM_MAPPING_QUALITY 20 --COVERAGE_CAP 1000  --NEAR_DISTANCE 500")
+        intersect_cov: toolArgs('bedtools_intersect_cov', s, opts, [:]),
+        collecthsmetrics: toolArgs('picard_collecthsmetrics', s, opts, [MINIMUM_MAPPING_QUALITY: 20, COVERAGE_CAP: 1000, NEAR_DISTANCE: 500])
     )
 }
 
-def qualimapArgs(p: QualimapParams) -> String {
+def qualimapOpts(p: QualimapParams) -> Map<String,?> {
     return [
-        p.genome?.startsWith('GRCh') ? '-gd HUMAN' : '',
-        p.genome?.startsWith('GRCm') ? '-gd MOUSE' : ''
-    ].join(" ").trim()
+        '-gd': p.genome?.startsWith('GRCh') ? 'HUMAN' : p.genome?.startsWith('GRCm') ? 'MOUSE' : null
+    ]
 }
 
-def methuratorArgs(p: MethuratorParams) -> String {
+def methuratorOpts(p: MethuratorParams) -> Map<String,?> {
     return [
-        p.methurator_compute_ci ? ' --compute_ci' : '',
-        p.rrbs ? ' --rrbs' : '',
-        p.methurator_minimum_coverage ? " --minimum-coverage ${p.methurator_minimum_coverage}" : "",
-        p.methurator_t_max ? " --t-max ${p.methurator_t_max}" : ""
-    ].join(" ").trim()
+        compute_ci: p.methurator_compute_ci,
+        rrbs: p.rrbs,
+        'minimum-coverage': p.methurator_minimum_coverage,
+        't-max': p.methurator_t_max
+    ]
 }
 
 def multiqcArgs(p: MultiqcParams) -> String {
-    return runArgs('multiqc', p.args, p.multiqc_title ? "--title \"${p.multiqc_title}\"" : '')
+    return runArgs('multiqc', p.opts, [title: p.multiqc_title ? "\"${p.multiqc_title}\"" : null])
 }
 
 record TrimgaloreParams {
@@ -222,7 +209,7 @@ record TrimgaloreParams {
 }
 
 record BismarkParams {
-    args: Map<String,String>
+    opts: Map<String,Map<String,?>>
     aligner: String
     known_splices: Path?
     pbat: Boolean
@@ -249,7 +236,7 @@ record BismarkParams {
 }
 
 record MethyldackelParams {
-    args: Map<String,String>
+    opts: Map<String,Map<String,?>>
     all_contexts: Boolean
     merge_context: Boolean
     ignore_flags: Boolean
@@ -269,6 +256,6 @@ record MethuratorParams {
 }
 
 record MultiqcParams {
-    args: Map<String,String>
+    opts: Map<String,Map<String,?>>
     multiqc_title: String?
 }

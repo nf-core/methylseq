@@ -28,14 +28,14 @@ include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator
 
 include { Sample                        } from '../../utils/types.nf'
 include { toolArgs                      } from './args'
-include { trimgaloreArgs                } from './args'
+include { trimgaloreOpts                } from './args'
 include { bismarkArgs                   } from './args'
 include { bwamethArgs                   } from './args'
 include { bwamemArgs                    } from './args'
 include { methyldackelArgs              } from './args'
 include { targetedSequencingArgs        } from './args'
-include { qualimapArgs                  } from './args'
-include { methuratorArgs                } from './args'
+include { qualimapOpts                  } from './args'
+include { methuratorOpts                } from './args'
 include { multiqcArgs                   } from './args'
 include { runArgs                       } from './args'
 
@@ -80,7 +80,7 @@ workflow METHYLSEQ {
     // MODULE: Run FastQC
     //
     if (!params.skip_fastqc) {
-        ch_fastqc = FASTQC(ch_fastq.map { s -> s + record(args: toolArgs('fastqc', s, params.args, '--quiet')) })
+        ch_fastqc = FASTQC(ch_fastq.map { s -> s + record(args: toolArgs('fastqc', s, params.opts, [quiet: true])) })
     }
     else {
         ch_fastqc = channel.empty()
@@ -92,7 +92,7 @@ workflow METHYLSEQ {
     if (!params.skip_trimming) {
         ch_trimmed = TRIMGALORE(
             ch_fastq.map { s ->
-                s + record(args: toolArgs('trimgalore', s, params.args, trimgaloreArgs(s, params)))
+                s + record(args: toolArgs('trimgalore', s, params.opts, trimgaloreOpts(s, params)))
             }
         )
         ch_reads = ch_fastq
@@ -133,7 +133,7 @@ workflow METHYLSEQ {
     }
     else if (params.aligner == 'bwameth' && val_fasta_index && val_bwameth_index) {
         bwameth = FASTQ_ALIGN_DEDUP_BWAMETH(
-            ch_reads.map { r -> r + record(bwameth_args: bwamethArgs(r, params.args)) },
+            ch_reads.map { r -> r + record(bwameth_args: bwamethArgs(r, params.opts)) },
             val_fasta,
             val_fasta_index,
             val_bwameth_index,
@@ -145,7 +145,7 @@ workflow METHYLSEQ {
     }
     else if (params.aligner == 'bwamem' && val_fasta_index && val_bwamem_index) {
         bwamem = FASTQ_ALIGN_DEDUP_BWAMEM(
-            ch_reads.map { r -> r + record(bwamem_args: bwamemArgs(r, params.args)) },
+            ch_reads.map { r -> r + record(bwamem_args: bwamemArgs(r, params.opts)) },
             val_fasta,
             val_fasta_index,
             val_bwamem_index,
@@ -192,7 +192,7 @@ workflow METHYLSEQ {
                     single_end: r.single_end,
                     bam: r.bam,
                     gff: params.bamqc_regions_file,
-                    args: toolArgs('qualimap_bamqc', r, params.args, qualimapArgs(params))
+                    args: toolArgs('qualimap_bamqc', r, params.opts, qualimapOpts(params))
                 )
             }
         )
@@ -215,13 +215,13 @@ workflow METHYLSEQ {
             ch_alignment
                 .join(ch_bedgraph, by: 'id')
                 .join(ch_meta, by: 'id')
-                .map { r -> r + record(targeted_args: targetedSequencingArgs(r, params.args)) },
+                .map { r -> r + record(targeted_args: targetedSequencingArgs(r, params.opts)) },
             channel.value(params.target_regions_file),
             val_fasta,
             val_fasta_index,
             params.collecthsmetrics,
-            runArgs('picard_createsequencedictionary', params.args, ''),
-            runArgs('picard_bedtointervallist', params.args, ''),
+            runArgs('picard_createsequencedictionary', params.opts, [:]),
+            runArgs('picard_bedtointervallist', params.opts, [:]),
         )
         ch_targeted_sequencing = targeted_sequencing.results
         val_reference_dict = targeted_sequencing.reference_dict
@@ -241,7 +241,7 @@ workflow METHYLSEQ {
     if (params.run_preseq) {
         ch_preseq = PRESEQ_LCEXTRAP(
             ch_alignment.join(ch_meta, by: 'id').map { r ->
-                record(id: r.id, single_end: r.single_end, bam: r.bam, args: toolArgs('preseq_lcextrap', r, params.args, ' -verbose -bam'))
+                record(id: r.id, single_end: r.single_end, bam: r.bam, args: toolArgs('preseq_lcextrap', r, params.opts, ['-verbose': true, '-bam': true]))
             }
         )
     }
@@ -261,7 +261,7 @@ workflow METHYLSEQ {
             ch_alignment
                 .combine(fasta: val_fasta, fai: val_fasta_index)
                 .join(ch_meta, by: 'id')
-                .map { r -> r + record(args: toolArgs('methurator_gtestimator', r, params.args, methuratorArgs(params))) }
+                .map { r -> r + record(args: toolArgs('methurator_gtestimator', r, params.opts, methuratorOpts(params))) }
         )
         ch_methurator = ch_methurator_gtestimator.join(METHURATOR_PLOT(ch_methurator_gtestimator), by: 'id')
     }
@@ -347,7 +347,7 @@ workflow METHYLSEQ {
 }
 
 record MethylseqParams {
-    args: Map<String,String>
+    opts: Map<String,Map<String,?>>
     slamseq: Boolean
     comprehensive: Boolean
     meth_cutoff: Integer?

@@ -36,8 +36,8 @@ include { Sample                    } from './utils/types.nf'
 */
 
 params {
-    // Per-tool args overrides, e.g. --args.trimgalore='--quality 30'
-    args: Map<String,String> = [:]
+    // Per-option tool args overrides, merged into the pipeline defaults, e.g. --opts.trimgalore.quality=30
+    opts: Map<String,Map<String,?>> = [:]
 
     /// Input/output options
 
@@ -358,7 +358,7 @@ workflow NFCORE_METHYLSEQ {
         params_methylseq.run_methurator,
         params_index.use_mem2,
         bismarkGenomePreparationArgs(params_methylseq),
-        runArgs('samtools_faidx', params_methylseq.args, '')
+        runArgs('samtools_faidx', params_methylseq.opts, [:])
     )
 
     //
