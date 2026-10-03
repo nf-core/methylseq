@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BISMARK_COVERAGE2CYTOSINE {
     tag "$meta.id"
     label 'process_low'
@@ -8,26 +10,34 @@ process BISMARK_COVERAGE2CYTOSINE {
         'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4' }"
 
     input:
-    tuple val(meta), path(coverage_file)
-    tuple val(meta2), path(fasta, stageAs: 'tmp/*') // This change mounts as directory containing the FASTA file to prevent nested symlinks
-    tuple val(meta3), path(index)
+    record(
+        meta: Record,
+        methylation_coverage: Path,
+        fasta: Path,
+        bismark_index: Path
+    )
+
+    stage:
+    stageAs fasta, 'tmp/*' // This change mounts as directory containing the FASTA file to prevent nested symlinks
 
     output:
-    tuple val(meta), path("*.cov.gz")                      , emit: coverage,  optional: true
-    tuple val(meta), path("*report.txt.gz")                , emit: report
-    tuple val(meta), path("*cytosine_context_summary.txt") , emit: summary
-    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
+    record(
+        meta                       : meta,
+        coverage2cytosine_coverage : file("*.cov.gz", optional: true),
+        coverage2cytosine_report   : file("*report.txt.gz"),
+        coverage2cytosine_summary  : file("*cytosine_context_summary.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     coverage2cytosine \\
-        ${coverage_file} \\
-        --genome ${index} \\
+        ${methylation_coverage} \\
+        --genome ${bismark_index} \\
         --output ${prefix} \\
         --gzip \\
         ${args}

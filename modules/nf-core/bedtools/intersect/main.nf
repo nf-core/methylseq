@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BEDTOOLS_INTERSECT {
     tag "$meta.id"
     label 'process_single'
@@ -8,15 +10,21 @@ process BEDTOOLS_INTERSECT {
         'biocontainers/bedtools:2.31.1--hf5e1c6e_0' }"
 
     input:
-    tuple val(meta), path(intervals1), path(intervals2)
-    tuple val(meta2), path(chrom_sizes)
+    record(
+        meta: Record,
+        intervals1: Path,
+        intervals2: Path
+    )
+    chrom_sizes: Path?
 
     output:
-    tuple val(meta), path("*.${extension}"), emit: intersect
-    path  "versions.yml"                   , emit: versions
+    record(
+        meta               : meta,
+        coverage_intersect : file("*.${extension}")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -35,11 +43,6 @@ process BEDTOOLS_INTERSECT {
         $args \\
         $sizes \\
         > ${prefix}.${extension}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
     """
 
     stub:
@@ -50,10 +53,5 @@ process BEDTOOLS_INTERSECT {
         error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
     """
     touch ${prefix}.${extension}
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
     """
 }

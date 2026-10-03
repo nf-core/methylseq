@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process METHURATOR_PLOT {
     tag "${meta.id}"
     label 'process_medium'
@@ -8,19 +10,24 @@ process METHURATOR_PLOT {
         : 'quay.io/biocontainers/methurator:2.2.0--pyhdfd78af_0'}"
 
     input:
-    tuple val(meta), path(summary_report)
+    record(
+        meta: Record,
+        methurator_summary: Path
+    )
 
     output:
-    tuple val(meta), path("plots/*.html"), emit: plots
-    tuple val("${task.process}"), val('methurator'), eval("methurator --version | sed 's/.* //'"), emit: versions_methurator, topic: versions
+    record(
+        meta             : meta,
+        methurator_plots : files("plots/*.html")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'methurator', eval("methurator --version | sed 's/.* //'")) >> 'versions'
 
     script:
     """
     methurator plot \\
-        --summary ${summary_report} \\
+        --summary ${methurator_summary} \\
         --outdir .
 
     """

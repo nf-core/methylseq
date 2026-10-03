@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BWA_MEM {
     tag "$meta.id"
     label 'process_high'
@@ -8,22 +10,27 @@ process BWA_MEM {
         'community.wave.seqera.io/library/bwa_htslib_samtools:83b50ff84ead50d0' }"
 
     input:
-    tuple val(meta) , path(reads)
-    tuple val(meta2), path(index)
-    tuple val(meta3), path(fasta)
-    val   sort_bam
+    record(
+        meta: Record,
+        reads: List<Path>,
+        bwa_index: Path,
+        fasta: Path?
+    )
+    sort_bam: Boolean
 
     output:
-    tuple val(meta), path("*.bam")  , emit: bam,    optional: true
-    tuple val(meta), path("*.cram") , emit: cram,   optional: true
-    tuple val(meta), path("*.sam")  , emit: sam,    optional: true
-    tuple val(meta), path("*.csi")  , emit: csi,    optional: true
-    tuple val(meta), path("*.crai") , emit: crai,   optional: true
-    tuple val("${task.process}"), val('bwa'), eval('bwa 2>&1 | sed -n "s/^Version: //p"'), topic: versions, emit: versions_bwa
-    tuple val("${task.process}"), val('samtools'), eval("samtools version | sed '1!d;s/.* //'"), topic: versions, emit: versions_samtools
+    record(
+        meta : meta,
+        bam  : file("*.bam", optional: true),
+        cram : file("*.cram", optional: true),
+        sam  : file("*.sam", optional: true),
+        csi  : file("*.csi", optional: true),
+        crai : file("*.crai", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bwa', eval("bwa 2>&1 | sed -n \"s/^Version: //p\"")) >> 'versions'
+    tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -53,7 +60,7 @@ process BWA_MEM {
         $args \\
         -t $task.cpus \\
         \$INDEX \\
-        $reads \\
+        ${reads.join(' ')} \\
         $pipe_command
     """
 

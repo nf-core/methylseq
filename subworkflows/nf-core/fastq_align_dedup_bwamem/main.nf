@@ -1,97 +1,89 @@
+nextflow.enable.types = true
+
 include { BAM_SORT_STATS_SAMTOOLS       } from '../../nf-core/bam_sort_stats_samtools/main'
 include { FASTQ_ALIGN_BWA               } from '../../nf-core/fastq_align_bwa/main'
 include { PICARD_ADDORREPLACEREADGROUPS } from '../../../modules/nf-core/picard/addorreplacereadgroups/main'
 include { PICARD_MARKDUPLICATES         } from '../../../modules/nf-core/picard/markduplicates/main'
 include { PARABRICKS_FQ2BAM             } from '../../../modules/nf-core/parabricks/fq2bam/main'
 include { SAMTOOLS_INDEX                } from '../../../modules/nf-core/samtools/index/main'
+
 workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     take:
-    ch_reads // channel: [ val(meta), [ reads ] ]
-    ch_fasta_fai // channel: [ val(meta), fasta, fai ]
-    ch_bwamem_index // channel: [ val(meta), [ bwamem index ] ]
-    skip_deduplication // boolean: whether to deduplicate alignments
-    use_gpu // boolean: whether to use GPU accelerated alignment
-    output_fmt // string: output format for parabricks fq2bam (e.g., 'bam' or 'cram')
-    interval_file // channel: [ val(meta), [ interval file ] ]
-    known_sites // channel: [ val(meta), [ known sites ] ]
+    ch_reads: Channel<Sample>
+    val_fasta: Value<Path>
+    val_fasta_index: Value<Path>
+    val_bwamem_index: Value<Path>
+    skip_deduplication: Boolean // whether to deduplicate alignments
+    use_gpu: Boolean            // whether to use GPU accelerated alignment
+    output_fmt: String          // output format for parabricks fq2bam (e.g., 'bam' or 'cram')
+    interval_file: List<Path>
+    known_sites: List<Path>
 
     main:
-    ch_alignment = channel.empty()
-    ch_alignment_index = channel.empty()
-    ch_flagstat = channel.empty()
-    ch_stats = channel.empty()
-    ch_idxstats = channel.empty()
-    ch_picard_metrics = channel.empty()
-    ch_multiqc_files = channel.empty()
-    ch_fasta = ch_fasta_fai.map { meta, fasta, _fai -> [meta, fasta] }
     /*
     Align with parabricks GPU enabled fq2bam implementation of bwa-mem
     */
     if (use_gpu) {
-        PARABRICKS_FQ2BAM(
-            ch_reads,
-            ch_fasta,
-            ch_bwamem_index,
+        ch_fq2bam = PARABRICKS_FQ2BAM(
+            ch_reads.combine(fasta: val_fasta, bwa_index: val_bwamem_index),
             interval_file,
             known_sites,
             output_fmt,
         )
-        ch_alignment = PARABRICKS_FQ2BAM.out.bam
-        BAM_SORT_STATS_SAMTOOLS(
-            ch_alignment,
-            ch_fasta_fai,
-        )
-        ch_alignment = BAM_SORT_STATS_SAMTOOLS.out.bam
-        ch_alignment_index = BAM_SORT_STATS_SAMTOOLS.out.index
-        ch_stats = BAM_SORT_STATS_SAMTOOLS.out.stats
-        ch_flagstat = BAM_SORT_STATS_SAMTOOLS.out.flagstat
-        ch_idxstats = BAM_SORT_STATS_SAMTOOLS.out.idxstats
+        ch_alignment = BAM_SORT_STATS_SAMTOOLS(ch_fq2bam, val_fasta, val_fasta_index)
     }
     else {
-        FASTQ_ALIGN_BWA(
-            ch_reads,
-            ch_bwamem_index,
-            true,
-            ch_fasta_fai
-        )
-        ch_alignment = FASTQ_ALIGN_BWA.out.bam
+        ch_alignment = FASTQ_ALIGN_BWA(ch_reads, val_bwamem_index, true, val_fasta, val_fasta_index)
     }
+
     if (!skip_deduplication) {
         /*
          * Run Picard AddOrReplaceReadGroups to add read group (RG) to reads in bam file
-         */        PICARD_ADDORREPLACEREADGROUPS(
-            ch_alignment,
-            ch_fasta_fai,
+         */
+        ch_readgroups = PICARD_ADDORREPLACEREADGROUPS(
+            ch_alignment.map { r -> record(meta: r.meta, bam: r.bam) }.combine(fasta: val_fasta, fai: val_fasta_index)
         )
         /*
          * Run Picard MarkDuplicates to mark duplicates
-         */        PICARD_MARKDUPLICATES(
-            PICARD_ADDORREPLACEREADGROUPS.out.bam,
-            ch_fasta_fai,
+         */
+        ch_markdup = PICARD_MARKDUPLICATES(
+            ch_readgroups.combine(fasta: val_fasta, fai: val_fasta_index)
         )
+            .map { r -> record(meta: r.meta, bam: r.bam, picard_metrics: r.picard_metrics) }
         /*
          * Run samtools index on deduplicated alignment
-         */        SAMTOOLS_INDEX(
-            PICARD_MARKDUPLICATES.out.bam
-        )
-        ch_alignment = PICARD_MARKDUPLICATES.out.bam
-        ch_alignment_index = SAMTOOLS_INDEX.out.index
-        ch_picard_metrics = PICARD_MARKDUPLICATES.out.metrics
+         */
+        ch_results = ch_alignment
+            .join(ch_markdup, by: 'meta')
+            .join(SAMTOOLS_INDEX(ch_markdup), by: 'meta')
     }
+    else {
+        ch_results = ch_alignment.map { r -> r + record(picard_metrics: null) }
+    }
+
     /*
      * Collect MultiQC inputs
-     */    ch_multiqc_files = ch_picard_metrics
-        .collect { _meta, metrics -> metrics }
-        .mix(ch_flagstat.collect { _meta, flagstat -> flagstat })
-        .mix(ch_stats.collect { _meta, stats -> stats })
-        .mix(ch_idxstats.collect { _meta, stats -> stats })
+     */
+    ch_multiqc_files = ch_results.flatMap { r -> [r.picard_metrics, r.samtools_flagstat, r.samtools_stats, r.samtools_idxstats] }
+        .filter { f -> f != null }
 
     emit:
-    bam               = ch_alignment // channel: [ val(meta), [ bam ]       ]
-    index             = ch_alignment_index // channel: [ val(meta), [ index ]     ]
-    samtools_flagstat = ch_flagstat // channel: [ val(meta), [ flagstat ]  ]
-    samtools_stats    = ch_stats // channel: [ val(meta), [ stats ]     ]
-    samtools_idxstats = ch_idxstats // channel: [ val(meta), [ idxstats ]  ]
-    picard_metrics    = ch_picard_metrics // channel: [ val(meta), [ metrics ]   ]
-    multiqc           = ch_multiqc_files // channel: [ *{html,txt}              ]
+    results : Channel<BwamemResult> = ch_results
+    multiqc : Channel<Path>         = ch_multiqc_files
+}
+
+record BwamemResult {
+    meta: Record
+    bam: Path
+    bai: Path
+    align_bam: Path?
+    samtools_flagstat: Path
+    samtools_stats: Path
+    samtools_idxstats: Path
+    picard_metrics: Path?
+}
+
+record Sample {
+    meta: Record
+    reads: List<Path>
 }

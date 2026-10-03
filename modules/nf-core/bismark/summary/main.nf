@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BISMARK_SUMMARY {
     label 'process_low'
 
@@ -7,18 +9,19 @@ process BISMARK_SUMMARY {
         'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4' }"
 
     input:
-    val(bam)
-    path(align_report)
-    path(dedup_report)
-    path(splitting_report)
-    path(mbias)
+    record(
+        bam: Set<String>,
+        align_report: Set<Path>,
+        dedup_report: Set<Path>,
+        methylation_report: Set<Path>,
+        methylation_mbias: Set<Path>
+    )
 
     output:
-    path("*report.{html,txt}"), emit: summary
-    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
+    files("*report.{html,txt}")
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
     """

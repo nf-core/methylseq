@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process SAMTOOLS_SORT {
     tag "${meta.id}"
     label 'process_medium'
@@ -8,19 +10,25 @@ process SAMTOOLS_SORT {
         : 'community.wave.seqera.io/library/htslib_samtools:1.23.1--5b6bb4ede7e612e5'}"
 
     input:
-    tuple val(meta), path(bam)
-    tuple val(meta2), path(fasta), path(fai)
-    val index_format
+    record(
+        meta: Record,
+        bam: Path,
+        fasta: Path?,
+        fai: Path?
+    )
+    index_format: String
 
     output:
-    tuple val(meta), path("${prefix}.bam"), emit: bam, optional: true
-    tuple val(meta), path("${prefix}.cram"), emit: cram, optional: true
-    tuple val(meta), path("${prefix}.sam"), emit: sam, optional: true
-    tuple val(meta), path("${prefix}.${extension}.{crai,csi,bai}"), emit: index, optional: true
-    tuple val("${task.process}"), val('samtools'), eval("samtools version | sed '1!d;s/.* //'"), topic: versions, emit: versions_samtools
+    record(
+        meta  : meta,
+        bam   : file("${prefix}.bam", optional: true),
+        cram  : file("${prefix}.cram", optional: true),
+        sam   : file("${prefix}.sam", optional: true),
+        index : file("${prefix}.${extension}.{crai,csi,bai}", optional: true)
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
@@ -36,13 +44,13 @@ process SAMTOOLS_SORT {
     def output_file = "${prefix}.${extension}"
 
     // Update if index is requested
-    if (index_format != '' && index_format) {
+    if (index_format) {
         write_index = "--write-index"
         output_file = "${prefix}.${extension}##idx##${prefix}.${extension}.${index_format}"
     }
-    def is_sam = (bam instanceof List ? bam[0] : bam).name.endsWith('.sam')
+    def is_sam = bam.name.endsWith('.sam')
     if (index_format) {
-        if (!index_format.matches('bai|csi|crai')) {
+        if (!(index_format ==~ /bai|csi|crai/)) {
             error("Index format not one of bai, csi, crai.")
         }
         else if (extension == "sam") {
@@ -80,7 +88,7 @@ process SAMTOOLS_SORT {
             : "bam"
 
     if (index_format) {
-        if (!index_format.matches('bai|csi|crai')) {
+        if (!(index_format ==~ /bai|csi|crai/)) {
             error("Index format not one of bai, csi, crai.")
         }
         else if (extension == "sam") {

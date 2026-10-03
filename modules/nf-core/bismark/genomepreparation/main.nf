@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process BISMARK_GENOMEPREPARATION {
     tag "$fasta"
     label 'process_high'
@@ -8,14 +10,16 @@ process BISMARK_GENOMEPREPARATION {
         'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4' }"
 
     input:
-    tuple val(meta), path(fasta, name:"BismarkIndex/")
+    fasta: Path
+
+    stage:
+    stageAs fasta, "BismarkIndex/"
 
     output:
-    tuple val(meta), path("BismarkIndex"), emit: index
-    tuple val("${task.process}"), val('bismark'), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), emit: versions_bismark, topic: versions
+    file("BismarkIndex")
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

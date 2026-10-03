@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process GUNZIP {
     tag "${archive}"
     label 'process_single'
@@ -8,14 +10,13 @@ process GUNZIP {
         : 'community.wave.seqera.io/library/coreutils_grep_gzip_lbzip2_pruned:838ba80435a629f8'}"
 
     input:
-    tuple val(meta), path(archive)
+    archive: Path
 
     output:
-    tuple val(meta), path("${gunzip}"), emit: gunzip
-    tuple val("${task.process}"), val('gunzip'), eval('gunzip --version 2>&1 | head -1 | sed "s/^.*(gzip) //; s/ Copyright.*//"'), topic: versions, emit: versions_gunzip
+    file(gunzip)
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'gunzip', eval("gunzip --version 2>&1 | head -1 | sed \"s/^.*(gzip) //; s/ Copyright.*//\"")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''

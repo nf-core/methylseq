@@ -14,6 +14,7 @@ include { samplesheetToList       } from 'plugin/nf-schema'
 include { paramsHelp              } from 'plugin/nf-schema'
 include { completionEmail         } from '../../nf-core/utils_nfcore_pipeline'
 include { completionSummary       } from '../../nf-core/utils_nfcore_pipeline'
+include { paramsSummaryMultiqc    } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE } from '../../nf-core/utils_nextflow_pipeline'
 include { UTILS_NFCORE_PIPELINE   } from '../../nf-core/utils_nfcore_pipeline'
 
@@ -36,8 +37,6 @@ workflow PIPELINE_INITIALISATION {
     show_hidden // boolean: Show hidden parameters in the help message
 
     main:
-
-    ch_versions = channel.empty()
 
     //
     // Print version and exit if required and dump pipeline parameters to JSON file
@@ -109,13 +108,9 @@ workflow PIPELINE_INITIALISATION {
     //
 
     channel.fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map { meta, fastq_1, fastq_2, genome ->
-            if (!fastq_2) {
-                return [meta.id, meta + [single_end: true], [fastq_1]]
-            }
-            else {
-                return [meta.id, meta + [single_end: false], [fastq_1, fastq_2]]
-            }
+        .map { meta, fastq_1, fastq_2, _genome ->
+            def single_end = !fastq_2
+            return [meta.id, meta + [single_end: single_end], single_end ? [fastq_1] : [fastq_1, fastq_2]]
         }
         .groupTuple()
         .map { samplesheet ->
@@ -126,7 +121,6 @@ workflow PIPELINE_INITIALISATION {
 
     emit:
     samplesheet = ch_samplesheet
-    versions    = ch_versions
 }
 
 /*
@@ -146,7 +140,7 @@ workflow PIPELINE_COMPLETION {
 
     main:
     summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
-    def multiqc_reports = multiqc_report.toList()
+    def multiqc_reports = (multiqc_report ?: channel.empty()).toList()
 
     //
     // Completion email and summary
@@ -165,14 +159,6 @@ workflow PIPELINE_COMPLETION {
         }
 
         completionSummary(monochrome_logs)
-
-        // Merge topic channel versions into the main versions file
-        // This is a workaround until all modules use topic channels
-        def mqcVersionsFile = file("${outdir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
-        def topicVersionsFile = file("${outdir}/pipeline_info/nf_core_methylseq_topic_versions.yml")
-        if (topicVersionsFile.exists() && mqcVersionsFile.exists()) {
-            mqcVersionsFile.append(topicVersionsFile.text)
-        }
     }
 
     workflow.onError {
@@ -217,7 +203,8 @@ def validateInputSamplesheet(input) {
         error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
     }
 
-    return [metas[0], fastqs]
+    def meta = metas[0]
+    return record(meta: record(meta), reads: fastqs.flatten())
 }
 //
 // Get attribute from genome config file e.g. fasta
@@ -241,11 +228,18 @@ def genomeExistsError() {
     }
 }
 //
+// Generate workflow summary for MultiQC
+//
+def workflowSummaryMultiqc() {
+    return paramsSummaryMultiqc(paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json"))
+}
+
+//
 // Generate methods description for MultiQC
 //
 def toolCitationText() {
     // FIXME Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-    def citation_text = ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].join(' ').trim()
+    return ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].join(' ').trim()
 }
 
 def toolBibliographyText() {

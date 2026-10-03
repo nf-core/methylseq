@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process RASTAIR_MBIAS {
     label 'process_medium'
 
@@ -7,20 +9,24 @@ process RASTAIR_MBIAS {
         'community.wave.seqera.io/library/rastair:0.8.2--bf70eeab4121509c' }"
 
     input:
-    tuple val(meta), path(bam)
-    tuple val(meta2), path(bai)
-    tuple val(meta3), path(fasta)
-    tuple val(meta4), path(fai)
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("*.rastair_mbias.txt"),   emit: txt
-    path "versions.yml",                            emit: versions
+    record(
+        meta          : meta,
+        rastair_mbias : file("*.rastair_mbias.txt")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
 
     """
@@ -28,21 +34,11 @@ process RASTAIR_MBIAS {
         --threads ${task.cpus} \\
         --fasta-file ${fasta} \\
         ${bam} > ${prefix}.rastair_mbias.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        rastair: \$(rastair --version)
-    END_VERSIONS
     """
 
     stub:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     touch ${prefix}.rastair_mbias.txt
-
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        rastair: \$(rastair --version 2>&1 || echo "stub")
-    END_VERSIONS
     """
 }

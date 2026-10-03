@@ -1,3 +1,5 @@
+nextflow.enable.types = true
+
 process METHURATOR_GTESTIMATOR {
     tag "${meta.id}"
     label 'process_medium'
@@ -8,14 +10,22 @@ process METHURATOR_GTESTIMATOR {
         : 'quay.io/biocontainers/methurator:2.2.0--pyhdfd78af_0'}"
 
     input:
-    tuple val(meta), path(bam), path(bai), path(fasta), path(fai)
+    record(
+        meta: Record,
+        bam: Path,
+        bai: Path,
+        fasta: Path,
+        fai: Path
+    )
 
     output:
-    tuple val(meta), path("${prefix}.yml"), emit: summary_report
-    tuple val("${task.process}"), val('methurator'), eval("methurator --version | sed 's/.* //'"), emit: versions_methurator, topic: versions
+    record(
+        meta               : meta,
+        methurator_summary : file("${prefix}.yml")
+    )
 
-    when:
-    task.ext.when == null || task.ext.when
+    topic:
+    tuple(task.process, 'methurator', eval("methurator --version | sed 's/.* //'")) >> 'versions'
 
     script:
     def args = task.ext.args ?: ''
