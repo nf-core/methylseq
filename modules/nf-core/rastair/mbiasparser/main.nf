@@ -11,7 +11,8 @@ process RASTAIR_MBIASPARSER {
     input:
     record(
         meta: Record,
-        rastair_mbias: Path
+        rastair_mbias: Path,
+        prefix: String?
     )
 
     output:
@@ -27,7 +28,7 @@ process RASTAIR_MBIASPARSER {
     tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     """
     plot_mbias.R --pdf -o ${prefix}.rastair_mbias_processed.pdf ${rastair_mbias} > ${prefix}.rastair_mbias_processed.txt
@@ -38,7 +39,7 @@ process RASTAIR_MBIASPARSER {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.rastair_mbias_processed.pdf
     touch ${prefix}.rastair_mbias_processed.csv

@@ -13,7 +13,9 @@ process TRIMGALORE {
     input:
     record(
         meta: Record,
-        reads: List<Path>
+        reads: List<Path>,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -30,7 +32,7 @@ process TRIMGALORE {
     tuple(task.process, 'trimgalore', eval('trim_galore --version | grep -Eo "[0-9]+(\\.[0-9]+)+"')) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     // Calculate number of --cores for TrimGalore based on value of task.cpus
     // See: https://github.com/FelixKrueger/TrimGalore/blob/master/CHANGELOG.md#version-060-release-on-1-mar-2019
     // See: https://github.com/nf-core/atacseq/pull/65
@@ -49,7 +51,7 @@ process TRIMGALORE {
     }
 
     // Added soft-links to original fastqs for consistent naming in MultiQC
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     if (meta.single_end) {
         def args_se = args.replaceAll(/(?i)--\S*_r2\s+\S+/, '').trim()
         """
@@ -76,7 +78,7 @@ process TRIMGALORE {
     }
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     if (meta.single_end) {
         output_command = "echo '' | gzip > ${prefix}_trimmed.fq.gz ;"
         output_command += "touch ${prefix}.fastq.gz_trimming_report.txt"

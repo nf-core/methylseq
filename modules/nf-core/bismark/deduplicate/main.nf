@@ -12,7 +12,9 @@ process BISMARK_DEDUPLICATE {
     input:
     record(
         meta: Record,
-        bam: Path
+        bam: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -26,7 +28,7 @@ process BISMARK_DEDUPLICATE {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args    = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     def seqtype = meta.single_end ? '-s' : '-p'
     """
     deduplicate_bismark \\
@@ -36,7 +38,7 @@ process BISMARK_DEDUPLICATE {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.deduplicated.bam
     touch ${prefix}.deduplication_report.txt

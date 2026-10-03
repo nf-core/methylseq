@@ -11,6 +11,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
 
     input:
     fasta: Path
+    args: String?
 
     output:
     file("*.dict")
@@ -19,8 +20,8 @@ process PICARD_CREATESEQUENCEDICTIONARY {
     tuple(task.process, 'picard', eval("picard CreateSequenceDictionary --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${fasta.baseName}"
+    args = task.ext.args ?: args ?: ''
+    def prefix = "${fasta.baseName}"
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard CreateSequenceDictionary] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
@@ -37,7 +38,7 @@ process PICARD_CREATESEQUENCEDICTIONARY {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${fasta.baseName}"
+    def prefix = "${fasta.baseName}"
     """
     touch ${prefix}.dict
     """

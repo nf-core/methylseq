@@ -13,7 +13,8 @@ process SAMTOOLS_FLAGSTAT {
     record(
         meta: Record,
         bam: Path,
-        bai: Path
+        bai: Path,
+        prefix: String?
     )
 
     output:
@@ -26,7 +27,7 @@ process SAMTOOLS_FLAGSTAT {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     samtools \\
         flagstat \\
@@ -36,7 +37,7 @@ process SAMTOOLS_FLAGSTAT {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     cat <<-END_FLAGSTAT > ${prefix}.flagstat
     1000000 + 0 in total (QC-passed reads + QC-failed reads)

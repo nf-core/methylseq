@@ -14,7 +14,9 @@ process BISMARK_COVERAGE2CYTOSINE {
         meta: Record,
         methylation_coverage: Path,
         fasta: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -32,8 +34,8 @@ process BISMARK_COVERAGE2CYTOSINE {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     coverage2cytosine \\
         ${methylation_coverage} \\
@@ -44,7 +46,7 @@ process BISMARK_COVERAGE2CYTOSINE {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     echo "" | gzip > ${prefix}.cov.gz
     echo "" | gzip > ${prefix}.report.txt.gz

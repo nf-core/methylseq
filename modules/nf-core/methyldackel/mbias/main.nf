@@ -15,7 +15,9 @@ process METHYLDACKEL_MBIAS {
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -28,8 +30,8 @@ process METHYLDACKEL_MBIAS {
     tuple(task.process, 'methyldackel', eval("MethylDackel --version 2>&1 | cut -f1 -d' '")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     MethylDackel mbias \\
         ${args} \\
@@ -41,7 +43,7 @@ process METHYLDACKEL_MBIAS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.mbias.txt
     """

@@ -12,7 +12,8 @@ process SAMTOOLS_INDEX {
     input:
     record(
         meta: Record,
-        bam: Path
+        bam: Path,
+        args: String?
     )
 
     output:
@@ -25,7 +26,7 @@ process SAMTOOLS_INDEX {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     """
     samtools \\
         index \\
@@ -35,7 +36,7 @@ process SAMTOOLS_INDEX {
     """
 
     stub:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     def extension = bam.getExtension() == 'cram'
         ? "crai"
         : args.contains("-c") ? "csi" : "bai"

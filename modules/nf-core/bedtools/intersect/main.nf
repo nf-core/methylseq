@@ -13,7 +13,10 @@ process BEDTOOLS_INTERSECT {
     record(
         meta: Record,
         intervals1: Path,
-        intervals2: Path
+        intervals2: Path,
+        args: String?,
+        prefix: String?,
+        suffix: String?
     )
     chrom_sizes: Path?
 
@@ -27,14 +30,14 @@ process BEDTOOLS_INTERSECT {
     tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     //Extension of the output file. It is set by the user via "ext.suffix" in the config. Corresponds to the file format which depends on arguments (e. g., ".bed", ".bam", ".txt", etc.).
-    extension = task.ext.suffix ?: "${intervals1.extension}"
+    extension = task.ext.suffix ?: suffix ?: "${intervals1.extension}"
     def sizes = chrom_sizes ? "-g ${chrom_sizes}" : ''
     if ("$intervals1" == "${prefix}.${extension}" ||
         "$intervals2" == "${prefix}.${extension}")
-        error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
+        error "Input and output names are the same, use \"prefix\" to disambiguate!"
     """
     bedtools \\
         intersect \\
@@ -46,11 +49,11 @@ process BEDTOOLS_INTERSECT {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    extension = task.ext.suffix ?: "bed"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
+    extension = task.ext.suffix ?: suffix ?: "bed"
     if ("$intervals1" == "${prefix}.${extension}" ||
         "$intervals2" == "${prefix}.${extension}")
-        error "Input and output names are the same, use \"task.ext.prefix\" to disambiguate!"
+        error "Input and output names are the same, use \"prefix\" to disambiguate!"
     """
     touch ${prefix}.${extension}
     """

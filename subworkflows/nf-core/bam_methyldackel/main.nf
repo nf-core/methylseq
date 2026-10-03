@@ -9,6 +9,7 @@ workflow BAM_METHYLDACKEL {
     ch_bam: Channel<AlignedSample>
     val_fasta: Value<Path>
     val_fasta_index: Value<Path>
+    args: MethyldackelArgs
 
     main:
 
@@ -17,9 +18,9 @@ workflow BAM_METHYLDACKEL {
      */
     ch_inputs = ch_bam.combine(fasta: val_fasta, fai: val_fasta_index)
 
-    ch_extract = METHYLDACKEL_EXTRACT(ch_inputs)
+    ch_extract = METHYLDACKEL_EXTRACT(ch_inputs.map { r -> r + record(args: args.extract) })
 
-    ch_mbias = METHYLDACKEL_MBIAS(ch_inputs)
+    ch_mbias = METHYLDACKEL_MBIAS(ch_inputs.map { r -> r + record(args: args.mbias) })
 
     ch_results = ch_extract.join(ch_mbias, by: 'meta')
 
@@ -31,6 +32,11 @@ workflow BAM_METHYLDACKEL {
     emit:
     results : Channel<MethyldackelResult> = ch_results
     multiqc : Channel<Path>               = ch_multiqc_files
+}
+
+record MethyldackelArgs {
+    extract: String?
+    mbias: String?
 }
 
 record MethyldackelResult {

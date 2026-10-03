@@ -15,7 +15,9 @@ process BISMARK_REPORT {
         align_report: Path,
         dedup_report: Path?,
         methylation_report: Path,
-        methylation_mbias: Path
+        methylation_mbias: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -28,13 +30,13 @@ process BISMARK_REPORT {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     """
     bismark2report ${args}
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.report.txt
     touch ${prefix}.report.html

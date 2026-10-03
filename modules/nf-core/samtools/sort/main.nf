@@ -14,7 +14,9 @@ process SAMTOOLS_SORT {
         meta: Record,
         bam: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?
     )
     index_format: String
 
@@ -31,8 +33,8 @@ process SAMTOOLS_SORT {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     extension = args.contains("--output-fmt sam")
         ? "sam"
         : args.contains("--output-fmt cram")
@@ -58,10 +60,10 @@ process SAMTOOLS_SORT {
         }
     }
     if ("${bam}" == "${prefix}.bam") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     if ("${bam}" == "${prefix}.bam") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
 
     def input_source = is_sam ? "${bam}" : "-"
@@ -79,8 +81,8 @@ process SAMTOOLS_SORT {
     """
 
     stub:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     extension = args.contains("--output-fmt sam")
         ? "sam"
         : args.contains("--output-fmt cram")

@@ -14,7 +14,10 @@ process BWA_MEM {
         meta: Record,
         reads: List<Path>,
         bwa_index: Path,
-        fasta: Path?
+        fasta: Path?,
+        args: String?,
+        args2: String?,
+        prefix: String?
     )
     sort_bam: Boolean
 
@@ -33,9 +36,9 @@ process BWA_MEM {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    args2 = task.ext.args2 ?: args2 ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def samtools_command = sort_bam ? 'sort' : 'view'
     def extension = args2.contains("--output-fmt sam")   ? "sam" :
                     args2.contains("--output-fmt cram")  ? "cram":
@@ -65,8 +68,8 @@ process BWA_MEM {
     """
 
     stub:
-    def args2 = task.ext.args2 ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args2 = task.ext.args2 ?: args2 ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def extension = args2.contains("--output-fmt sam")   ? "sam" :
                     args2.contains("--output-fmt cram")  ? "cram":
                     sort_bam && args2.contains("-O cram")? "cram":

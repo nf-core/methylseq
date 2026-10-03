@@ -12,7 +12,8 @@ process METHURATOR_PLOT {
     input:
     record(
         meta: Record,
-        methurator_summary: Path
+        methurator_summary: Path,
+        prefix: String?
     )
 
     output:
@@ -33,7 +34,7 @@ process METHURATOR_PLOT {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     mkdir plots/
     touch plots/${prefix}.html

@@ -14,7 +14,9 @@ process PARABRICKS_FQ2BAMMETH {
         meta: Record,
         reads: List<Path>,
         fasta: Path,
-        bwameth_index: Path
+        bwameth_index: Path,
+        args: String?,
+        prefix: String?
     )
     known_sites: List<Path>
 
@@ -36,8 +38,8 @@ process PARABRICKS_FQ2BAMMETH {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args                = task.ext.args ?: ''
-    def prefix              = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def in_fq_command       = meta.single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
     def known_sites_command = known_sites.collect { knownSite ->  "--knownSites ${knownSite}" }.join(' ')
     def known_sites_output  = known_sites ? "--out-recal-file ${prefix}.table" : ""
@@ -65,7 +67,7 @@ process PARABRICKS_FQ2BAMMETH {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.bam
     touch ${prefix}.bam.bai

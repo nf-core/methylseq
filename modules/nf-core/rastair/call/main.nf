@@ -16,7 +16,8 @@ process RASTAIR_CALL {
         fasta: Path,
         fai: Path,
         trim_OT: String,
-        trim_OB: String
+        trim_OB: String,
+        prefix: String?
     )
 
     output:
@@ -29,9 +30,9 @@ process RASTAIR_CALL {
     tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def nt_OT_to_trim = meta.trim_OT ?: trim_OT
-    def nt_OB_to_trim = meta.trim_OB ?: trim_OB
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
+    def nt_OT_to_trim = trim_OT
+    def nt_OB_to_trim = trim_OB
 
     """
     rastair call \\
@@ -43,7 +44,7 @@ process RASTAIR_CALL {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.rastair_call.txt
     """

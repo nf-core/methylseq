@@ -11,7 +11,7 @@ include { BISMARK_SUMMARY              } from '../../../modules/nf-core/bismark/
 
 workflow FASTQ_ALIGN_DEDUP_BISMARK {
     take:
-    ch_reads: Channel<Sample>
+    ch_reads: Channel<BismarkReads>
     val_fasta: Value<Path>
     val_bismark_index: Value<Path>
     skip_deduplication: Boolean // whether to deduplicate alignments
@@ -19,11 +19,16 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
 
     main:
 
+    // per-sample args, joined back where needed
+    ch_args = ch_reads.map { r -> record(meta: r.meta, bismark_args: r.bismark_args) }
+
     /*
      * Align with bismark
      */
     ch_alignment = BISMARK_ALIGN(
-        ch_reads.combine(fasta: val_fasta, bismark_index: val_bismark_index)
+        ch_reads
+            .combine(fasta: val_fasta, bismark_index: val_bismark_index)
+            .map { r -> r + record(args: r.bismark_args?.align) }
     )
         .map { r -> r + record(align_bam: r.bam) }
 
@@ -40,7 +45,12 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     /*
      * MODULE: Run samtools sort on aligned or deduplicated bam
      */
-    ch_bam = SAMTOOLS_SORT(ch_alignment_dedup.combine(fasta: val_fasta), '')
+    ch_bam = SAMTOOLS_SORT(
+        ch_alignment_dedup
+            .combine(fasta: val_fasta)
+            .map { r -> r + record(prefix: skip_deduplication ? "${r.meta.id}.sorted" : "${r.meta.id}.deduplicated.sorted") },
+        ''
+    )
 
     /*
      * MODULE: Run samtools index on aligned or deduplicated bam
@@ -51,7 +61,10 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
      * Run bismark_methylation_extractor
      */
     ch_methylation = BISMARK_METHYLATIONEXTRACTOR(
-        ch_alignment_dedup.combine(bismark_index: val_bismark_index)
+        ch_alignment_dedup
+            .combine(bismark_index: val_bismark_index)
+            .join(ch_args, by: 'meta')
+            .map { r -> r + record(args: r.bismark_args?.methylation_extractor) }
     )
 
     /*
@@ -59,7 +72,10 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
      */
     if (cytosine_report) {
         ch_coverage2cytosine = BISMARK_COVERAGE2CYTOSINE(
-            ch_methylation.combine(fasta: val_fasta, bismark_index: val_bismark_index)
+            ch_methylation
+                .combine(fasta: val_fasta, bismark_index: val_bismark_index)
+                .join(ch_args, by: 'meta')
+                .map { r -> r + record(args: r.bismark_args?.coverage2cytosine) }
         )
     }
     else {
@@ -118,6 +134,18 @@ workflow FASTQ_ALIGN_DEDUP_BISMARK {
     multiqc         : Channel<Path>          = ch_multiqc_files
 }
 
+record BismarkReads {
+    meta: Record
+    reads: List<Path>
+    bismark_args: BismarkArgs?
+}
+
+record BismarkArgs {
+    align: String?
+    methylation_extractor: String?
+    coverage2cytosine: String?
+}
+
 record BismarkResult {
     meta: Record
     bam: Path
@@ -135,9 +163,4 @@ record BismarkResult {
     coverage2cytosine_report: Path?
     coverage2cytosine_summary: Path?
     bismark_report: Set<Path>
-}
-
-record Sample {
-    meta: Record
-    reads: List<Path>
 }

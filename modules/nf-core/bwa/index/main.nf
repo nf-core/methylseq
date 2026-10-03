@@ -13,6 +13,7 @@ process BWA_INDEX {
 
     input:
     fasta: Path
+    args: String?
 
     output:
     file("bwa")
@@ -21,8 +22,8 @@ process BWA_INDEX {
     tuple(task.process, 'bwa', eval("bwa 2>&1 | sed -n \"s/^Version: //p\"")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${fasta.baseName}"
-    def args   = task.ext.args ?: ''
+    def prefix = "${fasta.baseName}"
+    args = task.ext.args ?: args ?: ''
     """
     mkdir bwa
     bwa \\
@@ -33,7 +34,7 @@ process BWA_INDEX {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${fasta.baseName}"
+    def prefix = "${fasta.baseName}"
     """
     mkdir bwa
     touch bwa/${prefix}.amb

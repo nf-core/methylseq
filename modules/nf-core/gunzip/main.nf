@@ -11,6 +11,7 @@ process GUNZIP {
 
     input:
     archive: Path
+    args: String?
 
     output:
     file(gunzip)
@@ -19,11 +20,11 @@ process GUNZIP {
     tuple(task.process, 'gunzip', eval("gunzip --version 2>&1 | head -1 | sed \"s/^.*(gzip) //; s/ Copyright.*//\"")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     def nameWithoutGz = archive.extension == 'gz' ? archive.baseName : archive.name
 	def extension = file(nameWithoutGz).extension
 	def name = file(nameWithoutGz).baseName
-    def prefix = task.ext.prefix ?: name
+    def prefix = name
     gunzip = prefix + ".${extension}"
     """
     # Not calling gunzip itself because it creates files
@@ -40,7 +41,7 @@ process GUNZIP {
     def nameWithoutGz = archive.extension == 'gz' ? archive.baseName : archive.name
 	def extension = file(nameWithoutGz).extension
 	def name = file(nameWithoutGz).baseName
-    def prefix = task.ext.prefix ?: name
+    def prefix = name
     gunzip = prefix + ".${extension}"
     """
     touch ${gunzip}

@@ -14,7 +14,8 @@ process RASTAIR_MBIAS {
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        prefix: String?
     )
 
     output:
@@ -27,7 +28,7 @@ process RASTAIR_MBIAS {
     tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     """
     rastair mbias \\
@@ -37,7 +38,7 @@ process RASTAIR_MBIAS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.rastair_mbias.txt
     """

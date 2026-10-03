@@ -26,6 +26,14 @@ include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targete
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
 
+include { trimgaloreArgs                } from './args'
+include { bismarkArgs                   } from './args'
+include { markduplicatesArgs            } from './args'
+include { methyldackelArgs              } from './args'
+include { qualimapArgs                  } from './args'
+include { methuratorArgs                } from './args'
+include { multiqcArgs                   } from './args'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -62,7 +70,7 @@ workflow METHYLSEQ {
     // MODULE: Run FastQC
     //
     if (!params.skip_fastqc) {
-        ch_fastqc = FASTQC(ch_fastq)
+        ch_fastqc = FASTQC(ch_fastq.map { s -> s + record(args: '--quiet') })
     }
     else {
         ch_fastqc = channel.empty()
@@ -72,7 +80,7 @@ workflow METHYLSEQ {
     // MODULE: Run TrimGalore!
     //
     if (!params.skip_trimming) {
-        ch_trimmed = TRIMGALORE(ch_fastq)
+        ch_trimmed = TRIMGALORE(ch_fastq.map { s -> s + record(args: trimgaloreArgs(s.meta, params)) })
         ch_reads = ch_trimmed.map { r -> record(meta: r.meta, reads: r.trim_reads) }
     }
     else {
@@ -96,7 +104,7 @@ workflow METHYLSEQ {
         // Run Bismark alignment + downstream processing
         //
         bismark = FASTQ_ALIGN_DEDUP_BISMARK(
-            ch_reads,
+            ch_reads.map { r -> r + record(bismark_args: bismarkArgs(r.meta, params)) },
             val_fasta,
             val_bismark_index,
             params.skip_deduplication || params.rrbs,
@@ -115,6 +123,8 @@ workflow METHYLSEQ {
             val_bwameth_index,
             params.skip_deduplication || params.rrbs,
             use_gpu,
+            '--low-memory',
+            markduplicatesArgs(),
         )
         ch_alignment = bwameth.results
         ch_aligner_mqc = bwameth.multiqc
@@ -130,6 +140,8 @@ workflow METHYLSEQ {
             'bam',
             [],
             [],
+            '--RGID 1 --RGLB lib1 --RGPL illumina --RGPU unit1 --RGSM sample1',
+            markduplicatesArgs(),
         )
         ch_alignment = bwamem.results
         ch_aligner_mqc = bwamem.multiqc
@@ -145,7 +157,7 @@ workflow METHYLSEQ {
         ch_methylation = BAM_TAPS_CONVERSION(ch_alignment, val_fasta, val_fasta_index)
     }
     else if (!params.taps && params.aligner == 'bwameth' && val_fasta_index) {
-        methyldackel = BAM_METHYLDACKEL(ch_alignment, val_fasta, val_fasta_index)
+        methyldackel = BAM_METHYLDACKEL(ch_alignment, val_fasta, val_fasta_index, methyldackelArgs(params))
         ch_methylation = methyldackel.results
         ch_bedgraph = methyldackel.results.map { r -> record(meta: r.meta, bedgraphs: r.methyldackel_bedgraph.toList(), coverage: null) }
     }
@@ -156,7 +168,7 @@ workflow METHYLSEQ {
     //
     if (params.run_qualimap) {
         ch_qualimap = QUALIMAP_BAMQC(
-            ch_alignment.map { r -> record(meta: r.meta, bam: r.bam, gff: params.bamqc_regions_file) }
+            ch_alignment.map { r -> r + record(gff: params.bamqc_regions_file, args: qualimapArgs(params)) }
         )
     }
     else {
@@ -179,6 +191,7 @@ workflow METHYLSEQ {
             val_fasta,
             val_fasta_index,
             params.collecthsmetrics,
+            '--MINIMUM_MAPPING_QUALITY 20 --COVERAGE_CAP 1000 --NEAR_DISTANCE 500',
         )
         ch_targeted_sequencing = targeted_sequencing.results
         val_reference_dict = targeted_sequencing.reference_dict
@@ -196,7 +209,7 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_preseq` param.
     //
     if (params.run_preseq) {
-        ch_preseq = PRESEQ_LCEXTRAP(ch_alignment)
+        ch_preseq = PRESEQ_LCEXTRAP(ch_alignment.map { r -> r + record(args: '-verbose -bam') })
     }
     else {
         ch_preseq = channel.empty()
@@ -211,7 +224,9 @@ workflow METHYLSEQ {
             error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
         }
         ch_methurator_gtestimator = METHURATOR_GTESTIMATOR(
-            ch_alignment.combine(fasta: val_fasta, fai: val_fasta_index)
+            ch_alignment
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .map { r -> r + record(args: methuratorArgs(params)) }
         )
         ch_methurator = ch_methurator_gtestimator.join(METHURATOR_PLOT(ch_methurator_gtestimator), by: 'meta')
     }
@@ -277,7 +292,8 @@ workflow METHYLSEQ {
                 record(
                     multiqc_files: files.toSet(),
                     multiqc_config: multiqc_config,
-                    multiqc_logo: params.multiqc_logo
+                    multiqc_logo: params.multiqc_logo,
+                    args: multiqcArgs(params)
                 )
             }
         val_multiqc = MULTIQC(val_multiqc_inputs)
@@ -301,7 +317,46 @@ record Sample {
 }
 
 record MethylseqParams {
+    slamseq: Boolean
+    comprehensive: Boolean
+    meth_cutoff: Integer?
+    ignore_r1: Integer
+    ignore_3prime_r1: Integer
+    no_overlap: Boolean
+    ignore_r2: Integer
+    ignore_3prime_r2: Integer
+    all_contexts: Boolean
+    merge_context: Boolean
+    ignore_flags: Boolean
+    methyl_kit: Boolean
+    min_depth: Integer
+    genome: String?
+    methurator_compute_ci: Boolean
+    methurator_minimum_coverage: String?
+    methurator_t_max: Integer?
+    multiqc_title: String?
     aligner: String
+    known_splices: Path?
+    pbat: Boolean
+    single_cell: Boolean
+    non_directional: Boolean
+    accel: Boolean
+    zymo: Boolean
+    em_seq: Boolean
+    combined_index: Boolean
+    local_alignment: Boolean
+    unmapped: Boolean
+    relax_mismatches: Boolean
+    num_mismatches: Float
+    minins: Integer?
+    maxins: Integer?
+    nextseq_trim: Integer
+    length_trim: Integer?
+    clip_r1: Integer
+    clip_r2: Integer
+    three_prime_clip_r1: Integer
+    three_prime_clip_r2: Integer
+    skip_trimming_presets: Boolean
     taps: Boolean
     skip_fastqc: Boolean
     skip_trimming: Boolean
