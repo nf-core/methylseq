@@ -12,7 +12,9 @@ process FASTQC {
     input:
     record(
         meta: Record,
-        reads: List<Path>
+        reads: List<Path>,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -29,8 +31,8 @@ process FASTQC {
     tuple(task.process, 'fastqc', eval("fastqc --version | sed \"/FastQC v/!d; s/.*v//\"")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     // Make list of old name and new name pairs to use for renaming in the bash while loop
     def new_names = reads.withIndex().collect { entry, index -> reads.size() == 1 ? "${prefix}.${entry.extension}" : "${prefix}_${index + 1}.${entry.extension}" }
     def rename_to = reads.withIndex().collect { entry, index -> "${entry} ${new_names[index]}" }.join(' ')
@@ -59,7 +61,7 @@ process FASTQC {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.html
     touch ${prefix}.zip

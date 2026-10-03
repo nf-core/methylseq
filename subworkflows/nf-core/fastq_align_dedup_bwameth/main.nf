@@ -17,6 +17,8 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     val_bwameth_index: Value<Path>
     skip_deduplication: Boolean // whether to deduplicate alignments
     use_gpu: Boolean            // whether to use GPU or CPU for bwameth alignment
+    fq2bammeth_args: String     // args for parabricks fq2bammeth
+    markduplicates_args: String // args for picard markduplicates
 
     main:
 
@@ -29,7 +31,7 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         /*
         * Align with parabricks GPU enabled fq2bammeth implementation of bwameth
         */
-        ch_alignment = PARABRICKS_FQ2BAMMETH(ch_align_inputs, [])
+        ch_alignment = PARABRICKS_FQ2BAMMETH(ch_align_inputs.map { r -> r + record(args: fq2bammeth_args) }, [])
             .map { r -> record(meta: r.meta, bam: r.bam) }
     }
     else {
@@ -42,7 +44,12 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     /*
      * Sort raw output BAM
      */
-    ch_sorted = SAMTOOLS_SORT(ch_alignment.combine(fasta: val_fasta, fai: val_fasta_index), '')
+    ch_sorted = SAMTOOLS_SORT(
+        ch_alignment
+            .combine(fasta: val_fasta, fai: val_fasta_index)
+            .map { r -> r + record(prefix: "${r.meta.id}.sorted") },
+        ''
+    )
         .map { r -> record(meta: r.meta, bam: r.bam) }
 
     /*
@@ -64,7 +71,11 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
         /*
         * Run Picard MarkDuplicates
         */
-        ch_markdup = PICARD_MARKDUPLICATES(ch_sorted.combine(fasta: val_fasta, fai: val_fasta_index))
+        ch_markdup = PICARD_MARKDUPLICATES(
+            ch_sorted
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .map { r -> r + record(args: markduplicates_args, prefix: "${r.meta.id}.markdup.sorted") }
+        )
             .map { r -> record(meta: r.meta, bam: r.bam, picard_metrics: r.picard_metrics) }
 
         /*

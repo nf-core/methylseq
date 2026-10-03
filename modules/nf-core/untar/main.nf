@@ -11,6 +11,7 @@ process UNTAR {
 
     input:
     archive: Path
+    args: String?
 
     output:
     file(prefix)
@@ -19,9 +20,9 @@ process UNTAR {
     tuple(task.process, 'untar', eval("tar --version 2>&1 | head -1 | sed \"s/tar (GNU tar) //; s/ Copyright.*//\"")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def args2 = task.ext.args2 ?: ''
-    prefix = task.ext.prefix ?: archive.baseName.replaceFirst(/\.tar$/, "")
+    args = task.ext.args ?: args ?: ''
+    def args2 = ''
+    prefix = archive.baseName.replaceFirst(/\.tar$/, "")
 
     """
     mkdir ${prefix}
@@ -47,7 +48,7 @@ process UNTAR {
     """
 
     stub:
-    prefix = task.ext.prefix ?: archive.name.replaceFirst(/\.[^\.]+(.gz)?$/, "")
+    prefix = archive.name.replaceFirst(/\.[^\.]+(.gz)?$/, "")
     """
     mkdir ${prefix}
     ## Dry-run untaring the archive to get the files and place all in prefix

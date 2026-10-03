@@ -13,7 +13,8 @@ process SAMTOOLS_IDXSTATS {
     record(
         meta: Record,
         bam: Path,
-        bai: Path
+        bai: Path,
+        prefix: String?
     )
 
     output:
@@ -26,7 +27,7 @@ process SAMTOOLS_IDXSTATS {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     """
     # Note: --threads value represents *additional* CPUs to allocate (total CPUs = 1 + --threads).
@@ -38,7 +39,7 @@ process SAMTOOLS_IDXSTATS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     """
     touch ${prefix}.idxstats

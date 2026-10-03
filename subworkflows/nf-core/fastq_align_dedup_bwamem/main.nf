@@ -18,6 +18,8 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     output_fmt: String          // output format for parabricks fq2bam (e.g., 'bam' or 'cram')
     interval_file: List<Path>
     known_sites: List<Path>
+    readgroups_args: String     // args for picard addorreplacereadgroups
+    markduplicates_args: String // args for picard markduplicates
 
     main:
     /*
@@ -33,7 +35,13 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
         ch_alignment = BAM_SORT_STATS_SAMTOOLS(ch_fq2bam, val_fasta, val_fasta_index)
     }
     else {
-        ch_alignment = FASTQ_ALIGN_BWA(ch_reads, val_bwamem_index, true, val_fasta, val_fasta_index)
+        ch_alignment = FASTQ_ALIGN_BWA(
+            ch_reads,
+            val_bwamem_index,
+            true,
+            val_fasta,
+            val_fasta_index
+        )
     }
 
     if (!skip_deduplication) {
@@ -41,13 +49,18 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
          * Run Picard AddOrReplaceReadGroups to add read group (RG) to reads in bam file
          */
         ch_readgroups = PICARD_ADDORREPLACEREADGROUPS(
-            ch_alignment.map { r -> record(meta: r.meta, bam: r.bam) }.combine(fasta: val_fasta, fai: val_fasta_index)
+            ch_alignment
+                .map { r -> record(meta: r.meta, bam: r.bam) }
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .map { r -> r + record(args: readgroups_args) }
         )
         /*
          * Run Picard MarkDuplicates to mark duplicates
          */
         ch_markdup = PICARD_MARKDUPLICATES(
-            ch_readgroups.combine(fasta: val_fasta, fai: val_fasta_index)
+            ch_readgroups
+                .combine(fasta: val_fasta, fai: val_fasta_index)
+                .map { r -> r + record(args: markduplicates_args, prefix: "${r.meta.id}.markdup.sorted") }
         )
             .map { r -> record(meta: r.meta, bam: r.bam, picard_metrics: r.picard_metrics) }
         /*
@@ -58,7 +71,8 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
             .join(SAMTOOLS_INDEX(ch_markdup), by: 'meta')
     }
     else {
-        ch_results = ch_alignment.map { r -> r + record(picard_metrics: null) }
+        ch_results = ch_alignment
+            .map { r -> r + record(picard_metrics: null) }
     }
 
     /*

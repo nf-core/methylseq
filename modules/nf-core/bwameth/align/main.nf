@@ -14,7 +14,10 @@ process BWAMETH_ALIGN {
         meta: Record,
         reads: List<Path>,
         fasta: Path,
-        bwameth_index: Path
+        bwameth_index: Path,
+        args: String?,
+        args2: String?,
+        prefix: String?
     )
 
     output:
@@ -28,9 +31,9 @@ process BWAMETH_ALIGN {
     tuple(task.process, 'samtools', eval("samtools version | sed '1!d;s/.* //'")) >> 'versions'
 
     script:
-    def args       = task.ext.args ?: ''
-    def args2      = task.ext.args2 ?: ''
-    def prefix     = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    args2 = task.ext.args2 ?: args2 ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     export BWA_METH_SKIP_TIME_CHECKS=1
     ln -sf \$(readlink ${fasta}) ${bwameth_index}/${fasta}
@@ -44,7 +47,7 @@ process BWAMETH_ALIGN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.bam
     """

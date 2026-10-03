@@ -14,7 +14,9 @@ process BISMARK_ALIGN {
         meta: Record,
         reads: List<Path>,
         fasta: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -32,9 +34,10 @@ process BISMARK_ALIGN {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    if (task.ext.prefix) {
-        args += " --prefix ${task.ext.prefix}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix
+    if (prefix) {
+        args += " --prefix ${prefix}"
     }
     def fastq = meta.single_end ? reads.join(' ') : "-1 ${reads[0]} -2 ${reads[1]}"
 
@@ -98,7 +101,7 @@ process BISMARK_ALIGN {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.bam
     touch ${prefix}.report.txt

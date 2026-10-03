@@ -25,6 +25,7 @@ workflow FASTA_INDEX_METHYLSEQ {
     collecthsmetrics: Boolean   // whether to run picard collecthsmetrics
     methurator: Boolean         // whether to run methurator
     use_mem2: Boolean           // generate mem2 index if no index provided, and bwameth is selected
+    genomeprep_args: String     // args for bismark genome preparation
 
     main:
 
@@ -35,7 +36,7 @@ workflow FASTA_INDEX_METHYLSEQ {
 
     // Check if fasta file is gzipped and decompress if needed
     val_fasta = isGzipped(fasta)
-        ? GUNZIP( fasta )
+        ? GUNZIP( fasta, '' )
         : channel.value(fasta)
 
     // Aligner: bismark or bismark_hisat
@@ -45,12 +46,12 @@ workflow FASTA_INDEX_METHYLSEQ {
          */
         if (bismark_index) {
             val_bismark_index = isGzipped(bismark_index)
-                ? UNTAR_BISMARK( bismark_index )
+                ? UNTAR_BISMARK( bismark_index, '' )
                 : channel.value(bismark_index)
         } else if( aligner == "bismark_hisat") {
-            val_bismark_index = BISMARK_GENOMEPREPARATION_HISAT( val_fasta )
+            val_bismark_index = BISMARK_GENOMEPREPARATION_HISAT( val_fasta, genomeprep_args )
         } else {
-            val_bismark_index = BISMARK_GENOMEPREPARATION_BOWTIE( val_fasta )
+            val_bismark_index = BISMARK_GENOMEPREPARATION_BOWTIE( val_fasta, genomeprep_args )
         }
     }
 
@@ -61,7 +62,7 @@ workflow FASTA_INDEX_METHYLSEQ {
          */
         if (bwameth_index) {
             val_bwameth_index = isGzipped(bwameth_index)
-                ? UNTAR_BWAMETH( bwameth_index )
+                ? UNTAR_BWAMETH( bwameth_index, '' )
                 : channel.value(bwameth_index)
         } else {
             val_bwameth_index = BWAMETH_INDEX( val_fasta, use_mem2 )
@@ -74,11 +75,11 @@ workflow FASTA_INDEX_METHYLSEQ {
          */
         if (bwamem_index) {
             val_bwamem_index = isGzipped(bwamem_index)
-                ? UNTAR_BISMARK( bwamem_index )
+                ? UNTAR_BISMARK( bwamem_index, '' )
                 : channel.value(bwamem_index)
         } else {
             log.info "BWA index not provided. Generating BWA index from FASTA file."
-            val_bwamem_index = BWA_INDEX( val_fasta )
+            val_bwamem_index = BWA_INDEX( val_fasta, '' )
         }
     }
 
@@ -90,7 +91,7 @@ workflow FASTA_INDEX_METHYLSEQ {
             val_fasta_index = channel.value(fasta_index)
         } else {
             log.info "Fasta index not provided. Generating fasta index from FASTA file."
-            val_fasta_index = SAMTOOLS_FAIDX( val_fasta, null, false ).map { r -> r.fai }
+            val_fasta_index = SAMTOOLS_FAIDX( val_fasta, null, false, '' ).map { r -> r.fai }
         }
     }
 

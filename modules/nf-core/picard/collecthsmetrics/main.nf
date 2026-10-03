@@ -19,7 +19,9 @@ process PICARD_COLLECTHSMETRICS {
         ref: Path?,
         ref_fai: Path?,
         ref_dict: Path?,
-        ref_gzi: Path? // ref_gzi only required if reference is gzipped
+        ref_gzi: Path?, // ref_gzi only required if reference is gzipped
+        args: String?,
+        prefix: String?
     )
 
     stage:
@@ -36,8 +38,8 @@ process PICARD_COLLECTHSMETRICS {
     tuple(task.process, 'picard', eval("picard CollectHsMetrics --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def reference = ref ? "--REFERENCE_SEQUENCE ${ref}" : ""
 
     def avail_mem = 3072
@@ -80,7 +82,7 @@ process PICARD_COLLECTHSMETRICS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.CollectHsMetrics.coverage_metrics
     """

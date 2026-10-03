@@ -13,7 +13,9 @@ process PRESEQ_LCEXTRAP {
     input:
     record(
         meta: Record,
-        bam: Path
+        bam: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -27,9 +29,9 @@ process PRESEQ_LCEXTRAP {
     tuple(task.process, 'preseq', eval("preseq 2>&1 | sed -n 's/Version: //p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     args = task.attempt > 1 ? args + ' -defects' : args  // Disable testing for defects
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def paired_end = meta.single_end ? '' : '-pe'
     """
     preseq \\
@@ -42,7 +44,7 @@ process PRESEQ_LCEXTRAP {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.lc_extrap.txt
     touch ${prefix}.command.log

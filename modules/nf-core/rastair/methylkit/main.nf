@@ -11,7 +11,8 @@ process RASTAIR_METHYLKIT {
     input:
     record(
         meta: Record,
-        rastair_call: Path
+        rastair_call: Path,
+        prefix: String?
     )
 
     output:
@@ -24,14 +25,14 @@ process RASTAIR_METHYLKIT {
     tuple(task.process, 'rastair', eval("rastair --version | sed 's/rastair //'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     """
     cat ${rastair_call} | rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.methylkit.txt.gz
     """

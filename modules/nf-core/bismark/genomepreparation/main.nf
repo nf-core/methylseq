@@ -11,6 +11,7 @@ process BISMARK_GENOMEPREPARATION {
 
     input:
     fasta: Path
+    args: String?
 
     stage:
     stageAs fasta, "BismarkIndex/"
@@ -22,7 +23,7 @@ process BISMARK_GENOMEPREPARATION {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     """
     bismark_genome_preparation \\
         ${args} \\

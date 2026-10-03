@@ -26,7 +26,8 @@ process FILTER_BEDGRAPH_TARGETS {
     record(
         meta: Record,
         bedgraph: Path,
-        targets: Path
+        targets: Path,
+        prefix: String?
     )
 
     output:
@@ -39,7 +40,7 @@ process FILTER_BEDGRAPH_TARGETS {
     tuple(task.process, 'bedtools', eval("bedtools --version | sed -e 's/bedtools v//g'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) and extend the end
     # coordinate by 1 bp so the interval covers the full CpG dinucleotide.

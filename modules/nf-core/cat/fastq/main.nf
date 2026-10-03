@@ -12,7 +12,8 @@ process CAT_FASTQ {
     input:
     record(
         meta: Record,
-        reads: List<Path>
+        reads: List<Path>,
+        prefix: String?
     )
 
     stage:
@@ -28,7 +29,7 @@ process CAT_FASTQ {
     tuple(task.process, 'cat', eval("cat --version 2>&1 | head -n 1 | sed 's/^.*coreutils) //; s/ .*\$//'")) >> 'versions'
 
     script:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def readList = reads
     if (meta.single_end) {
         if (readList.size() >= 1) {
@@ -53,7 +54,7 @@ process CAT_FASTQ {
     }
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def readList = reads
     if (meta.single_end) {
         if (readList.size() >= 1) {

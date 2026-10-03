@@ -14,7 +14,9 @@ process PARABRICKS_FQ2BAM {
         meta: Record,
         reads: List<Path>,
         fasta: Path,
-        bwa_index: Path
+        bwa_index: Path,
+        args: String?,
+        prefix: String?
     )
     intervals: List<Path>
     known_sites: List<Path>
@@ -40,8 +42,8 @@ process PARABRICKS_FQ2BAM {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
 
     def in_fq_command = meta.single_end ? "--in-se-fq ${reads.join(' ')}" : "--in-fq ${reads.join(' ')}"
     def extension = "${output_fmt}"
@@ -74,8 +76,8 @@ process PARABRICKS_FQ2BAM {
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
         error("Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead.")
     }
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def extension = "${output_fmt}"
     def extension_index = "${output_fmt}" == "cram" ? "crai" : "bai"
     def known_sites_output = known_sites ? "touch ${prefix}.table" : ""

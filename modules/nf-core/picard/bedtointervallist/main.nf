@@ -12,6 +12,7 @@ process PICARD_BEDTOINTERVALLIST {
     input:
     bed: Path
     dict: Path
+    args: String?
 
     output:
     file('*.intervallist')
@@ -20,8 +21,8 @@ process PICARD_BEDTOINTERVALLIST {
     tuple(task.process, 'picard', eval("picard BedToIntervalList --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args       = task.ext.args     ?: ''
-    def prefix     = task.ext.prefix   ?: "${bed.baseName}"
+    args = task.ext.args ?: args ?: ''
+    def prefix     = "${bed.baseName}"
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard BedToIntervalList] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'
@@ -40,7 +41,7 @@ process PICARD_BEDTOINTERVALLIST {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${bed.baseName}"
+    def prefix = "${bed.baseName}"
     def avail_mem = 3072
     if (!task.memory) {
         log.info '[Picard BedToIntervalList] Available memory not known - defaulting to 3GB. Specify process memory requirements to change this.'

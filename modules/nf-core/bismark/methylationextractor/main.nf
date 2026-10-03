@@ -13,7 +13,9 @@ process BISMARK_METHYLATIONEXTRACTOR {
     record(
         meta: Record,
         bam: Path,
-        bismark_index: Path
+        bismark_index: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -30,7 +32,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
     tuple(task.process, 'bismark', eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
+    args = task.ext.args ?: args ?: ''
     // Assign sensible numbers for multicore and buffer_size based on bismark docs
     if(!args.contains('--multicore') && task.cpus >= 6){
         args += " --multicore ${task.cpus.intdiv(3)}"
@@ -53,7 +55,7 @@ process BISMARK_METHYLATIONEXTRACTOR {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     echo "" | gzip > ${prefix}.bedGraph.gz
     echo "" | gzip > ${prefix}.txt.gz

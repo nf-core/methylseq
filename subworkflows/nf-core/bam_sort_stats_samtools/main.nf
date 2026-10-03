@@ -15,7 +15,12 @@ workflow BAM_SORT_STATS_SAMTOOLS {
     val_fasta_index: Value<Path>
 
     main:
-    ch_sorted = SAMTOOLS_SORT(ch_bam.combine(fasta: val_fasta, fai: val_fasta_index), '')
+    ch_sorted = SAMTOOLS_SORT(
+        ch_bam
+            .combine(fasta: val_fasta, fai: val_fasta_index)
+            .map { r -> r + record(prefix: "${r.meta.id}.sorted") },
+        ''
+    )
         .map { r -> record(meta: r.meta, bam: r.bam) }
 
     ch_bam_bai = ch_sorted.join(SAMTOOLS_INDEX(ch_sorted), by: 'meta')

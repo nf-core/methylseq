@@ -15,7 +15,9 @@ process METHURATOR_GTESTIMATOR {
         bam: Path,
         bai: Path,
         fasta: Path,
-        fai: Path
+        fai: Path,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -28,8 +30,8 @@ process METHURATOR_GTESTIMATOR {
     tuple(task.process, 'methurator', eval("methurator --version | sed 's/.* //'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     methurator gt-estimator \\
         ${bam} \\
@@ -42,7 +44,7 @@ process METHURATOR_GTESTIMATOR {
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.yml
 

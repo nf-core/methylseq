@@ -15,7 +15,9 @@ process SAMTOOLS_STATS {
         bam: Path,
         bai: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?
     )
 
     output:
@@ -28,8 +30,8 @@ process SAMTOOLS_STATS {
     tuple(task.process, 'samtools', eval('samtools version | sed "1!d;s/.* //"')) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     def reference = fasta ? "--reference ${fasta}" : ""
     """
     samtools \\
@@ -42,7 +44,7 @@ process SAMTOOLS_STATS {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
     """
     touch ${prefix}.stats
     """

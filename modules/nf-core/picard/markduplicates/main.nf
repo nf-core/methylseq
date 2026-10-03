@@ -14,7 +14,10 @@ process PICARD_MARKDUPLICATES {
         meta: Record,
         bam: Path,
         fasta: Path?,
-        fai: Path?
+        fai: Path?,
+        args: String?,
+        prefix: String?,
+        suffix: String?
     )
 
     output:
@@ -30,9 +33,9 @@ process PICARD_MARKDUPLICATES {
     tuple(task.process, 'picard', eval("picard MarkDuplicates --version 2>&1 | sed -n 's/.*Version://p'")) >> 'versions'
 
     script:
-    def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = task.ext.suffix ?: "${bam.getExtension()}"
+    args = task.ext.args ?: args ?: ''
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
+    suffix = task.ext.suffix ?: suffix ?: "${bam.getExtension()}"
     def reference = fasta ? "--REFERENCE_SEQUENCE ${fasta}" : ""
     def avail_mem = 3072
     if (!task.memory) {
@@ -43,7 +46,7 @@ process PICARD_MARKDUPLICATES {
     }
 
     if ("${bam}" == "${prefix}.${suffix}") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     """
     picard \\
@@ -57,10 +60,10 @@ process PICARD_MARKDUPLICATES {
     """
 
     stub:
-    def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = task.ext.suffix ?: "${bam.getExtension()}"
+    prefix = task.ext.prefix ?: prefix ?: "${meta.id}"
+    suffix = task.ext.suffix ?: suffix ?: "${bam.getExtension()}"
     if ("${bam}" == "${prefix}.${suffix}") {
-        error("Input and output names are the same, use \"task.ext.prefix\" to disambiguate!")
+        error("Input and output names are the same, use \"prefix\" to disambiguate!")
     }
     """
     touch ${prefix}.${suffix}
