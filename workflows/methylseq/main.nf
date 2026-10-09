@@ -466,6 +466,9 @@ workflow METHYLSEQ {
         if (!params.skip_fastqc) {
             ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
         }
+        if (params.run_methylqc) {
+            ch_multiqc_files = ch_multiqc_files.mix(METHYLQC.out.multiqc_files.flatten())
+        }
 
         if (params.run_picardhs_report) {
             if (!params.run_targeted_sequencing || !params.collecthsmetrics) {

@@ -3,7 +3,8 @@
  *
  * Merges per-sample MethylDackel outputs (methylKit, bedGraph, M-bias) into cohort-level
  * objects, then runs control statistics, read statistics, tiled statistics, Twist and
- * repeat annotation summaries and per-chromosome methylation histograms.
+ * repeat annotation summaries and per-chromosome methylation histograms. The tables are
+ * converted into MultiQC custom content (emit: multiqc_files).
  */
 
 include { COMBINED_METHOBJ              } from '../../../modules/local/exo/make_combined_methobj'
@@ -16,6 +17,7 @@ include { TWIST_ANNOTATION              } from '../../../modules/local/exo/twist
 include { REPEAT_ANNOTATION             } from '../../../modules/local/exo/repeat_annotation'
 include { MERGE_ANNOTATION_STATS        } from '../../../modules/local/exo/merge_annotation_stats'
 include { METH_HISTOGRAM_BY_CHROMOSOME  } from '../../../modules/local/exo/meth_histogram_by_chromosome'
+include { METHYLQC_MULTIQC              } from '../../../modules/local/exo/methylqc_multiqc'
 
 workflow METHYLQC {
 
@@ -30,23 +32,21 @@ workflow METHYLQC {
     main:
     ch_versions = channel.empty()
 
-    // Collect per-sample files and sample metadata into cohort-level lists
-    ch_methylkit_files = ch_methylkit.collect { _meta, files -> files }
-    ch_methylkit_meta  = ch_methylkit.collect { meta, _files -> meta }
-    ch_bedgraph_files  = ch_bedgraph.collect { _meta, files -> files }
-    ch_bedgraph_meta   = ch_bedgraph.collect { meta, _files -> meta }
-    ch_mbias_files     = ch_mbias.collect { _meta, files -> files }
-    ch_mbias_meta      = ch_mbias.collect { meta, _files -> meta }
+    // Collect per-sample files into cohort-level lists, sorted by sample id so that the
+    // file list and the metadata list always line up and the task inputs are stable on -resume
+    ch_methylkit_cohort = cohort(ch_methylkit)
+    ch_bedgraph_cohort  = cohort(ch_bedgraph)
+    ch_mbias_cohort     = cohort(ch_mbias)
 
     COMBINED_METHOBJ (
-        ch_methylkit_files,
-        ch_methylkit_meta
+        ch_methylkit_cohort.files,
+        ch_methylkit_cohort.meta
     )
     ch_versions = ch_versions.mix(COMBINED_METHOBJ.out.versions)
 
     COMBINED_HDF5 (
-        ch_bedgraph_files,
-        ch_bedgraph_meta
+        ch_bedgraph_cohort.files,
+        ch_bedgraph_cohort.meta
     )
     ch_versions = ch_versions.mix(COMBINED_HDF5.out.versions)
 
@@ -57,8 +57,8 @@ workflow METHYLQC {
 
     BASIC_READ_STATISTICS (
         COMBINED_HDF5.out.merged_bedgraph_hdf5,
-        ch_mbias_files,
-        ch_mbias_meta
+        ch_mbias_cohort.files,
+        ch_mbias_cohort.meta
     )
     ch_versions = ch_versions.mix(BASIC_READ_STATISTICS.out.versions)
 
@@ -68,9 +68,9 @@ workflow METHYLQC {
     ch_versions = ch_versions.mix(TILE_METHYL_COUNTS.out.versions)
 
     MERGE_TILED_STATS (
-        TILE_METHYL_COUNTS.out.methobj_lowcov_tiled,
-        ch_methylkit_meta
+        TILE_METHYL_COUNTS.out.methobj_lowcov_tiled
     )
+    ch_versions = ch_versions.mix(MERGE_TILED_STATS.out.versions)
 
     TWIST_ANNOTATION (
         COMBINED_METHOBJ.out.methobj_lowcov,
@@ -93,15 +93,41 @@ workflow METHYLQC {
     ch_versions = ch_versions.mix(MERGE_ANNOTATION_STATS.out.versions)
 
     METH_HISTOGRAM_BY_CHROMOSOME (
-        ch_bedgraph_files,
-        ch_bedgraph_meta,
+        ch_bedgraph_cohort.files,
+        ch_bedgraph_cohort.meta,
         ch_chrom_sizes
     )
     ch_versions = ch_versions.mix(METH_HISTOGRAM_BY_CHROMOSOME.out.versions)
+
+    METHYLQC_MULTIQC (
+        CONTROL_STATS.out.control_stats,
+        BASIC_READ_STATISTICS.out.metrics_table,
+        BASIC_READ_STATISTICS.out.meth_distribution,
+        BASIC_READ_STATISTICS.out.depth_distribution,
+        BASIC_READ_STATISTICS.out.merged_mbias,
+        METH_HISTOGRAM_BY_CHROMOSOME.out.chr_percent_df,
+        MERGE_ANNOTATION_STATS.out.twist_annotation,
+        MERGE_ANNOTATION_STATS.out.repeat_annotation,
+        MERGE_TILED_STATS.out.merge_tiled_stats
+    )
+    ch_versions = ch_versions.mix(METHYLQC_MULTIQC.out.versions)
 
     emit:
     methobj        = COMBINED_METHOBJ.out.methobj          // channel: path(methobj.rds)
     methobj_lowcov = COMBINED_METHOBJ.out.methobj_lowcov   // channel: path(methobj_lowcov.rds)
     control_stats  = CONTROL_STATS.out.control_stats       // channel: path(control_stats.csv)
+    multiqc_files  = METHYLQC_MULTIQC.out.mqc              // channel: path(*_mqc.json)
     versions       = ch_versions                           // channel: path(versions.yml)
+}
+
+/*
+ * Turn a per-sample channel of [ meta, files ] into two value channels holding the
+ * cohort's files and metadata, both ordered by sample id.
+ */
+def cohort(ch_samples) {
+    def ch_sorted = ch_samples.toSortedList { a, b -> a[0].id <=> b[0].id }
+    return [
+        files: ch_sorted.map { samples -> samples.collect { _meta, files -> files }.flatten() },
+        meta : ch_sorted.map { samples -> samples.collect { meta, _files -> meta } }
+    ]
 }

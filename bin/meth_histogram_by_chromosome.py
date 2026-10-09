@@ -1,263 +1,92 @@
 #!/usr/bin/env python
 
+"""
+Per-chromosome CpG counts and methylation from MethylDackel bedGraph files.
+
+A CpG counts as methylated when its methylation level is above 0 (partially or fully methylated).
+
+Outputs:
+    --counts_df_long  long table of methylated CpG counts: index (chromosome), replicate, count
+    --chr_percent_df  long table: Sample, Chromosome, Methylated CpG Count, CpG Count, Percent CpGs Methylated
+    meth_histogram_by_chromosome_CpG_count.png, meth_histogram_by_chromosome_Percent_CpGs.png
+"""
+
 import argparse
-import pandas as pd
 import re
-import collections
-import bz2
-import gzip
-from urllib.request import urlopen
+
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
-
-
+KEEP_CHROMOSOMES = [f"chr{i}" for i in range(1, 23)] + ["chrX", "chrY", "chrM"]
+CONTROL_CHROMOSOMES = ["phage_lambda", "plasmid_puc19c"]
 
 
 def main():
-	parser = argparse.ArgumentParser(description="Gather BedGraph files into single hdf5 file")
-	parser.add_argument("--input_files", required=True, help="List of input bedGraph files (i.e. 'healthy_1.bedGraph healthy_2.bedGraph disease_1.bedGraph disease_2.bedGraph")
-	parser.add_argument("--meta", required=True, help="Sample ID and group information metadata (i.e. [[id:healthy_1, group:healthy], [id:healthy_2, group:healthy], [id:disease_1, group:disease], [id:disease_2, group:disease]]")
-	parser.add_argument("--hg38_chrom_sizes", required=True, help="Chromosome size file")
-	parser.add_argument("--counts_df_long", required=True, help="Output file merged raw methylation counts")
-	parser.add_argument("--chr_percent_df", required=True, help="Output file merged percentage of CpGs")
+    parser = argparse.ArgumentParser(description="Per-chromosome CpG methylation from bedGraph files")
+    parser.add_argument("--input_files", required=True, help="Space-separated bedGraph files, in the same order as --meta")
+    parser.add_argument("--meta", required=True, help="Sample metadata, e.g. [[id:healthy_1, group:healthy], [id:disease_1, group:disease]]")
+    parser.add_argument("--hg38_chrom_sizes", required=True, help="Chromosome sizes file (two columns: name, length)")
+    parser.add_argument("--counts_df_long", required=True, help="Output CSV of methylated CpG counts per chromosome")
+    parser.add_argument("--chr_percent_df", required=True, help="Output CSV of CpG counts and percent methylated per chromosome")
+    args = parser.parse_args()
+
+    input_files = args.input_files.split()
+    sample_ids = re.findall(r"id:([^,\]]+)", args.meta)
+    if len(sample_ids) != len(input_files):
+        raise SystemExit(f"Got {len(input_files)} bedGraph files but {len(sample_ids)} sample ids")
+
+    # Only chromosomes present in the sizes file are reported (plus the spike-in controls)
+    chrom_sizes = pd.read_csv(args.hg38_chrom_sizes, sep="\t", header=None, usecols=[0], names=["chromosome"])
+    chromosomes = [c for c in KEEP_CHROMOSOMES if c in set(chrom_sizes["chromosome"])] + CONTROL_CHROMOSOMES
+
+    chr_percent_df = pd.concat(
+        [chromosome_stats(f, sample, chromosomes) for sample, f in zip(sample_ids, input_files)],
+        ignore_index=True,
+    )
+    chr_percent_df.to_csv(args.chr_percent_df)
+
+    counts_df_long = chr_percent_df.rename(
+        columns={"Chromosome": "index", "Sample": "replicate", "Methylated CpG Count": "count"}
+    )[["index", "replicate", "count"]]
+    counts_df_long.to_csv(args.counts_df_long)
+
+    plot_chromosome_histograms(chr_percent_df)
 
 
-
-	args = parser.parse_args()
-
-	input_files = args.input_files.split()
-
-	rep_list = re.findall(r"id:([^,\]]+)", args.meta)
-
-	file_id_df = pd.DataFrame.from_dict({
-		"id": rep_list,
-		"file": input_files
-	})
-	# file_id_df.to_csv(args.id_file, index = None )
-
-	counts_df_long, chr_percent_df = meth_histogram_by_chromosome(args.hg38_chrom_sizes, file_id_df)
-
-	output_chromosome_histograms(counts_df_long, chr_percent_df)
-	
-	counts_df_long.to_csv(args.counts_df_long)
-	chr_percent_df.to_csv(args.chr_percent_df)
+def chromosome_stats(bedgraph_file: str, sample: str, chromosomes: list) -> pd.DataFrame:
+    try:
+        tab = pd.read_table(bedgraph_file, header=None, skiprows=1, usecols=[0, 3], names=["chr", "percent_methylation"])
+    except pd.errors.EmptyDataError:
+        tab = pd.DataFrame({"chr": pd.Series(dtype=str), "percent_methylation": pd.Series(dtype=float)})
+    cpg_count = tab.groupby("chr").size().reindex(chromosomes, fill_value=0)
+    meth_count = (tab["percent_methylation"] > 0).groupby(tab["chr"]).sum().reindex(chromosomes, fill_value=0).astype(int)
+    percent = (100 * meth_count / cpg_count.where(cpg_count > 0)).fillna(0)
+    return pd.DataFrame({
+        "Sample": sample,
+        "Chromosome": chromosomes,
+        "Methylated CpG Count": meth_count.to_numpy(),
+        "CpG Count": cpg_count.to_numpy(),
+        "Percent CpGs Methylated": percent.to_numpy(),
+    })
 
 
+def plot_chromosome_histograms(chr_percent_df: pd.DataFrame, dims=(8, 4), rotation=45) -> None:
+    for column, filename in [
+        ("CpG Count", "meth_histogram_by_chromosome_CpG_count.png"),
+        ("Percent CpGs Methylated", "meth_histogram_by_chromosome_Percent_CpGs.png"),
+    ]:
+        f, ax = plt.subplots(figsize=dims)
+        sns.barplot(data=chr_percent_df, y=column, x="Chromosome", hue="Sample", palette="Set2", ax=ax)
+        sns.despine()
+        plt.xticks(rotation=rotation, ha="right")
+        ax.legend(bbox_to_anchor=(1, 1))
+        f.savefig(filename, bbox_inches="tight")
+        plt.close(f)
 
-def read_bedfile(fname:str):
-    '''
-    read compressed (.gz .bz) BED files
-    From https://github.com/liguowang/cpgtools/blob/master/lib/cpgmodule/ireader.py
-    cpgtools version 1.10.0
-    Used with chrom_count_from_bedfile function
-    '''
-
-    def nopen(f, mode="rb"):
-        if not isinstance(f, str):
-            return f
-        if f.startswith("|"):
-            p = Popen(f[1:], stdout=PIPE, stdin=PIPE, shell=True)
-            if mode[0] == "r": return p.stdout
-            return p
-        return {"r": sys.stdin, "w": sys.stdout}[mode[0]] if f == "-" \
-            else gzip.open(f, mode) if f.endswith((".gz", ".Z", ".z")) \
-            else bz2.BZ2File(f, mode) if f.endswith((".bz", ".bz2", ".bzip2")) \
-            else urlopen(f) if f.startswith(("http://", "https://","ftp://")) \
-            else open(f, mode)
-
-    for l in nopen(fname):
-        yield l.decode('utf8').strip().replace("\r", "")
-
-def cpg_count_from_bedfile(infile:str) -> dict:
-    '''
-    count chrom frequencies from BED file
-    From https://github.com/liguowang/cpgtools/blob/master/lib/cpgmodule/utils.py
-    cpgtools version 1.10.0
-    '''
-    
-    
-    chrom_count = collections.defaultdict(int)
-    
-    for l in read_bedfile(infile):
-        if l.startswith('#'):
-            continue
-        if l.startswith('track'):
-            continue
-        if l.startswith('browser'):
-            continue
-        f = l.split()
-        if len(f)< 3:
-            print ("BED has at least 3 columns. Skip: " + l, file=sys.stderr)
-            continue
-        try:
-            start = int(f[1])
-            end = int(f[2])
-            if start > end:
-                print ("'Start' cannot be larger than 'End'. Skip: " + l, file=sys.stderr)
-                continue
-        except:
-            print ("Not in valid BED format. Skip:" + l, file=sys.stderr)
-            continue
-
-        chrom_count[f[0]] += 1
-    return chrom_count
-
-def meth_count_from_bedfile(infile:str) -> dict:
-    '''
-    count methylation on each chromosome from BED file
-    Modified from https://github.com/liguowang/cpgtools/blob/master/lib/cpgmodule/utils.py
-    cpgtools version 1.10.0
-    '''
-    
-    
-    chrom_count = collections.defaultdict(int)
-    
-    for l in read_bedfile(infile):
-        if l.startswith('#'):
-            continue
-        if l.startswith('track'):
-            continue
-        if l.startswith('browser'):
-            continue
-        f = l.split()
-        if len(f)< 3:
-            print("BED has at least 3 columns. Skip: " + l, file=sys.stderr)
-            continue
-        try:
-            start = int(f[1])
-            end = int(f[2])
-            if start > end:
-                print("'Start' cannot be larger than 'End'. Skip: " + l, file=sys.stderr)
-                continue
-        except:
-            print("Not in valid BED format. Skip:" + l, file=sys.stderr)
-            continue
-
-        # Counts any partially or fully methylated CpG.
-        if float(f[3]) > 0:
-            chrom_count[f[0]] += 1
-
-    return chrom_count
-
-def meth_histogram_by_chromosome(hg38_chrom_sizes:str,
-	file_id_df:pd.DataFrame) -> (pd.DataFrame, pd.DataFrame):
-	'''
-    Calculate chromosome-level CpG methylation statistics. Returns one Pandas DataFrame that is raw methylation counts and one that is percentage of CpGs.
-
-    '''
-	
-	keep_chr_names = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX',  'chrY', 'chrM']
-	control_chr_names = ['phage_lambda', 'plasmid_puc19c']
-	chr_size_df = pd.read_csv(hg38_chrom_sizes, sep='\t', index_col=0, header=None)
-	chr_size_df.columns = ['chr_length']
-	chr_size_df.index.name = 'chromosome'
-
-	cpg_countsL = []
-	meth_countsL = []
-
-	control_cpg_countsL = []
-	control_meth_countsL = []
-
-	for index, row in file_id_df.iterrows():
-		rep = row["id"]
-
-		cpg_count = cpg_count_from_bedfile(row["file"])
-		cpg_count_df = pd.DataFrame(data={rep+'_cpg':[cpg_count[q] for q in keep_chr_names]}, index=keep_chr_names)
-		meth_count = meth_count_from_bedfile(row["file"])
-		meth_count_df = pd.DataFrame(data={rep+'_meth':[meth_count[q] for q in keep_chr_names]}, index=keep_chr_names)
-		cpg_countsL.append(cpg_count_df)
-		meth_countsL.append(meth_count_df)
-
-		control_cpg_count_df = pd.DataFrame(data={rep+'_cpg':[cpg_count[q] for q in control_chr_names]}, index=control_chr_names)
-		control_meth_count_df = pd.DataFrame(data={rep+'_meth':[meth_count[q] for q in control_chr_names]}, index=control_chr_names)
-		control_cpg_countsL.append(control_cpg_count_df)
-		control_meth_countsL.append(control_meth_count_df)
-	
-	cpg_counts_df = pd.concat(cpg_countsL, axis=1)
-	meth_counts_df = pd.concat(meth_countsL, axis=1)
-	counts_df = pd.concat([meth_counts_df, cpg_counts_df], axis=1)
-    # counts_df.to_csv(mfreq_path_fn)
-
-	control_cpg_counts_df = pd.concat(control_cpg_countsL, axis=1)
-	control_meth_counts_df = pd.concat(control_meth_countsL, axis=1)
-	control_counts_df = pd.concat([control_meth_counts_df, control_cpg_counts_df], axis=1)
-    # control_counts_df.to_csv(mfreq_control_path_fn)
-
-	counts_df_meth = counts_df.filter(like='_meth', axis=1)
-	count_col_names = [q[:-5] for q in counts_df_meth.columns]
-	counts_df_meth.columns = count_col_names
-
-	counts_df_cpg = counts_df.filter(like='_cpg', axis=1)
-	count_col_names = [q[:-4] for q in counts_df_cpg.columns]
-	counts_df_cpg.columns = count_col_names
-
-	counts_df_long = counts_df_meth.reset_index().melt(id_vars='index', var_name = "replicate", value_name='count')
-	cpg_df_long = counts_df_cpg.reset_index().melt(id_vars='index', var_name = "replicate", value_name='count')
-
-	control_counts_df_meth = control_counts_df.filter(like='_meth', axis=1)
-	count_col_names = [q[:-5] for q in control_counts_df_meth.columns]
-	control_counts_df_meth.columns = count_col_names
-    
-	control_counts_df_cpg = control_counts_df.filter(like='_cpg', axis=1)
-	count_col_names = [q[:-4] for q in control_counts_df_cpg.columns]
-	control_counts_df_cpg.columns = count_col_names
-    
-	control_counts_df_long = control_counts_df_meth.reset_index().melt(id_vars='index', var_name = "replicate", value_name='count')
-	control_cpg_df_long = control_counts_df_cpg.reset_index().melt(id_vars='index', var_name = "replicate", value_name='count')
-    
-	counts_df_long = pd.concat([counts_df_long, control_counts_df_long])
-	cpg_df_long = pd.concat([cpg_df_long, control_cpg_df_long])
-
-	chr_iteration_list = keep_chr_names + control_chr_names
-	# Calculate the percentage of methylation and return a DF with methylated CpG counts, all CpG counts, and percent methylated.
-	chr_percentL = []
-	for this_chr_name in chr_iteration_list:
-		this_cpg_counts = cpg_df_long.where(counts_df_long.loc[:,'index'].eq(this_chr_name)).dropna()
-		this_meth_counts = counts_df_long.where(counts_df_long.loc[:,'index'].eq(this_chr_name)).dropna()
-
-		this_chr_pct = this_meth_counts.loc[:,'count'].div(this_cpg_counts.loc[:,'count']).mul(100).reset_index(drop=True)
-		# If a zero is in the denominator it means there was zero methylation percent.
-		this_chr_pct = this_chr_pct.fillna(0)
-		this_chr_pct.name = 'Percent CpGs Methylated'
-
-		this_chr_name_df = this_cpg_counts.loc[:,'index'].reset_index(drop=True)
-		this_chr_name_df.name = 'Chromosome'
-
-		this_chr_sample = this_cpg_counts.loc[:,'replicate'].reset_index(drop=True)
-		this_chr_sample.name = 'Sample'
-
-		this_chr_cpg_counts = this_cpg_counts.loc[:,'count'].reset_index(drop=True)
-		this_chr_cpg_counts.name = 'CpG Count'
-
-		this_chr_meth_counts = this_cpg_counts.loc[:,'count'].reset_index(drop=True)
-		this_chr_meth_counts.name = 'Methylated CpG Count'
-
-		this_chr_df = pd.concat([this_chr_sample, this_chr_name_df, this_chr_meth_counts, this_chr_cpg_counts, this_chr_pct], axis=1)
-		chr_percentL.append(this_chr_df)
-	chr_percent_df = pd.concat(chr_percentL)
-	return counts_df_long, chr_percent_df
-
-def output_chromosome_histograms(counts_df_long:pd.DataFrame, chr_percent_df:pd.DataFrame, histogram_dims:(float,float) = (8,4), histogram_xaxis_label_rotation:float = 45) -> None:
-	'''
-	counts_df_long: Pandas DataFrame containing columns named index, count, and replicate. index is chromosome.
-	chr_percent_df: Same as above except it is percent methylated CpGs.
-	These objects are created by the function meth_histogram_by_chromosome()
-	'''
-	f,ax = plt.subplots(figsize=histogram_dims)
-	# sns.barplot(data=counts_df_long, y='count', x='index', hue='replicate', palette='Set2');
-	sns.barplot(data=chr_percent_df, y='CpG Count', x='Chromosome', hue='Sample', palette='Set2');
-	sns.despine()
-	plt.xticks(rotation=histogram_xaxis_label_rotation, ha='right')
-	plt.legend(bbox_to_anchor=(1,1));
-	plt.savefig("meth_histogram_by_chromosome_CpG_count.png")
-
-	f,ax = plt.subplots(figsize=histogram_dims)
-	sns.barplot(data=chr_percent_df, y='Percent CpGs Methylated', x='Chromosome', hue='Sample', palette='Set2');
-	sns.despine()
-	plt.xticks(rotation=histogram_xaxis_label_rotation, ha='right')
-	plt.legend(bbox_to_anchor=(1,1));
-	plt.savefig("meth_histogram_by_chromosome_Percent_CpGs.png")
 
 if __name__ == "__main__":
     main()

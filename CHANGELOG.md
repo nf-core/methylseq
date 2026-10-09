@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## EvolvDx fork (`evolvdx-main`)
 
 - Rebuilt on nf-core/methylseq 4.2.0. Added the EvolvDx QC steps (`--run_methylqc`, `--run_cpg_coverage`, `--run_methsnsv`, `--run_picardhs_report`), the `evolvdx*` profiles and the custom genomes. See `EVOLVDX.md`.
+- `--run_methylqc` results now appear in the MultiQC report under "EvolvDx methylation QC": General Stats columns (spike-in and mean CpG methylation, CpG depth, % CpGs in repeats), CpG read metrics, methylation and depth distributions, M-bias, methylation by chromosome, Twist annotation and tiled beta values (new `METHYLQC_MULTIQC` module).
+- methyl_qc fixes: "Methylated CpG Count" in `chr_percent_df.csv` no longer repeats the CpG count; read metrics are now computed from read counts (the old "% of total reads that are partial" was built from the bedGraph methylation column); tiles missing from a sample are left empty instead of set to beta 0; cohort inputs are ordered by sample id.
+- methyl_qc modules reformatted with named emits, `when:` blocks and clean `versions.yml`; `env/exo` Dockerfiles and the methylkit environment now build.
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
