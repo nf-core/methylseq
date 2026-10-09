@@ -1,0 +1,20 @@
+name: methylkit
+
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  - bioconda::bioconductor-chippeakanno=3.38.0
+  - bioconda::bioconductor-genomation=1.34.0
+  - bioconda::bioconductor-methylkit=1.36.0
+  - bioconda::bioconductor-rtracklayer=1.64.0
+  - bioconda::bioconductor-txdb.hsapiens.ucsc.hg38.knowngene=3.18.0
+  - conda-forge::h5py=3.11.0
+  - conda-forge::natsort=8.4.0
+  - conda-forge::numpy=1.26.4
+  - conda-forge::pandas=2.2.2
+  - conda-forge::rpy2=3.5.15
+  - conda-forge::r-base=4.4.1
+  - conda-forge::r-optparse=1.7.4

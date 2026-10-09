@@ -1,0 +1,14 @@
+id: Hybcap uniformity
+anchor: picard Hs
+parent_description: This section contains results collected from Picard Hs metrics
+parent_id: Picard Hs metrics
+parent_name: Picard Hs metrics
+pconfig:
+  cpswitch_counts_label: Number of Bases
+  id: Uniformity
+  title: Uniformity
+  xlab: Coverage
+  ylab: Base covered at >X (%)
+  logswitch: True
+plot_type: linegraph
+section_name: Hybcap uniformity

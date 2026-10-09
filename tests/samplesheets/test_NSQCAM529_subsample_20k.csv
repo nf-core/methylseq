@@ -1,0 +1,2 @@
+sample,single_end,single_end,fastq_1,fastq_2,group
+Healthy_1-1,FALSE,FALSE,s3://exosomedx/pipeline_resources/methylseq/test/data/Healthy_1-1_S1_20k_subsample_R1_001.fastq.gz,s3://exosomedx/pipeline_resources/methylseq/test/data/Healthy_1-1_S1_subsample_20k_R2_001.fastq.gz,Healthy

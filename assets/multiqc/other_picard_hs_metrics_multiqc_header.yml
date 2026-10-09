@@ -1,0 +1,18 @@
+headers:
+  FOLD_80_BASE_PENALTY:
+    description: Fold 80 base penalty would appear as ? if median target coverage
+      is 0
+    title: Fold 80 base penalty
+  FOLD_ENRICHMENT:
+    format: '{:,.2f}'
+    title: Fold enrichment
+  MEAN_TARGET_COVERAGE:
+    format: '{:,.2f}'
+    title: Mean target coverage
+plot_type: table
+id: Other Picard Hs metrics
+parent_id: Picard Hs metrics
+parent_name: Picard Hs metrics
+config:
+  sortRows: true
+  table_title: Other Picard Hs metrics

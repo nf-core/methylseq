@@ -1,0 +1,12 @@
+# parent_id: 'Picard Hs metrics'
+# parent_name: "Picard Hs metrics"
+# parent_description: "This section contains results collected from Picard Hs metrics"
+# id: 'Hybcap on off target rate'
+# section_name: 'Hybcap on off target rate'
+# plot_type: 'bargraph'
+# anchor: 'picard Hs'
+# pconfig:
+#     id: "On off target rate"
+#     title: "On off target rate"
+#     xlab: "# Bases"
+#     cpswitch_counts_label: "Number of Bases"

@@ -1,0 +1,13 @@
+nextflow run exosomedx/methylseq -r exo_dev -latest \
+	-bucket-dir 's3://exosome-nextflow-wd/methylseq/NSQCAM_529' \
+    --input tests/samplesheets/test_NSQCAM529_subsample_100k.csv \
+    --outdir tests/results/test_NSQCAM529_subsample_100k \
+    --genome grch38_core_bs_controls \
+    --aligner bwameth \
+    --clip_r1 20 \
+    --clip_r2 15 \
+    --methyl_kit \
+    --with_hybcap \
+    --probe_bed "s3://exosomedx/pipeline_resources/bedfiles/covered_targets_Twist_Methylome_hg38_annotated_collapsed.bed" \
+    --fai "s3://exosomedx/pipeline_resources/references/methylation/grch38_core+bs_controls/bwameth/genome.fa.fai" \
+    -c conf/demand-nextflowbatch-ami-500Gb_multisubnets_v2.cfg -resume

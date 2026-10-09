@@ -1,0 +1,14 @@
+name: basic_read_statistics
+
+channels:
+  - conda-forge
+  - defaults
+  - anaconda
+  - bioconda
+  - r
+
+dependencies:
+  - conda-forge::h5py=3.8.0
+  - conda-forge::numpy=1.23.3
+  - conda-forge::pandas=1.5.0
+  - conda-forge::seaborn=0.12.2
