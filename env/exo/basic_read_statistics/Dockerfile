@@ -1,4 +1,4 @@
-FROM mambaorg/micromamba:0.25.1
+FROM mambaorg/micromamba:1.5.10
 COPY --chown=$MAMBA_USER:$MAMBA_USER conda_environment.yml /tmp/conda_environment.yml
 RUN micromamba install -y -n base -f /tmp/conda_environment.yml && \
     micromamba clean --all --yes
