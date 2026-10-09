@@ -711,6 +711,69 @@
                     "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
+        },
+        "evolvdx_options": {
+            "title": "EvolvDx options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "EvolvDx additions on top of nf-core/methylseq (use with `-profile evolvdx`).",
+            "properties": {
+                "exogenomes_base": {
+                    "type": "string",
+                    "default": "s3://exosomedx/pipeline_resources/references/methylation",
+                    "description": "Base path of the EvolvDx reference genomes defined in conf/evolvdx/custom_genomes.config.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "custom_genomes_ignore": {
+                    "type": "boolean",
+                    "description": "Do not load the EvolvDx custom genomes config.",
+                    "fa_icon": "fas fa-ban"
+                },
+                "cpg_island_bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "BED file of CpG islands used by --run_cpg_coverage.",
+                    "fa_icon": "fas fa-file"
+                },
+                "methylqc_target_bed": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Twist methylome target BED used by --run_methylqc. Defaults to the genome's `twist_methylome_bed`.",
+                    "fa_icon": "fas fa-file"
+                },
+                "repeat_annotation": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Repeat annotation (bigBed) used by --run_methylqc. Defaults to the genome's `repeat_annot`.",
+                    "fa_icon": "fas fa-file"
+                },
+                "chrom_sizes": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Chromosome sizes file used by --run_methylqc. Defaults to the genome's `hg38_chrom_sizes`.",
+                    "fa_icon": "fas fa-file"
+                },
+                "run_methylqc": {
+                    "type": "boolean",
+                    "description": "Run the EvolvDx cohort-level methylation QC (requires --aligner bwameth and --methyl_kit).",
+                    "fa_icon": "fas fa-chart-bar"
+                },
+                "run_cpg_coverage": {
+                    "type": "boolean",
+                    "description": "Run EvolvDx CpG island coverage (requires --cpg_island_bed).",
+                    "fa_icon": "fas fa-chart-area"
+                },
+                "run_methsnsv": {
+                    "type": "boolean",
+                    "description": "Run EvolvDx methylation SNV/SV statistics on MethylDackel bedGraphs (requires --aligner bwameth).",
+                    "fa_icon": "fas fa-chart-line"
+                },
+                "run_picardhs_report": {
+                    "type": "boolean",
+                    "description": "Add the EvolvDx Picard HS metrics tables to MultiQC (requires --run_targeted_sequencing and --collecthsmetrics).",
+                    "fa_icon": "fas fa-table"
+                }
+            }
         }
     },
     "allOf": [
@@ -761,6 +824,9 @@
         },
         {
             "$ref": "#/$defs/generic_options"
+        },
+        {
+            "$ref": "#/$defs/evolvdx_options"
         },
         {
             "$ref": "#/$defs/institutional_config_options"

@@ -1,0 +1,11 @@
+{
+    "input": "s3://your-bucket/samplesheets/experiment.csv",
+    "outdir": "s3://your-bucket/results/experiment/",
+    "genome": "GRCh38",
+    "aligner": "bwameth",
+    "run_targeted_sequencing": true,
+    "target_regions_file": "s3://your-bucket/references/panel.bed",
+    "save_reference": true,
+    "save_align_intermeds": false,
+    "email": "your.email@evolvdx.com"
+}

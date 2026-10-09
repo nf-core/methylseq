@@ -21,9 +21,14 @@ include { paramsSummaryMultiqc          } from '../../subworkflows/nf-core/utils
 include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute            } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { CPG_COV                       } from '../../subworkflows/local/cpg_cov'
+include { METHYLQC                      } from '../../subworkflows/local/methylqc'
+include { METHSNSV                      } from '../../modules/local/exo/methsnsv'
+include { CUSTOM_MULTIQC_PICARDHS       } from '../../modules/local/exo/custom_multiqc/custom_multiqc_picardhs'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -307,6 +312,64 @@ workflow METHYLSEQ {
     }
 
     //
+    // SUBWORKFLOW: EvolvDx CpG island coverage
+    // skipped by default. to use run with `--run_cpg_coverage` param.
+    //
+    if (params.run_cpg_coverage) {
+        if (!params.cpg_island_bed) {
+            error "ERROR: --cpg_island_bed must be specified when using --run_cpg_coverage"
+        }
+        CPG_COV (
+            ch_bam,
+            channel.fromPath(params.cpg_island_bed, checkIfExists: true).first()
+        )
+        ch_versions = ch_versions.mix(CPG_COV.out.versions)
+    }
+
+    //
+    // MODULE: EvolvDx methylation SNV/SV statistics from bedGraph
+    // skipped by default. to use run with `--run_methsnsv` param.
+    //
+    if (params.run_methsnsv) {
+        if (params.aligner != 'bwameth' || params.taps) {
+            error "ERROR: --run_methsnsv requires --aligner bwameth (MethylDackel bedGraph output) and is not compatible with --taps"
+        }
+        METHSNSV (
+            ch_bedgraph
+        )
+        ch_versions = ch_versions.mix(METHSNSV.out.version)
+    }
+
+    //
+    // SUBWORKFLOW: EvolvDx cohort-level methylation QC
+    // skipped by default. to use run with `--run_methylqc` param.
+    //
+    if (params.run_methylqc) {
+        if (params.aligner != 'bwameth' || params.taps) {
+            error "ERROR: --run_methylqc requires --aligner bwameth (MethylDackel output) and is not compatible with --taps"
+        }
+        if (!params.methyl_kit) {
+            error "ERROR: --run_methylqc requires --methyl_kit so that MethylDackel writes methylKit files"
+        }
+        // EvolvDx QC references: explicit --params win, otherwise taken from the selected genome
+        def methylqc_target_bed = params.methylqc_target_bed ?: getGenomeAttribute('twist_methylome_bed')
+        def repeat_annotation   = params.repeat_annotation   ?: getGenomeAttribute('repeat_annot')
+        def chrom_sizes         = params.chrom_sizes         ?: getGenomeAttribute('hg38_chrom_sizes')
+        if (!methylqc_target_bed || !repeat_annotation || !chrom_sizes) {
+            error "ERROR: --run_methylqc requires --methylqc_target_bed, --repeat_annotation and --chrom_sizes (or a --genome that defines twist_methylome_bed, repeat_annot and hg38_chrom_sizes)"
+        }
+        METHYLQC (
+            ch_methylkit,
+            ch_bedgraph,
+            ch_mbias,
+            channel.fromPath(methylqc_target_bed, checkIfExists: true).first(),
+            channel.fromPath(repeat_annotation, checkIfExists: true).first(),
+            channel.fromPath(chrom_sizes, checkIfExists: true).first()
+        )
+        ch_versions = ch_versions.mix(METHYLQC.out.versions)
+    }
+
+    //
     // Collate and save software versions
     //
     softwareVersionsToYAML(ch_versions)
@@ -381,6 +444,22 @@ workflow METHYLSEQ {
         }
         if (!params.skip_fastqc) {
             ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ it[1] }.ifEmpty([]))
+        }
+
+        if (params.run_picardhs_report) {
+            if (!params.run_targeted_sequencing || !params.collecthsmetrics) {
+                error "ERROR: --run_picardhs_report requires --run_targeted_sequencing and --collecthsmetrics"
+            }
+            CUSTOM_MULTIQC_PICARDHS (
+                TARGETED_SEQUENCING.out.picard_metrics.collect{ it[1] },
+                file(params.input, checkIfExists: true),
+                file("$projectDir/assets/multiqc/picard_on_off_rate_multiqc_header.txt", checkIfExists: true),
+                file("$projectDir/assets/multiqc/picard_uniformity_multiqc_header.yml", checkIfExists: true),
+                file("$projectDir/assets/multiqc/other_picard_hs_metrics_multiqc_header.yml", checkIfExists: true)
+            )
+            ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_MULTIQC_PICARDHS.out.yml)
+            ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_MULTIQC_PICARDHS.out.tsv)
+            ch_versions      = ch_versions.mix(CUSTOM_MULTIQC_PICARDHS.out.versions)
         }
 
         MULTIQC (
