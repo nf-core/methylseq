@@ -27,9 +27,9 @@ process COMBINED_HDF5 {
 	
 
 	cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        h5py: \$(python -c 'import h5py; print(h5py.__version__)')
-    END_VERSIONS
+	"${task.process}":
+	    h5py: \$(python -c 'import h5py; print(h5py.__version__)')
+	END_VERSIONS
 	"""
 
 

@@ -33,6 +33,12 @@
                 "exists": true,
                 "pattern": "^[a-zA-Z0-9._-]+$",
                 "errorMessage": "Invalid reference genome name"
+            },
+            "group": {
+                "type": "string",
+                "pattern": "^\\S*$",
+                "errorMessage": "Group cannot contain spaces",
+                "meta": ["group"]
             }
         },
         "required": ["sample", "fastq_1"]

@@ -60,6 +60,11 @@ group_values <- regmatches(meta_string, gregexpr("(?<=group:)[^,\\]]+", meta_str
 # Convert group character names to integers (i.e. c("healthy", "healthy", "disease", "disease") --> c(1,1,0,0))
 group_values_int <- char2intVec(group_values)
 
+# Samplesheets without a group column get a single treatment group
+if (length(group_values_int) == 0) {
+	group_values_int <- rep(0, length(id_values))
+}
+
 methobj <- methRead(methylkit_files,
             sample.id = as.list(id_values),
             assembly="hg38",
