@@ -25,6 +25,7 @@ include { getGenomeAttribute            } from '../../subworkflows/local/utils_n
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { METHYLDACKEL_EXTRACT as METHYLDACKEL_EXTRACT_METHYLKIT } from '../../modules/nf-core/methyldackel/extract/main'
 include { CPG_COV                       } from '../../subworkflows/local/cpg_cov'
 include { METHYLQC                      } from '../../subworkflows/local/methylqc'
 include { METHSNSV                      } from '../../modules/local/exo/methsnsv'
@@ -54,7 +55,9 @@ workflow METHYLSEQ {
     ch_reads         = channel.empty()
     ch_bam           = channel.empty()
     ch_bai           = channel.empty()
-    ch_gzi           = channel.empty()
+    // EvolvDx: upstream leaves ch_gzi empty, which makes the .combine(ch_gzi) inside TARGETED_SEQUENCING emit
+    // nothing, so PICARD_COLLECTHSMETRICS never runs. Provide an empty (meta, path) pair instead.
+    ch_gzi           = channel.value([ [:], [] ])
     ch_bedgraph      = channel.empty()
     ch_aligner_mqc   = channel.empty()
     ch_rastair_mbias = channel.empty()
@@ -260,6 +263,24 @@ workflow METHYLSEQ {
         ch_methylkit   = BAM_METHYLDACKEL.out.methydackel_extract_methylkit // channel: [ val(meta), [ methylkit ] ]
         ch_mbias       = BAM_METHYLDACKEL.out.methydackel_mbias // channel: [ val(meta), [ mbias ] ]
         ch_versions    = ch_versions.mix(BAM_METHYLDACKEL.out.versions)
+
+        //
+        // EvolvDx: MethylDackel's --methylKit option replaces the bedGraph output, but the EvolvDx QC
+        // steps need both formats. Run a second extraction that writes methylKit files.
+        //
+        if (params.run_methylqc) {
+            if (params.methyl_kit) {
+                error "ERROR: --run_methylqc needs bedGraph and methylKit output; do not combine it with --methyl_kit (the pipeline extracts methylKit files itself)"
+            }
+            METHYLDACKEL_EXTRACT_METHYLKIT (
+                ch_methyldackel_inputs.bam,
+                ch_methyldackel_inputs.bai,
+                ch_methyldackel_inputs.fasta,
+                ch_methyldackel_inputs.fasta_index
+            )
+            ch_methylkit = METHYLDACKEL_EXTRACT_METHYLKIT.out.methylkit
+            ch_versions  = ch_versions.mix(METHYLDACKEL_EXTRACT_METHYLKIT.out.versions)
+        }
     }
 
     //
@@ -334,6 +355,9 @@ workflow METHYLSEQ {
         if (params.aligner != 'bwameth' || params.taps) {
             error "ERROR: --run_methsnsv requires --aligner bwameth (MethylDackel bedGraph output) and is not compatible with --taps"
         }
+        if (params.methyl_kit) {
+            error "ERROR: --run_methsnsv needs bedGraph output, which MethylDackel does not write with --methyl_kit"
+        }
         METHSNSV (
             ch_bedgraph
         )
@@ -347,9 +371,6 @@ workflow METHYLSEQ {
     if (params.run_methylqc) {
         if (params.aligner != 'bwameth' || params.taps) {
             error "ERROR: --run_methylqc requires --aligner bwameth (MethylDackel output) and is not compatible with --taps"
-        }
-        if (!params.methyl_kit) {
-            error "ERROR: --run_methylqc requires --methyl_kit so that MethylDackel writes methylKit files"
         }
         // EvolvDx QC references: explicit --params win, otherwise taken from the selected genome
         def methylqc_target_bed = params.methylqc_target_bed ?: getGenomeAttribute('twist_methylome_bed')

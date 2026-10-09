@@ -755,7 +755,7 @@
                 },
                 "run_methylqc": {
                     "type": "boolean",
-                    "description": "Run the EvolvDx cohort-level methylation QC (requires --aligner bwameth and --methyl_kit).",
+                    "description": "Run the EvolvDx cohort-level methylation QC (requires --aligner bwameth; do not combine with --methyl_kit).",
                     "fa_icon": "fas fa-chart-bar"
                 },
                 "run_cpg_coverage": {
@@ -765,7 +765,7 @@
                 },
                 "run_methsnsv": {
                     "type": "boolean",
-                    "description": "Run EvolvDx methylation SNV/SV statistics on MethylDackel bedGraphs (requires --aligner bwameth).",
+                    "description": "Run EvolvDx methylation SNV/SV statistics on MethylDackel bedGraphs (requires --aligner bwameth; do not combine with --methyl_kit).",
                     "fa_icon": "fas fa-chart-line"
                 },
                 "run_picardhs_report": {

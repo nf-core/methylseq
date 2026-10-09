@@ -12,7 +12,7 @@ nextflow run EVolvDx/methylseq -r evolvdx-main -profile evolvdx,docker --input s
 
 | Profile | Purpose |
 |---|---|
-| `evolvdx` | Production defaults: `bwameth`, `--methyl_kit`, `grch38_core_bs_controls`, `clip_r1 20`, `clip_r2 15`, EvolvDx QC steps on |
+| `evolvdx` | Production defaults: `bwameth`, `grch38_core_bs_controls`, `clip_r1 20`, `clip_r2 15`, EvolvDx QC steps on |
 | `evolvdx_test` | Small NSQCAM529 subsample from S3, EvolvDx steps and Picard HS report on |
 | `evolvdx_aws`, `evolvdx_aws_500gb` | AWS Batch queues (`conf/evolvdx/`) |
 
@@ -22,7 +22,7 @@ Plain nf-core behaviour is unchanged unless one of the flags below is set.
 
 | Flag | Component | Notes |
 |---|---|---|
-| `--run_methylqc` | `subworkflows/local/methylqc` | Cohort-level methylKit/HDF5 merge, control stats, read stats, tiled stats, Twist and repeat annotation, per-chromosome histograms. Needs `--aligner bwameth --methyl_kit`. |
+| `--run_methylqc` | `subworkflows/local/methylqc` | Cohort-level methylKit/HDF5 merge, control stats, read stats, tiled stats, Twist and repeat annotation, per-chromosome histograms. Needs `--aligner bwameth`; runs a second MethylDackel extraction for the methylKit files (do not also pass `--methyl_kit`, which would suppress the bedGraph output). |
 | `--run_cpg_coverage` | `subworkflows/local/cpg_cov` | CpG island intersect and per-base coverage. Needs `--cpg_island_bed`. |
 | `--run_methsnsv` | `modules/local/exo/methsnsv.nf` | Methylation SNV/SV statistics from MethylDackel bedGraphs. |
 | `--run_picardhs_report` | `modules/local/exo/custom_multiqc` | EvolvDx Picard HS tables in MultiQC. Needs `--run_targeted_sequencing --collecthsmetrics`. |
