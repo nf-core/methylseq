@@ -32,9 +32,9 @@ process METH_HISTOGRAM_BY_CHROMOSOME {
 	
 
 	cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        basic_read_statistics: \$(echo \$(basic_read_statistics.py --version 2>&1) | sed 's/^.*basic_read_statistics //; s/Using.*\$//' )
-    END_VERSIONS
+	"${task.process}":
+	    pandas: \$(python -c "import pandas; print(pandas.__version__)" 2>/dev/null)
+	END_VERSIONS
 	"""
 
 

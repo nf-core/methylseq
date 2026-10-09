@@ -28,14 +28,14 @@ process TWIST_ANNOTATION {
 	
 
 	cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        r-base: \$(echo \$(R --version 2>&1) | sed 's/^.*R version //; s/ .*\$//')
-        bioconductor-methylkit: \$(Rscript -e "library(methylKit); cat(as.character(packageVersion('methylKit')))")
+	"${task.process}":
+	    r-base: \$(echo \$(R --version 2>&1) | sed 's/^.*R version //; s/ .*\$//')
+	    bioconductor-methylkit: \$(Rscript -e "library(methylKit); cat(as.character(packageVersion('methylKit')))")
 		bioconductor-genomation: \$(Rscript -e "library(genomation); cat(as.character(packageVersion('genomation')))")
 		bioconductor-ChIPpeakAnno: \$(Rscript -e "library(ChIPpeakAnno); cat(as.character(packageVersion('ChIPpeakAnno')))")
 		bioconductor-TxDb.Hsapiens.UCSC.hg38.knownGene: \$(Rscript -e "library(TxDb.Hsapiens.UCSC.hg38.knownGene); cat(as.character(packageVersion('TxDb.Hsapiens.UCSC.hg38.knownGene')))")
 		bioconductor-rtracklayer: \$(Rscript -e "library(rtracklayer); cat(as.character(packageVersion('rtracklayer')))")
-    END_VERSIONS
+	END_VERSIONS
 	"""
 
 

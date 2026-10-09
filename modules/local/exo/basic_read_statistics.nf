@@ -41,9 +41,9 @@ process BASIC_READ_STATISTICS {
 	
 
 	cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        basic_read_statistics: \$(echo \$(basic_read_statistics.py --version 2>&1) | sed 's/^.*basic_read_statistics //; s/Using.*\$//' )
-    END_VERSIONS
+	"${task.process}":
+	    basic_read_statistics: \$(echo \$(basic_read_statistics.py --version 2>/dev/null) | sed 's/^.*basic_read_statistics //; s/Using.*\$//' )
+	END_VERSIONS
 	"""
 
 
