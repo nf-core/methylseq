@@ -125,6 +125,26 @@
                     "help_text": "Directory for a bwa-mem genome reference index. Only used when using the bwa-mem aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwamem.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
                 },
+                "spikein": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable spike-in alignment and bisulfite conversion QC."
+                },
+                "spikein_genome": {
+                    "type": "string",
+                    "description": "Name of spike-in iGenomes reference."
+                },
+                "spikein_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Path to spike-in FASTA."
+                },
+                "spikein_bismark_index": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to spike-in Bismark index."
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
