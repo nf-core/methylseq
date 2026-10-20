@@ -24,6 +24,7 @@ include { validateInputSamplesheet      } from '../../subworkflows/local/utils_n
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { FASTQC as FASTQC_POSTTRIM     } from '../../modules/nf-core/fastqc/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,6 +40,8 @@ workflow METHYLSEQ {
     ch_fasta           // channel: [ path(fasta)           ]
     ch_fasta_index     // channel: [ path(fasta index)     ]
     ch_bismark_index   // channel: [ path(bismark index)   ]
+    ch_spikein_fasta
+    ch_spikein_bismark_index
     ch_bwameth_index   // channel: [ path(bwameth index)   ]
     ch_bwamem_index    // channel: [ path(bwamem_index)    ]
 
@@ -106,7 +109,24 @@ workflow METHYLSEQ {
     } else {
         ch_reads    = ch_fastq
     }
+    if (!params.skip_fastqc && !params.skip_posttrim_fastqc) {
 
+        FASTQC_POSTTRIM(
+            TRIMGALORE.out.reads
+        )
+
+        ch_fastqc_html = ch_fastqc_html.mix(
+            FASTQC_POSTTRIM.out.html
+        )
+
+        ch_fastqc_zip = ch_fastqc_zip.mix(
+            FASTQC_POSTTRIM.out.zip
+        )
+
+        ch_versions = ch_versions.mix(
+            FASTQC_POSTTRIM.out.versions
+        )
+    }
     //
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
@@ -129,13 +149,45 @@ workflow METHYLSEQ {
                 bismark_index: [ meta_bismark, bismark_index ]
             }
 
+        spike_fasta_ch  = channel.empty()
+        spike_index_ch  = channel.empty()
+
+
+        if (params.spikein) {
+
+            assert ch_spikein_fasta :
+                "Spike-in enabled but no spike-in FASTA channel provided"
+
+            assert ch_spikein_bismark_index :
+                "Spike-in enabled but no spike-in Bismark index channel provided"
+
+            ch_spikein_inputs = ch_reads
+                .combine(ch_spikein_fasta)
+                .combine(ch_spikein_bismark_index)
+                .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
+                    reads: [ meta, reads ]
+                    fasta: [ meta_fasta, fasta ]
+                    bismark_index: [ meta_bismark, bismark_index ]
+                }
+
+            spike_fasta_ch = ch_spikein_inputs.fasta
+            spike_index_ch = ch_spikein_inputs.bismark_index
+        }
+
         FASTQ_ALIGN_DEDUP_BISMARK (
             ch_bismark_inputs.reads,
             ch_bismark_inputs.fasta,
             ch_bismark_inputs.bismark_index,
+
+            spike_fasta_ch,
+            spike_index_ch,
+
             params.skip_deduplication || params.rrbs,
-            params.cytosine_report || params.nomeseq
+            params.cytosine_report || params.nomeseq,
+
+            params.spikein
         )
+
         ch_bam         = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BISMARK.out.bai
         ch_bedgraph    = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph

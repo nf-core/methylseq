@@ -60,9 +60,36 @@ workflow NFCORE_METHYLSEQ {
     ch_or_val_bwameth_index = params.bwameth_index ? channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bwamem_index  = params.bwamem_index  ? channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : []
 
+    // Spike-in channels
+    ch_spikein_fasta = params.spikein_fasta ?
+        channel.fromPath(params.spikein_fasta)
+            .map { it -> [ [id:'spikein'], it ] } :
+        channel.empty()
+
+    ch_spikein_bismark_index = params.spikein_bismark_index ?
+        Channel.value(
+            [
+                [id:'spikein'],
+                file(params.spikein_bismark_index)
+            ]
+        ) :
+        Channel.empty()
+
+ch_spikein_bismark_index = params.spikein_bismark_index ?
+    
+
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
+
+    if (params.spikein) {
+
+        assert params.spikein_fasta :
+            "ERROR: --spikein_fasta must be specified when using --spikein"
+
+        assert params.spikein_bismark_index :
+            "ERROR: --spikein_bismark_index must be specified when using --spikein"
+    }
     FASTA_INDEX_METHYLSEQ(
         ch_fasta,
         ch_or_val_fasta_index,
@@ -85,6 +112,8 @@ workflow NFCORE_METHYLSEQ {
         FASTA_INDEX_METHYLSEQ.out.fasta,
         FASTA_INDEX_METHYLSEQ.out.fasta_index,
         FASTA_INDEX_METHYLSEQ.out.bismark_index,
+        ch_spikein_fasta,
+        ch_spikein_bismark_index,
         FASTA_INDEX_METHYLSEQ.out.bwameth_index,
         FASTA_INDEX_METHYLSEQ.out.bwamem_index,
     )
