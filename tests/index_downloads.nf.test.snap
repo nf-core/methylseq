@@ -135,6 +135,9 @@
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
                 },
+                "SAMTOOLS_SORT_PRESEQ": {
+                    "samtools": "1.23.1"
+                },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
                 },
@@ -143,10 +146,10 @@
                 }
             }
         ],
-        "timestamp": "2026-07-20T19:13:28.811076397",
+        "timestamp": "2026-10-26T10:06:07.321179",
         "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "25.10.0"
+            "nf-test": "0.9.4",
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with bwameth-index": {
