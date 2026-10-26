@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🐛 Run Preseq on the pre-deduplication BAM for `--aligner bismark` / `bismark_hisat`; it was given the deduplicated BAM. The `fastq_align_dedup_bismark` subworkflow now emits the raw aligned BAM (`bam_aligned`, local nf-core patch), which is sorted by `SAMTOOLS_SORT_PRESEQ` before Preseq ([#632](https://github.com/nf-core/methylseq/issues/632))
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))
 - 🐛 Remove the `aws_batch` profile, which referenced a deleted config file and broke config parsing (and linting) on recent Nextflow versions ([#610](https://github.com/nf-core/methylseq/pull/610))
 - 🐛 Fix `RASTAIR_MBIASPARSER` strict-parser error by quoting the `env('trim_OT')`/`env('trim_OB')` output declarations (local nf-core module patch); the pipeline now lints cleanly under Nextflow's strict parser (≥25.10)

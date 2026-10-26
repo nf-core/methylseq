@@ -17,6 +17,7 @@ include { FASTQ_ALIGN_DEDUP_BWAMEM      } from '../../subworkflows/nf-core/fastq
 include { PICARD_MARKDUPLICATES         } from '../../modules/nf-core/picard/markduplicates/main'
 include { PICARD_ADDORREPLACEREADGROUPS } from '../../modules/nf-core/picard/addorreplacereadgroups/main'
 include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_PRESEQ } from '../../modules/nf-core/samtools/sort/main'
 include { paramsSummaryMultiqc          } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
@@ -291,8 +292,19 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_preseq` param.
     //
     if (params.run_preseq) {
+        // Preseq estimates complexity from duplicate counts, so it needs the BAM before deduplication.
+        // Bismark removes duplicates, so sort its raw alignments; the other aligners only mark duplicates.
+        ch_preseq_bam = ch_bam
+        if (params.aligner =~ /bismark/ && !(params.skip_deduplication || params.rrbs)) {
+            SAMTOOLS_SORT_PRESEQ(
+                FASTQ_ALIGN_DEDUP_BISMARK.out.bam_aligned,
+                [[:], [], []],
+                '',
+            )
+            ch_preseq_bam = SAMTOOLS_SORT_PRESEQ.out.bam
+        }
         PRESEQ_LCEXTRAP(
-            ch_bam
+            ch_preseq_bam
         )
         ch_preseq = PRESEQ_LCEXTRAP.out.lc_extrap
         ch_versions = ch_versions.mix(PRESEQ_LCEXTRAP.out.versions)
