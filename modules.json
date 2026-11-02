@@ -57,12 +57,12 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
                         "installed_by": ["fastq_align_dedup_bwameth"]
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
                     "cat/fastq": {
