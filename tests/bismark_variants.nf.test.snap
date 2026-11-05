@@ -2,9 +2,6 @@
     "Params: bismark with run_qualimap": {
         "content": [
             {
-                "QUALIMAP_BAMQC": {
-                    "qualimap": 2.3
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -31,6 +28,9 @@
                 },
                 "MULTIQC": {
                     "multiqc": 1.34
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
@@ -4415,9 +4415,6 @@
     "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication": {
         "content": [
             {
-                "CAT_FASTQ": {
-                    "cat": 9.5
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -4432,6 +4429,9 @@
                 },
                 "BISMARK_SUMMARY": {
                     "bismark": "3.1.0"
+                },
+                "CAT_FASTQ": {
+                    "cat": 9.5
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"

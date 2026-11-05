@@ -2,9 +2,6 @@
     "Params: bwameth with run_qualimap": {
         "content": [
             {
-                "QUALIMAP_BAMQC": {
-                    "qualimap": 2.3
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -28,6 +25,9 @@
                 },
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
+                },
+                "QUALIMAP_BAMQC": {
+                    "qualimap": 2.3
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
@@ -992,14 +992,14 @@
     "Params: bwameth with CAT_FASTQ and skip_trimming and skip_deduplication": {
         "content": [
             {
-                "CAT_FASTQ": {
-                    "cat": 9.5
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
+                },
+                "CAT_FASTQ": {
+                    "cat": 9.5
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
