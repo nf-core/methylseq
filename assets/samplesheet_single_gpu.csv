@@ -1,0 +1,2 @@
+sample,fastq_1,fastq_2,genome
+SRR7961150_GSM3415714_MShef4_bulk,s3://ngi-igenomes/test-data/methylseq/SRR7961150_GSM3415714_MShef4_bulk_BSseq_Homo_sapiens_Bisulfite-Seq_1.fastq.gz,s3://ngi-igenomes/test-data/methylseq/SRR7961150_GSM3415714_MShef4_bulk_BSseq_Homo_sapiens_Bisulfite-Seq_2.fastq.gz,

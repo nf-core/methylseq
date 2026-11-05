@@ -7,6 +7,9 @@ testing/
 testing*
 *.pyc
 null/
+.nf-test.log
+.nf-test/
+setup-nextflow/
 .lineage/
 .nf-test/
 .nf-test.log
