@@ -5,9 +5,6 @@
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -49,6 +46,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -488,9 +488,6 @@
     "Params: bwameth with skip_deduplication": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -526,6 +523,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -762,9 +762,6 @@
     "Params: bwameth with skip_fastqc": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -803,6 +800,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -995,9 +995,6 @@
                 "CAT_FASTQ": {
                     "cat": 9.5
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1030,6 +1027,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1198,9 +1198,6 @@
     "Params: bwameth": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1242,6 +1239,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1502,9 +1502,6 @@
     "Params: bwameth with skip_multiqc": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1543,6 +1540,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1662,9 +1662,6 @@
     "Params: bwameth with skip_trimming": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1703,6 +1700,9 @@
                 },
                 "SAMTOOLS_STATS": {
                     "samtools": "1.23.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1924,9 +1924,6 @@
     "Params: bwameth with mem2 index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1968,6 +1965,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -2228,9 +2228,6 @@
     "Params: bwameth with save_reference and save_align_intermeds": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -2272,6 +2269,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -2590,9 +2590,6 @@
     "Params: bwameth with rrbs": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -2628,6 +2625,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

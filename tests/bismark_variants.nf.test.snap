@@ -5,9 +5,6 @@
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -43,6 +40,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -641,9 +641,6 @@
     "Params: bismark with nomeseq": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -682,6 +679,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1070,9 +1070,6 @@
     "Params: bismark with skip_multiqc": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -1105,6 +1102,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1288,9 +1288,6 @@
     "Params: bismark (default)": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -1326,6 +1323,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1670,9 +1670,6 @@
     "Params: bismark with cytosine_report": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -1711,6 +1708,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -2075,9 +2075,6 @@
     "Params: bismark with em_seq and clip_r1": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -2113,6 +2110,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -2457,9 +2457,6 @@
     "Params: bismark with skip_trimming": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -2492,6 +2489,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -2797,9 +2797,6 @@
     "Params: bismark with skip_deduplication": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -2832,6 +2829,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -3180,9 +3180,6 @@
     "Params: bismark with rrbs": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -3215,6 +3212,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -3563,9 +3563,6 @@
     "Params: bismark with save_reference and save_align_intermeds": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -3601,6 +3598,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -4000,9 +4000,6 @@
     "Params: bismark with run_methurator": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -4044,6 +4041,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -4418,9 +4418,6 @@
                 "CAT_FASTQ": {
                     "cat": 9.5
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -4450,6 +4447,9 @@
                 },
                 "SAMTOOLS_SORT": {
                     "samtools": "1.23.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -4692,9 +4692,6 @@
     "Params: bismark with run_preseq": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -4730,6 +4727,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -5074,9 +5074,6 @@
     "Params: bismark with skip_fastqc": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -5109,6 +5106,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

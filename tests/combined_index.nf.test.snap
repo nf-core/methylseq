@@ -2,9 +2,6 @@
     "Params: bismark with combined_index and non_directional": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -40,6 +37,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -464,9 +464,6 @@
     "Params: bismark with combined_index and pbat": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -502,6 +499,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -896,9 +896,6 @@
     "Params: bismark with combined_index (directional)": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -934,6 +931,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1328,9 +1328,6 @@
     "Params: bismark_hisat with combined_index (directional)": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -1366,6 +1363,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

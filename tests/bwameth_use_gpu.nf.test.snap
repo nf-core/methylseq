@@ -2,9 +2,6 @@
     "Params: PARABRICKS_FQ2BAMMETH - GPU Profile": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_INDEX": {
                     "bwameth": "0.2.9"
                 },
@@ -46,6 +43,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

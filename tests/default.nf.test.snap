@@ -2,9 +2,6 @@
     "-profile test": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -40,6 +37,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

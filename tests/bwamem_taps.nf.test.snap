@@ -14,9 +14,6 @@
                 "RASTAIR_METHYLKIT": {
                     "rastair": "rastair 0.8.2"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWA_INDEX": {
                     "bwa": "0.7.19-r1273"
                 },
@@ -55,6 +52,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

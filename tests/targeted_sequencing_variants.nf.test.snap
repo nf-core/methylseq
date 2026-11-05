@@ -5,9 +5,6 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -49,6 +46,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -329,9 +329,6 @@
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -367,6 +364,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -735,9 +735,6 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -773,6 +770,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1142,9 +1142,6 @@
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1186,6 +1183,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -1459,9 +1459,6 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -1503,6 +1500,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
