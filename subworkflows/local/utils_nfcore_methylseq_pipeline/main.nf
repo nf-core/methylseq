@@ -88,8 +88,7 @@ workflow PIPELINE_INITIALISATION {
         show_hidden,
         before_text,
         after_text,
-        command,
-        null
+        command
     )
 
 
