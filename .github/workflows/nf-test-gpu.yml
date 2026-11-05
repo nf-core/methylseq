@@ -94,6 +94,9 @@ jobs:
 
       - name: Run nf-test Action
         uses: ./.github/actions/nf-test
+        env:
+          NFT_WORKDIR: ${{ env.NFT_WORKDIR }}
+          NXF_VERSION: ${{ matrix.NXF_VER }}
         with:
           profile: ${{ matrix.profile }},gpu
           shard: ${{ matrix.shard }}
