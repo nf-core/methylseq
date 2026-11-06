@@ -1,0 +1,85 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf - bwa-mem3 with TAPS"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    test("Params: bwamem3 | taps") {
+        when {
+            params {
+                input       = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta       = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner     = "bwamem3"
+                taps        = true
+                outdir      = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', '**/multiqc.parquet'])
+            // rastair 0.8 call output (and the methylKit file and M-bias PDF derived from it) is not reproducible between runs
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/call/*.txt', 'rastair/methylkit/*.txt.gz', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_licence = true
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', '**/multiqc.parquet'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2 - licence not accepted") {
+        when {
+            params {
+                aligner     = "bwamem3"
+                taps        = true
+                taps_caller = "rastair2"
+                outdir      = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { it.contains('--accept_rastair2_licence') } }
+            )
+        }
+    }
+
+}

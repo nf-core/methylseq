@@ -128,8 +128,8 @@
                 "bwamem3_index": {
                     "type": "string",
                     "format": "path",
-                    "description": "Path to a bwa-mem3 methylation index directory (or .tar.gz), built with `bwa-mem3 index --meth`.",
-                    "help_text": "Only used with `--aligner bwamem3`. The directory must contain both the original index (`<prefix>.{amb,ann,bwt.2bit.64,pac}`) and the methylation seed index (`<prefix>.meth.{amb,ann,bwt.2bit.64,pac}`). If not given, the pipeline builds it from `--fasta`, which needs roughly 150 GB of memory for a human genome. Use `--save_reference` to keep it.",
+                    "description": "Path to a bwa-mem3 methylation index (built with `bwa-mem3 index --meth`): a directory, a .tar.gz, or an index prefix.",
+                    "help_text": "Only used with `--aligner bwamem3`. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta`, which needs roughly 150 GB of memory for a human genome. Use `--save_reference` to keep it.",
                     "fa_icon": "far fa-dot-circle"
                 },
                 "igenomes_ignore": {

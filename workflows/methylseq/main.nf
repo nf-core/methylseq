@@ -24,6 +24,8 @@ include { methodsDescriptionText        } from '../../subworkflows/local/utils_n
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_CALL                 } from '../../modules/nf-core/rastair2/call/main'
+include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
+include { BCFTOOLS_STATS                } from '../../modules/nf-core/bcftools/stats/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
@@ -60,6 +62,7 @@ workflow METHYLSEQ {
     ch_rastair_call = channel.empty()
     ch_rastair2_vcf = channel.empty()
     ch_rastair2_bed = channel.empty()
+    ch_rastair2_mqc = channel.empty()
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()
@@ -248,6 +251,23 @@ workflow METHYLSEQ {
         )
         ch_rastair2_vcf = RASTAIR2_CALL.out.vcf
         ch_rastair2_bed = RASTAIR2_CALL.out.bed
+
+        //
+        // MultiQC: variant QC (bcftools stats) and CpG methylation summary of the rastair 2 output
+        //
+        BCFTOOLS_STATS(
+            RASTAIR2_CALL.out.vcf.join(RASTAIR2_CALL.out.tbi),
+            [[:], []],
+            [[:], []],
+            [[:], []],
+            [[:], []],
+            [[:], []],
+        )
+        RASTAIR2_SUMMARY(RASTAIR2_CALL.out.bed)
+        ch_rastair2_mqc = BCFTOOLS_STATS.out.stats
+            .mix(RASTAIR2_SUMMARY.out.mqc)
+            .map { _meta, files -> files }
+            .flatten()
     }
     else if (params.taps || taps_aligner) {
 
@@ -416,6 +436,7 @@ workflow METHYLSEQ {
             ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { it[1] }.ifEmpty([]))
         }
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_rastair2_mqc.collect().ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { it[1] })
         }

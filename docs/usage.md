@@ -159,7 +159,7 @@ When `--taps` is specified, the pipeline automatically:
 
 `--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3) in its TAPS mode (`bwa-mem3 mem --meth=taps`), which accounts for 5mC->T conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. As with `--aligner bwamem`, rastair then calls methylation.
 
-It needs an index built with `bwa-mem3 index --meth`. Pass a pre-built one with `--bwamem3_index` (directory or `.tar.gz`), or let the pipeline build it from `--fasta` and keep it with `--save_reference`. Building the index for a human genome needs roughly 150 GB of memory.
+It needs an index built with `bwa-mem3 index --meth`. Pass a pre-built one with `--bwamem3_index`: a directory, a `.tar.gz`, or the index prefix (e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`, useful when several genomes share a folder). Otherwise the pipeline builds it from `--fasta`; keep it with `--save_reference`. Building the index for a human genome needs roughly 150 GB of memory, and aligning against it roughly 30 GB.
 
 ```bash
 nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --outdir results -profile docker

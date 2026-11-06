@@ -309,6 +309,13 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.bed.gz`, `sample.bed.gz.tbi`
   - bgzipped BED of per-position CpG methylation (beta estimate, modified and unmodified read counts, genotype), and its tabix index.
 
+**`results/rastair2/bcftools_stats/`**
+
+- `sample.bcftools_stats.txt`
+  - `bcftools stats` of the rastair version 2 VCF (SNV and indel counts, transitions/transversions), shown in the MultiQC report.
+
+The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs, so spike-in controls (shown in the per-contig table) do not skew them; references without chromosome-like contig names use all contigs.
+
 ### Targeted Sequencing
 
 If `--run_targeted_sequencing` is set to `true`, the pipeline performs additional analysis for targeted sequencing experiments.

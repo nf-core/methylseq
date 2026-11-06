@@ -20,6 +20,7 @@ include { BWA_INDEX                 } from './modules/nf-core/bwa/index/main'
 include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { bwamem3IndexChannel       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { METHYLSEQ                 } from './workflows/methylseq/'
 
 /*
@@ -31,6 +32,7 @@ params.fasta         = getGenomeAttribute('fasta')
 params.fasta_index   = getGenomeAttribute('fasta_index')
 params.bwameth_index = getGenomeAttribute('bwameth')
 params.bwamem_index  = getGenomeAttribute('bwa')
+params.bwamem3_index = getGenomeAttribute('bwamem3')
 params.bismark_index = params.aligner == 'bismark_hisat' ? getGenomeAttribute('bismark_hisat2') : getGenomeAttribute('bismark')
 
 /*
@@ -59,8 +61,9 @@ workflow NFCORE_METHYLSEQ {
     ch_or_val_bismark_index = params.bismark_index ? channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bwameth_index = params.bwameth_index ? channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
     // bwa-mem3 reuses the bwamem index slot: FASTA_INDEX_METHYLSEQ builds or untars a `bwa-mem3 index --meth` index for it
-    def bwamem_index_path   = params.aligner == 'bwamem3' ? params.bwamem3_index : params.bwamem_index
-    ch_or_val_bwamem_index  = bwamem_index_path    ? channel.fromPath(bwamem_index_path).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwamem_index  = params.aligner == 'bwamem3'
+        ? bwamem3IndexChannel(params.bwamem3_index)
+        : (params.bwamem_index ? channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : [])
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices

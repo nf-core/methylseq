@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "rastair2_summary"
+description: Summarise the rastair version 2 CpG methylation BED as MultiQC custom content (genome-wide and per-contig CpG methylation, CpG methylation distribution)
+keywords:
+  - taps
+  - methylation
+  - multiqc
+  - rastair
+tools:
+  - "awk":
+      description: "Pattern scanning and processing language, used by bin/rastair2_summary.sh"
+      homepage: "https://www.gnu.org/software/gawk/"
+      licence: ["GPL-3.0-or-later"]
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information. e.g. `[ id:'sample1' ]`
+    - bed:
+        type: file
+        description: bgzipped CpG methylation BED from `rastair call --bed`
+        pattern: "*.bed.gz"
+        ontologies: []
+output:
+  mqc:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information. e.g. `[ id:'sample1' ]`
+      - "*_mqc.tsv":
+          type: file
+          description: MultiQC custom content files (General Statistics, methylation distribution, per-contig methylation)
+          pattern: "*_mqc.tsv"
+          ontologies: []
+authors:
+  - "@eduard-watchmaker"
+maintainers:
+  - "@eduard-watchmaker"

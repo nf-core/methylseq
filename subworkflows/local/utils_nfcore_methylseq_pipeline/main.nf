@@ -253,6 +253,25 @@ def getGenomeAttribute(attribute) {
 //
 // Exit pipeline if incorrect --genome key provided
 //
+//
+// bwa-mem3 `--meth` index as [ meta, index ]: a directory or .tar.gz, or an index prefix
+// (e.g. s3://bucket/genomes/hg38.fa) whose <prefix>.* and <prefix>.meth.* files are staged together
+//
+def bwamem3IndexChannel(index) {
+    if (!index) {
+        return []
+    }
+    def index_path = file(index)
+    if (index.toString().endsWith('.gz') || index_path.isDirectory()) {
+        return channel.of([[id: index_path.baseName], index_path])
+    }
+    // `mem --meth` reads only .amb/.ann/.pac from the plain prefix; it seeds from the .meth index
+    def index_files = ['amb', 'ann', 'pac', 'meth.amb', 'meth.ann', 'meth.bwt.2bit.64', 'meth.pac'].collect { ext ->
+        file("${index}.${ext}", checkIfExists: true)
+    }
+    return channel.of([[id: index_path.name], index_files])
+}
+
 def genomeExistsError() {
     if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
         def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" + "  Genome '${params.genome}' not found in any config files provided to the pipeline.\n" + "  Currently, the available genome keys are:\n" + "  ${params.genomes.keySet().join(", ")}\n" + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
