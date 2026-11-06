@@ -155,6 +155,27 @@ When `--taps` is specified, the pipeline automatically:
 > [!NOTE]
 > When using `--aligner bwamem`, Rastair is automatically used for methylation calling even without the `--taps` flag, as bwamem is optimized for TAPS data.
 
+#### bwa-mem3 in TAPS mode
+
+`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3) in its TAPS mode (`bwa-mem3 mem --meth=taps`), which accounts for 5mC->T conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. As with `--aligner bwamem`, rastair then calls methylation.
+
+It needs an index built with `bwa-mem3 index --meth`. Pass a pre-built one with `--bwamem3_index` (directory or `.tar.gz`), or let the pipeline build it from `--fasta` and keep it with `--save_reference`. Building the index for a human genome needs roughly 150 GB of memory.
+
+```bash
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --outdir results -profile docker
+```
+
+#### rastair version 2 (`--taps_caller rastair2`)
+
+`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, `--non_directional` adds `--guess-read-orientation`, and `--trim_OT`/`--trim_OB` set the read-end clipping.
+
+> [!WARNING]
+> rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_licence` to use it.
+
+```bash
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --taps_caller rastair2 --accept_rastair2_licence --outdir results -profile docker
+```
+
 ### Targeted sequencing (optional)
 
 To run region-focused analysis and optional hybrid-capture metrics:
@@ -305,6 +326,7 @@ For a detailed list of different options available, please refer to the official
 - [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
 - [bwa-meth](https://github.com/brentp/bwa-meth)
 - [bwa-mem](https://github.com/lh3/bwa)
+- [bwa-mem3](https://github.com/fg-labs/bwa-mem3)
 
 ### Running the `test` profile
 

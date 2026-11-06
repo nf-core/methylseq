@@ -125,6 +125,13 @@
                     "help_text": "Directory for a bwa-mem genome reference index. Only used when using the bwa-mem aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwamem.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
                 },
+                "bwamem3_index": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to a bwa-mem3 methylation index directory (or .tar.gz), built with `bwa-mem3 index --meth`.",
+                    "help_text": "Only used with `--aligner bwamem3`. The directory must contain both the original index (`<prefix>.{amb,ann,bwt.2bit.64,pac}`) and the methylation seed index (`<prefix>.meth.{amb,ann,bwt.2bit.64,pac}`). If not given, the pipeline builds it from `--fasta`, which needs roughly 150 GB of memory for a human genome. Use `--save_reference` to keep it.",
+                    "fa_icon": "far fa-dot-circle"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
@@ -152,8 +159,8 @@
                     "default": "bismark",
                     "description": "Alignment tool to use.",
                     "fa_icon": "fas fa-dot-circle",
-                    "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem"],
-                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
+                    "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem", "bwamem3"],
+                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\nFor TAPS libraries, `--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3) in its TAPS mode (`mem --meth=taps`), which accounts for 5mC->T conversions during alignment. Methylation is then called with rastair (see `--taps_caller`)."
                 },
                 "use_mem2": {
                     "type": "boolean",
@@ -432,10 +439,24 @@
         "rastair_options": {
             "title": "rastair options",
             "type": "object",
-            "description": "Parameters specific to the RASTAIR workflow",
+            "description": "Parameters for TAPS methylation calling with rastair",
             "default": "",
             "fa_icon": "fas fa-robot",
             "properties": {
+                "taps_caller": {
+                    "type": "string",
+                    "default": "rastair",
+                    "enum": ["rastair", "rastair2"],
+                    "description": "Methylation caller for TAPS data.",
+                    "help_text": "`rastair` (default) runs rastair 0.8 (GPL-3.0): M-bias, methylation calls and methylKit output.\n\n`rastair2` runs rastair version 2, which jointly calls SNVs, indels and CpG methylation and writes a bgzipped VCF and CpG BED. rastair version 2 is free for non-commercial research use only; commercial use requires a licence from Oxford University Innovation. It also requires `--accept_rastair2_licence`.",
+                    "fa_icon": "fas fa-robot"
+                },
+                "accept_rastair2_licence": {
+                    "type": "boolean",
+                    "description": "Confirm that your use of rastair version 2 complies with its non-commercial licence.",
+                    "help_text": "Required with `--taps_caller rastair2`. rastair version 2 is free for non-commercial research use only. Commercial use (including paid services or product development) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice \"Copyright © 2025, University of Oxford\".",
+                    "fa_icon": "fas fa-file-signature"
+                },
                 "trim_OT": {
                     "type": "string",
                     "default": "0,0,10,0",

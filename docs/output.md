@@ -210,7 +210,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `logs/samtools_stats/sample_stats.txt`
   - Summary file giving lots of metrics about the aligned BAM file.
 
-**bwa-mem output directory: `results/bwamem/alignments/`**
+**bwa-mem / bwa-mem3 output directory: `results/bwamem/alignments/` or `results/bwamem3/alignments/`**
 
 - `sample.sorted.bam`
   - Sorted aligned reads in BAM format.
@@ -247,7 +247,7 @@ This step removes alignments with identical mapping position to avoid technical 
 - `logs/sample.sorted.markDups_metrics.txt`
   - Log file giving summary statistics about deduplication.
 
-**bwa-mem output directory: `results/bwamem/deduplicated/`**
+**bwa-mem / bwa-mem3 output directory: `results/bwamem/deduplicated/` or `results/bwamem3/deduplicated/`**
 
 - `sample.markdup.sorted.bam`
   - Sorted BAM file with duplicated reads marked.
@@ -301,6 +301,13 @@ Filename abbreviations stand for the following reference alignment strands:
   - File reporting the dynamic trimming to be passed to the rastair/call process.
 - `methylkit/sample.rastair_methylkit.txt.gz`
   - Individual methylation calls in a format digestible by MethylKit R package.
+
+**rastair version 2 output directory (`--taps_caller rastair2`): `results/rastair2/call/`**
+
+- `sample.vcf.gz`, `sample.vcf.gz.tbi`
+  - bgzipped VCF with variant genotypes (`GT`/`GQ`/`PL`) and per-CpG methylation (`M5mC`, `DPM5mC`, `ADM5mC`), and its tabix index.
+- `sample.bed.gz`, `sample.bed.gz.tbi`
+  - bgzipped BED of per-position CpG methylation (beta estimate, modified and unmodified read counts, genotype), and its tabix index.
 
 ### Targeted Sequencing
 

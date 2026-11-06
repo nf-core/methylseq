@@ -55,6 +55,16 @@
                         "git_sha": "2fb127c8fd13de0adaa676df7169131e45c0b114",
                         "installed_by": ["fastq_align_bwa"]
                     },
+                    "bwamem3/index": {
+                        "branch": "master",
+                        "git_sha": "d9d44fa4a5048f6af0d785ab973f5e49fb3ecb60",
+                        "installed_by": ["fasta_index_methylseq"]
+                    },
+                    "bwamem3/mem": {
+                        "branch": "master",
+                        "git_sha": "d9d44fa4a5048f6af0d785ab973f5e49fb3ecb60",
+                        "installed_by": ["modules"]
+                    },
                     "bwameth/align": {
                         "branch": "master",
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
@@ -175,6 +185,11 @@
                         "branch": "master",
                         "git_sha": "0dca361fb441760fb333467b3f5800d34490fb86",
                         "installed_by": ["bam_taps_conversion"]
+                    },
+                    "rastair2/call": {
+                        "branch": "master",
+                        "git_sha": "f2f668cf00debf1255241dd580f4065b2dad3d05",
+                        "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
