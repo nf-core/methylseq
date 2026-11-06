@@ -205,8 +205,8 @@ def validateInputParameters() {
     }
     // rastair 2 and newer is distributed under a non-commercial licence: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
-        if (!(params.taps || params.aligner in ['bwamem', 'bwamem3'])) {
-            log.warn("--taps_caller rastair2 only applies to TAPS data (--taps, --aligner bwamem or --aligner bwamem3); it is ignored for --aligner ${params.aligner}.")
+        if (!(params.taps || params.aligner == 'bwamem')) {
+            log.warn("--taps_caller rastair2 only applies to TAPS data (--taps or --aligner bwamem); it is ignored.")
         }
         else if (!params.accept_rastair2_licence) {
             error(

@@ -120,9 +120,9 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
-    // TAPS-capable aligners: rastair calls methylation on their output
-    def taps_aligner = params.aligner in ['bwamem', 'bwamem3']
-    if (params.taps && !taps_aligner) {
+    // TAPS: rastair calls methylation. bwa-mem3 aligns TAPS (--taps) or bisulfite/EM-seq data; bwa-mem implies TAPS.
+    def taps_aligner = params.aligner == 'bwamem' || (params.aligner == 'bwamem3' && params.taps)
+    if (params.taps && !(params.aligner in ['bwamem', 'bwamem3'])) {
         log.info("TAPS protocol detected and aligner is not 'bwamem' or 'bwamem3'. We recommend using bwa-mem3 (--aligner bwamem3) for TAPS libraries.")
     }
 
@@ -294,7 +294,7 @@ workflow METHYLSEQ {
         // channel: [ val(meta), [ txt ] ]
         ch_versions = ch_versions.mix(BAM_TAPS_CONVERSION.out.versions)
     }
-    else if (!params.taps && params.aligner == 'bwameth') {
+    else if (!params.taps && params.aligner in ['bwameth', 'bwamem3']) {
 
         ch_bam_bai = ch_bam.join(ch_bai)
         ch_methyldackel_inputs = ch_bam_bai

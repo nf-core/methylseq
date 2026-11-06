@@ -1,0 +1,77 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - bwa-mem3 bisulfite variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // bwa-mem3 without --taps: bisulfite/EM-seq alignment (`bwa-mem3 mem --meth`) followed by MethylDackel
+    def testScenarios = [
+        [
+            name: "bwamem3_default",
+            description: "Params: bwamem3",
+            params: [
+                aligner: "bwamem3"
+            ]
+        ],
+        [
+            name: "bwamem3_skip_deduplication",
+            description: "Params: bwamem3 with skip_deduplication",
+            params: [
+                aligner: "bwamem3",
+                skip_deduplication: true
+            ]
+        ],
+        [
+            name: "bwamem3_save_reference_save_align_intermeds",
+            description: "Params: bwamem3 with save_reference and save_align_intermeds",
+            params: [
+                aligner: "bwamem3",
+                save_reference: true,
+                save_align_intermeds: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        if (key == 'input') {
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
+                        } else {
+                            delegate."$key" = value
+                        }
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

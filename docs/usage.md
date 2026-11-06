@@ -155,9 +155,14 @@ When `--taps` is specified, the pipeline automatically:
 > [!NOTE]
 > When using `--aligner bwamem`, Rastair is automatically used for methylation calling even without the `--taps` flag, as bwamem is optimized for TAPS data.
 
-#### bwa-mem3 in TAPS mode
+#### bwa-mem3 (TAPS and bisulfite)
 
-`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3) in its TAPS mode (`bwa-mem3 mem --meth=taps`), which accounts for 5mC->T conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. As with `--aligner bwamem`, rastair then calls methylation.
+`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. The data type decides the mode:
+
+- With `--taps`, it runs in TAPS mode (`bwa-mem3 mem --meth=taps`, methylated C->T) and rastair calls methylation (see `--taps_caller`).
+- Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`.
+
+Both modes use the same index.
 
 It needs an index built with `bwa-mem3 index --meth`. Pass a pre-built one with `--bwamem3_index`: a directory, a `.tar.gz`, or the index prefix (e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`, useful when several genomes share a folder). Otherwise the pipeline builds it from `--fasta`; keep it with `--save_reference`. Building the index for a human genome needs roughly 150 GB of memory, and aligning against it roughly 30 GB.
 
