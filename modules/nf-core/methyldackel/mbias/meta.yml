@@ -1,0 +1,94 @@
+name: methyldackel_mbias
+description: Generates methylation bias plots from alignments
+keywords:
+  - methylation
+  - 5mC
+  - methylseq
+  - bisulphite
+  - bisulfite
+  - methylation bias
+  - mbias
+  - qc
+  - bam
+  - cram
+tools:
+  - methyldackel:
+      description: |
+        Read position methylation bias tools from MethylDackel, a (mostly) universal extractor
+        for methyl-seq experiments.
+      homepage: https://github.com/dpryan79/MethylDackel
+      documentation: https://github.com/dpryan79/MethylDackel/blob/master/README.md
+      licence:
+        - "MIT"
+      identifier: biotools:methyldackel
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - bam:
+        type: file
+        description: BAM/CRAM file
+        pattern: "*.{bam,cram}"
+        ontologies: []
+    - bai:
+        type: file
+        description: BAM/CRAM index file
+        pattern: "*.{bai,crai}"
+        ontologies: []
+  - - meta2:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. [ id:'test', single_end:false ]
+    - fasta:
+        type: file
+        description: Input genome fasta file
+        pattern: "*.{fasta,fa}"
+        ontologies: []
+    - fai:
+        type: file
+        description: FASTA index file
+        pattern: "*.{fai}"
+        ontologies: []
+output:
+  txt:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. [ id:'test', single_end:false ]
+      - "*.mbias.txt":
+          type: file
+          description: Text file containing methylation bias
+          pattern: "*.{txt}"
+          ontologies: []
+  versions_methyldackel:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - methyldackel:
+          type: string
+          description: The name of the tool
+      - MethylDackel --version 2>&1 | cut -f1 -d' ':
+          type: eval
+          description: The expression to obtain the version of the tool
+
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - methyldackel:
+          type: string
+          description: The name of the tool
+      - MethylDackel --version 2>&1 | cut -f1 -d' ':
+          type: eval
+          description: The expression to obtain the version of the tool
+
+authors:
+  - "@phue"
+maintainers:
+  - "@phue"
+  - "@eduard-watchmaker"
