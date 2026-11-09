@@ -11,5 +11,3 @@ null/
 .nf-test/
 setup-nextflow/
 .lineage/
-.nf-test/
-.nf-test.log
