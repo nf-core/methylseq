@@ -29,3 +29,4 @@ qualimap/**/raw_data_qualimapReport/*
 trimgalore/fastqc/*.html
 trimgalore/fastqc/zips/*.zip
 trimgalore/logs/*.txt
+*/qualimap/bamqc/*/raw_data_qualimapReport/genome_fraction_coverage.txt

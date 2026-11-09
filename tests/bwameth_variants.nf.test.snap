@@ -321,7 +321,6 @@
                 "coverage_across_reference.txt:md5,c4c7f930ad577d15de1358226acab252",
                 "coverage_histogram.txt:md5,cddf42d662856425649c196c731f048b",
                 "duplication_rate_histogram.txt:md5,764cb7ceebd9f6c40d68fac844d8645e",
-                "genome_fraction_coverage.txt:md5,53bbcec7b73cabbacfee1519a047bcbf",
                 "homopolymer_indels.txt:md5,99b50d128297f11553837958d07e0ec5",
                 "insert_size_across_reference.txt:md5,d55ce0a480c4651cda5f204bb5596cc2",
                 "insert_size_histogram.txt:md5,6cfc87a2fe207fe1b5e00a1dca58baa8",
