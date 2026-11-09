@@ -94,12 +94,12 @@
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
                 },
-                "UNTAR_BISMARK": {
+                "UNTAR_BWAMEM": {
                     "untar": 1.34
                 }
             }
         ],
-        "timestamp": "2026-11-09T11:46:45.193121",
+        "timestamp": "2026-11-09T12:01:56.062346",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
