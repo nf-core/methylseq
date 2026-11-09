@@ -164,11 +164,31 @@ When `--taps` is specified, the pipeline automatically:
 
 Both modes use the same index.
 
-It needs an index built with `bwa-mem3 index --meth`. Pass a pre-built one with `--bwamem3_index`: a directory, a `.tar.gz`, or the index prefix (e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`, useful when several genomes share a folder). Otherwise the pipeline builds it from `--fasta`; keep it with `--save_reference`. Building the index for a human genome needs roughly 150 GB of memory, and aligning against it roughly 30 GB.
+It needs an index built with `bwa-mem3 index --meth`. Without `--bwamem3_index`, the pipeline builds one from `--fasta` (keep it with `--save_reference`), which is fine for small genomes:
 
 ```bash
 nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --outdir results -profile docker
 ```
+
+##### bwa-mem3 index for human and other large genomes
+
+For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. Building a `--meth` index for hg38 takes roughly 100 GB of memory (scaled from measurements on smaller genomes). The pipeline's `BWAMEM3_INDEX` step requests more than that (about 180 GB for hg38), so on machines with less memory it fails unless you cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits).
+
+To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
+
+```bash
+bwa-mem3 index --meth hg38.fa
+```
+
+This writes `hg38.fa.{amb,ann,bwt.2bit.64,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` next to the FASTA. Alignment doesn't read the intermediate `hg38.fa.meth.fa` or the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), so you can delete both. `--bwamem3_index` accepts any of:
+
+- the index prefix, e.g. `--bwamem3_index s3://bucket/genomes/hg38.fa`. The pipeline then stages only the files alignment reads: `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. This is useful when the index sits in a shared genomes folder.
+- a directory that contains the index files.
+- a `.tar.gz` of that directory.
+
+For hg38, the files alignment reads come to about 23 GB, most of it `hg38.fa.meth.bwt.2bit.64` (about 21 GB). Alignment loads them into memory: on hg38, `BWAMEM3_MEM` peaked at 23 GB with the default `process_high` resources (72 GB, 12 CPUs), so it needs at least about 24 GB. Most of that is the index, but per-thread buffers grow with the number of reads in flight, so leave headroom for large samples.
+
+Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must match the `--fasta` used for the rest of the run.
 
 #### rastair version 2 (`--taps_caller rastair2`)
 

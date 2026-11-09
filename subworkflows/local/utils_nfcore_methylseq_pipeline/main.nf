@@ -203,6 +203,20 @@ def validateInputParameters() {
             log.warn("--combined_index with a pre-built --bismark_index: the index must have been built with 'bismark_genome_preparation --combined_genome', otherwise alignment will fail (pre-built iGenomes indexes are not compatible).")
         }
     }
+    // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it (~100 GB for hg38):
+    // point users with large genomes at a pre-built --bwamem3_index.
+    // (`params` here is the copy taken at include time, so test for --bwamem3_index with containsKey)
+    if (params.aligner == 'bwamem3' && !(params.containsKey('bwamem3_index') && params.bwamem3_index) && params.fasta) {
+        def fasta_bytes = 0L
+        try { fasta_bytes = file(params.fasta).size() } catch (Exception _e) { }
+        if (fasta_bytes > 300_000_000L) {
+            log.warn(
+                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from --fasta (${Math.round(fasta_bytes / 1e6)} MB). " +
+                "For human-sized genomes this needs roughly 100 GB of memory: consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index " +
+                "(see https://nf-co.re/methylseq/usage). Use --save_reference to keep the index built by this run."
+            )
+        }
+    }
     // rastair 2 and newer is distributed under a non-commercial licence: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
         if (!(params.taps || params.aligner == 'bwamem')) {

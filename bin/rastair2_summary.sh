@@ -25,6 +25,14 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
     function is_minor(c) {
         return c ~ /(_alt|_random|_fix|_decoy|_hap[0-9]*)$|^chrUn|^HLA-|EBV/
     }
+    function sort_key(c,    b) {
+        b = c; sub(/^chr/, "", b)
+        if (b ~ /^[0-9]+$/) return sprintf("0%06d", b + 0)
+        if (b == "X") return "1X"
+        if (b == "Y") return "2Y"
+        if (b == "M" || b == "MT") return "3M"
+        return "4" c
+    }
     function is_chrom(c) {
         return c ~ /^(chr)?([0-9]+|[XYMW]|MT|Z)$/ || is_minor(c)
     }
@@ -98,14 +106,23 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
         print header > hf
         print line > hf
 
-        # Per-contig table; MultiQC rejects a table without columns, so skip it when no contig qualifies
-        header = "Sample"; line = sample; n_contigs = 0
+        # Per-contig table; MultiQC rejects a table without columns, so skip it when no contig qualifies.
+        # Columns in natural order: chr1..chr22, X, Y, M/MT, then other contigs (spike-ins) by name.
+        n_contigs = 0
         for (c in contig_depth) {
-            if (is_minor(c)) continue
-            if (contig_sites[c] < 10) continue
+            if (is_minor(c) || contig_sites[c] < 10) continue
+            n_contigs++; keep[n_contigs] = c; key[n_contigs] = sort_key(c)
+        }
+        for (i = 2; i <= n_contigs; i++) {
+            c = keep[i]; k = key[i]
+            for (j = i - 1; j >= 1 && key[j] > k; j--) { keep[j + 1] = keep[j]; key[j + 1] = key[j] }
+            keep[j + 1] = c; key[j + 1] = k
+        }
+        header = "Sample"; line = sample
+        for (i = 1; i <= n_contigs; i++) {
+            c = keep[i]
             header = header "\t" c
             line = line "\t" sprintf("%.2f", 100 * contig_mod[c] / contig_depth[c])
-            n_contigs++
         }
         if (n_contigs > 0) {
             cf = sample ".rastair2_contigs_mqc.tsv"
