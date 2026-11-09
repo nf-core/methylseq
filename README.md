@@ -35,25 +35,27 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark), [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel) or [BWA-Mem](https://github.com/lh3/bwa) plus [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/) for TAPS data processing. rastair can also be used with bwa-meth aligned reads by setting the aligner to `--aligner bwameth` and adding the flag `--taps`.
 
-Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat`, `--aligner bwameth` or `--aligner bwamem`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html) and the [Parabricks implementation of bwa-mem (fq2bammemh)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implement the baseline tools `bwa-meth` and `bwa-mem`. To use this option, include the `gpu` profile along with `--aligner bwameth` or `--aligner bwamem`.
+[bwa-mem3](https://github.com/fg-labs/bwa-mem3) (`--aligner bwamem3`) aligns methylation data with a conversion-aware index: with `--taps` it runs in TAPS mode followed by rastair (or rastair version 2 with `--taps_caller rastair2`, which also calls SNVs and indels), and without it, it aligns bisulfite/EM-seq reads followed by MethylDackel.
+
+Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat`, `--aligner bwameth`, `--aligner bwamem` or `--aligner bwamem3`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html) and the [Parabricks implementation of bwa-mem (fq2bammemh)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implement the baseline tools `bwa-meth` and `bwa-mem`. To use this option, include the `gpu` profile along with `--aligner bwameth` or `--aligner bwamem`.
 
 Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--use_mem2`. The GPU pathway (Parabricks) requires `-profile gpu` and a container runtime (Docker, Singularity, or Podman); Conda/Mamba are not supported for the GPU module.
 
-| Step                                         | Bismark workflow         | bwa-meth workflow       | bwa-mem + TAPS workflow    |
-| -------------------------------------------- | ------------------------ | ----------------------- | -------------------------- |
-| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth                | bwa index                  |
-| Merge re-sequenced FastQ files               | cat                      | cat                     | cat                        |
-| Raw data QC                                  | FastQC                   | FastQC                  | FastQC                     |
-| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               |
-| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    |
-| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      |
-| Extract methylation calls                    | Bismark                  | MethylDackel            | TAPS subworkflow (rastair) |
-| Sample report                                | Bismark                  | -                       | -                          |
-| Summary Report                               | Bismark                  | -                       | -                          |
-| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      |
-| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        |
-| CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | methurator _(optional)_    |
-| Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    |
+| Step                                         | Bismark workflow         | bwa-meth workflow       | bwa-mem + TAPS workflow    | bwa-mem3 workflow                                   |
+| -------------------------------------------- | ------------------------ | ----------------------- | -------------------------- | --------------------------------------------------- |
+| Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth                | bwa index                  | bwa-mem3 index --meth                               |
+| Merge re-sequenced FastQ files               | cat                      | cat                     | cat                        | cat                                                 |
+| Raw data QC                                  | FastQC                   | FastQC                  | FastQC                     | FastQC                                              |
+| Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               | Trim Galore!                                        |
+| Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    | bwa-mem3 (`--meth=taps` or `--meth`)                |
+| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      | Picard MarkDuplicates                               |
+| Extract methylation calls                    | Bismark                  | MethylDackel            | TAPS subworkflow (rastair) | rastair or rastair version 2 (TAPS); MethylDackel   |
+| Sample report                                | Bismark                  | -                       | -                          | -                                                   |
+| Summary Report                               | Bismark                  | -                       | -                          | -                                                   |
+| Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      | Qualimap _(optional)_                               |
+| Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        | Preseq _(optional)_                                 |
+| CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | methurator _(optional)_    | methurator _(optional, bisulfite/EM-seq only)_      |
+| Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    | MultiQC (with bcftools stats for rastair version 2) |
 
 Optional targeted sequencing analysis is available via `--run_targeted_sequencing` and `--target_regions_file`; see the [usage documentation](https://nf-co.re/methylseq/usage) for details.
 
