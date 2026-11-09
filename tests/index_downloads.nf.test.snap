@@ -49,6 +49,62 @@
             "nextflow": "25.10.0"
         }
     },
+    "Params: bwamem3 with bwamem3-index": {
+        "content": [
+            {
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                },
+                "BWAMEM3_MEM": {
+                    "samtools": 1.25
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLDACKEL_EXTRACT": {
+                    "methyldackel": "0.6.1"
+                },
+                "METHYLDACKEL_MBIAS": {
+                    "methyldackel": "0.6.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.34
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.4.0"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_INDEX_ALIGN": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_INDEX_DEDUP": {
+                    "samtools": "1.23.1"
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": "1.23.1"
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.3.0"
+                },
+                "UNTAR_BISMARK": {
+                    "untar": 1.34
+                }
+            }
+        ],
+        "timestamp": "2026-11-09T11:46:45.193121",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
     "Params: bismark_hisat with hisat2-index": {
         "content": [
             {
