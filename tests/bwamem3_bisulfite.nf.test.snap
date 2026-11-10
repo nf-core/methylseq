@@ -2,9 +2,6 @@
     "Params: bwamem3 with save_reference and save_align_intermeds": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.16.0"
                 },
@@ -46,6 +43,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -291,9 +291,6 @@
     "Params: bwamem3": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.16.0"
                 },
@@ -335,6 +332,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -538,9 +538,6 @@
     "Params: bwamem3 with skip_deduplication": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.16.0"
                 },
@@ -576,6 +573,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [

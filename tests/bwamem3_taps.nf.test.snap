@@ -2,21 +2,6 @@
     "Params: bwamem3 | taps": {
         "content": [
             {
-                "RASTAIR_CALL": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_MBIAS": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_MBIASPARSER": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_METHYLKIT": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.16.0"
                 },
@@ -35,6 +20,18 @@
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
                 },
+                "RASTAIR_CALL": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "rastair 0.8.2"
+                },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
                 },
@@ -52,6 +49,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -220,9 +220,6 @@
     "Params: bwamem3 | taps | taps_caller rastair2": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BCFTOOLS_STATS": {
                     "bcftools": 1.25
                 },
@@ -264,6 +261,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
