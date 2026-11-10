@@ -3,10 +3,10 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -235,10 +235,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:27:41.082059818",
+        "timestamp": "2026-11-10T00:55:48.04581174",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bismark with run_targeted_sequencing and collecthsmetrics": {
@@ -879,10 +879,10 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1119,20 +1119,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:29:20.015101173",
+        "timestamp": "2026-11-10T00:57:25.875764789",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with all_contexts and run_targeted_sequencing": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1393,10 +1393,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:28:32.454762599",
+        "timestamp": "2026-11-10T00:56:38.77521518",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     }
 }

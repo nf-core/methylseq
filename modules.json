@@ -58,7 +58,8 @@
                     "bwameth/align": {
                         "branch": "master",
                         "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
-                        "installed_by": ["fastq_align_dedup_bwameth"]
+                        "installed_by": ["fastq_align_dedup_bwameth"],
+                        "patch": "modules/nf-core/bwameth/align/bwameth-align.diff"
                     },
                     "bwameth/index": {
                         "branch": "master",
