@@ -24,9 +24,7 @@ include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
-include { RASTAIR2_CALL                 } from '../../modules/nf-core/rastair2/call/main'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
-include { BCFTOOLS_STATS                } from '../../modules/nf-core/bcftools/stats/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
@@ -233,47 +231,20 @@ workflow METHYLSEQ {
     //
     // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
     //
-    if ((params.taps || taps_aligner) && params.taps_caller == 'rastair2') {
-        //
-        // MODULE: Joint SNV/indel and CpG methylation calling with rastair 2 (non-commercial licence)
-        //
-        ch_rastair2_inputs = ch_bam
-            .join(ch_bai)
-            .combine(ch_fasta)
-            .combine(ch_fasta_index)
-            .multiMap { meta, bam, bai, meta_fasta, fasta, _meta_fai, fai ->
-                bam: [meta, bam, bai]
-                fasta: [meta_fasta, fasta, fai]
-            }
+    if (params.taps || taps_aligner) {
+        ch_taps_bam_bai = ch_bam.join(ch_bai)
 
-        RASTAIR2_CALL(
-            ch_rastair2_inputs.bam,
-            ch_rastair2_inputs.fasta,
-        )
-        ch_rastair2_vcf = RASTAIR2_CALL.out.vcf
-        ch_rastair2_bed = RASTAIR2_CALL.out.bed
+        if (params.taps_caller == 'rastair') {
+            ch_taps_bam_bai
+                .filter { meta, _bam, _bai -> meta.single_end }
+                .map { meta, _bam, _bai -> meta.id }
+                .collect()
+                .subscribe { ids ->
+                    log.warn("rastair 0.8 (--taps_caller rastair) only calls properly paired reads, so these single-end samples get no methylation calls: ${ids.join(', ')}. Use --taps_caller rastair2 for single-end TAPS data.")
+                }
+        }
 
-        //
-        // MultiQC: variant QC (bcftools stats) and CpG methylation summary of the rastair 2 output
-        //
-        BCFTOOLS_STATS(
-            RASTAIR2_CALL.out.vcf.join(RASTAIR2_CALL.out.tbi),
-            [[:], []],
-            [[:], []],
-            [[:], []],
-            [[:], []],
-            [[:], []],
-        )
-        RASTAIR2_SUMMARY(RASTAIR2_CALL.out.bed)
-        ch_rastair2_mqc = BCFTOOLS_STATS.out.stats
-            .mix(RASTAIR2_SUMMARY.out.mqc)
-            .map { _meta, files -> files }
-            .flatten()
-    }
-    else if (params.taps || taps_aligner) {
-
-        ch_bam_bai = ch_bam.join(ch_bai)
-        ch_taps_inputs = ch_bam_bai
+        ch_taps_inputs = ch_taps_bam_bai
             .combine(ch_fasta)
             .combine(ch_fasta_index)
             .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
@@ -283,17 +254,34 @@ workflow METHYLSEQ {
                 fasta_index: [meta, fai]
             }
 
+        // --trim_OT/--trim_OB replace the M-bias estimate for both callers; an unset one means no trimming
+        def taps_trims = (params.trim_OT || params.trim_OB)
+            ? [params.trim_OT ?: '0,0,0,0', params.trim_OB ?: '0,0,0,0']
+            : []
+
         BAM_TAPS_CONVERSION(
             ch_taps_inputs.bam,
             ch_taps_inputs.bai,
             ch_taps_inputs.fasta,
             ch_taps_inputs.fasta_index,
+            params.taps_caller == 'rastair2',
+            taps_trims,
         )
         ch_rastair_mbias = BAM_TAPS_CONVERSION.out.mbias
-        // channel: [ val(meta), [ txt ] ]
         ch_rastair_call = BAM_TAPS_CONVERSION.out.call
-        // channel: [ val(meta), [ txt ] ]
-        ch_versions = ch_versions.mix(BAM_TAPS_CONVERSION.out.versions)
+        ch_rastair2_vcf = BAM_TAPS_CONVERSION.out.vcf
+        ch_rastair2_bed = BAM_TAPS_CONVERSION.out.bed
+
+        if (params.taps_caller == 'rastair2') {
+            //
+            // MultiQC: variant QC (bcftools stats) and CpG methylation summary of the rastair 2 output
+            //
+            RASTAIR2_SUMMARY(BAM_TAPS_CONVERSION.out.bed)
+            ch_rastair2_mqc = BAM_TAPS_CONVERSION.out.bcftools_stats
+                .mix(RASTAIR2_SUMMARY.out.mqc)
+                .map { _meta, files -> files }
+                .flatten()
+        }
     }
     else if (!params.taps && params.aligner in ['bwameth', 'bwamem3']) {
 

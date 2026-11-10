@@ -8,7 +8,7 @@
                     "bcftools/stats": {
                         "branch": "master",
                         "git_sha": "ed7a2286df416088793e62fa6a740d07974d0ff8",
-                        "installed_by": ["modules"]
+                        "installed_by": ["bam_taps_conversion"]
                     },
                     "bedtools/intersect": {
                         "branch": "master",
@@ -177,29 +177,33 @@
                     },
                     "rastair/call": {
                         "branch": "master",
-                        "git_sha": "20ff6c8d298d29bc00d3ef11cda614dac5f77ce8",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/mbias": {
                         "branch": "master",
-                        "git_sha": "20ff6c8d298d29bc00d3ef11cda614dac5f77ce8",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/mbiasparser": {
                         "branch": "master",
-                        "git_sha": "a4f1768a3026017b92a7e5d1c8b0fb9ac3efa3a9",
-                        "installed_by": ["bam_taps_conversion"],
-                        "patch": "modules/nf-core/rastair/mbiasparser/rastair-mbiasparser.diff"
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/methylkit": {
                         "branch": "master",
-                        "git_sha": "0dca361fb441760fb333467b3f5800d34490fb86",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair2/call": {
-                        "branch": "master",
-                        "git_sha": "f2f668cf00debf1255241dd580f4065b2dad3d05",
-                        "installed_by": ["modules"]
+                        "branch": "bam-taps-conversion-rastair2",
+                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
+                        "installed_by": ["bam_taps_conversion", "modules"]
+                    },
+                    "rastair2/mbias": {
+                        "branch": "bam-taps-conversion-rastair2",
+                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
+                        "installed_by": ["bam_taps_conversion"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
@@ -271,8 +275,8 @@
                         "installed_by": ["bam_sort_stats_samtools", "fastq_align_dedup_bwamem3"]
                     },
                     "bam_taps_conversion": {
-                        "branch": "master",
-                        "git_sha": "a4f1768a3026017b92a7e5d1c8b0fb9ac3efa3a9",
+                        "branch": "bam-taps-conversion-rastair2",
+                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
                         "installed_by": ["subworkflows"]
                     },
                     "fasta_index_bismark_bwameth": {

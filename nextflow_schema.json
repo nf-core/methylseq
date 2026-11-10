@@ -459,13 +459,21 @@
                 },
                 "trim_OT": {
                     "type": "string",
-                    "default": "0,0,10,0",
-                    "description": "Nucleotides to exclude from methylation calling on Original Top (strand) reads, following this pattern: R1 start, R1 end, R2 start, R2 end"
+                    "description": "Bases to ignore on Original Top (OT) reads in TAPS methylation calls: R1 start, R1 end, R2 start, R2 end. Replaces the M-bias estimate.",
+                    "pattern": "^\\d+,\\d+,\\d+,\\d+$",
+                    "help_text": "By default, the TAPS callers estimate these from the M-bias of each sample (rastair 0.8: `rastair mbias`; rastair version 2: `rastair2 mbias`, paired-end samples only), and use `0,0,0,0` (no trimming) when they can't. Setting `--trim_OT` or `--trim_OB` (for example `0,0,10,0`) skips the estimate for both strands and callers; an unset one means no trimming on that strand."
                 },
                 "trim_OB": {
                     "type": "string",
-                    "default": "0,0,10,0",
-                    "description": "Nucleotides to exclude from methylation calling on Original Bottom (strand) reads, following this pattern: R1 start, R1 end, R2 start, R2 end"
+                    "description": "Bases to ignore on Original Bottom (OB) reads in TAPS methylation calls: R1 start, R1 end, R2 start, R2 end. Replaces the M-bias estimate.",
+                    "pattern": "^\\d+,\\d+,\\d+,\\d+$",
+                    "help_text": "By default, the TAPS callers estimate these from the M-bias of each sample (rastair 0.8: `rastair mbias`; rastair version 2: `rastair2 mbias`, paired-end samples only), and use `0,0,0,0` (no trimming) when they can't. Setting `--trim_OT` or `--trim_OB` (for example `0,0,10,0`) skips the estimate for both strands and callers; an unset one means no trimming on that strand."
+                },
+                "rastair2_mbias_region": {
+                    "type": "string",
+                    "description": "Region used to estimate M-bias trims with rastair version 2 (for example a methylated spike-in contig).",
+                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal. Ignored with `--trim_OT`/`--trim_OB`.",
+                    "fa_icon": "fas fa-ruler-horizontal"
                 }
             }
         },
