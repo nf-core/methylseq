@@ -24,16 +24,16 @@
                     "picard": "3.4.0"
                 },
                 "RASTAIR_CALL": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_MBIAS": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_MBIASPARSER": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_METHYLKIT": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
@@ -247,10 +247,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:25:51.714328435",
+        "timestamp": "2026-11-10T19:44:10.107977004",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     }
 }

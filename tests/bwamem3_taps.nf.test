@@ -24,6 +24,7 @@ nextflow_pipeline {
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
                 { assert workflow.success },
+                { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     stable_name,
@@ -50,16 +51,46 @@ nextflow_pipeline {
 
         then {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
-            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet'], ignoreFile: 'tests/.nftignore')
+            // the M-bias HTML report embeds its plots
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html'], ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
                 { assert workflow.success },
+                { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
+                { assert !file("$outputDir/rastair2/mbias/taps_se.mbias.html").exists() },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     stable_name,
                     stable_path,
                     bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
                 ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2 | trim_OT, trim_OB") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_licence = true
+                trim_OT                 = "0,0,10,0"
+                trim_OB                 = "0,0,10,0"
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_path = getAllFilesFromDir(params.outdir, include: ['rastair2/call/*.bed.gz'])
+            assertAll(
+                { assert workflow.success },
+                { assert !file("$outputDir/rastair2/mbias").exists() },
+                { assert path("$outputDir/rastair2/call/taps_pe.vcf.gz").linesGzip.any { line -> line.startsWith('##rastairCommand=') && line.contains('--nOT 0,0,10,0') && line.contains('--nOB 0,0,10,0') } },
+                { assert snapshot(stable_path).match() }
             )
         }
     }
@@ -77,7 +108,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.failed },
-                { assert workflow.stdout.any { it.contains('--accept_rastair2_licence') } }
+                { assert workflow.stdout.any { line -> line.contains('--accept_rastair2_licence') } }
             )
         }
     }

@@ -79,10 +79,7 @@
                 "SAMTOOLS_IDXSTATS": {
                     "samtools": "1.23.1"
                 },
-                "SAMTOOLS_INDEX_ALIGN": {
-                    "samtools": "1.23.1"
-                },
-                "SAMTOOLS_INDEX_DEDUP": {
+                "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
                 },
                 "SAMTOOLS_STATS": {
@@ -99,7 +96,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-09T12:01:56.062346",
+        "timestamp": "2026-11-10T20:04:40.450496364",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

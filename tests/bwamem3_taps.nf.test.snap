@@ -21,16 +21,16 @@
                     "picard": "3.4.0"
                 },
                 "RASTAIR_CALL": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_MBIAS": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_MBIASPARSER": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "RASTAIR_METHYLKIT": {
-                    "rastair": "rastair 0.8.2"
+                    "rastair": "0.8.2"
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
@@ -38,10 +38,7 @@
                 "SAMTOOLS_IDXSTATS": {
                     "samtools": "1.23.1"
                 },
-                "SAMTOOLS_INDEX_ALIGN": {
-                    "samtools": "1.23.1"
-                },
-                "SAMTOOLS_INDEX_DEDUP": {
+                "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
                 },
                 "SAMTOOLS_STATS": {
@@ -211,7 +208,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-09T19:59:50.153690127",
+        "timestamp": "2026-11-10T19:43:23.011441159",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
+    "Params: bwamem3 | taps | taps_caller rastair2 | trim_OT, trim_OB": {
+        "content": [
+            [
+                "taps_pe.bed.gz:md5,01cc651c3c849f19acfe84231e5c0a6f",
+                "taps_se.bed.gz:md5,63754247d1c3770292da8a2acdd88a01"
+            ]
+        ],
+        "timestamp": "2026-11-10T19:58:24.907676178",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -244,16 +254,16 @@
                 "RASTAIR2_CALL": {
                     "tabix": 1.24
                 },
+                "RASTAIR2_MBIAS": {
+                    "rastair": "2.2.0"
+                },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
                 },
                 "SAMTOOLS_IDXSTATS": {
                     "samtools": "1.23.1"
                 },
-                "SAMTOOLS_INDEX_ALIGN": {
-                    "samtools": "1.23.1"
-                },
-                "SAMTOOLS_INDEX_DEDUP": {
+                "SAMTOOLS_INDEX": {
                     "samtools": "1.23.1"
                 },
                 "SAMTOOLS_STATS": {
@@ -362,6 +372,9 @@
                 "rastair2/call/taps_se.bed.gz.tbi",
                 "rastair2/call/taps_se.vcf.gz",
                 "rastair2/call/taps_se.vcf.gz.tbi",
+                "rastair2/mbias",
+                "rastair2/mbias/taps_pe.chr19.cutoffs.txt",
+                "rastair2/mbias/taps_pe.mbias.html",
                 "trimgalore",
                 "trimgalore/fastqc",
                 "trimgalore/fastqc/taps_pe_1_val_1_fastqc.html",
@@ -383,13 +396,13 @@
                 "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
                 "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
                 "taps_se.stats:md5,ec3871038ce25fc4eb18c5b7b213e46d",
-                "bcftools-stats-subtypes.txt:md5,02ad079b51983a5561ad4145a1b6560b",
+                "bcftools-stats-subtypes.txt:md5,29578ebf9f5d30a4649d223775fb798a",
                 "bcftools_stats_indel-lengths.txt:md5,520280af2576dcfa9afe6a2f27385021",
-                "bcftools_stats_variant_depths.txt:md5,b958ecdfd3323232f32bd8201786f6f3",
-                "bcftools_stats_vqc_Count_Indels.txt:md5,b1e01f85120dcffa2e429e9eac01412d",
-                "bcftools_stats_vqc_Count_SNP.txt:md5,bf1a9827c765bca5e1affefc4fdeca2f",
-                "bcftools_stats_vqc_Count_Transitions.txt:md5,c52c7a5908a9c380c3475dfb32dbd0a7",
-                "bcftools_stats_vqc_Count_Transversions.txt:md5,0cafcc160dc91c5fab920fe50148379a",
+                "bcftools_stats_variant_depths.txt:md5,1fa7e471d1eddf8bf92fb5efce56699a",
+                "bcftools_stats_vqc_Count_Indels.txt:md5,a44a680d5d1a8acfcaafe5b2a0384d96",
+                "bcftools_stats_vqc_Count_SNP.txt:md5,54c21e97c956c5d211fb97a586c93acf",
+                "bcftools_stats_vqc_Count_Transitions.txt:md5,683698f5999b63d4210f82b1ed882907",
+                "bcftools_stats_vqc_Count_Transversions.txt:md5,5feb935df29ab7c81579a31050572010",
                 "cutadapt_filtered_reads_plot.txt:md5,b236966103084cc68b0880ac5afc9f3a",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,7dc9dedceec6b1632be5af9fdd450e90",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,4de0b352da2ca07b3b768707e45a0551",
@@ -405,12 +418,12 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,88e9e980d7b7f3b7fe7bd9932bcf65dd",
                 "fastqc_sequence_length_distribution_plot.txt:md5,1c2123e5156374f1f92a511fd9ee9a51",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,051ca970ba58049824e8ed5eca42ffad",
-                "multiqc_bcftools_stats.txt:md5,7b92d47f04abfeecfbd6d18afeefe3f1",
+                "multiqc_bcftools_stats.txt:md5,fd2e13da55728661d361bf250ad04fc3",
                 "multiqc_citations.txt:md5,f9650d514f06a45b6f6ba43e63050b1c",
                 "multiqc_cutadapt.txt:md5,30bc9b15979908e342502cec388957d4",
                 "multiqc_picard_dups.txt:md5,2c2b80facf6cdf4e47990d04c35499ee",
-                "multiqc_rastair2_beta_hist_plot.txt:md5,53eb1049d841f4578490ea726511c7af",
-                "multiqc_rastair2_contigs_table.txt:md5,ddb0b73f833198dd363c630bff5fa0c2",
+                "multiqc_rastair2_beta_hist_plot.txt:md5,5a6818ec3e6c93d6525a3b56806440bc",
+                "multiqc_rastair2_contigs_table.txt:md5,38bcf5d05aead37120a2f12bdaacd6ed",
                 "multiqc_samtools_flagstat.txt:md5,2eee9bed255cb17850315201eb8d1870",
                 "multiqc_samtools_idxstats.txt:md5,1384ce93cd58ffb3f812c2808b0542d6",
                 "multiqc_samtools_stats.txt:md5,56b0bc845c7dd286abfb7414ddcf0d46",
@@ -426,16 +439,17 @@
                 "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,a45cc50f5c94d1ac7efbf067a1ad157e",
                 "samtools-stats-dp.txt:md5,4af163f374fe7e3c60bc4710450c22af",
                 "samtools_alignment_plot.txt:md5,bb50cb8139d02ab34c4a92b001466bf4",
-                "taps_pe.bcftools_stats.txt:md5,abe73067f4358089726afe44fd07cd7b",
+                "taps_pe.bcftools_stats.txt:md5,6e5ecf79928281c5763292bb6406cc67",
                 "taps_se.bcftools_stats.txt:md5,f7221ab1e042cae9e2fd8eb23008ac25",
-                "taps_pe.bed.gz:md5,01cc651c3c849f19acfe84231e5c0a6f",
-                "taps_pe.bed.gz.tbi:md5,53047a575a4bf9941eca79b7f810b0bd",
-                "taps_pe.vcf.gz:md5,4bf2b581694a6c264724883130bb99e8",
-                "taps_pe.vcf.gz.tbi:md5,e064e3f7da8600c32820e02dbf8f2394",
+                "taps_pe.bed.gz:md5,1229ef44d65524b8c32a5e5e00ee0360",
+                "taps_pe.bed.gz.tbi:md5,e2852bee9bf6e0bbed586a909865a4f8",
+                "taps_pe.vcf.gz:md5,e5542cc4baa85b7347668ecdd18efc03",
+                "taps_pe.vcf.gz.tbi:md5,0c40ef4d4b85239df44663e06c01d416",
                 "taps_se.bed.gz:md5,63754247d1c3770292da8a2acdd88a01",
                 "taps_se.bed.gz.tbi:md5,4667580916584029b294937662827e04",
-                "taps_se.vcf.gz:md5,42f744602e73933319abb40b114bfb5d",
-                "taps_se.vcf.gz.tbi:md5,ae23ac7ff5df5ab856de2314163f5dbf"
+                "taps_se.vcf.gz:md5,4fb53955dba2780a18f7ae6a6c670517",
+                "taps_se.vcf.gz.tbi:md5,cd815b41b77abbf197e46b80164ea279",
+                "taps_pe.chr19.cutoffs.txt:md5,d0ac63240920ce4c068167d625da7ca1"
             ],
             [
                 [
@@ -448,7 +462,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-09T20:02:27.791837044",
+        "timestamp": "2026-11-10T19:58:23.640015454",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
