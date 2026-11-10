@@ -72,12 +72,13 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
-                        "installed_by": ["fastq_align_dedup_bwameth"]
+                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
+                        "installed_by": ["fastq_align_dedup_bwameth"],
+                        "patch": "modules/nf-core/bwameth/align/bwameth-align.diff"
                     },
                     "bwameth/index": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
                     "cat/fastq": {
@@ -288,7 +289,8 @@
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
                         "git_sha": "ab0a9bbac4178bed819d0d35e23a099bd7477c27",
-                        "installed_by": ["subworkflows"]
+                        "installed_by": ["subworkflows"],
+                        "patch": "subworkflows/nf-core/fastq_align_dedup_bismark/fastq_align_dedup_bismark.diff"
                     },
                     "fastq_align_dedup_bwamem": {
                         "branch": "master",

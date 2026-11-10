@@ -3,7 +3,7 @@
         "content": [
             {
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
