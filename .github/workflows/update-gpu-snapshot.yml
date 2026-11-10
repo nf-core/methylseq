@@ -10,7 +10,7 @@ env:
   NFT_VER: "0.9.3"
   NXF_ANSI_LOG: false
   # renovate: datasource=github-releases depName=nextflow-io/nextflow versioning=semver
-  NXF_VER: "25.04.0"
+  NXF_VER: "25.10.4"
 
 jobs:
   update-gpu-snapshot:

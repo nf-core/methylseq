@@ -2,21 +2,6 @@
     "Params: bwamem | taps": {
         "content": [
             {
-                "RASTAIR_CALL": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_MBIAS": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_MBIASPARSER": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "RASTAIR_METHYLKIT": {
-                    "rastair": "rastair 0.8.2"
-                },
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWA_INDEX": {
                     "bwa": "0.7.19-r1273"
                 },
@@ -38,6 +23,18 @@
                 "PICARD_MARKDUPLICATES": {
                     "picard": "3.4.0"
                 },
+                "RASTAIR_CALL": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "rastair 0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "rastair 0.8.2"
+                },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": "1.23.1"
                 },
@@ -55,6 +52,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             },
             [
@@ -131,64 +131,6 @@
                 "multiqc/bwamem/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
                 "multiqc/bwamem/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
                 "multiqc/bwamem/multiqc_data/picard_deduplication.txt",
-                "multiqc/bwamem/multiqc_plots",
-                "multiqc/bwamem/multiqc_plots/pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/cutadapt_filtered_reads_plot-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/cutadapt_filtered_reads_plot-pct.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Counts.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/cutadapt_trimmed_sequences_plot_3_Obs_Exp.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc-status-check-heatmap.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_adapter_content_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_overrepresented_sequences_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_per_base_n_content_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_per_base_sequence_quality_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_per_sequence_gc_content_plot_Counts.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_per_sequence_gc_content_plot_Percentages.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_per_sequence_quality_scores_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_sequence_counts_plot-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_sequence_counts_plot-pct.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_sequence_duplication_levels_plot.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/fastqc_top_overrepresented_sequences_table.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/picard_deduplication-cnt.pdf",
-                "multiqc/bwamem/multiqc_plots/pdf/picard_deduplication-pct.pdf",
-                "multiqc/bwamem/multiqc_plots/png",
-                "multiqc/bwamem/multiqc_plots/png/cutadapt_filtered_reads_plot-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/cutadapt_filtered_reads_plot-pct.png",
-                "multiqc/bwamem/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Counts.png",
-                "multiqc/bwamem/multiqc_plots/png/cutadapt_trimmed_sequences_plot_3_Obs_Exp.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc-status-check-heatmap.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_adapter_content_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_overrepresented_sequences_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_per_base_n_content_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_per_base_sequence_quality_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_per_sequence_gc_content_plot_Counts.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_per_sequence_gc_content_plot_Percentages.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_per_sequence_quality_scores_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_sequence_counts_plot-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_sequence_counts_plot-pct.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_sequence_duplication_levels_plot.png",
-                "multiqc/bwamem/multiqc_plots/png/fastqc_top_overrepresented_sequences_table.png",
-                "multiqc/bwamem/multiqc_plots/png/picard_deduplication-cnt.png",
-                "multiqc/bwamem/multiqc_plots/png/picard_deduplication-pct.png",
-                "multiqc/bwamem/multiqc_plots/svg",
-                "multiqc/bwamem/multiqc_plots/svg/cutadapt_filtered_reads_plot-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/cutadapt_filtered_reads_plot-pct.svg",
-                "multiqc/bwamem/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Counts.svg",
-                "multiqc/bwamem/multiqc_plots/svg/cutadapt_trimmed_sequences_plot_3_Obs_Exp.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc-status-check-heatmap.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_adapter_content_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_overrepresented_sequences_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_per_base_n_content_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_per_base_sequence_quality_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_per_sequence_gc_content_plot_Counts.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_per_sequence_gc_content_plot_Percentages.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_per_sequence_quality_scores_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_sequence_counts_plot-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_sequence_counts_plot-pct.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_sequence_duplication_levels_plot.svg",
-                "multiqc/bwamem/multiqc_plots/svg/fastqc_top_overrepresented_sequences_table.svg",
-                "multiqc/bwamem/multiqc_plots/svg/picard_deduplication-cnt.svg",
-                "multiqc/bwamem/multiqc_plots/svg/picard_deduplication-pct.svg",
                 "multiqc/bwamem/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
