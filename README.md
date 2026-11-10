@@ -52,7 +52,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | Summary Report                               | Bismark                  | -                       | -                          |
 | Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      |
 | Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        |
-| CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | methurator _(optional)_    |
+| CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | -                          |
 | Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    |
 
 Optional targeted sequencing analysis is available via `--run_targeted_sequencing` and `--target_regions_file`; see the [usage documentation](https://nf-co.re/methylseq/usage) for details.
