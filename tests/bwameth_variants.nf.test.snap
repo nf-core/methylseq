@@ -3,10 +3,10 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -393,20 +393,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:22:33.309350653",
+        "timestamp": "2026-11-10T00:52:29.248151256",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with skip_deduplication": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -600,20 +600,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:20:01.521117531",
+        "timestamp": "2026-11-10T00:50:13.776524534",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with skip_fastqc": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -793,20 +793,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:23:11.438502251",
+        "timestamp": "2026-11-10T00:53:11.289850196",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with CAT_FASTQ and skip_trimming and skip_deduplication": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "CAT_FASTQ": {
                     "cat": 9.5
@@ -944,20 +944,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:21:38.779189594",
+        "timestamp": "2026-11-10T00:54:20.634480938",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1175,20 +1175,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:18:03.745744126",
+        "timestamp": "2026-11-10T00:48:04.852388408",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with skip_multiqc": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1335,20 +1335,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:23:44.188298803",
+        "timestamp": "2026-11-10T00:53:44.753264056",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with skip_trimming": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1536,20 +1536,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-19T18:16:11.363035689",
+        "timestamp": "2026-11-10T00:49:33.699964332",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with mem2 index": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -1767,20 +1767,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:18:44.680891147",
+        "timestamp": "2026-11-10T00:48:49.476979667",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with save_reference and save_align_intermeds": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -2056,20 +2056,20 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:21:20.293027259",
+        "timestamp": "2026-11-10T00:51:40.177254782",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwameth with rrbs": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
-                    "samtools": "1.22.1"
+                    "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
-                    "bwameth": "0.2.9"
+                    "bwameth": "0.2.10"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -2263,10 +2263,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:20:39.575146862",
+        "timestamp": "2026-11-10T00:50:53.867680086",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     }
 }
