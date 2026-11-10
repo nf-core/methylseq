@@ -18,7 +18,7 @@ nextflow_pipeline {
         }
 
         then {
-            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', '**/multiqc.parquet'])
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
             // rastair 0.8 call output (and the methylKit file and M-bias PDF derived from it) is not reproducible between runs
             def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/call/*.txt', 'rastair/methylkit/*.txt.gz', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
@@ -49,7 +49,7 @@ nextflow_pipeline {
         }
 
         then {
-            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', '**/multiqc.parquet'])
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
             def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet'], ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             assertAll(
