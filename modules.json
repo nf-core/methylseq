@@ -67,8 +67,8 @@
                     },
                     "bwamem3/mem": {
                         "branch": "master",
-                        "git_sha": "d9d44fa4a5048f6af0d785ab973f5e49fb3ecb60",
-                        "installed_by": ["modules"]
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
+                        "installed_by": ["fastq_align_dedup_bwamem3", "modules"]
                     },
                     "bwameth/align": {
                         "branch": "master",
@@ -154,7 +154,11 @@
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
-                        "installed_by": ["fastq_align_dedup_bwamem", "fastq_align_dedup_bwameth"]
+                        "installed_by": [
+                            "fastq_align_dedup_bwamem",
+                            "fastq_align_dedup_bwamem3",
+                            "fastq_align_dedup_bwameth"
+                        ]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
@@ -219,6 +223,7 @@
                             "bam_sort_stats_samtools",
                             "fastq_align_dedup_bismark",
                             "fastq_align_dedup_bwamem",
+                            "fastq_align_dedup_bwamem3",
                             "fastq_align_dedup_bwameth"
                         ]
                     },
@@ -263,7 +268,7 @@
                     "bam_stats_samtools": {
                         "branch": "master",
                         "git_sha": "156feda0cb6589cd29c04902004fa3b53bc00205",
-                        "installed_by": ["bam_sort_stats_samtools"]
+                        "installed_by": ["bam_sort_stats_samtools", "fastq_align_dedup_bwamem3"]
                     },
                     "bam_taps_conversion": {
                         "branch": "master",
@@ -277,7 +282,7 @@
                     },
                     "fasta_index_methylseq": {
                         "branch": "master",
-                        "git_sha": "3ffe3a3819b7778ad88ade92c93f2c7fd9789d49",
+                        "git_sha": "9f33d5b46919fb18bca6044a3ead2dd215c7e942",
                         "installed_by": ["subworkflows"],
                         "patch": "subworkflows/nf-core/fasta_index_methylseq/fasta_index_methylseq.diff"
                     },
@@ -295,6 +300,11 @@
                     "fastq_align_dedup_bwamem": {
                         "branch": "master",
                         "git_sha": "cbb7a6362981f07d2c26e43f8186025320569ffd",
+                        "installed_by": ["subworkflows"]
+                    },
+                    "fastq_align_dedup_bwamem3": {
+                        "branch": "master",
+                        "git_sha": "8de7382b73071351977d621eaa05750d189534e7",
                         "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bwameth": {

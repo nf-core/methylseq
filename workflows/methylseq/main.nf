@@ -14,7 +14,7 @@ include { CAT_FASTQ                     } from '../../modules/nf-core/cat/fastq/
 include { FASTQ_ALIGN_DEDUP_BISMARK     } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH     } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { FASTQ_ALIGN_DEDUP_BWAMEM      } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
-include { FASTQ_ALIGN_DEDUP_BWAMEM3     } from '../../subworkflows/local/fastq_align_dedup_bwamem3/main'
+include { FASTQ_ALIGN_DEDUP_BWAMEM3     } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem3/main'
 include { PICARD_MARKDUPLICATES         } from '../../modules/nf-core/picard/markduplicates/main'
 include { PICARD_ADDORREPLACEREADGROUPS } from '../../modules/nf-core/picard/addorreplacereadgroups/main'
 include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
@@ -223,7 +223,7 @@ workflow METHYLSEQ {
             params.skip_deduplication,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bai
+        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM3.out.multiqc
     }
     else {
