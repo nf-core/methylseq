@@ -192,7 +192,7 @@ Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must ma
 
 #### rastair version 2 (`--taps_caller rastair2`)
 
-`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, `--non_directional` adds `--guess-read-orientation`, and `--trim_OT`/`--trim_OB` set the read-end clipping.
+`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, and `--non_directional` adds `--guess-read-orientation`.
 
 > [!WARNING]
 > rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_licence` to use it.
@@ -200,6 +200,20 @@ Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must ma
 ```bash
 nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --taps_caller rastair2 --accept_rastair2_licence --outdir results -profile docker
 ```
+
+#### TAPS read-end trimming (M-bias)
+
+Methylation calls near read ends can be biased (end repair, adapter ligation), so both TAPS callers ignore some bases at the read ends. By default each sample's trims are estimated from its M-bias, the methylation level by position in the read:
+
+- rastair 0.8 (`--taps_caller rastair`): `rastair mbias` over all reads, then `rastair/mbiasparser` picks the trims.
+- rastair version 2 (`--taps_caller rastair2`): `rastair2 mbias` on the reads in `--rastair2_mbias_region`. Its report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in, such as lambda, gives the clearest signal: for example `--rastair2_mbias_region J02459.1`.
+
+When the trims can't be estimated, nothing is trimmed (`0,0,0,0`). Both M-bias tools need properly paired reads, so single-end samples are never trimmed by the estimate.
+
+To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 end,R2 start,R2 end` bases to ignore on original top and bottom strand reads (for example `--trim_OT 0,0,10,0 --trim_OB 0,0,10,0`). This skips the estimate for both callers, and a strand you don't set is not trimmed.
+
+> [!WARNING]
+> rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about them at the start of the TAPS step. Use `--taps_caller rastair2` for single-end TAPS data.
 
 ### Targeted sequencing (optional)
 

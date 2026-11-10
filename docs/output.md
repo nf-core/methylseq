@@ -298,7 +298,7 @@ Filename abbreviations stand for the following reference alignment strands:
 - `mbias/sample.rastair_mbias.txt`
   - Average conversion rate per position on the read per read pair (R1 and R2) original strand (OT, OB).
 - `mbiasparser/sample.rastair_mbias_processed.csv`
-  - File reporting the dynamic trimming to be passed to the rastair/call process.
+  - Trims estimated from the M-bias and passed to `rastair call` (line 1 `--nOT`, line 2 `--nOB`). Not produced when `--trim_OT`/`--trim_OB` are set.
 - `methylkit/sample.rastair_methylkit.txt.gz`
   - Individual methylation calls in a format digestible by MethylKit R package.
 
@@ -308,6 +308,13 @@ Filename abbreviations stand for the following reference alignment strands:
   - bgzipped VCF with variant genotypes (`GT`/`GQ`/`PL`) and per-CpG methylation (`M5mC`, `DPM5mC`, `ADM5mC`), and its tabix index.
 - `sample.bed.gz`, `sample.bed.gz.tbi`
   - bgzipped BED of per-position CpG methylation (beta estimate, modified and unmodified read counts, genotype), and its tabix index.
+
+**`results/rastair2/mbias/`** (paired-end samples, unless `--trim_OT`/`--trim_OB` are set)
+
+- `sample.mbias.html`
+  - rastair version 2 M-bias report: methylation by position in read for each contig in `--rastair2_mbias_region`, with the suggested trims drawn on the plots.
+- `sample.<contig>.cutoffs.txt`
+  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed.
 
 **`results/rastair2/bcftools_stats/`**
 
