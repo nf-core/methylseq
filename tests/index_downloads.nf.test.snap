@@ -2,9 +2,6 @@
     "Params: default with bowtie2-index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -40,6 +37,9 @@
                 },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
@@ -52,9 +52,6 @@
     "Params: bismark_hisat with hisat2-index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -90,6 +87,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
@@ -102,9 +102,6 @@
     "Params: bismark with run_preseq with bowtie2-index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -143,6 +140,9 @@
                 },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
@@ -155,9 +155,6 @@
     "Params: bwameth with bwameth-index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BWAMETH_ALIGN": {
                     "samtools": "1.22.1"
                 },
@@ -199,6 +196,9 @@
                 },
                 "UNTAR_BWAMETH": {
                     "untar": 1.34
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
@@ -211,9 +211,6 @@
     "Params: bismark with run_methurator with bowtie2-index": {
         "content": [
             {
-                "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.1.0"
                 },
@@ -255,6 +252,9 @@
                 },
                 "UNTAR_BISMARK": {
                     "untar": 1.34
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
