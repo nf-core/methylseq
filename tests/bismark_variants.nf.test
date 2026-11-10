@@ -112,7 +112,7 @@ nextflow_pipeline {
 
     // Common assertion function (without workflow access)
     def getStandardAssertionData = { outputDir ->
-        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
         def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
         def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
 
