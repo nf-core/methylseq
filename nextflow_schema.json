@@ -472,7 +472,7 @@
                 "rastair2_mbias_region": {
                     "type": "string",
                     "description": "Region used to estimate M-bias trims with rastair version 2 (for example a methylated spike-in contig).",
-                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal. Ignored with `--trim_OT`/`--trim_OB`.",
+                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal, and is needed for shallow libraries: with too few reads in the region the estimate is no trimming. Ignored with `--trim_OT`/`--trim_OB`.",
                     "fa_icon": "fas fa-ruler-horizontal"
                 }
             }
