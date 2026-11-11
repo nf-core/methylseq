@@ -195,7 +195,7 @@ workflow METHYLSEQ {
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
             'bam',
             [[:], []],
-            [[:], []],
+            [[:], [], []],
         )
 
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam

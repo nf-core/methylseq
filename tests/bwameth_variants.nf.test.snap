@@ -24,25 +24,25 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "QUALIMAP_BAMQC": {
                     "qualimap": 2.3
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -310,13 +310,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "genome_results.txt:md5,1ee2e29ac41c2cd7e6a0f00741e8d16e",
                 "coverage_across_reference.txt:md5,c4c7f930ad577d15de1358226acab252",
                 "coverage_histogram.txt:md5,cddf42d662856425649c196c731f048b",
@@ -393,7 +393,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:52:29.248151256",
+        "timestamp": "2026-11-11T20:35:23.874129962",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -424,16 +424,16 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -543,13 +543,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,aa88f19284e63097e9abccac4d7c6669",
                 "SRR389222_sub1.sorted_CpG.bedGraph:md5,4475a9462ce86a019015b69b82a9d5a2",
                 "SRR389222_sub2.sorted_CpG.bedGraph:md5,18b8845d9d985d3c203ca6c9c40aab1b",
@@ -600,7 +600,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:50:13.776524534",
+        "timestamp": "2026-11-11T20:32:15.053467895",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -628,22 +628,22 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -741,13 +741,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -793,7 +793,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:53:11.289850196",
+        "timestamp": "2026-11-11T20:36:16.313881995",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -827,16 +827,16 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -906,9 +906,9 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
-                "Ecoli_10K_methylated.stats:md5,df3dc85a83ad7e7cc07a91d6742da67a",
+                "Ecoli_10K_methylated.stats:md5,6394a473b9421b4c49d7bdf54f2920cb",
                 "SRR389222.flagstat:md5,a90f1bdcb30f4d0597ccf69fe0b37b1f",
-                "SRR389222.stats:md5,801a471ccd2f68929c47f63ec5868303",
+                "SRR389222.stats:md5,6c0c67955124dd4f4aa30875454d4a26",
                 "SRR389222.merged.fastq.gz:md5,47e1d7461d511a970e80085dd6454775",
                 "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,3656c54896013b76de978ab95c3f5975",
                 "SRR389222.sorted_CpG.bedGraph:md5,a754358e8b95db30602aa29835a896bd",
@@ -944,7 +944,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:54:20.634480938",
+        "timestamp": "2026-11-11T20:38:02.470154793",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -975,22 +975,22 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -1112,13 +1112,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -1175,7 +1175,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:48:04.852388408",
+        "timestamp": "2026-11-11T20:29:28.366273274",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1203,22 +1203,22 @@
                     "methyldackel": "0.6.1"
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -1300,13 +1300,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -1335,7 +1335,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:53:44.753264056",
+        "timestamp": "2026-11-11T20:37:10.158951261",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1366,22 +1366,22 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1477,13 +1477,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,7c3bae0f9c700dde88785a7e94c6ae2c",
-                "Ecoli_10K_methylated.stats:md5,df3dc85a83ad7e7cc07a91d6742da67a",
+                "Ecoli_10K_methylated.stats:md5,6394a473b9421b4c49d7bdf54f2920cb",
                 "SRR389222_sub1.flagstat:md5,897d500a710a56a7098172167fa71108",
-                "SRR389222_sub1.stats:md5,c5d493eed10203dafc1baf78a953610e",
+                "SRR389222_sub1.stats:md5,0c4fbb74ac42d6ce7524773749826936",
                 "SRR389222_sub2.flagstat:md5,37d33d68b31d4550620dc17582a3a750",
-                "SRR389222_sub2.stats:md5,d0fa689a679284057dd1bd073ddf62f3",
+                "SRR389222_sub2.stats:md5,963ea51282b8299693268fe813cba7f1",
                 "SRR389222_sub3.flagstat:md5,e3e925a7b7356e93d14f5e9e102c55b7",
-                "SRR389222_sub3.stats:md5,e9dae75b994ea52f0ef5fb86e4e40b08",
+                "SRR389222_sub3.stats:md5,2a93da9f4eb11b0f33c1bb953e9ee11d",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,b43c4c8ff346ae865b2b5db996650942",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -1536,7 +1536,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:49:33.699964332",
+        "timestamp": "2026-11-11T20:31:13.889235355",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1567,22 +1567,22 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -1704,13 +1704,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,d3bce01078b6e7749f3906bf9faad5b5",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
@@ -1767,7 +1767,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:48:49.476979667",
+        "timestamp": "2026-11-11T20:30:22.473443187",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1798,22 +1798,22 @@
                     "multiqc": 1.34
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -1955,13 +1955,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,f520e87cc4050799a0dbed72909572ec",
-                "Ecoli_10K_methylated.stats:md5,6974c6a6bd7478005791f21c7f05d7a0",
+                "Ecoli_10K_methylated.stats:md5,4471df18edeef3b773bb3dcdabbbb447",
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "genome.fa.bwameth.c2t:md5,e51d48ed28fa0c26e2f9c9f13d09403b",
                 "genome.fa.bwameth.c2t.amb:md5,010a242c6764efb30141868a45d698b3",
                 "genome.fa.bwameth.c2t.ann:md5,09b4db3d87a2d4dac9e10e807f377110",
@@ -2056,7 +2056,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:51:40.177254782",
+        "timestamp": "2026-11-11T20:34:09.709457217",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -2087,16 +2087,16 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -2206,13 +2206,13 @@
             ],
             [
                 "Ecoli_10K_methylated.flagstat:md5,c6a9a8b50c5e1d239071a8b75bc63b4f",
-                "Ecoli_10K_methylated.stats:md5,b99f4dcb8229f13f6044a16b70ce7d9e",
+                "Ecoli_10K_methylated.stats:md5,7cd873d9adf4407a13908bb78aec9fcb",
                 "SRR389222_sub1.flagstat:md5,cccae088e2f8686b890d019b60f63065",
-                "SRR389222_sub1.stats:md5,159ac39b4f3367c783d92c9cdce7d38d",
+                "SRR389222_sub1.stats:md5,c42c3588a115259a3fc0603f4021c772",
                 "SRR389222_sub2.flagstat:md5,403af1bed1e3e96f5e04d65e96728828",
-                "SRR389222_sub2.stats:md5,2456a2a40283e80afdc88965c20bacda",
+                "SRR389222_sub2.stats:md5,3ed5c75e638804d5d4b7ca069f0d31dc",
                 "SRR389222_sub3.flagstat:md5,73a5cb246f6388d5d449775d6e35f5fa",
-                "SRR389222_sub3.stats:md5,e0cbcb11525b99e9d2b0962e81595564",
+                "SRR389222_sub3.stats:md5,c4b7828ac5e8cb5a29ea9f4ad65c98af",
                 "Ecoli_10K_methylated.sorted_CpG.bedGraph:md5,5e0bf8c8bb3162de75203784414a6399",
                 "SRR389222_sub1.sorted_CpG.bedGraph:md5,4475a9462ce86a019015b69b82a9d5a2",
                 "SRR389222_sub2.sorted_CpG.bedGraph:md5,18b8845d9d985d3c203ca6c9c40aab1b",
@@ -2263,7 +2263,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T00:50:53.867680086",
+        "timestamp": "2026-11-11T20:33:13.736450005",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
