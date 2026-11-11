@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🐛 `bwameth/align` no longer writes the FASTA link into the staged index, which concurrent tasks share and may be read-only; the local patch is replaced by the nf-core module ([nf-core/modules#13642](https://github.com/nf-core/modules/pull/13642))
 - 🐛 Make `.hooks/block_pipeline_outdir.sh` executable again (as in the nf-core template); the template sync dropped the bit, so the `block-pipeline-outdir` pre-commit hook failed on every commit
 - 🐛 Run Preseq on the pre-deduplication BAM for `--aligner bismark` / `bismark_hisat`; it was given the deduplicated BAM. The `fastq_align_dedup_bismark` subworkflow now emits the raw aligned BAM (`bam_aligned`, from [nf-core/modules#13643](https://github.com/nf-core/modules/pull/13643)), which is sorted by `SAMTOOLS_SORT_PRESEQ` before Preseq ([#632](https://github.com/nf-core/methylseq/issues/632))
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))

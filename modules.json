@@ -72,9 +72,8 @@
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
-                        "installed_by": ["fastq_align_dedup_bwameth"],
-                        "patch": "modules/nf-core/bwameth/align/bwameth-align.diff"
+                        "git_sha": "acdb643bad6e7377d5d3b983577d71f51d336d0d",
+                        "installed_by": ["fastq_align_dedup_bwameth"]
                     },
                     "bwameth/index": {
                         "branch": "master",
@@ -196,13 +195,13 @@
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair2/call": {
-                        "branch": "bam-taps-conversion-rastair2",
-                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
+                        "branch": "master",
+                        "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
                         "installed_by": ["bam_taps_conversion", "modules"]
                     },
                     "rastair2/mbias": {
-                        "branch": "bam-taps-conversion-rastair2",
-                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
+                        "branch": "master",
+                        "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "samtools/faidx": {
@@ -275,8 +274,8 @@
                         "installed_by": ["bam_sort_stats_samtools", "fastq_align_dedup_bwamem3"]
                     },
                     "bam_taps_conversion": {
-                        "branch": "bam-taps-conversion-rastair2",
-                        "git_sha": "5c337cbbf6b5e3d15700a2c6173292d61097fc93",
+                        "branch": "master",
+                        "git_sha": "9b7485dc7a1b3f43a36b54a3e4a77e1ed17d5bc5",
                         "installed_by": ["subworkflows"]
                     },
                     "fasta_index_bismark_bwameth": {
