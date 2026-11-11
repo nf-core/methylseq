@@ -244,14 +244,6 @@
                 "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,474c4c51b3f330261d1b8a9c9995e4d8",
                 "samtools-stats-dp.txt:md5,6edf2bf655885b17c3c8e2087b808dbe",
                 "samtools_alignment_plot.txt:md5,3a748a90ccfbb3e55811b71bcb1eece8",
-                "Ecoli_10K_methylated.bam:md5,d429ef4b1a55c1c20701a3db0c1fd6ef",
-                "Ecoli_10K_methylated.bam.bai:md5,32274c2a916f3b3f2fa4a1c4898e591f",
-                "SRR389222_sub1.bam:md5,84cced75dc336b7edddf675e9a0ea297",
-                "SRR389222_sub1.bam.bai:md5,4c61eab7fbc68059cebd78a9bba59b70",
-                "SRR389222_sub2.bam:md5,c76258f09c770a398d3f4388c0fea38d",
-                "SRR389222_sub2.bam.bai:md5,e4e77584e484c6ca15acd820f3a860e7",
-                "SRR389222_sub3.bam:md5,de1fd50082317cc5063e19d8e42c87db",
-                "SRR389222_sub3.bam.bai:md5,b1553eea540b19f17d9cc883a4725538",
                 "Ecoli_10K_methylated.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "SRR389222_sub1.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "SRR389222_sub2.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
@@ -276,7 +268,7 @@
                 ],
                 [
                     "SRR389222_sub1.markdup.sorted.bam",
-                    "0c992112b441a58f716fad602c208c3d"
+                    "c992112b441a58f716fad602c208c3d"
                 ],
                 [
                     "SRR389222_sub2.markdup.sorted.bam",
@@ -292,7 +284,7 @@
                 ],
                 [
                     "SRR389222_sub1.bam",
-                    "0c992112b441a58f716fad602c208c3d"
+                    "c992112b441a58f716fad602c208c3d"
                 ],
                 [
                     "SRR389222_sub2.bam",

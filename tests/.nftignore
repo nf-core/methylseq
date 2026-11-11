@@ -23,6 +23,7 @@ multiqc/*/multiqc_data/multiqc_software_versions.txt
 multiqc/*/multiqc_data/multiqc_sources.txt
 multiqc/*/multiqc_plots/{pdf,png,svg}/*.{pdf,png,svg}
 multiqc/*/multiqc_report.html
+parabricks/*.{bam,bam.bai}
 pipeline_info/*.{html,json,txt,yml}
 qualimap/**/images_qualimapReport/*
 qualimap/**/raw_data_qualimapReport/*
