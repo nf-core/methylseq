@@ -1,0 +1,30 @@
+Changes in component 'nf-core/fasta_index_methylseq'
+'subworkflows/nf-core/fasta_index_methylseq/nextflow.config' is unchanged
+'subworkflows/nf-core/fasta_index_methylseq/meta.yml' is unchanged
+Changes in 'fasta_index_methylseq/main.nf':
+--- subworkflows/nf-core/fasta_index_methylseq/main.nf
++++ subworkflows/nf-core/fasta_index_methylseq/main.nf
+@@ -17,6 +17,7 @@
+     bwamem_index     // channel: [ val(meta), [ bwamem index ] ]
+     aligner          // string: bismark, bismark_hisat, bwameth or bwamem
+     collecthsmetrics // boolean: whether to run picard collecthsmetrics
++    methurator       // boolean: whether to run methurator
+     use_mem2         // boolean: generate mem2 index if no index provided, and bwameth is selected
+ 
+     main:
+@@ -133,9 +134,9 @@
+     }
+ 
+     /*
+-    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
++    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool or methurator tool
+     */
+-    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics) {
++    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics || methurator) {
+         // already existing fasta index
+         if (fasta_index) {
+             ch_fasta_index = fasta_index
+
+'subworkflows/nf-core/fasta_index_methylseq/tests/main.nf.test.snap' is unchanged
+'subworkflows/nf-core/fasta_index_methylseq/tests/main.nf.test' is unchanged
+************************************************************

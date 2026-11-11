@@ -1,0 +1,34 @@
+Changes in component 'nf-core/fastq_align_dedup_bismark'
+Changes in 'fastq_align_dedup_bismark/meta.yml':
+--- subworkflows/nf-core/fastq_align_dedup_bismark/meta.yml
++++ subworkflows/nf-core/fastq_align_dedup_bismark/meta.yml
+@@ -50,6 +50,12 @@
+       type: file
+       description: |
+         Channel containing aligned or deduplicated BAM files.
++        Structure: [ val(meta), path(bam) ]
++      pattern: "*.bam"
++  - bam_aligned:
++      type: file
++      description: |
++        Channel containing unsorted BAM files straight from Bismark alignment, before deduplication.
+         Structure: [ val(meta), path(bam) ]
+       pattern: "*.bam"
+   - bai:
+
+Changes in 'fastq_align_dedup_bismark/main.nf':
+--- subworkflows/nf-core/fastq_align_dedup_bismark/main.nf
++++ subworkflows/nf-core/fastq_align_dedup_bismark/main.nf
+@@ -127,6 +127,7 @@
+ 
+     emit:
+     bam                        = SAMTOOLS_SORT.out.bam // channel: [ val(meta), [ bam ] ]
++    bam_aligned                = BISMARK_ALIGN.out.bam // channel: [ val(meta), [ bam ] ] unsorted, before deduplication
+     index                      = SAMTOOLS_INDEX.out.index // channel: [ val(meta), [ index ] ]
+     coverage2cytosine_coverage = ch_coverage2cytosine_coverage // channel: [ val(meta), [ coverage ] ]
+     coverage2cytosine_report   = ch_coverage2cytosine_report // channel: [ val(meta), [ report ] ]
+
+'subworkflows/nf-core/fastq_align_dedup_bismark/tests/main.nf.test.snap' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bismark/tests/nextflow.config' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bismark/tests/main.nf.test' is unchanged
+************************************************************
