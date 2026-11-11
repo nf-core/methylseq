@@ -18,10 +18,10 @@
                     "multiqc": 1.34
                 },
                 "PICARD_ADDORREPLACEREADGROUPS": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "RASTAIR_CALL": {
                     "rastair": "0.8.2"
@@ -36,19 +36,19 @@
                     "rastair": "0.8.2"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_IDXSTATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -179,16 +179,16 @@
             [
                 "Ecoli_10K_methylated.flagstat:md5,6875b2d49eec4f8b199bceda4f3ab148",
                 "Ecoli_10K_methylated.idxstats:md5,bfccbb1237079763a8b6625821423ed0",
-                "Ecoli_10K_methylated.stats:md5,965d7d335a6f918ee8ec6d359afc5651",
+                "Ecoli_10K_methylated.stats:md5,00b55f69c32c2c1afc1911a4e6ae2e4a",
                 "SRR389222_sub1.flagstat:md5,fbfec3e5592cbb11f050ed06983f2bbd",
                 "SRR389222_sub1.idxstats:md5,47eaa730cb2000975476b03df209a5e8",
-                "SRR389222_sub1.stats:md5,78965287ea508ee7b387cf9614de7de2",
+                "SRR389222_sub1.stats:md5,89728688d02814ac39e85cff780f461b",
                 "SRR389222_sub2.flagstat:md5,0ad57bb4ef7b258fc23d9b3ab7ed26b4",
                 "SRR389222_sub2.idxstats:md5,766288f18a1767e4b95c7383005161e8",
-                "SRR389222_sub2.stats:md5,3622a00daee1b2dbe01fcabb6f130c01",
+                "SRR389222_sub2.stats:md5,6396ea3639b211ccf5c8e04703bb394e",
                 "SRR389222_sub3.flagstat:md5,c6e3f93f66e47ff2138f640eaebd1c3b",
                 "SRR389222_sub3.idxstats:md5,59fa8ca802e25072377a7527a6801f9b",
-                "SRR389222_sub3.stats:md5,8c80eeb3baf1fcbaf02cbdff40ab22ae",
+                "SRR389222_sub3.stats:md5,cd89c2e299fbb90071a07c47cbfc4c95",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
                 "cutadapt_trimmed_sequences_plot_3_Obs_Exp.txt:md5,1e5ca4193f8290c5c812334d03615b41",
@@ -247,7 +247,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-10T19:44:10.107977004",
+        "timestamp": "2026-11-11T20:38:54.532483689",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

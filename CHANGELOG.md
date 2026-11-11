@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Threaded a combined `[ meta, fasta, fai ]` channel through the alignment subworkflows
 - 🔧 Add [methurator](https://vibtobilab.github.io/methurator/latest/) as an additional QC tool for both the Bismark and bwa-meth subworkflows.
 - 🔧 Update the `bwameth/align` and `bwameth/index` modules to bwa-meth 0.2.10 (consistent read-name handling and FASTQ comment-tag propagation upstream) and samtools 1.25 ([#637](https://github.com/nf-core/methylseq/pull/637))
+- 🔧 Update Parabricks to 4.8.0-1 (`parabricks/fq2bam` and `parabricks/fq2bammeth`), samtools to 1.25 and Picard to 3.5.0 in the GPU and bwa-mem alignment paths, with the nf-core modules and subworkflows they use (`fastq_align_dedup_bwameth`, `fastq_align_dedup_bwamem`, `fastq_align_bwa`, `bam_sort_stats_samtools`, `bam_stats_samtools`, `bam_methyldackel`). `samtools/faidx` moves to samtools 1.25 too. Results are unchanged, except that Parabricks 4.8 `fq2bam` adds the `MC` tag to unmapped reads with a mapped mate. A new GPU test covers `--aligner bwamem --taps` (`parabricks/fq2bam`)
 - 🔄 Update template to nf-core/tools v4.2.1 (includes v4.1.0); minimum Nextflow version is now 25.10.4 and nf-schema is bumped to 2.7.3 ([#634](https://github.com/nf-core/methylseq/pull/634))
 - 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
 
