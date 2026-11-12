@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🐛 Remove the version pin on the `nf-amazon` plugin (`nf-amazon@2.15.0` -> `nf-amazon`) so Nextflow uses the nf-amazon version bundled with it. The pin forced a plugin built for Nextflow 25.04 onto newer releases, and on Seqera Platform AWS Batch runs it conflicted with the `xpack-amzn` plugin (requires `nf-amazon>=3.12.1`), failing at startup with `Dependencies '[nf-amazon]' not found` ([#642](https://github.com/nf-core/methylseq/pull/642))
 - 🐛 Make `.hooks/block_pipeline_outdir.sh` executable again (as in the nf-core template); the template sync dropped the bit, so the `block-pipeline-outdir` pre-commit hook failed on every commit
 - 🐛 Run Preseq on the pre-deduplication BAM for `--aligner bismark` / `bismark_hisat`; it was given the deduplicated BAM. The `fastq_align_dedup_bismark` subworkflow now emits the raw aligned BAM (`bam_aligned`, local nf-core patch), which is sorted by `SAMTOOLS_SORT_PRESEQ` before Preseq ([#632](https://github.com/nf-core/methylseq/issues/632))
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))
