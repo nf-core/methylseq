@@ -195,10 +195,10 @@ Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must ma
 `--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, and `--non_directional`, `--pbat`, `--zymo` or `--single_cell` add `--guess-read-orientation`. rastair 0.8 assumes directional libraries.
 
 > [!WARNING]
-> rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_licence` to use it.
+> rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_license` to use it.
 
 ```bash
-nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --taps_caller rastair2 --accept_rastair2_licence --outdir results -profile docker
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --taps_caller rastair2 --accept_rastair2_license --outdir results -profile docker
 ```
 
 #### TAPS read-end trimming (M-bias)

@@ -254,21 +254,21 @@ def validateInputParameters() {
         [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
     ]
     ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
-    // rastair 2 and newer is distributed under a non-commercial licence: require an explicit opt-in.
+    // rastair 2 and newer is distributed under a non-commercial license: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
         if (!(params.taps || params.aligner == 'bwamem')) {
             log.warn("--taps_caller rastair2 only applies to TAPS data (--taps or --aligner bwamem); it is ignored.")
         }
-        else if (!params.accept_rastair2_licence) {
+        else if (!params.accept_rastair2_license) {
             error(
                 "--taps_caller rastair2 uses rastair version 2, which is free for non-commercial research use only. " +
-                "Commercial use requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). " +
-                "Run `rastair license` for the full terms. Set --accept_rastair2_licence to confirm your use complies, or use --taps_caller rastair."
+                "Commercial use requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). " +
+                "Run `rastair license` for the full terms. Set --accept_rastair2_license to confirm your use complies, or use --taps_caller rastair."
             )
         }
         else {
             log.warn(
-                "rastair version 2 is free for non-commercial research use only; commercial use requires a licence from Oxford University Innovation " +
+                "rastair version 2 is free for non-commercial research use only; commercial use requires a license from Oxford University Innovation " +
                 "(enquiries@innovation.ox.ac.uk, reference 24811). Publications using its results must include the notice \"Copyright © 2025, University of Oxford\"."
             )
         }

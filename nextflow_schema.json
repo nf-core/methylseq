@@ -448,13 +448,13 @@
                     "default": "rastair",
                     "enum": ["rastair", "rastair2"],
                     "description": "Methylation caller for TAPS data.",
-                    "help_text": "`rastair` (default) runs rastair 0.8 (GPL-3.0): M-bias, methylation calls and methylKit output.\n\n`rastair2` runs rastair version 2, which jointly calls SNVs, indels and CpG methylation and writes a bgzipped VCF and CpG BED. rastair version 2 is free for non-commercial research use only; commercial use requires a licence from Oxford University Innovation. It also requires `--accept_rastair2_licence`.",
+                    "help_text": "`rastair` (default) runs rastair 0.8 (GPL-3.0): M-bias, methylation calls and methylKit output.\n\n`rastair2` runs rastair version 2, which jointly calls SNVs, indels and CpG methylation and writes a bgzipped VCF and CpG BED. rastair version 2 is free for non-commercial research use only; commercial use requires a license from Oxford University Innovation. It also requires `--accept_rastair2_license`.",
                     "fa_icon": "fas fa-robot"
                 },
-                "accept_rastair2_licence": {
+                "accept_rastair2_license": {
                     "type": "boolean",
-                    "description": "Confirm that your use of rastair version 2 complies with its non-commercial licence.",
-                    "help_text": "Required with `--taps_caller rastair2`. rastair version 2 is free for non-commercial research use only. Commercial use (including paid services or product development) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice \"Copyright © 2025, University of Oxford\".",
+                    "description": "Confirm that your use of rastair version 2 complies with its non-commercial license.",
+                    "help_text": "Required with `--taps_caller rastair2`. rastair version 2 is free for non-commercial research use only. Commercial use (including paid services or product development) requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice \"Copyright © 2025, University of Oxford\".",
                     "fa_icon": "fas fa-file-signature"
                 },
                 "trim_OT": {

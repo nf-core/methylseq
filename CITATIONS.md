@@ -55,7 +55,7 @@
 
 - [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/)
 
-  > rastair version 2 (`--taps_caller rastair2`) is distributed under a non-commercial licence by the University of Oxford ([rastair.com](https://www.rastair.com)). Publications using its results must include the notice "Copyright © 2025, University of Oxford".
+  > rastair version 2 (`--taps_caller rastair2`) is distributed under a non-commercial license by the University of Oxford ([rastair.com](https://www.rastair.com)). Publications using its results must include the notice "Copyright © 2025, University of Oxford".
 
 - [bwa-mem3](https://github.com/fg-labs/bwa-mem3)
 

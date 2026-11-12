@@ -60,7 +60,7 @@ nextflow_pipeline {
                 aligner                 = "bwamem3"
                 taps                    = true
                 taps_caller             = "rastair2"
-                accept_rastair2_licence = true
+                accept_rastair2_license = true
                 outdir                  = "$outputDir"
             }
         }
@@ -108,7 +108,7 @@ nextflow_pipeline {
                 aligner                 = "bwamem3"
                 taps                    = true
                 taps_caller             = "rastair2"
-                accept_rastair2_licence = true
+                accept_rastair2_license = true
                 trim_OT                 = "0,0,10,0"
                 trim_OB                 = "0,0,10,0"
                 outdir                  = "$outputDir"
@@ -126,7 +126,7 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bwamem3 | taps | taps_caller rastair2 - licence not accepted") {
+    test("Params: bwamem3 | taps | taps_caller rastair2 - license not accepted") {
         when {
             params {
                 aligner     = "bwamem3"
@@ -139,7 +139,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.failed },
-                { assert workflow.stdout.any { line -> line.contains('--accept_rastair2_licence') } }
+                { assert workflow.stdout.any { line -> line.contains('--accept_rastair2_license') } }
             )
         }
     }
