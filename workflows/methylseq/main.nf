@@ -53,7 +53,8 @@ workflow METHYLSEQ {
     ch_reads = channel.empty()
     ch_bam = channel.empty()
     ch_bai = channel.empty()
-    ch_gzi = channel.empty()
+    // No GZI: the FASTA reaching CollectHsMetrics is uncompressed. An empty channel here would make the targeted subworkflow's .combine() emit nothing
+    ch_gzi = channel.value([[:], []])
     ch_bedgraph = channel.empty()
     ch_coverage = channel.empty()
     ch_aligner_mqc = channel.empty()
@@ -191,7 +192,7 @@ workflow METHYLSEQ {
             ch_bwamem_inputs.reads,
             ch_bwamem_inputs.fasta_fai,
             ch_bwamem_inputs.bwamem_index,
-            params.skip_deduplication,
+            params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
             'bam',
             [[:], []],

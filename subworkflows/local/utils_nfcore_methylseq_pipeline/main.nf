@@ -217,13 +217,43 @@ def validateInputParameters() {
             )
         }
     }
-    // bwa-mem3 `--meth` seeds read 1 as C->T and read 2 as G->A, so it only handles directional libraries
-    if (params.aligner == 'bwamem3' && (params.pbat || params.non_directional)) {
-        error(
-            "--aligner bwamem3 only supports directional libraries: --pbat and --non_directional are not supported. " +
-            "Use --aligner bismark for PBAT or non-directional libraries."
-        )
+    // --pbat, --non_directional and the non-directional presets (--zymo, --single_cell) only change alignment for Bismark
+    def non_directional_options = ['pbat', 'non_directional', 'zymo', 'single_cell'].findAll { option -> params[option] }.collect { option -> "--${option}" }
+    if (non_directional_options) {
+        // bwa-mem3 `--meth` seeds read 1 as C->T and read 2 as G->A, so it only handles directional libraries
+        if (params.aligner == 'bwamem3') {
+            error(
+                "--aligner bwamem3 only supports directional libraries: ${non_directional_options.join(', ')} not supported. " +
+                "Use --aligner bismark for PBAT or non-directional libraries."
+            )
+        }
+        if (params.aligner == 'bwameth') {
+            log.warn("bwa-meth aligns directional libraries only: ${non_directional_options.join(', ')} only change trimming with --aligner bwameth. Use --aligner bismark for PBAT or non-directional libraries.")
+        }
+        if ((params.taps || params.aligner == 'bwamem') && params.taps_caller == 'rastair') {
+            log.warn("rastair 0.8 (--taps_caller rastair) assumes directional libraries: ${non_directional_options.join(', ')} are ignored when calling. --taps_caller rastair2 guesses each read's orientation instead.")
+        }
     }
+    // TAPS calling needs a FASTA index and an aligner without bisulfite methylation extraction
+    if (params.taps && params.aligner.startsWith('bismark')) {
+        error("--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem.")
+    }
+    // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
+    if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !params.taps) {
+        error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
+    }
+    // Options that only apply to some steps: say so instead of ignoring them
+    def taps_run = params.taps || params.aligner == 'bwamem'
+    def ignored_options = [
+        [!taps_run && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
+        [params.rastair2_mbias_region && !(taps_run && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
+        [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
+        [params.run_targeted_sequencing && taps_run, 'TAPS runs write no bedGraphs, so --run_targeted_sequencing only runs Picard CollectHsMetrics (with --collecthsmetrics)'],
+        [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
+        [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
+    ]
+    ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
     // rastair 2 and newer is distributed under a non-commercial licence: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
         if (!(params.taps || params.aligner == 'bwamem')) {

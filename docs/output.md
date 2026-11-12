@@ -188,6 +188,9 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `sample.bam`
   - Aligned reads in BAM format.
   - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+- `sample.sorted.bam`
+  - Aligned reads in a sorted BAM file.
+  - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified.
 - `logs/sample_PE_report.txt`
   - Log file giving summary statistics about alignment.
 - `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
@@ -212,12 +215,15 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 
 **bwa-mem / bwa-mem3 output directory: `results/bwamem/alignments/` or `results/bwamem3/alignments/`**
 
+- `sample.bam` (bwa-mem only)
+  - Aligned reads as written by bwa-mem (or Parabricks `fq2bam` with `-profile gpu`).
+  - **NB:** Only saved if `--save_align_intermeds` is specified.
 - `sample.sorted.bam`
   - Sorted aligned reads in BAM format.
-  - **NB:** Only saved if `--save_align_intermeds` or `--skip_deduplication` is specified.
+  - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified, and for bwa-mem3 also with `--save_align_intermeds`.
 - `sample.sorted.bam.bai`
   - Index of sorted BAM file.
-  - **NB:** Only saved if `--save_align_intermeds` or `--skip_deduplication` is specified.
+  - **NB:** Saved with `sample.sorted.bam`.
 - `samtools_stats/sample.flagstat`
   - Summary file describing the number of reads which aligned in different ways.
 - `samtools_stats/sample.stats`
@@ -331,8 +337,8 @@ If `--run_targeted_sequencing` is set to `true`, the pipeline performs additiona
 
 BedGraph files are filtered using the BED file passed to `--target_regions_file`.
 
-**Bismark output directory: `results/bismark/methylation_calls/bedGraph/`**
-**bwa-meth output directory: `results/methyldackel/`**
+**Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
+**bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**
 
 - `*.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.

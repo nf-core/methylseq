@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Bug fixes & refactoring
 
 - 🐛 rastair 0.8 now calls each sample with its own M-bias trims: `bam_taps_conversion` paired BAMs and trims by arrival order, so a sample could be called with another sample's trims (local patch until the nf-core fix merges)
+- 🐛 `--collecthsmetrics` now runs Picard CollectHsMetrics: an empty GZI channel made the targeted analysis drop it
+- 🐛 `--aligner bwamem` without GPU now emits the BAM index and samtools stats from alignment, so `--skip_deduplication` no longer leaves TAPS calling without input and MultiQC gets the samtools sections (local patch of `fastq_align_dedup_bwamem` until the nf-core fix merges)
+- 🐛 `--rrbs` skips deduplication for `--aligner bwamem` and `bwamem3` too, as it already did for bismark and bwameth
+- 🐛 `--taps` with `--aligner bismark` or `bismark_hisat` now stops with an error; it used to produce no methylation calls without saying why
+- 🐛 `--aligner bwamem3` stops with an error on `--pbat`, `--non_directional`, `--zymo` or `--single_cell`, which it can't align. bwa-meth and rastair 0.8 warn that they ignore them, and rastair version 2 guesses read orientation for all of them
+- 🐛 `--methyl_kit` with `--run_targeted_sequencing` (bwa-meth, bwa-mem3) stops with an error, since the targeted analysis needs the bedGraphs it replaces
+- 🐛 Warn about options that have no effect in the current run instead of ignoring them silently (`--trim_OT/--trim_OB` and `--rastair2_mbias_region` outside TAPS or rastair version 2, `--collecthsmetrics` without targeted sequencing, `--bamqc_regions_file` without Qualimap, `--slamseq` outside Bismark or with `--bismark_index`, targeted sequencing on TAPS data)
+- 🐛 Publishing: `bismark_hisat` coverage2cytosine and targeted outputs go to `bismark_hisat/` instead of `bismark/` or `methyldackel/`; GPU `--aligner bwamem` no longer publishes the raw Parabricks BAMs to `parabricks/` (only with `--save_align_intermeds`, under `alignments/`) or stray indexes to `deduplicated/`
+- 📖 Fix the swapped `--ignore_3prime_r1`/`--ignore_3prime_r2` help texts, the bwa-mem/bwa-mem3 alignment outputs in `docs/output.md`, and the TAPS aligner advice in `docs/usage.md`; the `index_downloads` test now really uses a pre-built HISAT2 index
 - 🐛 Drop the `nf-amazon@2.15.0` plugin pin, as in the nf-core template: that release doesn't work with Nextflow 25.10 (`NoSuchMethodError` on `Session.getExecConfigProp`), so any run reading S3 paths (including iGenomes) or using AWS Batch failed at startup. Nextflow now loads the nf-amazon release that matches its version
 - 🐛 `bwameth/align` no longer writes the FASTA link into the staged index, which concurrent tasks share and may be read-only; the local patch is replaced by the nf-core module ([nf-core/modules#13642](https://github.com/nf-core/modules/pull/13642))
 - 🐛 Make `.hooks/block_pipeline_outdir.sh` executable again (as in the nf-core template); the template sync dropped the bit, so the `block-pipeline-outdir` pre-commit hook failed on every commit

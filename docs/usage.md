@@ -142,14 +142,14 @@ The pipeline supports **TAPS data analysis**, which uses a different approach to
 | **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
 
 > [!NOTE]
-> We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data.
+> We recommend `--aligner bwamem3` for TAPS data: it aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth --taps` also work.
 
 #### Automatic Parameter Configuration
 
 When `--taps` is specified, the pipeline automatically:
 
 - Uses Rastair for methylation calling (TAPS conversion analysis)
-- Validates aligner compatibility (prevents using Bismark with TAPS data)
+- Validates aligner compatibility (stops with an error for `--aligner bismark` or `bismark_hisat`)
 - Configures appropriate deduplication (Picard MarkDuplicates for TAPS)
 
 > [!NOTE]
@@ -162,7 +162,7 @@ When `--taps` is specified, the pipeline automatically:
 - With `--taps`, it runs in TAPS mode (`bwa-mem3 mem --meth=taps`, methylated C->T) and rastair calls methylation (see `--taps_caller`).
 - Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`.
 
-Both modes use the same index. bwa-mem3 assumes directional libraries (read 1 C->T, read 2 G->A), so `--pbat` and `--non_directional` are not supported with `--aligner bwamem3`.
+Both modes use the same index. bwa-mem3 assumes directional libraries (read 1 C->T, read 2 G->A), so `--pbat`, `--non_directional`, `--zymo` and `--single_cell` are not supported with `--aligner bwamem3`.
 
 It needs an index built with `bwa-mem3 index --meth`. Without `--bwamem3_index`, the pipeline builds one from `--fasta` (keep it with `--save_reference`), which is fine for small genomes:
 
@@ -192,7 +192,7 @@ Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must ma
 
 #### rastair version 2 (`--taps_caller rastair2`)
 
-`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, and `--non_directional` adds `--guess-read-orientation`.
+`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, and `--non_directional`, `--pbat`, `--zymo` or `--single_cell` add `--guess-read-orientation`. rastair 0.8 assumes directional libraries.
 
 > [!WARNING]
 > rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a licence from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_licence` to use it.
