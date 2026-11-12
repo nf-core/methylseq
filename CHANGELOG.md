@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
+- 🐛 Drop the `nf-amazon@2.15.0` plugin pin, as in the nf-core template. That release doesn't work with Nextflow 25.10 (`NoSuchMethodError` on `Session.getExecConfigProp`) and conflicts with Seqera Platform's `xpack-amzn`, so runs reading S3 paths or using AWS Batch failed at startup. Nextflow loads the nf-amazon release that matches it when it needs one; declaring it without a version fails nf-core lint ([#642](https://github.com/nf-core/methylseq/pull/642))
 - 🐛 rastair 0.8 now calls each sample with its own M-bias trims: `bam_taps_conversion` paired BAMs and trims by arrival order, so a sample could be called with another sample's trims (local patch until the nf-core fix merges)
 - 🐛 `--collecthsmetrics` now runs Picard CollectHsMetrics: an empty GZI channel made the targeted analysis drop it
 - 🐛 `--aligner bwamem` without GPU now emits the BAM index and samtools stats from alignment, so `--skip_deduplication` no longer leaves TAPS calling without input and MultiQC gets the samtools sections (local patch of `fastq_align_dedup_bwamem` until the nf-core fix merges)
