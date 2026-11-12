@@ -280,6 +280,9 @@
                 "PICARD_BEDTOINTERVALLIST": {
                     "picard": "3.4.0"
                 },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
                 },
@@ -381,6 +384,10 @@
                 "bismark/summary/bismark_summary_report.html",
                 "bismark/summary/bismark_summary_report.txt",
                 "enrichment_metrics",
+                "enrichment_metrics/Ecoli_10K_methylated.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub1.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub2.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub3.CollectHsMetrics.coverage_metrics",
                 "enrichment_metrics/genome_target_regions.intervallist",
                 "fastqc",
                 "fastqc/Ecoli_10K_methylated_1_fastqc.html",
@@ -432,8 +439,15 @@
                 "multiqc/bismark/multiqc_data/multiqc_data.json",
                 "multiqc/bismark/multiqc_data/multiqc_fastqc.txt",
                 "multiqc/bismark/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bismark/multiqc_data/multiqc_picard_HsMetrics.txt",
                 "multiqc/bismark/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/bismark/multiqc_data/multiqc_sources.txt",
+                "multiqc/bismark/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
+                "multiqc/bismark/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
+                "multiqc/bismark/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
+                "multiqc/bismark/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
+                "multiqc/bismark/multiqc_data/picard_hsmetrics_table.txt",
+                "multiqc/bismark/multiqc_data/picard_percentage_target_bases.txt",
                 "multiqc/bismark/multiqc_report.html",
                 "pipeline_info",
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
@@ -535,7 +549,14 @@
                 "multiqc_bismark_dedup.txt:md5,d09a5de4d81a3207efb6a8937d060e46",
                 "multiqc_bismark_methextract.txt:md5,4b6db3a59616df1c803713affc07e043",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
-                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
+                "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
+                "multiqc_picard_HsMetrics.txt:md5,2bc7838d2ac6108999a27b7e21ec0e01",
+                "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_hsmetrics_table.txt:md5,74785d533bbcb5c546ccb307f0d12431",
+                "picard_percentage_target_bases.txt:md5,0e2b173edebc6d13da4a63bc429e18f8"
             ],
             [
                 [
@@ -556,7 +577,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:41:35.136801712",
+        "timestamp": "2026-11-12T16:56:34.778815951",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -905,6 +926,9 @@
                 "PICARD_BEDTOINTERVALLIST": {
                     "picard": "3.4.0"
                 },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
                 "PICARD_CREATESEQUENCEDICTIONARY": {
                     "picard": "3.4.0"
                 },
@@ -960,6 +984,10 @@
                 "bwameth/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.metrics.txt",
                 "bwameth/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.metrics.txt",
                 "enrichment_metrics",
+                "enrichment_metrics/Ecoli_10K_methylated.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub1.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub2.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/SRR389222_sub3.CollectHsMetrics.coverage_metrics",
                 "enrichment_metrics/genome_target_regions.intervallist",
                 "fastqc",
                 "fastqc/Ecoli_10K_methylated_1_fastqc.html",
@@ -1012,6 +1040,7 @@
                 "multiqc/bwameth/multiqc_data/multiqc_data.json",
                 "multiqc/bwameth/multiqc_data/multiqc_fastqc.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_picard_HsMetrics.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_picard_dups.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_samtools_flagstat.txt",
                 "multiqc/bwameth/multiqc_data/multiqc_samtools_stats.txt",
@@ -1022,6 +1051,8 @@
                 "multiqc/bwameth/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
                 "multiqc/bwameth/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
                 "multiqc/bwameth/multiqc_data/picard_deduplication.txt",
+                "multiqc/bwameth/multiqc_data/picard_hsmetrics_table.txt",
+                "multiqc/bwameth/multiqc_data/picard_percentage_target_bases.txt",
                 "multiqc/bwameth/multiqc_data/samtools-flagstat-pct-table.txt",
                 "multiqc/bwameth/multiqc_data/samtools-flagstat-table.txt",
                 "multiqc/bwameth/multiqc_data/samtools-stats-dp.txt",
@@ -1087,6 +1118,7 @@
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
                 "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
+                "multiqc_picard_HsMetrics.txt:md5,b840f4004c674964b267008ffdda97db",
                 "multiqc_picard_dups.txt:md5,82eaab96189f22fd93db38bb516ba6a5",
                 "multiqc_samtools_flagstat.txt:md5,a8f5b45b8b3412a9adc3dd0d35208c73",
                 "multiqc_samtools_stats.txt:md5,edac97e95c57ea6276d3b3801ed732a8",
@@ -1095,6 +1127,8 @@
                 "picard_MeanQualityByCycle_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "picard_deduplication.txt:md5,7dacf4d4e0d7d2d9a7205beecfa7125c",
+                "picard_hsmetrics_table.txt:md5,a39ee5a71d92d3d11e311478d94e623b",
+                "picard_percentage_target_bases.txt:md5,828edfb37d5f7b8644046826560e7682",
                 "samtools-flagstat-pct-table.txt:md5,ff5d65a480449ba98587c43f3a2bd33e",
                 "samtools-flagstat-table.txt:md5,6a5332e2ad59f7da00b5a9a1a25fd2f8",
                 "samtools-stats-dp.txt:md5,2c5b19dc795bc5d4a1dbd52660aae4b9",
@@ -1119,7 +1153,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:40:54.415427986",
+        "timestamp": "2026-11-12T16:48:36.995328051",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

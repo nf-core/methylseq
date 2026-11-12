@@ -76,16 +76,12 @@
                 "bwamem/deduplicated",
                 "bwamem/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam",
                 "bwamem/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam.bai",
-                "bwamem/deduplicated/Ecoli_10K_methylated.sorted.bam.bai",
                 "bwamem/deduplicated/SRR389222_sub1.markdup.sorted.bam",
                 "bwamem/deduplicated/SRR389222_sub1.markdup.sorted.bam.bai",
-                "bwamem/deduplicated/SRR389222_sub1.sorted.bam.bai",
                 "bwamem/deduplicated/SRR389222_sub2.markdup.sorted.bam",
                 "bwamem/deduplicated/SRR389222_sub2.markdup.sorted.bam.bai",
-                "bwamem/deduplicated/SRR389222_sub2.sorted.bam.bai",
                 "bwamem/deduplicated/SRR389222_sub3.markdup.sorted.bam",
                 "bwamem/deduplicated/SRR389222_sub3.markdup.sorted.bam.bai",
-                "bwamem/deduplicated/SRR389222_sub3.sorted.bam.bai",
                 "bwamem/deduplicated/picard_metrics",
                 "bwamem/deduplicated/picard_metrics/Ecoli_10K_methylated.markdup.sorted.metrics.txt",
                 "bwamem/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.metrics.txt",
@@ -146,15 +142,6 @@
                 "multiqc/bwamem/multiqc_data/samtools-stats-dp.txt",
                 "multiqc/bwamem/multiqc_data/samtools_alignment_plot.txt",
                 "multiqc/bwamem/multiqc_report.html",
-                "parabricks",
-                "parabricks/Ecoli_10K_methylated.bam",
-                "parabricks/Ecoli_10K_methylated.bam.bai",
-                "parabricks/SRR389222_sub1.bam",
-                "parabricks/SRR389222_sub1.bam.bai",
-                "parabricks/SRR389222_sub2.bam",
-                "parabricks/SRR389222_sub2.bam.bai",
-                "parabricks/SRR389222_sub3.bam",
-                "parabricks/SRR389222_sub3.bam.bai",
                 "pipeline_info",
                 "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
                 "pipeline_info/nf_core_methylseq_topic_versions.yml",
@@ -277,22 +264,6 @@
                 [
                     "SRR389222_sub3.markdup.sorted.bam",
                     "3a9acfe4ca7f15acf3a6df36912de09e"
-                ],
-                [
-                    "Ecoli_10K_methylated.bam",
-                    "23fac34fa3a8bbfefd28f51d3eadbebe"
-                ],
-                [
-                    "SRR389222_sub1.bam",
-                    "c992112b441a58f716fad602c208c3d"
-                ],
-                [
-                    "SRR389222_sub2.bam",
-                    "b0d9e41eb0ca5615268847465c941c98"
-                ],
-                [
-                    "SRR389222_sub3.bam",
-                    "3a9acfe4ca7f15acf3a6df36912de09e"
                 ]
             ]
         ],
@@ -300,6 +271,6 @@
             "nf-test": "0.9.3",
             "nextflow": "25.10.4"
         },
-        "timestamp": "2026-11-11T13:44:52.325000"
+        "timestamp": "2026-11-12T10:18:10.424607"
     }
 }
