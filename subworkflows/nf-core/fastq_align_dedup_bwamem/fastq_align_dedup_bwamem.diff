@@ -1,0 +1,24 @@
+Changes in component 'nf-core/fastq_align_dedup_bwamem'
+'subworkflows/nf-core/fastq_align_dedup_bwamem/nextflow.config' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bwamem/meta.yml' is unchanged
+Changes in 'fastq_align_dedup_bwamem/main.nf':
+--- subworkflows/nf-core/fastq_align_dedup_bwamem/main.nf
++++ subworkflows/nf-core/fastq_align_dedup_bwamem/main.nf
+@@ -59,6 +59,10 @@
+             ch_fasta_fai
+         )
+         ch_alignment = FASTQ_ALIGN_BWA.out.bam
++        ch_alignment_index = FASTQ_ALIGN_BWA.out.index
++        ch_stats = FASTQ_ALIGN_BWA.out.stats
++        ch_flagstat = FASTQ_ALIGN_BWA.out.flagstat
++        ch_idxstats = FASTQ_ALIGN_BWA.out.idxstats
+     }
+     if (!skip_deduplication) {
+         /*
+
+'subworkflows/nf-core/fastq_align_dedup_bwamem/tests/main.nf.test.snap' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bwamem/tests/gpu.nf.test' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bwamem/tests/nextflow.config' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bwamem/tests/main.nf.test' is unchanged
+'subworkflows/nf-core/fastq_align_dedup_bwamem/tests/gpu.nf.test.snap' is unchanged
+************************************************************

@@ -4,23 +4,23 @@ Changes in component 'nf-core/fasta_index_methylseq'
 Changes in 'fasta_index_methylseq/main.nf':
 --- subworkflows/nf-core/fasta_index_methylseq/main.nf
 +++ subworkflows/nf-core/fasta_index_methylseq/main.nf
-@@ -17,6 +17,7 @@
-     bwamem_index     // channel: [ val(meta), [ bwamem index ] ]
-     aligner          // string: bismark, bismark_hisat, bwameth or bwamem
+@@ -22,6 +22,7 @@
+     bwamem_index     // channel: [ val(meta), [ bwamem index ] ] (bwa-mem3 `--meth` index when aligner is bwamem3)
+     aligner          // string: bismark, bismark_hisat, bwameth, bwamem or bwamem3
      collecthsmetrics // boolean: whether to run picard collecthsmetrics
 +    methurator       // boolean: whether to run methurator
      use_mem2         // boolean: generate mem2 index if no index provided, and bwameth is selected
  
      main:
-@@ -133,9 +134,9 @@
+@@ -145,9 +146,9 @@
      }
  
      /*
 -    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
 +    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool or methurator tool
      */
--    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics) {
-+    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics || methurator) {
+-    if (aligner in ['bwameth', 'bwamem', 'bwamem3'] || collecthsmetrics) {
++    if (aligner in ['bwameth', 'bwamem', 'bwamem3'] || collecthsmetrics || methurator) {
          // already existing fasta index
          if (fasta_index) {
              ch_fasta_index = fasta_index

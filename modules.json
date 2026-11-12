@@ -5,6 +5,11 @@
         "https://github.com/nf-core/modules.git": {
             "modules": {
                 "nf-core": {
+                    "bcftools/stats": {
+                        "branch": "master",
+                        "git_sha": "ed7a2286df416088793e62fa6a740d07974d0ff8",
+                        "installed_by": ["bam_taps_conversion"]
+                    },
                     "bedtools/intersect": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
@@ -52,14 +57,23 @@
                     },
                     "bwa/mem": {
                         "branch": "master",
-                        "git_sha": "2fb127c8fd13de0adaa676df7169131e45c0b114",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["fastq_align_bwa"]
+                    },
+                    "bwamem3/index": {
+                        "branch": "master",
+                        "git_sha": "d9d44fa4a5048f6af0d785ab973f5e49fb3ecb60",
+                        "installed_by": ["fasta_index_methylseq"]
+                    },
+                    "bwamem3/mem": {
+                        "branch": "master",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
+                        "installed_by": ["fastq_align_dedup_bwamem3", "modules"]
                     },
                     "bwameth/align": {
                         "branch": "master",
-                        "git_sha": "47eb51529f3a6eabb7da7cd2d22b327e67066eee",
-                        "installed_by": ["fastq_align_dedup_bwameth"],
-                        "patch": "modules/nf-core/bwameth/align/bwameth-align.diff"
+                        "git_sha": "acdb643bad6e7377d5d3b983577d71f51d336d0d",
+                        "installed_by": ["fastq_align_dedup_bwameth"]
                     },
                     "bwameth/index": {
                         "branch": "master",
@@ -93,12 +107,12 @@
                     },
                     "methyldackel/extract": {
                         "branch": "master",
-                        "git_sha": "f8eeebe6800a0a501ca1dc426b8057c3965047d5",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_methyldackel", "fastq_align_dedup_bwameth"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
-                        "git_sha": "f8eeebe6800a0a501ca1dc426b8057c3965047d5",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_methyldackel", "fastq_align_dedup_bwameth"]
                     },
                     "multiqc": {
@@ -108,17 +122,17 @@
                     },
                     "parabricks/fq2bam": {
                         "branch": "master",
-                        "git_sha": "f0b0dc3c3f001b1b7bf814a3c353baecbab17ea1",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["fastq_align_dedup_bwamem"]
                     },
                     "parabricks/fq2bammeth": {
                         "branch": "master",
-                        "git_sha": "f0b0dc3c3f001b1b7bf814a3c353baecbab17ea1",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["fastq_align_dedup_bwameth"]
                     },
                     "picard/addorreplacereadgroups": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["fastq_align_dedup_bwamem"]
                     },
                     "picard/bedtointervallist": {
@@ -138,8 +152,12 @@
                     },
                     "picard/markduplicates": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
-                        "installed_by": ["fastq_align_dedup_bwamem", "fastq_align_dedup_bwameth"]
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": [
+                            "fastq_align_dedup_bwamem",
+                            "fastq_align_dedup_bwamem3",
+                            "fastq_align_dedup_bwameth"
+                        ]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
@@ -158,53 +176,63 @@
                     },
                     "rastair/call": {
                         "branch": "master",
-                        "git_sha": "20ff6c8d298d29bc00d3ef11cda614dac5f77ce8",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/mbias": {
                         "branch": "master",
-                        "git_sha": "20ff6c8d298d29bc00d3ef11cda614dac5f77ce8",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/mbiasparser": {
                         "branch": "master",
-                        "git_sha": "a4f1768a3026017b92a7e5d1c8b0fb9ac3efa3a9",
-                        "installed_by": ["bam_taps_conversion"],
-                        "patch": "modules/nf-core/rastair/mbiasparser/rastair-mbiasparser.diff"
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair/methylkit": {
                         "branch": "master",
-                        "git_sha": "0dca361fb441760fb333467b3f5800d34490fb86",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["bam_taps_conversion"]
+                    },
+                    "rastair2/call": {
+                        "branch": "master",
+                        "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
+                        "installed_by": ["bam_taps_conversion", "modules"]
+                    },
+                    "rastair2/mbias": {
+                        "branch": "master",
+                        "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "samtools/faidx": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
                     "samtools/flagstat": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["bam_stats_samtools", "fastq_align_dedup_bwameth"]
                     },
                     "samtools/idxstats": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["bam_stats_samtools"]
                     },
                     "samtools/index": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": [
                             "bam_sort_stats_samtools",
                             "fastq_align_dedup_bismark",
                             "fastq_align_dedup_bwamem",
+                            "fastq_align_dedup_bwamem3",
                             "fastq_align_dedup_bwameth"
                         ]
                     },
                     "samtools/sort": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": [
                             "bam_sort_stats_samtools",
                             "fastq_align_dedup_bismark",
@@ -213,7 +241,7 @@
                     },
                     "samtools/stats": {
                         "branch": "master",
-                        "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["bam_stats_samtools", "fastq_align_dedup_bwameth"]
                     },
                     "trimgalore": {
@@ -232,23 +260,24 @@
                 "nf-core": {
                     "bam_methyldackel": {
                         "branch": "master",
-                        "git_sha": "f8eeebe6800a0a501ca1dc426b8057c3965047d5",
+                        "git_sha": "984af83497f42f8ed5f9f2c5acbb775f8e928f02",
                         "installed_by": ["subworkflows"]
                     },
                     "bam_sort_stats_samtools": {
                         "branch": "master",
-                        "git_sha": "156feda0cb6589cd29c04902004fa3b53bc00205",
+                        "git_sha": "a582d5633f7df32396681ef4458068e2b509ca91",
                         "installed_by": ["fastq_align_bwa", "fastq_align_dedup_bwamem"]
                     },
                     "bam_stats_samtools": {
                         "branch": "master",
-                        "git_sha": "156feda0cb6589cd29c04902004fa3b53bc00205",
-                        "installed_by": ["bam_sort_stats_samtools"]
+                        "git_sha": "a582d5633f7df32396681ef4458068e2b509ca91",
+                        "installed_by": ["bam_sort_stats_samtools", "fastq_align_dedup_bwamem3"]
                     },
                     "bam_taps_conversion": {
                         "branch": "master",
-                        "git_sha": "a4f1768a3026017b92a7e5d1c8b0fb9ac3efa3a9",
-                        "installed_by": ["subworkflows"]
+                        "git_sha": "9b7485dc7a1b3f43a36b54a3e4a77e1ed17d5bc5",
+                        "installed_by": ["subworkflows"],
+                        "patch": "subworkflows/nf-core/bam_taps_conversion/bam_taps_conversion.diff"
                     },
                     "fasta_index_bismark_bwameth": {
                         "branch": "master",
@@ -257,29 +286,34 @@
                     },
                     "fasta_index_methylseq": {
                         "branch": "master",
-                        "git_sha": "3ffe3a3819b7778ad88ade92c93f2c7fd9789d49",
+                        "git_sha": "9f33d5b46919fb18bca6044a3ead2dd215c7e942",
                         "installed_by": ["subworkflows"],
                         "patch": "subworkflows/nf-core/fasta_index_methylseq/fasta_index_methylseq.diff"
                     },
                     "fastq_align_bwa": {
                         "branch": "master",
-                        "git_sha": "cbb7a6362981f07d2c26e43f8186025320569ffd",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["fastq_align_dedup_bwamem"]
                     },
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
-                        "git_sha": "ab0a9bbac4178bed819d0d35e23a099bd7477c27",
-                        "installed_by": ["subworkflows"],
-                        "patch": "subworkflows/nf-core/fastq_align_dedup_bismark/fastq_align_dedup_bismark.diff"
+                        "git_sha": "ce6f52deb738506cf6d1cac648cb12fa9cc723ff",
+                        "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bwamem": {
                         "branch": "master",
-                        "git_sha": "cbb7a6362981f07d2c26e43f8186025320569ffd",
+                        "git_sha": "a582d5633f7df32396681ef4458068e2b509ca91",
+                        "installed_by": ["subworkflows"],
+                        "patch": "subworkflows/nf-core/fastq_align_dedup_bwamem/fastq_align_dedup_bwamem.diff"
+                    },
+                    "fastq_align_dedup_bwamem3": {
+                        "branch": "master",
+                        "git_sha": "8de7382b73071351977d621eaa05750d189534e7",
                         "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bwameth": {
                         "branch": "master",
-                        "git_sha": "d1e879f0959ce1be59f014e0ad6d2f50b08f1172",
+                        "git_sha": "a582d5633f7df32396681ef4458068e2b509ca91",
                         "installed_by": ["subworkflows"]
                     },
                     "utils_nextflow_pipeline": {

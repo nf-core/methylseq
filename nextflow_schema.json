@@ -125,6 +125,13 @@
                     "help_text": "Directory for a bwa-mem genome reference index. Only used when using the bwa-mem aligner.\n\nNote that this is not a complete path, but the directory containing the reference. For example, if you have file paths such as `/path/to/ref/genome.fa.bwamem.c2t.bwt`, you should specify `/path/to/ref/`.",
                     "fa_icon": "far fa-dot-circle"
                 },
+                "bwamem3_index": {
+                    "type": "string",
+                    "format": "path",
+                    "description": "Path to a bwa-mem3 methylation index (built with `bwa-mem3 index --meth`): a directory, a .tar.gz, or an index prefix.",
+                    "help_text": "Only used with `--aligner bwamem3`; the same index serves TAPS and bisulfite data. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta` (use `--save_reference` to keep it). For human and other large genomes, build it once beforehand (`bwa-mem3 index --meth genome.fa`, roughly 100 GB of memory for hg38) and pass it here: see the usage docs.",
+                    "fa_icon": "far fa-dot-circle"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",
@@ -152,8 +159,8 @@
                     "default": "bismark",
                     "description": "Alignment tool to use.",
                     "fa_icon": "fas fa-dot-circle",
-                    "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem"],
-                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`."
+                    "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem", "bwamem3"],
+                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\n`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment. With `--taps` it runs in TAPS mode (`mem --meth=taps`) and rastair calls methylation (see `--taps_caller`); without `--taps` it aligns bisulfite/EM-seq reads (`mem --meth`) and MethylDackel extracts methylation."
                 },
                 "use_mem2": {
                     "type": "boolean",
@@ -175,7 +182,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-outdent",
                     "description": "Preset for working with TET-assisted pyridine borane sequencing (TAPS) libraries.",
-                    "help_text": "Specify this parameter when working with TAPS libraries.\n\nThis is also set if you set the aligner to `bwamem`."
+                    "help_text": "Specify this parameter when working with TAPS libraries.\n\nThis is also set if you set the aligner to `bwamem`. With `--aligner bwamem3` it selects TAPS mode (`bwa-mem3 mem --meth=taps`); without it, bwa-mem3 aligns bisulfite/EM-seq data."
                 },
                 "pbat": {
                     "type": "boolean",
@@ -333,14 +340,14 @@
                     "type": "integer",
                     "default": 0,
                     "description": "Ignore methylation in last n bases of 3' end of R1",
-                    "help_text": "Ignore the first <int> bp from the 5' end of Read 2 of paired-end sequencing results only. Since the first couple of bases in Read 2 of BS-Seq experiments show a severe bias towards non-methylation as a result of end-repairing sonicated fragments with unmethylated cytosines (see M-bias plot), it is recommended that the first couple of bp of Read 2 are removed before starting downstream analysis. Please see the section on M-bias plots in the Bismark User Guide for more details.",
+                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "ignore_3prime_r2": {
                     "type": "integer",
                     "default": 2,
                     "description": "Ignore methylation in last n bases of 3' end of R2",
-                    "help_text": "Ignore the last <int> bp from the 3' end of Read 1 (or single-end alignment files) when processing the methylation call string. This can remove unwanted biases from the end of reads.",
+                    "help_text": "Ignore the last <int> bp from the 3' end of Read 2 of paired-end sequencing results only. This can remove unwanted biases from the end of reads.",
                     "fa_icon": "far fa-eye-slash"
                 },
                 "known_splices": {
@@ -432,19 +439,41 @@
         "rastair_options": {
             "title": "rastair options",
             "type": "object",
-            "description": "Parameters specific to the RASTAIR workflow",
+            "description": "Parameters for TAPS methylation calling with rastair",
             "default": "",
             "fa_icon": "fas fa-robot",
             "properties": {
+                "taps_caller": {
+                    "type": "string",
+                    "default": "rastair",
+                    "enum": ["rastair", "rastair2"],
+                    "description": "Methylation caller for TAPS data.",
+                    "help_text": "`rastair` (default) runs rastair 0.8 (GPL-3.0): M-bias, methylation calls and methylKit output.\n\n`rastair2` runs rastair version 2, which jointly calls SNVs, indels and CpG methylation and writes a bgzipped VCF and CpG BED. rastair version 2 is free for non-commercial research use only; commercial use requires a license from Oxford University Innovation. It also requires `--accept_rastair2_license`.",
+                    "fa_icon": "fas fa-robot"
+                },
+                "accept_rastair2_license": {
+                    "type": "boolean",
+                    "description": "Confirm that your use of rastair version 2 complies with its non-commercial license.",
+                    "help_text": "Required with `--taps_caller rastair2`. rastair version 2 is free for non-commercial research use only. Commercial use (including paid services or product development) requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice \"Copyright © 2025, University of Oxford\".",
+                    "fa_icon": "fas fa-file-signature"
+                },
                 "trim_OT": {
                     "type": "string",
-                    "default": "0,0,10,0",
-                    "description": "Nucleotides to exclude from methylation calling on Original Top (strand) reads, following this pattern: R1 start, R1 end, R2 start, R2 end"
+                    "description": "Bases to ignore on Original Top (OT) reads in TAPS methylation calls: R1 start, R1 end, R2 start, R2 end. Replaces the M-bias estimate.",
+                    "pattern": "^\\d+,\\d+,\\d+,\\d+$",
+                    "help_text": "By default, the TAPS callers estimate these from the M-bias of each sample (rastair 0.8: `rastair mbias`; rastair version 2: `rastair2 mbias`, paired-end samples only), and use `0,0,0,0` (no trimming) when they can't. Setting `--trim_OT` or `--trim_OB` (for example `0,0,10,0`) skips the estimate for both strands and callers; an unset one means no trimming on that strand."
                 },
                 "trim_OB": {
                     "type": "string",
-                    "default": "0,0,10,0",
-                    "description": "Nucleotides to exclude from methylation calling on Original Bottom (strand) reads, following this pattern: R1 start, R1 end, R2 start, R2 end"
+                    "description": "Bases to ignore on Original Bottom (OB) reads in TAPS methylation calls: R1 start, R1 end, R2 start, R2 end. Replaces the M-bias estimate.",
+                    "pattern": "^\\d+,\\d+,\\d+,\\d+$",
+                    "help_text": "By default, the TAPS callers estimate these from the M-bias of each sample (rastair 0.8: `rastair mbias`; rastair version 2: `rastair2 mbias`, paired-end samples only), and use `0,0,0,0` (no trimming) when they can't. Setting `--trim_OT` or `--trim_OB` (for example `0,0,10,0`) skips the estimate for both strands and callers; an unset one means no trimming on that strand."
+                },
+                "rastair2_mbias_region": {
+                    "type": "string",
+                    "description": "Region used to estimate M-bias trims with rastair version 2 (for example a methylated spike-in contig).",
+                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal, and is needed for shallow libraries: with too few reads in the region the estimate is no trimming. Ignored with `--trim_OT`/`--trim_OB`.",
+                    "fa_icon": "fas fa-ruler-horizontal"
                 }
             }
         },

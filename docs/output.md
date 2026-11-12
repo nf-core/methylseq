@@ -188,6 +188,9 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `sample.bam`
   - Aligned reads in BAM format.
   - **NB:** Only saved if `--save_align_intermeds`, `--skip_deduplication` or `--rrbs` is specified when running the pipeline.
+- `sample.sorted.bam`
+  - Aligned reads in a sorted BAM file.
+  - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified.
 - `logs/sample_PE_report.txt`
   - Log file giving summary statistics about alignment.
 - `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
@@ -210,14 +213,17 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
 - `logs/samtools_stats/sample_stats.txt`
   - Summary file giving lots of metrics about the aligned BAM file.
 
-**bwa-mem output directory: `results/bwamem/alignments/`**
+**bwa-mem / bwa-mem3 output directory: `results/bwamem/alignments/` or `results/bwamem3/alignments/`**
 
+- `sample.bam` (bwa-mem only)
+  - Aligned reads as written by bwa-mem (or Parabricks `fq2bam` with `-profile gpu`).
+  - **NB:** Only saved if `--save_align_intermeds` is specified.
 - `sample.sorted.bam`
   - Sorted aligned reads in BAM format.
-  - **NB:** Only saved if `--save_align_intermeds` or `--skip_deduplication` is specified.
+  - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified, and for bwa-mem3 also with `--save_align_intermeds`.
 - `sample.sorted.bam.bai`
   - Index of sorted BAM file.
-  - **NB:** Only saved if `--save_align_intermeds` or `--skip_deduplication` is specified.
+  - **NB:** Saved with `sample.sorted.bam`.
 - `samtools_stats/sample.flagstat`
   - Summary file describing the number of reads which aligned in different ways.
 - `samtools_stats/sample.stats`
@@ -247,7 +253,7 @@ This step removes alignments with identical mapping position to avoid technical 
 - `logs/sample.sorted.markDups_metrics.txt`
   - Log file giving summary statistics about deduplication.
 
-**bwa-mem output directory: `results/bwamem/deduplicated/`**
+**bwa-mem / bwa-mem3 output directory: `results/bwamem/deduplicated/` or `results/bwamem3/deduplicated/`**
 
 - `sample.markdup.sorted.bam`
   - Sorted BAM file with duplicated reads marked.
@@ -298,9 +304,30 @@ Filename abbreviations stand for the following reference alignment strands:
 - `mbias/sample.rastair_mbias.txt`
   - Average conversion rate per position on the read per read pair (R1 and R2) original strand (OT, OB).
 - `mbiasparser/sample.rastair_mbias_processed.csv`
-  - File reporting the dynamic trimming to be passed to the rastair/call process.
+  - Trims estimated from the M-bias and passed to `rastair call` (line 1 `--nOT`, line 2 `--nOB`). Not produced when `--trim_OT`/`--trim_OB` are set.
 - `methylkit/sample.rastair_methylkit.txt.gz`
   - Individual methylation calls in a format digestible by MethylKit R package.
+
+**rastair version 2 output directory (`--taps_caller rastair2`): `results/rastair2/call/`**
+
+- `sample.vcf.gz`, `sample.vcf.gz.tbi`
+  - bgzipped VCF with variant genotypes (`GT`/`GQ`/`PL`) and per-CpG methylation (`M5mC`, `DPM5mC`, `ADM5mC`), and its tabix index.
+- `sample.bed.gz`, `sample.bed.gz.tbi`
+  - bgzipped BED of per-position CpG methylation (beta estimate, modified and unmodified read counts, genotype), and its tabix index.
+
+**`results/rastair2/mbias/`** (paired-end samples, unless `--trim_OT`/`--trim_OB` are set)
+
+- `sample.mbias.html`
+  - rastair version 2 M-bias report: methylation by position in read for each contig in `--rastair2_mbias_region`, with the suggested trims drawn on the plots.
+- `sample.<contig>.cutoffs.txt`
+  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed.
+
+**`results/rastair2/bcftools_stats/`**
+
+- `sample.bcftools_stats.txt`
+  - `bcftools stats` of the rastair version 2 VCF (SNV and indel counts, transitions/transversions), shown in the MultiQC report.
+
+The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs, so spike-in controls (shown in the per-contig table) do not skew them; references without chromosome-like contig names use all contigs.
 
 ### Targeted Sequencing
 
@@ -310,8 +337,8 @@ If `--run_targeted_sequencing` is set to `true`, the pipeline performs additiona
 
 BedGraph files are filtered using the BED file passed to `--target_regions_file`.
 
-**Bismark output directory: `results/bismark/methylation_calls/bedGraph/`**
-**bwa-meth output directory: `results/methyldackel/`**
+**Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
+**bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**
 
 - `*.targeted.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.

@@ -55,6 +55,10 @@
 
 - [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/)
 
+  > rastair version 2 (`--taps_caller rastair2`) is distributed under a non-commercial license by the University of Oxford ([rastair.com](https://www.rastair.com)). Publications using its results must include the notice "Copyright © 2025, University of Oxford".
+
+- [bwa-mem3](https://github.com/fg-labs/bwa-mem3)
+
 - [Samtools](https://doi.org/10.1093/gigascience/giab008)
 
   > Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li, Twelve years of SAMtools and BCFtools, GigaScience, Volume 10, Issue 2, February 2021, giab008, doi: [10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)

@@ -40,11 +40,19 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bwamem3_with_bwamem3_index",
+            description: "Params: bwamem3 with bwamem3-index",
+            params: [
+                aligner: "bwamem3",
+                bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz"
+            ]
+        ],
+        [
             name: "bismark_hisat_with_hisat2_index",
             description: "Params: bismark_hisat with hisat2-index",
             params: [
                 aligner: "bismark_hisat",
-                hisat2_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/HISAT2_Index.tar.gz"
+                bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
             ]
         ]
     ]

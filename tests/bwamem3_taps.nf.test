@@ -1,0 +1,147 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf - bwa-mem3 with TAPS"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    test("Params: bwamem3 | taps") {
+        when {
+            params {
+                input       = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta       = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner     = "bwamem3"
+                taps        = true
+                outdir      = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            // the M-bias PDF embeds its creation date
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // pooled methylation per contig, from rows of [ contig, methylated, covered ]
+            def pooledMethylation = { rows ->
+                rows.groupBy { row -> row[0] }.collectEntries { contig, contig_rows ->
+                    [ (contig): contig_rows.sum { row -> row[1] } / contig_rows.sum { row -> row[2] } ]
+                }
+            }
+            // methylKit columns: chrBase, chr, base, strand, coverage, freqC, freqT
+            def methylation = pooledMethylation(
+                path("$outputDir/rastair/methylkit/taps_pe.rastair_methylkit.txt.gz").linesGzip.drop(1).collect { line ->
+                    def fields = line.split('\t')
+                    [ fields[1], (fields[4] as double) * (fields[5] as double) / 100, fields[4] as double ]
+                }
+            )
+            assertAll(
+                { assert workflow.success },
+                { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
+                // TAPS reads methylated C as T: the methylated lambda spike-in should be high and the unmodified one low
+                { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                { assert methylation['2kb_3_Unmodified'] < 0.1 },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_license = true
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            // the M-bias HTML report embeds its plots
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // pooled methylation per contig, from rows of [ contig, methylated, covered ]
+            def pooledMethylation = { rows ->
+                rows.groupBy { row -> row[0] }.collectEntries { contig, contig_rows ->
+                    [ (contig): contig_rows.sum { row -> row[1] } / contig_rows.sum { row -> row[2] } ]
+                }
+            }
+            // CpG BED columns: chr, start, end, name, beta_est, strand, unmod, mod, ..., cpg (REF for reference CpGs)
+            def methylation = pooledMethylation(
+                path("$outputDir/rastair2/call/taps_pe.bed.gz").linesGzip.findAll { line -> !line.startsWith('#') }.collect { line ->
+                    def fields = line.split('\t')
+                    [ fields[0], fields[7] as double, (fields[6] as double) + (fields[7] as double) ]
+                }
+            )
+            assertAll(
+                { assert workflow.success },
+                { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                { assert methylation['2kb_3_Unmodified'] < 0.1 },
+                { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
+                { assert !file("$outputDir/rastair2/mbias/taps_se.mbias.html").exists() },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2 | trim_OT, trim_OB") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_license = true
+                trim_OT                 = "0,0,10,0"
+                trim_OB                 = "0,0,10,0"
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_path = getAllFilesFromDir(params.outdir, include: ['rastair2/call/*.bed.gz'])
+            assertAll(
+                { assert workflow.success },
+                { assert !file("$outputDir/rastair2/mbias").exists() },
+                { assert path("$outputDir/rastair2/call/taps_pe.vcf.gz").linesGzip.any { line -> line.startsWith('##rastairCommand=') && line.contains('--nOT 0,0,10,0') && line.contains('--nOB 0,0,10,0') } },
+                { assert snapshot(stable_path).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2 - license not accepted") {
+        when {
+            params {
+                aligner     = "bwamem3"
+                taps        = true
+                taps_caller = "rastair2"
+                outdir      = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('--accept_rastair2_license') } }
+            )
+        }
+    }
+
+}

@@ -14,6 +14,7 @@ include { CAT_FASTQ                     } from '../../modules/nf-core/cat/fastq/
 include { FASTQ_ALIGN_DEDUP_BISMARK     } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH     } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { FASTQ_ALIGN_DEDUP_BWAMEM      } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
+include { FASTQ_ALIGN_DEDUP_BWAMEM3     } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem3/main'
 include { PICARD_MARKDUPLICATES         } from '../../modules/nf-core/picard/markduplicates/main'
 include { PICARD_ADDORREPLACEREADGROUPS } from '../../modules/nf-core/picard/addorreplacereadgroups/main'
 include { SAMTOOLS_INDEX                } from '../../modules/nf-core/samtools/index/main'
@@ -23,6 +24,7 @@ include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
+include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
@@ -51,12 +53,16 @@ workflow METHYLSEQ {
     ch_reads = channel.empty()
     ch_bam = channel.empty()
     ch_bai = channel.empty()
-    ch_gzi = channel.empty()
+    // No GZI: the FASTA reaching CollectHsMetrics is uncompressed. An empty channel here would make the targeted subworkflow's .combine() emit nothing
+    ch_gzi = channel.value([[:], []])
     ch_bedgraph = channel.empty()
     ch_coverage = channel.empty()
     ch_aligner_mqc = channel.empty()
     ch_rastair_mbias = channel.empty()
     ch_rastair_call = channel.empty()
+    ch_rastair2_vcf = channel.empty()
+    ch_rastair2_bed = channel.empty()
+    ch_rastair2_mqc = channel.empty()
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()
@@ -114,8 +120,10 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
-    if (params.taps && params.aligner != 'bwamem') {
-        log.info("TAPS protocol detected and aligner is not 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data.")
+    // TAPS: rastair calls methylation. bwa-mem3 aligns TAPS (--taps) or bisulfite/EM-seq data; bwa-mem implies TAPS.
+    def taps_aligner = params.aligner == 'bwamem' || (params.aligner == 'bwamem3' && params.taps)
+    if (params.taps && !(params.aligner in ['bwamem', 'bwamem3'])) {
+        log.info("TAPS protocol detected and aligner is not 'bwamem' or 'bwamem3'. We recommend using bwa-mem3 (--aligner bwamem3) for TAPS libraries.")
     }
 
     // Aligner: bismark or bismark_hisat
@@ -184,28 +192,60 @@ workflow METHYLSEQ {
             ch_bwamem_inputs.reads,
             ch_bwamem_inputs.fasta_fai,
             ch_bwamem_inputs.bwamem_index,
-            params.skip_deduplication,
+            params.skip_deduplication || params.rrbs,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
             'bam',
             [[:], []],
-            [[:], []],
+            [[:], [], []],
         )
 
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
         ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.index
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
     }
+    else if (params.aligner == 'bwamem3') {
+
+        ch_bwamem3_inputs = ch_reads
+            .combine(ch_fasta)
+            .combine(ch_fasta_index)
+            .combine(ch_bwamem_index)
+            .multiMap { meta, reads, meta_fasta, fasta, _meta_fasta_index, fasta_index, meta_bwamem3, bwamem3_index ->
+                reads: [meta, reads]
+                fasta_fai: [meta_fasta, fasta, fasta_index]
+                bwamem3_index: [meta_bwamem3, bwamem3_index]
+            }
+
+        FASTQ_ALIGN_DEDUP_BWAMEM3(
+            ch_bwamem3_inputs.reads,
+            ch_bwamem3_inputs.fasta_fai,
+            ch_bwamem3_inputs.bwamem3_index,
+            params.skip_deduplication || params.rrbs,
+        )
+        ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
+        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index
+        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM3.out.multiqc
+    }
     else {
-        error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth' or 'bwamem'.")
+        error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth', 'bwamem' or 'bwamem3'.")
     }
 
     //
     // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
     //
-    if (params.taps || params.aligner == 'bwamem') {
+    if (params.taps || taps_aligner) {
+        ch_taps_bam_bai = ch_bam.join(ch_bai)
 
-        ch_bam_bai = ch_bam.join(ch_bai)
-        ch_taps_inputs = ch_bam_bai
+        if (params.taps_caller == 'rastair') {
+            ch_taps_bam_bai
+                .filter { meta, _bam, _bai -> meta.single_end }
+                .map { meta, _bam, _bai -> meta.id }
+                .collect()
+                .subscribe { ids ->
+                    log.warn("rastair 0.8 (--taps_caller rastair) only calls properly paired reads, so these single-end samples get no methylation calls: ${ids.join(', ')}. Use --taps_caller rastair2 for single-end TAPS data.")
+                }
+        }
+
+        ch_taps_inputs = ch_taps_bam_bai
             .combine(ch_fasta)
             .combine(ch_fasta_index)
             .multiMap { meta, bam, bai, _meta_fasta, fasta, _meta_fai, fai ->
@@ -215,19 +255,36 @@ workflow METHYLSEQ {
                 fasta_index: [meta, fai]
             }
 
+        // --trim_OT/--trim_OB replace the M-bias estimate for both callers; an unset one means no trimming
+        def taps_trims = (params.trim_OT || params.trim_OB)
+            ? [params.trim_OT ?: '0,0,0,0', params.trim_OB ?: '0,0,0,0']
+            : []
+
         BAM_TAPS_CONVERSION(
             ch_taps_inputs.bam,
             ch_taps_inputs.bai,
             ch_taps_inputs.fasta,
             ch_taps_inputs.fasta_index,
+            params.taps_caller == 'rastair2',
+            taps_trims,
         )
         ch_rastair_mbias = BAM_TAPS_CONVERSION.out.mbias
-        // channel: [ val(meta), [ txt ] ]
         ch_rastair_call = BAM_TAPS_CONVERSION.out.call
-        // channel: [ val(meta), [ txt ] ]
-        ch_versions = ch_versions.mix(BAM_TAPS_CONVERSION.out.versions)
+        ch_rastair2_vcf = BAM_TAPS_CONVERSION.out.vcf
+        ch_rastair2_bed = BAM_TAPS_CONVERSION.out.bed
+
+        if (params.taps_caller == 'rastair2') {
+            //
+            // MultiQC: variant QC (bcftools stats) and CpG methylation summary of the rastair 2 output
+            //
+            RASTAIR2_SUMMARY(BAM_TAPS_CONVERSION.out.bed)
+            ch_rastair2_mqc = BAM_TAPS_CONVERSION.out.bcftools_stats
+                .mix(RASTAIR2_SUMMARY.out.mqc)
+                .map { _meta, files -> files }
+                .flatten()
+        }
     }
-    else if (!params.taps && params.aligner == 'bwameth') {
+    else if (!params.taps && params.aligner in ['bwameth', 'bwamem3']) {
 
         ch_bam_bai = ch_bam.join(ch_bai)
         ch_methyldackel_inputs = ch_bam_bai
@@ -267,7 +324,7 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
     if (params.run_targeted_sequencing) {
-        if (params.taps || params.aligner == 'bwamem') {
+        if (params.taps || taps_aligner) {
             error("ERROR: --run_targeted_sequencing can't be running using rastair (methylation caller for TAPS) ")
         }
         if (!params.target_regions_file) {
@@ -315,7 +372,7 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_methurator` param.
     //
     if (params.run_methurator) {
-        if (params.taps || params.aligner == 'bwamem') {
+        if (params.taps || taps_aligner) {
             error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
         }
         ch_methurator_inputs = ch_bam
@@ -380,6 +437,7 @@ workflow METHYLSEQ {
             ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { it[1] }.ifEmpty([]))
         }
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_rastair2_mqc.collect().ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { it[1] })
         }
@@ -437,6 +495,8 @@ workflow METHYLSEQ {
     bai            = ch_bai // channel: [ val(meta), path(bai) ]
     rastair_mbias  = ch_rastair_mbias // channel: [ val(meta), path(rastair_mbias) ]
     rastair_call   = ch_rastair_call // channel: [ val(meta), path(rastair_call) ]
+    rastair2_vcf   = ch_rastair2_vcf // channel: [ val(meta), path(vcf.gz) ]
+    rastair2_bed   = ch_rastair2_bed // channel: [ val(meta), path(bed.gz) ]
     methylkit      = ch_methylkit // channel: [ val(meta), path(methylkit) ]
     mbias          = ch_mbias // channel: [ val(meta), path(mbias) ]
     bedgraph       = ch_bedgraph // channel: [ val(meta), path(bedgraph) ]

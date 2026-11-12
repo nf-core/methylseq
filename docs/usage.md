@@ -142,18 +142,78 @@ The pipeline supports **TAPS data analysis**, which uses a different approach to
 | **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
 
 > [!NOTE]
-> We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data.
+> We recommend `--aligner bwamem3` for TAPS data: it aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth --taps` also work.
 
 #### Automatic Parameter Configuration
 
 When `--taps` is specified, the pipeline automatically:
 
 - Uses Rastair for methylation calling (TAPS conversion analysis)
-- Validates aligner compatibility (prevents using Bismark with TAPS data)
+- Validates aligner compatibility (stops with an error for `--aligner bismark` or `bismark_hisat`)
 - Configures appropriate deduplication (Picard MarkDuplicates for TAPS)
 
 > [!NOTE]
 > When using `--aligner bwamem`, Rastair is automatically used for methylation calling even without the `--taps` flag, as bwamem is optimized for TAPS data.
+
+#### bwa-mem3 (TAPS and bisulfite)
+
+`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. The data type decides the mode:
+
+- With `--taps`, it runs in TAPS mode (`bwa-mem3 mem --meth=taps`, methylated C->T) and rastair calls methylation (see `--taps_caller`).
+- Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`.
+
+Both modes use the same index. bwa-mem3 assumes directional libraries (read 1 C->T, read 2 G->A), so `--pbat`, `--non_directional`, `--zymo` and `--single_cell` are not supported with `--aligner bwamem3`.
+
+It needs an index built with `bwa-mem3 index --meth`. Without `--bwamem3_index`, the pipeline builds one from `--fasta` (keep it with `--save_reference`), which is fine for small genomes:
+
+```bash
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --outdir results -profile docker
+```
+
+##### bwa-mem3 index for human and other large genomes
+
+For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. Building a `--meth` index for hg38 takes roughly 100 GB of memory (scaled from measurements on smaller genomes). The pipeline's `BWAMEM3_INDEX` step requests more than that (about 180 GB for hg38), so on machines with less memory it fails unless you cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits).
+
+To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
+
+```bash
+bwa-mem3 index --meth hg38.fa
+```
+
+This writes `hg38.fa.{amb,ann,bwt.2bit.64,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` next to the FASTA. Alignment doesn't read the intermediate `hg38.fa.meth.fa` or the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), so you can delete both. `--bwamem3_index` accepts any of:
+
+- the index prefix, e.g. `--bwamem3_index s3://bucket/genomes/hg38.fa`. The pipeline then stages only the files alignment reads: `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. This is useful when the index sits in a shared genomes folder.
+- a directory that contains the index files.
+- a `.tar.gz` of that directory.
+
+For hg38, the files alignment reads come to about 23 GB, most of it `hg38.fa.meth.bwt.2bit.64` (about 21 GB). Alignment loads them into memory: on hg38, `BWAMEM3_MEM` peaked at 23 GB with the default `process_high` resources (72 GB, 12 CPUs), so it needs at least about 24 GB. Most of that is the index, but per-thread buffers grow with the number of reads in flight, so leave headroom for large samples.
+
+Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must match the `--fasta` used for the rest of the run.
+
+#### rastair version 2 (`--taps_caller rastair2`)
+
+`--taps_caller rastair2` replaces the rastair 0.8 steps with `rastair call` from rastair version 2, which jointly calls SNVs, indels and CpG methylation. It writes a bgzipped VCF (genotypes and per-CpG methylation) and a CpG methylation BED, both tabix-indexed. Single-end samples are run with `--unpaired`, and `--non_directional`, `--pbat`, `--zymo` or `--single_cell` add `--guess-read-orientation`. rastair 0.8 assumes directional libraries.
+
+> [!WARNING]
+> rastair version 2 is free for non-commercial research use only. Commercial use (including providing paid services or developing products) requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). Run `rastair license` for the full terms. Publications using its results must include the notice "Copyright © 2025, University of Oxford". You must set `--accept_rastair2_license` to use it.
+
+```bash
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --aligner bwamem3 --taps --taps_caller rastair2 --accept_rastair2_license --outdir results -profile docker
+```
+
+#### TAPS read-end trimming (M-bias)
+
+Methylation calls near read ends can be biased (end repair, adapter ligation), so both TAPS callers ignore some bases at the read ends. By default each sample's trims are estimated from its M-bias, the methylation level by position in the read:
+
+- rastair 0.8 (`--taps_caller rastair`): `rastair mbias` over all reads, then `rastair/mbiasparser` picks the trims.
+- rastair version 2 (`--taps_caller rastair2`): `rastair2 mbias` on the reads in `--rastair2_mbias_region`. Its report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in, such as lambda, gives the clearest signal: for example `--rastair2_mbias_region J02459.1`. Use a spike-in for shallow libraries: with too few reads in the region, the estimate is no trimming. For example, a human TAPS library of 250,000 read pairs had about 3,000 CpG observations in the default region and got no trims (lambda methylation 0.96), while lambda as the region gave the same trims as rastair 0.8 (lambda 0.98).
+
+When the trims can't be estimated, nothing is trimmed (`0,0,0,0`). Both M-bias tools need properly paired reads, so single-end samples are never trimmed by the estimate.
+
+To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 end,R2 start,R2 end` bases to ignore on original top and bottom strand reads (for example `--trim_OT 0,0,10,0 --trim_OB 0,0,10,0`). This skips the estimate for both callers, and a strand you don't set is not trimmed.
+
+> [!WARNING]
+> rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about them at the start of the TAPS step. Use `--taps_caller rastair2` for single-end TAPS data.
 
 ### Targeted sequencing (optional)
 
@@ -305,6 +365,7 @@ For a detailed list of different options available, please refer to the official
 - [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
 - [bwa-meth](https://github.com/brentp/bwa-meth)
 - [bwa-mem](https://github.com/lh3/bwa)
+- [bwa-mem3](https://github.com/fg-labs/bwa-mem3)
 
 ### Running the `test` profile
 

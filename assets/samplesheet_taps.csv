@@ -1,0 +1,3 @@
+sample,fastq_1,fastq_2,genome
+taps_pe,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R1.fastq.gz,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R2.fastq.gz,
+taps_se,https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R1.fastq.gz,,
