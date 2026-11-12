@@ -19,12 +19,28 @@ nextflow_pipeline {
 
         then {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
-            // rastair 0.8 call output (and the methylKit file and M-bias PDF derived from it) is not reproducible between runs
-            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/call/*.txt', 'rastair/methylkit/*.txt.gz', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
+            // the M-bias PDF embeds its creation date
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // pooled methylation per contig, from rows of [ contig, methylated, covered ]
+            def pooledMethylation = { rows ->
+                rows.groupBy { row -> row[0] }.collectEntries { contig, contig_rows ->
+                    [ (contig): contig_rows.sum { row -> row[1] } / contig_rows.sum { row -> row[2] } ]
+                }
+            }
+            // methylKit columns: chrBase, chr, base, strand, coverage, freqC, freqT
+            def methylation = pooledMethylation(
+                path("$outputDir/rastair/methylkit/taps_pe.rastair_methylkit.txt.gz").linesGzip.drop(1).collect { line ->
+                    def fields = line.split('\t')
+                    [ fields[1], (fields[4] as double) * (fields[5] as double) / 100, fields[4] as double ]
+                }
+            )
             assertAll(
                 { assert workflow.success },
                 { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
+                // TAPS reads methylated C as T: the methylated lambda spike-in should be high and the unmodified one low
+                { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     stable_name,
@@ -54,8 +70,23 @@ nextflow_pipeline {
             // the M-bias HTML report embeds its plots
             def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html'], ignoreFile: 'tests/.nftignore')
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // pooled methylation per contig, from rows of [ contig, methylated, covered ]
+            def pooledMethylation = { rows ->
+                rows.groupBy { row -> row[0] }.collectEntries { contig, contig_rows ->
+                    [ (contig): contig_rows.sum { row -> row[1] } / contig_rows.sum { row -> row[2] } ]
+                }
+            }
+            // CpG BED columns: chr, start, end, name, beta_est, strand, unmod, mod, ..., cpg (REF for reference CpGs)
+            def methylation = pooledMethylation(
+                path("$outputDir/rastair2/call/taps_pe.bed.gz").linesGzip.findAll { line -> !line.startsWith('#') }.collect { line ->
+                    def fields = line.split('\t')
+                    [ fields[0], fields[7] as double, (fields[6] as double) + (fields[7] as double) ]
+                }
+            )
             assertAll(
                 { assert workflow.success },
+                { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
                 { assert !file("$outputDir/rastair2/mbias/taps_se.mbias.html").exists() },
                 { assert snapshot(

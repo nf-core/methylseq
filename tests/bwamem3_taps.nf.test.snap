@@ -192,10 +192,14 @@
                 "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,a45cc50f5c94d1ac7efbf067a1ad157e",
                 "samtools-stats-dp.txt:md5,4af163f374fe7e3c60bc4710450c22af",
                 "samtools_alignment_plot.txt:md5,bb50cb8139d02ab34c4a92b001466bf4",
+                "taps_pe.rastair_call.txt:md5,cb04a54eb21fc4fff3b58cea56b1e5b0",
+                "taps_se.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
                 "taps_pe.rastair_mbias.txt:md5,d424bb21910c7a076eeee0abf6e2a259",
                 "taps_se.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
                 "taps_pe.rastair_mbias_processed.csv:md5,f693c185316abb22a235c87537577e4e",
-                "taps_se.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91"
+                "taps_se.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
+                "taps_pe.rastair_methylkit.txt.gz:md5,ff9cfa7761bd233aafcd8165f9298941",
+                "taps_se.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445"
             ],
             [
                 [
@@ -208,7 +212,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:31:56.313359659",
+        "timestamp": "2026-11-12T15:08:58.070266819",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

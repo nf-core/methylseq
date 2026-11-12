@@ -74,4 +74,22 @@ nextflow_pipeline {
             }
         }
     }
+
+    test("Params: bwamem3 | pbat - not supported") {
+        when {
+            params {
+                aligner = "bwamem3"
+                pbat    = true
+                outdir  = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('--aligner bwamem3 only supports directional libraries') } }
+            )
+        }
+    }
+
 }

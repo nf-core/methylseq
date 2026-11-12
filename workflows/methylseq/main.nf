@@ -218,7 +218,7 @@ workflow METHYLSEQ {
             ch_bwamem3_inputs.reads,
             ch_bwamem3_inputs.fasta_fai,
             ch_bwamem3_inputs.bwamem3_index,
-            params.skip_deduplication,
+            params.skip_deduplication || params.rrbs,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
         ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index

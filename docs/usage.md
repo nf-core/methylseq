@@ -162,7 +162,7 @@ When `--taps` is specified, the pipeline automatically:
 - With `--taps`, it runs in TAPS mode (`bwa-mem3 mem --meth=taps`, methylated C->T) and rastair calls methylation (see `--taps_caller`).
 - Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`.
 
-Both modes use the same index.
+Both modes use the same index. bwa-mem3 assumes directional libraries (read 1 C->T, read 2 G->A), so `--pbat` and `--non_directional` are not supported with `--aligner bwamem3`.
 
 It needs an index built with `bwa-mem3 index --meth`. Without `--bwamem3_index`, the pipeline builds one from `--fasta` (keep it with `--save_reference`), which is fine for small genomes:
 

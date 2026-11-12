@@ -217,6 +217,13 @@ def validateInputParameters() {
             )
         }
     }
+    // bwa-mem3 `--meth` seeds read 1 as C->T and read 2 as G->A, so it only handles directional libraries
+    if (params.aligner == 'bwamem3' && (params.pbat || params.non_directional)) {
+        error(
+            "--aligner bwamem3 only supports directional libraries: --pbat and --non_directional are not supported. " +
+            "Use --aligner bismark for PBAT or non-directional libraries."
+        )
+    }
     // rastair 2 and newer is distributed under a non-commercial licence: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
         if (!(params.taps || params.aligner == 'bwamem')) {
@@ -276,7 +283,8 @@ def bwamem3IndexChannel(index) {
         return []
     }
     def index_path = file(index)
-    if (index.toString().endsWith('.gz') || index_path.isDirectory()) {
+    // Only archives go to UNTAR: an index prefix may itself end in .gz (bwa-mem3 index genome.fa.gz writes genome.fa.gz.amb, ...)
+    if (index.toString().endsWith('.tar.gz') || index_path.isDirectory()) {
         return channel.of([[id: index_path.baseName], index_path])
     }
     // `mem --meth` reads only .amb/.ann/.pac from the plain prefix; it seeds from the .meth index
