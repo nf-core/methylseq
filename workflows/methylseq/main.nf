@@ -324,12 +324,6 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
     if (params.run_targeted_sequencing) {
-        if (params.taps || taps_aligner) {
-            error("ERROR: --run_targeted_sequencing can't be running using rastair (methylation caller for TAPS) ")
-        }
-        if (!params.target_regions_file) {
-            error("ERROR: --target_regions_file must be specified when using --run_targeted_sequencing")
-        }
         TARGETED_SEQUENCING(
             ch_bedgraph,
             ch_coverage,
@@ -372,9 +366,6 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_methurator` param.
     //
     if (params.run_methurator) {
-        if (params.taps || taps_aligner) {
-            error("--run_methurator is not supported with the TAPS / bwa-mem workflow (methurator relies on MethylDackel).")
-        }
         ch_methurator_inputs = ch_bam
             .join(ch_bai)
             .combine(ch_fasta.map { meta, fasta -> fasta })

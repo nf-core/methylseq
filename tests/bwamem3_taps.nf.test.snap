@@ -3,7 +3,7 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.16.0"
+                    "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
                     "samtools": 1.25
@@ -212,7 +212,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-12T15:08:58.070266819",
+        "timestamp": "2026-11-16T17:12:29.039292971",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -221,11 +221,11 @@
     "Params: bwamem3 | taps | taps_caller rastair2 | trim_OT, trim_OB": {
         "content": [
             [
-                "taps_pe.bed.gz:md5,01cc651c3c849f19acfe84231e5c0a6f",
+                "taps_pe.bed.gz:md5,97e944f8889ee78cbd2ba11ca6166d2b",
                 "taps_se.bed.gz:md5,63754247d1c3770292da8a2acdd88a01"
             ]
         ],
-        "timestamp": "2026-11-10T19:58:24.907676178",
+        "timestamp": "2026-11-16T17:02:35.196460966",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -238,7 +238,7 @@
                     "bcftools": 1.25
                 },
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.16.0"
+                    "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
                     "samtools": 1.25
@@ -260,6 +260,9 @@
                 },
                 "RASTAIR2_MBIAS": {
                     "rastair": "2.2.0"
+                },
+                "RASTAIR2_SUMMARY": {
+                    "gawk": "5.3.1"
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -447,14 +450,32 @@
                 "taps_se.bcftools_stats.txt:md5,f7221ab1e042cae9e2fd8eb23008ac25",
                 "taps_pe.bed.gz:md5,1229ef44d65524b8c32a5e5e00ee0360",
                 "taps_pe.bed.gz.tbi:md5,e2852bee9bf6e0bbed586a909865a4f8",
-                "taps_pe.vcf.gz:md5,e5542cc4baa85b7347668ecdd18efc03",
-                "taps_pe.vcf.gz.tbi:md5,0c40ef4d4b85239df44663e06c01d416",
                 "taps_se.bed.gz:md5,63754247d1c3770292da8a2acdd88a01",
                 "taps_se.bed.gz.tbi:md5,4667580916584029b294937662827e04",
-                "taps_se.vcf.gz:md5,4fb53955dba2780a18f7ae6a6c670517",
-                "taps_se.vcf.gz.tbi:md5,cd815b41b77abbf197e46b80164ea279",
                 "taps_pe.chr19.cutoffs.txt:md5,d0ac63240920ce4c068167d625da7ca1"
             ],
+            [
+                [
+                    "taps_pe.vcf.gz",
+                    "66fd9cd7eeeae99e4365141ace5adad7"
+                ],
+                [
+                    "taps_se.vcf.gz",
+                    "980e444bfc4c6bc306a5e977763338dc"
+                ]
+            ],
+            {
+                "taps_pe": {
+                    "rastair2_cpg_meth": 38.15,
+                    "rastair2_cpg_sites": 1448,
+                    "rastair2_cpg_depth": 10.05
+                },
+                "taps_se": {
+                    "rastair2_cpg_meth": 38.37,
+                    "rastair2_cpg_sites": 1426,
+                    "rastair2_cpg_depth": 5.01
+                }
+            },
             [
                 [
                     "taps_pe.markdup.sorted.bam",
@@ -466,7 +487,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:34:42.53069354",
+        "timestamp": "2026-11-16T17:00:50.611692344",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

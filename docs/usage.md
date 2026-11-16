@@ -160,7 +160,7 @@ When `--taps` is specified, the pipeline automatically:
 `--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment and adds `XM`/`XR`/`XG` methylation tags. The data type decides the mode:
 
 - With `--taps`, it runs in TAPS mode (`bwa-mem3 mem --meth=taps`, methylated C->T) and rastair calls methylation (see `--taps_caller`).
-- Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`.
+- Without `--taps`, it runs in bisulfite/EM-seq mode (`bwa-mem3 mem --meth`, unmethylated C->T) and MethylDackel extracts methylation, as with `--aligner bwameth`. It uses bwa-mem3's default `--meth-scoring genomic`, which places fewer reads wrongly at high MAPQ than the `collapsed` scoring of bwa-mem3 0.16.0.
 
 Both modes use the same index. bwa-mem3 assumes directional libraries (read 1 C->T, read 2 G->A), so `--pbat`, `--non_directional`, `--zymo` and `--single_cell` are not supported with `--aligner bwamem3`.
 
@@ -172,7 +172,7 @@ nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --align
 
 ##### bwa-mem3 index for human and other large genomes
 
-For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. Building a `--meth` index for hg38 takes roughly 100 GB of memory (scaled from measurements on smaller genomes). The pipeline's `BWAMEM3_INDEX` step requests more than that (about 180 GB for hg38), so on machines with less memory it fails unless you cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits).
+For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. Building a `--meth` index for hg38 takes roughly 100 GB of memory (scaled from measurements on smaller genomes). The pipeline's `BWAMEM3_INDEX` step requests more than that: 560 MB per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry. On machines with less memory it can't be scheduled unless you cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits).
 
 To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
 
@@ -213,7 +213,7 @@ When the trims can't be estimated, nothing is trimmed (`0,0,0,0`). Both M-bias t
 To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 end,R2 start,R2 end` bases to ignore on original top and bottom strand reads (for example `--trim_OT 0,0,10,0 --trim_OB 0,0,10,0`). This skips the estimate for both callers, and a strand you don't set is not trimmed.
 
 > [!WARNING]
-> rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about them at the start of the TAPS step. Use `--taps_caller rastair2` for single-end TAPS data.
+> rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
 
 ### Targeted sequencing (optional)
 

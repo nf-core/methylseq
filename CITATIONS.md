@@ -55,13 +55,21 @@
 
 - [rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/)
 
+  > rastair calls methylation from TAPS data. The TAPS method: Liu Y, Siejka-Zielińska P, Velikova G, Bi Y, Yuan F, Tomkova M, Bai C, Chen L, Schuster-Böckler B, Song CX. Bisulfite-free direct detection of 5-methylcytosine and 5-hydroxymethylcytosine at base resolution. Nat Biotechnol. 2019 Apr;37(4):424-429. doi: [10.1038/s41587-019-0041-2](https://doi.org/10.1038/s41587-019-0041-2)
+
   > rastair version 2 (`--taps_caller rastair2`) is distributed under a non-commercial license by the University of Oxford ([rastair.com](https://www.rastair.com)). Publications using its results must include the notice "Copyright © 2025, University of Oxford".
 
 - [bwa-mem3](https://github.com/fg-labs/bwa-mem3)
 
-- [Samtools](https://doi.org/10.1093/gigascience/giab008)
+  > bwa-mem3 is derived from bwa-mem2: Vasimuddin Md, Misra S, Li H, Aluru S. Efficient Architecture-Aware Acceleration of BWA-MEM for Multicore Systems. 2019 IEEE International Parallel and Distributed Processing Symposium (IPDPS), 2019, pp. 314-324. doi: [10.1109/IPDPS.2019.00041](https://doi.org/10.1109/IPDPS.2019.00041)
+
+- [Samtools and BCFtools](https://doi.org/10.1093/gigascience/giab008)
 
   > Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li, Twelve years of SAMtools and BCFtools, GigaScience, Volume 10, Issue 2, February 2021, giab008, doi: [10.1093/gigascience/giab008](https://doi.org/10.1093/gigascience/giab008)
+
+- [HTSlib (bgzip, tabix)](https://doi.org/10.1093/gigascience/giab007)
+
+  > James K Bonfield, John Marshall, Petr Danecek, Heng Li, Valeriu Ohan, Andrew Whitwham, Thomas Keane, Robert M Davies, HTSlib: C library for reading/writing high-throughput sequencing data, GigaScience, Volume 10, Issue 2, February 2021, giab007, doi: [10.1093/gigascience/giab007](https://doi.org/10.1093/gigascience/giab007)
 
 - [Bedtools](https://doi.org/10.1093/bioinformatics/btq033)
 

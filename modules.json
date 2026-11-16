@@ -62,13 +62,13 @@
                     },
                     "bwamem3/index": {
                         "branch": "master",
-                        "git_sha": "d9d44fa4a5048f6af0d785ab973f5e49fb3ecb60",
+                        "git_sha": "2d590fdee3e25a93d4757ca14159a42e1406970b",
                         "installed_by": ["fasta_index_methylseq"]
                     },
                     "bwamem3/mem": {
                         "branch": "master",
-                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
-                        "installed_by": ["fastq_align_dedup_bwamem3", "modules"]
+                        "git_sha": "2d590fdee3e25a93d4757ca14159a42e1406970b",
+                        "installed_by": ["fastq_align_dedup_bwamem3"]
                     },
                     "bwameth/align": {
                         "branch": "master",
@@ -197,7 +197,7 @@
                     "rastair2/call": {
                         "branch": "master",
                         "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
-                        "installed_by": ["bam_taps_conversion", "modules"]
+                        "installed_by": ["bam_taps_conversion"]
                     },
                     "rastair2/mbias": {
                         "branch": "master",

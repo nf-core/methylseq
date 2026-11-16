@@ -22,6 +22,15 @@ nextflow_pipeline {
             ]
         ],
         [
+            // --rrbs skips deduplication
+            name: "bwamem3_rrbs",
+            description: "Params: bwamem3 with rrbs",
+            params: [
+                aligner: "bwamem3",
+                rrbs: true
+            ]
+        ],
+        [
             name: "bwamem3_save_reference_save_align_intermeds",
             description: "Params: bwamem3 with save_reference and save_align_intermeds",
             params: [

@@ -48,6 +48,16 @@ nextflow_pipeline {
                 run_targeted_sequencing: true,
                 collecthsmetrics: true
             ]
+        ],
+        [
+            // coverage2cytosine and targeted outputs are published under bismark_hisat/
+            name: "bismark_hisat_cytosine_report_run_targeted_sequencing",
+            description: "Params: bismark_hisat with cytosine_report and run_targeted_sequencing",
+            params: [
+                aligner: "bismark_hisat",
+                cytosine_report: true,
+                run_targeted_sequencing: true
+            ]
         ]
     ]
 

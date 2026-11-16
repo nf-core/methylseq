@@ -6,6 +6,7 @@ nextflow_pipeline {
     tag "cpu"
 
     test("Params: bwamem3 | taps") {
+        // same params as -profile test_taps, which tests/nextflow.config would override (it sets input and fasta for every test)
         when {
             params {
                 input       = "${projectDir}/assets/samplesheet_taps.csv"
@@ -67,8 +68,15 @@ nextflow_pipeline {
 
         then {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
-            // the M-bias HTML report embeds its plots
-            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html'], ignoreFile: 'tests/.nftignore')
+            // the M-bias HTML report embeds its plots; the VCF header records --threads, so VCFs are compared on their records
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html', 'rastair2/call/*.vcf.gz', 'rastair2/call/*.vcf.gz.tbi'], ignoreFile: 'tests/.nftignore')
+            def vcf_records = getAllFilesFromDir(params.outdir, include: ['rastair2/call/*.vcf.gz']).collect { vcf ->
+                [ vcf.getName(), path(vcf.toString()).linesGzip.findAll { line -> !line.startsWith('##') }.join('\n').md5() ]
+            }
+            def general_stats = new groovy.json.JsonSlurper()
+                .parse(new File("$outputDir/multiqc/bwamem3/multiqc_data/multiqc_data.json"))
+                .report_general_stats_data.custom_content
+                .collectEntries { sample, columns -> [ (sample): columns.findAll { column, value -> column.startsWith('rastair2_') } ] }
             def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
             // pooled methylation per contig, from rows of [ contig, methylated, covered ]
             def pooledMethylation = { rows ->
@@ -89,10 +97,13 @@ nextflow_pipeline {
                 { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
                 { assert !file("$outputDir/rastair2/mbias/taps_se.mbias.html").exists() },
+                { assert general_stats.keySet().sort() == ['taps_pe', 'taps_se'] && general_stats.every { sample, columns -> columns.keySet() == ['rastair2_cpg_meth', 'rastair2_cpg_sites', 'rastair2_cpg_depth'] as Set } },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     stable_name,
                     stable_path,
+                    vcf_records,
+                    general_stats,
                     bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
                 ).match() }
             )
@@ -110,7 +121,7 @@ nextflow_pipeline {
                 taps_caller             = "rastair2"
                 accept_rastair2_license = true
                 trim_OT                 = "0,0,10,0"
-                trim_OB                 = "0,0,10,0"
+                trim_OB                 = "0,0,3,0"
                 outdir                  = "$outputDir"
             }
         }
@@ -120,8 +131,33 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert !file("$outputDir/rastair2/mbias").exists() },
-                { assert path("$outputDir/rastair2/call/taps_pe.vcf.gz").linesGzip.any { line -> line.startsWith('##rastairCommand=') && line.contains('--nOT 0,0,10,0') && line.contains('--nOB 0,0,10,0') } },
+                { assert path("$outputDir/rastair2/call/taps_pe.vcf.gz").linesGzip.any { line -> line.startsWith('##rastairCommand=') && line.contains('--nOT 0,0,10,0') && line.contains('--nOB 0,0,3,0') } },
                 { assert snapshot(stable_path).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2 | trim_OT only") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_license = true
+                trim_OT                 = "2,0,2,0"
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert !file("$outputDir/rastair2/mbias").exists() },
+                // an unset --trim_OB means no trimming of OB reads, not the M-bias estimate
+                { assert path("$outputDir/rastair2/call/taps_pe.vcf.gz").linesGzip.any { line -> line.startsWith('##rastairCommand=') && line.contains('--nOT 2,0,2,0') && line.contains('--nOB 0,0,0,0') } }
             )
         }
     }

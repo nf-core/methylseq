@@ -13,15 +13,19 @@
 # sum(mod) / sum(mod + unmod). Genome-wide figures use chromosome-like contigs (chr1, 2, chrX,
 # chr1_KI270706v1_random, ...) so that spike-ins or controls do not skew them; if the reference has
 # no chromosome-like contigs, all contigs are used. The per-contig table lists every contig with at
-# least 10 covered CpGs, except unplaced, alternate, decoy, HLA and EBV sequences.
+# least 10 covered CpGs (the 50 with the most, if there are more), except unplaced, alternate, decoy,
+# HLA and EBV sequences. Columns are found by name in the BED header (unmod, mod, cpg).
 
 set -euo pipefail
+# Locale-independent number formatting (some awks write 60,37 under a comma-decimal LC_NUMERIC)
+export LC_ALL=C
 
-sample=$1
+# Passed through the environment: awk -v would interpret backslash escapes in the name
+export sample=$1
 bed=$2
 min_depth=${3:-5}
 
-gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
+gzip -cd "$bed" | awk -F '\t' -v min_depth="$min_depth" '
     function is_minor(c) {
         return c ~ /(_alt|_random|_fix|_decoy|_hap[0-9]*)$|^chrUn|^HLA-|EBV/
     }
@@ -37,12 +41,28 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
         return c ~ /^(chr)?([0-9]+|[XYMW]|MT|Z)$/ || is_minor(c)
     }
     BEGIN {
+        sample = ENVIRON["sample"]
+        max_contigs = 50
         for (i = 0; i < 10; i++) { hist[i] = 0; ghist[i] = 0 }
     }
-    /^#/ { next }
-    $15 != "REF" { next }
+    /^#/ {
+        if (!rows && !c_cpg) {
+            sub(/^#/, "")
+            for (i = 1; i <= NF; i++) col[$i] = i
+            c_unmod = col["unmod"]; c_mod = col["mod"]; c_cpg = col["cpg"]
+        }
+        next
+    }
     {
-        unmod = $7; mod = $8; depth = unmod + mod
+        rows++
+        if (!(c_unmod && c_mod && c_cpg)) {
+            print "rastair2_summary.sh: no unmod, mod and cpg columns in the BED header of " sample > "/dev/stderr"
+            failed = 1; exit 1
+        }
+    }
+    $c_cpg != "REF" { next }
+    {
+        unmod = $c_unmod; mod = $c_mod; depth = unmod + mod
         if (depth == 0) next
         sites++; mod_sum += mod; depth_sum += depth
         contig_mod[$1] += mod; contig_depth[$1] += depth; contig_sites[$1]++
@@ -54,6 +74,12 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
         }
     }
     END {
+        if (failed) exit 1
+        # No covered reference CpG: write nothing rather than a 0% methylation row in General Statistics
+        if (sites == 0) {
+            print "rastair2_summary.sh: no covered reference CpGs for " sample "; no MultiQC rows written" > "/dev/stderr"
+            exit 0
+        }
         # Genome-wide figures over chromosomes only, unless there are none
         if (gsites > 0) {
             sites = gsites; mod_sum = gmod_sum; depth_sum = gdepth_sum
@@ -111,8 +137,18 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
         n_contigs = 0
         for (c in contig_depth) {
             if (is_minor(c) || contig_sites[c] < 10) continue
-            n_contigs++; keep[n_contigs] = c; key[n_contigs] = sort_key(c)
+            n_contigs++; keep[n_contigs] = c
         }
+        # Draft assemblies can have thousands of contigs: keep the ones with the most covered CpGs
+        if (n_contigs > max_contigs) {
+            for (i = 2; i <= n_contigs; i++) {
+                c = keep[i]
+                for (j = i - 1; j >= 1 && contig_sites[keep[j]] < contig_sites[c]; j--) keep[j + 1] = keep[j]
+                keep[j + 1] = c
+            }
+            n_contigs = max_contigs
+        }
+        for (i = 1; i <= n_contigs; i++) key[i] = sort_key(keep[i])
         for (i = 2; i <= n_contigs; i++) {
             c = keep[i]; k = key[i]
             for (j = i - 1; j >= 1 && key[j] > k; j--) { keep[j + 1] = keep[j]; key[j + 1] = key[j] }
@@ -128,7 +164,7 @@ gzip -cd "$bed" | awk -F '\t' -v sample="$sample" -v min_depth="$min_depth" '
             cf = sample ".rastair2_contigs_mqc.tsv"
             print "# id: \"rastair2_contigs\"" > cf
             print "# section_name: \"rastair2 CpG methylation per contig\"" > cf
-            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls. Contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out.\"" > cf
+            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls. Contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out; at most " max_contigs " contigs (those with the most covered CpG positions) are shown.\"" > cf
             print "# plot_type: \"table\"" > cf
             print "# pconfig:" > cf
             print "#     id: \"rastair2_contigs_table\"" > cf

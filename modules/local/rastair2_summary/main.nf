@@ -8,14 +8,15 @@ process RASTAIR2_SUMMARY {
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/50/50c87ecbec7ea76f99ff4ad84e16f083c0b74651bf813d9158b1004234f6feca/data'
-        : 'community.wave.seqera.io/library/htslib_rastair:4ffd26b40813e268'}"
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/75/759bb68f05a46782e9715e821380f641adfb2ba92d41a0b7bfc98536086e101c/data'
+        : 'community.wave.seqera.io/library/gawk_gzip:f7d38a45baa28337'}"
 
     input:
     tuple val(meta), path(bed)
 
     output:
-    tuple val(meta), path("*_mqc.tsv"), emit: mqc
+    tuple val(meta), path("*_mqc.tsv"), emit: mqc, optional: true
+    tuple val("${task.process}"), val('gawk'), eval("awk --version | sed '1!d; s/^GNU Awk //; s/,.*//'"), topic: versions, emit: versions_gawk
 
     when:
     task.ext.when == null || task.ext.when

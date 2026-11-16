@@ -203,17 +203,20 @@ def validateInputParameters() {
             log.warn("--combined_index with a pre-built --bismark_index: the index must have been built with 'bismark_genome_preparation --combined_genome', otherwise alignment will fail (pre-built iGenomes indexes are not compatible).")
         }
     }
-    // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it (~100 GB for hg38):
+    // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
     // point users with large genomes at a pre-built --bwamem3_index.
-    // (`params` here is the copy taken at include time, so test for --bwamem3_index with containsKey)
-    if (params.aligner == 'bwamem3' && !(params.containsKey('bwamem3_index') && params.bwamem3_index) && params.fasta) {
+    // `params` here is the copy taken at include time: it lacks the --genome attributes main.nf sets later
+    def fasta = (params.containsKey('fasta') && params.fasta) ? params.fasta : getGenomeAttribute('fasta')
+    def bwamem3_index = (params.containsKey('bwamem3_index') && params.bwamem3_index) ? params.bwamem3_index : getGenomeAttribute('bwamem3')
+    if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
         def fasta_bytes = 0L
-        try { fasta_bytes = file(params.fasta).size() } catch (Exception _e) { }
+        try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
         if (fasta_bytes > 300_000_000L) {
             log.warn(
-                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from --fasta (${Math.round(fasta_bytes / 1e6)} MB). " +
-                "For human-sized genomes this needs roughly 100 GB of memory: consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index " +
-                "(see https://nf-co.re/methylseq/usage). Use --save_reference to keep the index built by this run."
+                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${Math.round(fasta_bytes / 1e6)} MB). " +
+                "The index build requests 560 MB of memory per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry: " +
+                "consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
+                "Use --save_reference to keep the index built by this run."
             )
         }
     }
@@ -242,16 +245,29 @@ def validateInputParameters() {
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !params.taps) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
-    // Options that only apply to some steps: say so instead of ignoring them
     def taps_run = params.taps || params.aligner == 'bwamem'
+    // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
+    if (params.run_targeted_sequencing && taps_run) {
+        error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
+    }
+    if (params.run_targeted_sequencing && !params.target_regions_file) {
+        error("--target_regions_file must be specified when using --run_targeted_sequencing.")
+    }
+    if (params.run_methurator && taps_run) {
+        error("--run_methurator is not supported with TAPS data (--taps or --aligner bwamem): methurator relies on MethylDackel.")
+    }
+    // Options that only apply to some steps: say so instead of ignoring them
     def ignored_options = [
         [!taps_run && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
         [params.rastair2_mbias_region && !(taps_run && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
-        [params.run_targeted_sequencing && taps_run, 'TAPS runs write no bedGraphs, so --run_targeted_sequencing only runs Picard CollectHsMetrics (with --collecthsmetrics)'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
         [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
+        [userParam('bismark_index') && !params.aligner.startsWith('bismark'), "--bismark_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bwameth_index') && params.aligner != 'bwameth', "--bwameth_index only applies to --aligner bwameth; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bwamem_index') && params.aligner != 'bwamem', "--bwamem_index only applies to --aligner bwamem${params.aligner == 'bwamem3' ? ' (use --bwamem3_index for bwa-mem3)' : ''}; it is ignored"],
+        [userParam('bwamem3_index') && params.aligner != 'bwamem3', "--bwamem3_index only applies to --aligner bwamem3; it is ignored for --aligner ${params.aligner}"],
     ]
     ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
     // rastair 2 and newer is distributed under a non-commercial license: require an explicit opt-in.
@@ -273,6 +289,13 @@ def validateInputParameters() {
             )
         }
     }
+}
+
+//
+// A parameter the user set: --genome attributes are added to `params` after this file's copy of it is taken
+//
+def userParam(name) {
+    return params.containsKey(name) && params[name]
 }
 
 //
@@ -302,9 +325,6 @@ def getGenomeAttribute(attribute) {
 }
 
 //
-// Exit pipeline if incorrect --genome key provided
-//
-//
 // bwa-mem3 `--meth` index as [ meta, index ]: a directory or .tar.gz, or an index prefix
 // (e.g. s3://bucket/genomes/hg38.fa) whose <prefix>.* and <prefix>.meth.* files are staged together
 //
@@ -312,18 +332,31 @@ def bwamem3IndexChannel(index) {
     if (!index) {
         return []
     }
+    def index_name = index.toString()
+    def usage = "--bwamem3_index must be a directory, a .tar.gz archive or an index prefix (see https://nf-co.re/methylseq/usage)"
+    if (index_name.contains('?')) {
+        error("${usage}: '${index_name}' has a query string, which hides its file name. Use a URL without one.")
+    }
     def index_path = file(index)
     // Only archives go to UNTAR: an index prefix may itself end in .gz (bwa-mem3 index genome.fa.gz writes genome.fa.gz.amb, ...)
-    if (index.toString().endsWith('.tar.gz') || index_path.isDirectory()) {
+    if (index_name.endsWith('.tar.gz') || index_path.isDirectory()) {
         return channel.of([[id: index_path.baseName], index_path])
     }
+    if (index_name =~ /\.(tgz|tar|tar\.bz2|tbz2|tar\.xz|txz|zip)$/) {
+        error("${usage}: '${index_name}' is an archive format the pipeline can't unpack. Repack it as .tar.gz or unpack it and pass the directory.")
+    }
     // `mem --meth` reads only .amb/.ann/.pac from the plain prefix; it seeds from the .meth index
-    def index_files = ['amb', 'ann', 'pac', 'meth.amb', 'meth.ann', 'meth.bwt.2bit.64', 'meth.pac'].collect { ext ->
-        file("${index}.${ext}", checkIfExists: true)
+    def index_files = ['amb', 'ann', 'pac', 'meth.amb', 'meth.ann', 'meth.bwt.2bit.64', 'meth.pac'].collect { ext -> file("${index}.${ext}") }
+    def missing = index_files.findAll { index_file -> !index_file.exists() }
+    if (missing) {
+        error("${usage}: treated '${index_name}' as an index prefix, but these files are missing: ${missing.collect { index_file -> index_file.name }.join(', ')}.")
     }
     return channel.of([[id: index_path.name], index_files])
 }
 
+//
+// Exit pipeline if incorrect --genome key provided
+//
 def genomeExistsError() {
     if (params.genomes && params.genome && !params.genomes.containsKey(params.genome)) {
         def error_string = "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" + "  Genome '${params.genome}' not found in any config files provided to the pipeline.\n" + "  Currently, the available genome keys are:\n" + "  ${params.genomes.keySet().join(", ")}\n" + "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"

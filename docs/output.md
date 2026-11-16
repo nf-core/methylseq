@@ -129,7 +129,7 @@ If you provide a FASTA file as input (`--fasta`), the pipeline will automaticall
 
 **Output directory: `results/<aligner>/reference_genome/`**
 
-- This directory contains the aligner-specific index files. For Bismark, this will be a `BismarkIndex/` directory. For bwa-meth, this will be a `BwamethIndex/` directory.
+- This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3. The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
 
 > **NB:** These files are only generated if a FASTA file is provided as input and `--save_reference` is specified.
 
@@ -259,7 +259,7 @@ This step removes alignments with identical mapping position to avoid technical 
   - Sorted BAM file with duplicated reads marked.
 - `sample.markdup.sorted.bam.bai`
   - Index for the markdup BAM file.
-- `picard_metrics/sample.markdup.sorted.MarkDuplicates.metrics.txt`
+- `picard_metrics/sample.markdup.sorted.metrics.txt`
   - Log file giving summary statistics about deduplication.
 
 ### Methylation Extraction
@@ -290,14 +290,14 @@ Filename abbreviations stand for the following reference alignment strands:
 - `logs/sample_splitting_report.txt`
   - Log file giving summary statistics about methylation extraction.
 
-**bwa-meth workflow output directory: `results/methyldackel/`**
+**bwa-meth and bwa-mem3 (bisulfite/EM-seq) output directory: `results/methyldackel/`**
 
 > **NB:** `CHG` and `CHH` contexts are not provided unless `--all_contexts` specified.
 
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
 
-**bwa-mem / TAPS workflow output directory: `results/rastair/`**
+**TAPS output directory (`--aligner bwamem`, or `--taps` with `--aligner bwamem3` or `bwameth`): `results/rastair/`**
 
 - `call/sample.rastair_call.txt`
   - Individual methylation calls file sorted by genomic coordinates and including cytosine context.
