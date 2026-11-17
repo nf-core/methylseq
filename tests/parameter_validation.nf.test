@@ -22,6 +22,12 @@ nextflow_pipeline {
             message: "--aligner bwamem3 only supports directional libraries: --single_cell not supported"
         ],
         [
+            // No --aligner: --taps defaults to bwa-mem3, which only aligns directional libraries
+            description: "Params: taps (default aligner bwamem3) | non_directional - not supported",
+            params: [ taps: true, non_directional: true ],
+            message: "--aligner bwamem3 only supports directional libraries: --non_directional not supported"
+        ],
+        [
             description: "Params: bismark | taps - not supported",
             params: [ aligner: "bismark", taps: true ],
             message: "--taps is not supported with --aligner bismark"

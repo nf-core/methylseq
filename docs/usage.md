@@ -142,13 +142,14 @@ The pipeline supports **TAPS data analysis**, which uses a different approach to
 | **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
 
 > [!NOTE]
-> We recommend `--aligner bwamem3` for TAPS data: it aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth --taps` also work.
+> With `--taps`, the aligner defaults to `bwamem3`, which aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth` also work with `--taps`.
 
 #### Automatic Parameter Configuration
 
 When `--taps` is specified, the pipeline automatically:
 
-- Uses Rastair for methylation calling (TAPS conversion analysis)
+- Uses bwa-mem3 to align, unless `--aligner` is set
+- Uses Rastair for methylation calling (TAPS conversion analysis; see `--taps_caller`)
 - Validates aligner compatibility (stops with an error for `--aligner bismark` or `bismark_hisat`)
 - Configures appropriate deduplication (Picard MarkDuplicates for TAPS)
 

@@ -23,6 +23,7 @@ include { paramsSummaryMultiqc          } from '../../subworkflows/nf-core/utils
 include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
@@ -119,12 +120,6 @@ workflow METHYLSEQ {
     //
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
-
-    // TAPS: rastair calls methylation. bwa-mem3 aligns TAPS (--taps) or bisulfite/EM-seq data; bwa-mem implies TAPS.
-    def taps_aligner = params.aligner == 'bwamem' || (params.aligner == 'bwamem3' && params.taps)
-    if (params.taps && !(params.aligner in ['bwamem', 'bwamem3'])) {
-        log.info("TAPS protocol detected and aligner is not 'bwamem' or 'bwamem3'. We recommend using bwa-mem3 (--aligner bwamem3) for TAPS libraries.")
-    }
 
     // Aligner: bismark or bismark_hisat
     if (params.aligner =~ /bismark/) {
@@ -230,9 +225,9 @@ workflow METHYLSEQ {
     }
 
     //
-    // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
+    // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation (TAPS, caller set by --taps_caller)
     //
-    if (params.taps || taps_aligner) {
+    if (isTaps()) {
         ch_taps_bam_bai = ch_bam.join(ch_bai)
 
         if (params.taps_caller == 'rastair') {
@@ -284,7 +279,7 @@ workflow METHYLSEQ {
                 .flatten()
         }
     }
-    else if (!params.taps && params.aligner in ['bwameth', 'bwamem3']) {
+    else if (params.aligner in ['bwameth', 'bwamem3']) {
 
         ch_bam_bai = ch_bam.join(ch_bai)
         ch_methyldackel_inputs = ch_bam_bai

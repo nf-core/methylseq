@@ -233,7 +233,7 @@ def validateInputParameters() {
         if (params.aligner == 'bwameth') {
             log.warn("bwa-meth aligns directional libraries only: ${non_directional_options.join(', ')} only change trimming with --aligner bwameth. Use --aligner bismark for PBAT or non-directional libraries.")
         }
-        if ((params.taps || params.aligner == 'bwamem') && params.taps_caller == 'rastair') {
+        if (isTaps() && params.taps_caller == 'rastair') {
             log.warn("rastair 0.8 (--taps_caller rastair) assumes directional libraries: ${non_directional_options.join(', ')} are ignored when calling. --taps_caller rastair2 guesses each read's orientation instead.")
         }
     }
@@ -242,24 +242,23 @@ def validateInputParameters() {
         error("--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem.")
     }
     // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
-    if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !params.taps) {
+    if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
-    def taps_run = params.taps || params.aligner == 'bwamem'
     // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
-    if (params.run_targeted_sequencing && taps_run) {
+    if (params.run_targeted_sequencing && isTaps()) {
         error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
     }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
     }
-    if (params.run_methurator && taps_run) {
+    if (params.run_methurator && isTaps()) {
         error("--run_methurator is not supported with TAPS data (--taps or --aligner bwamem): methurator relies on MethylDackel.")
     }
     // Options that only apply to some steps: say so instead of ignoring them
     def ignored_options = [
-        [!taps_run && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
-        [params.rastair2_mbias_region && !(taps_run && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
+        [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
@@ -272,7 +271,7 @@ def validateInputParameters() {
     ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
     // rastair 2 and newer is distributed under a non-commercial license: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
-        if (!(params.taps || params.aligner == 'bwamem')) {
+        if (!isTaps()) {
             log.warn("--taps_caller rastair2 only applies to TAPS data (--taps or --aligner bwamem); it is ignored.")
         }
         else if (!params.accept_rastair2_license) {
@@ -289,6 +288,13 @@ def validateInputParameters() {
             )
         }
     }
+}
+
+//
+// TAPS data: --taps, or --aligner bwamem (TAPS only). --taps_caller picks the methylation caller.
+//
+def isTaps() {
+    return params.taps || params.aligner == 'bwamem'
 }
 
 //
