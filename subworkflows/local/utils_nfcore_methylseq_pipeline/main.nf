@@ -259,6 +259,7 @@ def validateInputParameters() {
     def ignored_options = [
         [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],

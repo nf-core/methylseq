@@ -21,7 +21,9 @@ input:
         description: bgzipped CpG methylation BED from `rastair call --bed`
         pattern: "*.bed.gz"
         ontologies: []
-# `ext.args` is passed to the script as the minimum informative reads per CpG for the methylation distribution (default 5).
+# `ext.args` is passed to the script as options: `-d <n>` sets the minimum informative reads per CpG for the
+# methylation distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
+# genome-wide figures. The pipeline sets `-c` from `--rastair2_control_contigs`.
 output:
   mqc:
     - - meta:
