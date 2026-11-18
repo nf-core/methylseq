@@ -157,7 +157,7 @@
                 "aligner": {
                     "type": "string",
                     "default": "bismark",
-                    "description": "Alignment tool to use. Defaults to `bwamem3` with `--taps`.",
+                    "description": "Alignment tool to use. Defaults to `bwamem3` when `--taps` is given on the command line or in `-params-file`.",
                     "fa_icon": "fas fa-dot-circle",
                     "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem", "bwamem3"],
                     "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\n`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment. With `--taps` it runs in TAPS mode (`mem --meth=taps`) and rastair calls methylation (see `--taps_caller`); without `--taps` it aligns bisulfite/EM-seq reads (`mem --meth`) and MethylDackel extracts methylation."
@@ -472,8 +472,15 @@
                 "rastair2_mbias_region": {
                     "type": "string",
                     "description": "Region used to estimate M-bias trims with rastair version 2 (for example a methylated spike-in contig).",
-                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal, and is needed for shallow libraries: with too few reads in the region the estimate is no trimming. Ignored with `--trim_OT`/`--trim_OB`.",
+                    "help_text": "rastair version 2 estimates the trims from the reads in this region (`contig`, `contig:start-end` or several separated by spaces). Its M-bias report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in such as lambda gives the clearest signal, and is needed for shallow libraries: with too few reads in the region the estimate is no trimming. With several regions on different contigs, the trims from the longest contig are used, so give a spike-in on its own to use it. Ignored with `--trim_OT`/`--trim_OB`.",
                     "fa_icon": "fas fa-ruler-horizontal"
+                },
+                "rastair2_control_contigs": {
+                    "type": "string",
+                    "description": "Comma-separated spike-in or control contigs to leave out of the rastair version 2 genome-wide methylation figures.",
+                    "help_text": "The genome-wide figures of the rastair version 2 MultiQC summary (CpG methylation, CpGs covered and depth in General Statistics, and the methylation distribution) use contigs with chromosome-like names (`chr1`, `2L`, `chrIV`, ...), or every contig if the reference has none, and leave out organelles, decoys and EBV. List spike-ins and controls here (for example `J02459.1,pUC19`) to leave them out too; this matters most for references without chromosome-like names, where they would otherwise be included. A listed contig that is not in the reference is reported in the task log. The per-contig table still shows them.",
+                    "pattern": "^[A-Za-z0-9._:|+@~-]+(,[A-Za-z0-9._:|+@~-]+)*$",
+                    "fa_icon": "fas fa-vial"
                 }
             }
         },

@@ -320,14 +320,14 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.mbias.html`
   - rastair version 2 M-bias report: methylation by position in read for each contig in `--rastair2_mbias_region`, with the suggested trims drawn on the plots.
 - `sample.<contig>.cutoffs.txt`
-  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed.
+  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed; a file with one line (reads from one strand only in the region) is not used either, and the call task logs a warning.
 
 **`results/rastair2/bcftools_stats/`**
 
 - `sample.bcftools_stats.txt`
   - `bcftools stats` of the rastair version 2 VCF (SNV and indel counts, transitions/transversions), shown in the MultiQC report.
 
-The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs, so spike-in controls (shown in the per-contig table) do not skew them; references without chromosome-like contig names use all contigs.
+The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs (`chr1`, `2L`, `chrIV`, ...), or every contig for references without chromosome-like names, and leave out organelles, decoys, EBV and any `--rastair2_control_contigs`, so spike-in controls (shown in the per-contig table) do not skew them. The contigs used are listed in the `RASTAIR2_SUMMARY` task log; a sample with no covered CpGs on them gets no General Statistics row.
 
 ### Targeted Sequencing
 

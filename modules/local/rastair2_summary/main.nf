@@ -25,7 +25,7 @@ process RASTAIR2_SUMMARY {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    rastair2_summary.sh ${prefix} ${bed} ${args}
+    rastair2_summary.sh ${args} -- "${prefix}" "${bed}"
     """
 
     stub:

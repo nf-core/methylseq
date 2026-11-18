@@ -211,9 +211,13 @@ def validateInputParameters() {
     if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
         def fasta_bytes = 0L
         try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
-        if (fasta_bytes > 300_000_000L) {
+        // A gzipped FASTA is about a third of its uncompressed size, which is what the index build scales with
+        def gzipped = fasta.toString().endsWith('.gz')
+        def uncompressed_bytes = gzipped ? fasta_bytes * 3 : fasta_bytes
+        if (uncompressed_bytes > 300_000_000L) {
+            def size_text = gzipped ? "about ${Math.round(uncompressed_bytes / 1e6)} MB uncompressed" : "${Math.round(fasta_bytes / 1e6)} MB"
             log.warn(
-                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${Math.round(fasta_bytes / 1e6)} MB). " +
+                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${size_text}). " +
                 "The index build requests 560 MB of memory per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry: " +
                 "consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
                 "Use --save_reference to keep the index built by this run."
@@ -238,8 +242,14 @@ def validateInputParameters() {
         }
     }
     // TAPS calling needs a FASTA index and an aligner without bisulfite methylation extraction
+    // nextflow.config defaults --aligner to bwamem3 for --taps, but only sees --taps given on the command line or
+    // in -params-file: a config or profile that sets `taps = true` leaves the aligner at bismark.
     if (params.taps && params.aligner.startsWith('bismark')) {
-        error("--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem.")
+        error(
+            "--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem. " +
+            "If you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too: " +
+            "--taps only changes the default aligner when given on the command line or in -params-file."
+        )
     }
     // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
@@ -259,6 +269,7 @@ def validateInputParameters() {
     def ignored_options = [
         [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],

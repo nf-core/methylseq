@@ -53,6 +53,7 @@
         "content": [
             {
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -209,6 +210,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "FASTQC": {

@@ -6,6 +6,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -290,6 +291,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -510,6 +512,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -754,6 +757,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {

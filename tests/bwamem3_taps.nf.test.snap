@@ -6,6 +6,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -241,6 +242,7 @@
                     "bwamem3": "0.17.0"
                 },
                 "BWAMEM3_MEM": {
+                    "bwamem3": "0.17.0",
                     "samtools": 1.25
                 },
                 "FASTQC": {
@@ -256,6 +258,7 @@
                     "picard": "3.5.0"
                 },
                 "RASTAIR2_CALL": {
+                    "rastair": "2.2.0",
                     "tabix": 1.24
                 },
                 "RASTAIR2_MBIAS": {

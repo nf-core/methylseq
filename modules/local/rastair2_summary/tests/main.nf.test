@@ -1,0 +1,143 @@
+nextflow_process {
+
+    name "Test Process RASTAIR2_SUMMARY"
+    script "../main.nf"
+    process "RASTAIR2_SUMMARY"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "rastair2_summary"
+
+    // Writes a bgzip-compatible rastair version 2 CpG BED: `contigs` lists [ contig, CpGs, mod, unmod ]
+    def writeBed = { String path, List contigs ->
+        new File(path).parentFile.mkdirs()
+        new java.util.zip.GZIPOutputStream(new FileOutputStream(path)).withWriter { writer ->
+            writer << "#chr\tstart\tend\tname\tscore\tstrand\tunmod\tmod\tcpg\n"
+            contigs.each { contig, cpgs, mod, unmod ->
+                (1..cpgs).each { i -> writer << "${contig}\t${i}\t${i + 1}\t.\t.\t+\t${unmod}\t${mod}\tREF\n" }
+            }
+        }
+        return path
+    }
+
+    // The MultiQC files of the one sample, by name (a single file is emitted on its own, not in a list)
+    def mqcFiles = { out ->
+        def files = out.mqc[0][1]
+        (files instanceof List ? files : [ files ]).collectEntries { path -> [ (new File(path.toString()).name): path ] }
+    }
+
+    // Whether the task's stderr (.command.err in the test's work directory) has a line containing `text`
+    def taskLogContains = { String dir, String text ->
+        def found = false
+        new File(dir).eachFileRecurse { log_file ->
+            if (log_file.name == '.command.err' && log_file.text.contains(text)) {
+                found = true
+            }
+        }
+        return found
+    }
+
+    // Data rows of a MultiQC custom content file, keyed by column
+    def mqcRow = { path ->
+        def lines = new File(path.toString()).readLines().findAll { line -> !line.startsWith('#') }
+        [lines[0].split('\t') as List, lines[1].split('\t') as List].transpose().collectEntries()
+    }
+
+    test("chromosomes, organelle, decoy and spike-ins") {
+        when {
+            params {
+                module_args = ''
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'human' ],
+                    file('${writeBed("${outputDir}/input/human.bed.gz", [
+                        ['chr1', 20, 6, 4], ['chr2', 20, 4, 6], ['chrUn_KI270302v1', 10, 5, 5],
+                        ['chrM', 20, 0, 10], ['hs37d5', 20, 10, 0], ['J02459.1', 20, 10, 0]
+                    ])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            def stats = mqcRow(files['human.rastair2_generalstats_mqc.tsv'])
+            def contigs = mqcRow(files['human.rastair2_contigs_mqc.tsv'])
+            assertAll(
+                { assert process.success },
+                // chr1, chr2 and the unplaced chrUn contig: not chrM, the decoy or the spike-in
+                { assert stats['rastair2_cpg_meth'] == '50.00' },
+                { assert stats['rastair2_cpg_sites'] == '50' },
+                { assert taskLogContains(workDir.toString(), 'genome-wide figures from 3 contig(s): chr1, chr2, chrUn_KI270302v1') },
+                // the table leaves out unplaced and decoy contigs, in natural order with the organelle after chromosomes
+                { assert contigs.keySet() as List == ['Sample', 'chr1', 'chr2', 'chrM', 'J02459.1'] },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("scaffold assembly - control contigs") {
+        when {
+            params {
+                module_args = '-c J02459.1,pUC19'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'scaffolds' ],
+                    file('${writeBed("${outputDir}/input/scaffolds.bed.gz", [
+                        ['JH584295.1', 20, 6, 4], ['JH584296.1', 20, 4, 6], ['MT', 20, 0, 10], ['J02459.1', 20, 10, 0]
+                    ])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            def stats = mqcRow(files['scaffolds.rastair2_generalstats_mqc.tsv'])
+            def contigs = mqcRow(files['scaffolds.rastair2_contigs_mqc.tsv'])
+            assertAll(
+                { assert process.success },
+                // no chromosome-like names: every scaffold, without the mitochondrion and the listed spike-in
+                { assert stats['rastair2_cpg_meth'] == '50.00' },
+                { assert stats['rastair2_cpg_sites'] == '40' },
+                // accession-named scaffolds are not unplaced contigs here, so the table keeps them
+                { assert contigs.keySet() as List == ['Sample', 'MT', 'J02459.1', 'JH584295.1', 'JH584296.1'] },
+                { assert taskLogContains(workDir.toString(), 'control contig pUC19 is not in the BED') },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("only control contigs covered - no genome-wide figures") {
+        when {
+            params {
+                module_args = '-c J02459.1,2kb_3_Unmodified'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'-controls' ],
+                    file('${writeBed("${outputDir}/input/controls.bed.gz", [
+                        ['chr19', 20, 0, 0], ['J02459.1', 20, 10, 0], ['2kb_3_Unmodified', 20, 0, 10]
+                    ])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            def names = mqcFiles(process.out).keySet() as List
+            assertAll(
+                { assert process.success },
+                // a sample ID starting with '-' is not read as an option
+                { assert names == ['-controls.rastair2_contigs_mqc.tsv'] },
+                { assert taskLogContains(workDir.toString(), 'no genome-wide figures written') }
+            )
+        }
+    }
+}

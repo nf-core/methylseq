@@ -20,7 +20,7 @@ Changes in 'bam_taps_conversion/meta.yml':
 Changes in 'bam_taps_conversion/main.nf':
 --- subworkflows/nf-core/bam_taps_conversion/main.nf
 +++ subworkflows/nf-core/bam_taps_conversion/main.nf
-@@ -41,18 +41,19 @@
+@@ -41,18 +41,21 @@
      ch_bcftools_stats = channel.empty()
      ch_mbias_html    = channel.empty()
      ch_mbias_cutoffs = channel.empty()
@@ -30,9 +30,11 @@ Changes in 'bam_taps_conversion/main.nf':
          error("bam_taps_conversion: trims must be [] or [ nOT, nOB ], each as 'r1_start,r1_end,r2_start,r2_end' (got ${trims})")
      }
  
-+    // One reference for every sample, whether it is passed once or once per sample
++    // One reference for every sample, whether it is passed once or once per sample. Take the first of
++    // each input before combining: combining per-sample copies would make n x n items.
 +    ch_reference = ch_fasta
-+        .combine(ch_fasta_index)
++        .first()
++        .combine(ch_fasta_index.first())
 +        .map { meta, fasta, _meta2, fai -> [ meta, fasta, fai ] }
 +        .first()
 +
@@ -46,7 +48,7 @@ Changes in 'bam_taps_conversion/main.nf':
          ch_bam_bai = ch_bam.join(ch_bai)
  
          if (trims) {
-@@ -112,15 +113,23 @@
+@@ -112,15 +115,23 @@
          ch_bcftools_stats = BCFTOOLS_STATS.out.stats // channel: [ val(meta), stats.txt ]
      }
      else {
@@ -75,7 +77,7 @@ Changes in 'bam_taps_conversion/main.nf':
              )
              ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), txt ]
  
-@@ -130,13 +139,22 @@
+@@ -130,13 +141,22 @@
              ch_trims = RASTAIR_MBIASPARSER.out.mbias_processed_str // channel: [ val(meta), nOT_clip, nOB_clip ]
          }
  
@@ -104,7 +106,7 @@ Changes in 'bam_taps_conversion/main.nf':
          )
          ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), txt ]
  
-@@ -157,4 +175,5 @@
+@@ -157,4 +177,5 @@
      bcftools_stats = ch_bcftools_stats        // channel: [ val(meta), path("*stats.txt") ] rastair 2
      mbias_html     = ch_mbias_html            // channel: [ val(meta), path("*.mbias.html") ] rastair 2
      mbias_cutoffs  = ch_mbias_cutoffs         // channel: [ val(meta), path("*.cutoffs.txt") ] rastair 2

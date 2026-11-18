@@ -40,6 +40,7 @@ nextflow_pipeline {
                 { assert workflow.success },
                 { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
                 // TAPS reads methylated C as T: the methylated lambda spike-in should be high and the unmodified one low
+                { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                 { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
                 { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert snapshot(
@@ -52,21 +53,64 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bwamem3 | taps | taps_caller rastair2") {
+    test("Params: bwamem3 | taps | trim_OT, trim_OB") {
         when {
             params {
-                input                   = "${projectDir}/assets/samplesheet_taps.csv"
-                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
-                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
-                aligner                 = "bwamem3"
-                taps                    = true
-                taps_caller             = "rastair2"
-                accept_rastair2_license = true
-                outdir                  = "$outputDir"
+                input       = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta       = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner     = "bwamem3"
+                taps        = true
+                trim_OT     = "0,0,10,0"
+                trim_OB     = "0,0,3,0"
+                outdir      = "$outputDir"
             }
         }
 
         then {
+            // rastair 0.8 call does not record its command line, so read it from the task scripts
+            def call_scripts = []
+            new File(workDir.toString()).eachFileRecurse { script ->
+                if (script.name == '.command.sh' && script.text.contains('rastair call')) {
+                    call_scripts << script.text
+                }
+            }
+            assertAll(
+                { assert workflow.success },
+                // given trims replace the M-bias estimate
+                { assert !file("$outputDir/rastair/mbias").exists() },
+                { assert !file("$outputDir/rastair/mbiasparser").exists() },
+                // with given trims, rastair 0.8 call runs for both samples (taps_pe and taps_se)
+                { assert call_scripts.size() == 2 },
+                { assert call_scripts.every { script -> script.contains('--nOT 0,0,10,0') && script.contains('--nOB 0,0,3,0') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair2") {
+        when {
+            params {
+                input                    = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                    = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index              = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                  = "bwamem3"
+                taps                     = true
+                taps_caller              = "rastair2"
+                accept_rastair2_license  = true
+                // chr19 is the only chromosome-like contig, so the genome-wide figures are the same with or without it
+                rastair2_control_contigs = "bacteriophage_lambda_CpG,2kb_3_Unmodified"
+                outdir                   = "$outputDir"
+            }
+        }
+
+        then {
+            // RASTAIR2_SUMMARY task scripts, to check that --rastair2_control_contigs reaches the script
+            def summary_scripts = []
+            new File(workDir.toString()).eachFileRecurse { script ->
+                if (script.name == '.command.sh' && script.text.contains('rastair2_summary.sh')) {
+                    summary_scripts << script.text
+                }
+            }
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
             // the M-bias HTML report embeds its plots; the VCF header records --threads, so VCFs are compared on their records
             def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html', 'rastair2/call/*.vcf.gz', 'rastair2/call/*.vcf.gz.tbi'], ignoreFile: 'tests/.nftignore')
@@ -93,11 +137,14 @@ nextflow_pipeline {
             )
             assertAll(
                 { assert workflow.success },
+                { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                 { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
                 { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
                 { assert !file("$outputDir/rastair2/mbias/taps_se.mbias.html").exists() },
                 { assert general_stats.keySet().sort() == ['taps_pe', 'taps_se'] && general_stats.every { sample, columns -> columns.keySet() == ['rastair2_cpg_meth', 'rastair2_cpg_sites', 'rastair2_cpg_depth'] as Set } },
+                { assert summary_scripts.size() == 2 && summary_scripts.every { script -> script.contains("-c 'bacteriophage_lambda_CpG,2kb_3_Unmodified' -- ") } },
+                { assert !file("${metaDir}/nextflow.log").text.contains('--rastair2_control_contigs only applies') },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                     stable_name,

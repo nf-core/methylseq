@@ -1,0 +1,100 @@
+{
+    "chromosomes, organelle, decoy and spike-ins": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "human"
+                        },
+                        [
+                            "human.rastair2_beta_hist_mqc.tsv:md5,ae4fe896ef609884d969baecc81a5684",
+                            "human.rastair2_contigs_mqc.tsv:md5,bd3e180b8b44d830939bc0b2d82eb470",
+                            "human.rastair2_generalstats_mqc.tsv:md5,4db2e0335f44dbf99ae63bbb73c2700f"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "RASTAIR2_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "human"
+                        },
+                        [
+                            "human.rastair2_beta_hist_mqc.tsv:md5,ae4fe896ef609884d969baecc81a5684",
+                            "human.rastair2_contigs_mqc.tsv:md5,bd3e180b8b44d830939bc0b2d82eb470",
+                            "human.rastair2_generalstats_mqc.tsv:md5,4db2e0335f44dbf99ae63bbb73c2700f"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "RASTAIR2_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-18T01:13:22.320625",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
+    "scaffold assembly - control contigs": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "scaffolds"
+                        },
+                        [
+                            "scaffolds.rastair2_beta_hist_mqc.tsv:md5,3b4671123f49d04edcb7777e1079bd94",
+                            "scaffolds.rastair2_contigs_mqc.tsv:md5,e18e151e1f6bd0bd3c2e27180722cee9",
+                            "scaffolds.rastair2_generalstats_mqc.tsv:md5,3dc2b3ae5af873921c73247c35b89c61"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "RASTAIR2_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "scaffolds"
+                        },
+                        [
+                            "scaffolds.rastair2_beta_hist_mqc.tsv:md5,3b4671123f49d04edcb7777e1079bd94",
+                            "scaffolds.rastair2_contigs_mqc.tsv:md5,e18e151e1f6bd0bd3c2e27180722cee9",
+                            "scaffolds.rastair2_generalstats_mqc.tsv:md5,3dc2b3ae5af873921c73247c35b89c61"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "RASTAIR2_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-18T01:13:28.352091",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    }
+}

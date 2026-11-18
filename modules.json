@@ -197,7 +197,8 @@
                     "rastair2/call": {
                         "branch": "master",
                         "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
-                        "installed_by": ["bam_taps_conversion"]
+                        "installed_by": ["bam_taps_conversion"],
+                        "patch": "modules/nf-core/rastair2/call/rastair2-call.diff"
                     },
                     "rastair2/mbias": {
                         "branch": "master",
