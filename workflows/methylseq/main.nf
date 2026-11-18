@@ -461,13 +461,18 @@ workflow METHYLSEQ {
 
     //
     // Collate topic-channel versions (including MULTIQC) into a separate file.
+    // Group by process so a process that reports several tools (e.g. BWAMEM3_MEM: bwamem3 and
+    // samtools) gets one YAML key with every tool under it; one key per tool would be a
+    // duplicate key, and YAML parsers keep only the last one.
     //
     ch_topic_versions
         .distinct()
         .filter { entry -> !(entry instanceof Path) }
-        .map { process, tool, version ->
-            def processName = process[process.lastIndexOf(':') + 1..-1]
-            "${processName}:\n  ${tool}: ${version}"
+        .map { process, tool, version -> [process[process.lastIndexOf(':') + 1..-1], [tool, version]] }
+        .groupTuple()
+        .map { processName, toolVersions ->
+            def tools = toolVersions.unique().sort { toolVersion -> toolVersion[0] }
+            "${processName}:\n" + tools.collect { tool, version -> "  ${tool}: ${version}" }.join('\n')
         }
         .collectFile(
             storeDir: "${params.outdir}/pipeline_info",

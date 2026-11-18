@@ -3,6 +3,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -403,6 +404,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -610,6 +612,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -803,6 +806,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -954,6 +958,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -1185,6 +1190,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -1345,6 +1351,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -1546,6 +1553,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -1777,6 +1785,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
@@ -2066,6 +2075,7 @@
         "content": [
             {
                 "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
                     "samtools": 1.25
                 },
                 "BWAMETH_INDEX": {
