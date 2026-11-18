@@ -142,7 +142,7 @@ The pipeline supports **TAPS data analysis**, which uses a different approach to
 | **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
 
 > [!NOTE]
-> With `--taps`, the aligner defaults to `bwamem3`, which aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth` also work with `--taps`.
+> With `--taps`, the aligner defaults to `bwamem3`, which aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth` also work with `--taps`. The `bwamem3` default only applies when `--taps` is given on the command line or in `-params-file`: if you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too.
 
 #### Automatic Parameter Configuration
 
@@ -207,7 +207,7 @@ nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --align
 Methylation calls near read ends can be biased (end repair, adapter ligation), so both TAPS callers ignore some bases at the read ends. By default each sample's trims are estimated from its M-bias, the methylation level by position in the read:
 
 - rastair 0.8 (`--taps_caller rastair`): `rastair mbias` over all reads, then `rastair/mbiasparser` picks the trims.
-- rastair version 2 (`--taps_caller rastair2`): `rastair2 mbias` on the reads in `--rastair2_mbias_region`. Its report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in, such as lambda, gives the clearest signal: for example `--rastair2_mbias_region J02459.1`. Use a spike-in for shallow libraries: with too few reads in the region, the estimate is no trimming. For example, a human TAPS library of 250,000 read pairs had about 3,000 CpG observations in the default region and got no trims (lambda methylation 0.96), while lambda as the region gave the same trims as rastair 0.8 (lambda 0.98).
+- rastair version 2 (`--taps_caller rastair2`): `rastair2 mbias` on the reads in `--rastair2_mbias_region`. Its report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in, such as lambda, gives the clearest signal: for example `--rastair2_mbias_region J02459.1`. Use a spike-in for shallow libraries: with too few reads in the region, the estimate is no trimming. If you list regions on several contigs, the trims from the longest contig are used, so give a spike-in on its own to use it. For example, a human TAPS library of 250,000 read pairs had about 3,000 CpG observations in the default region and got no trims (lambda methylation 0.96), while lambda as the region gave the same trims as rastair 0.8 (lambda 0.98).
 
 The MultiQC report's genome-wide rastair version 2 figures (CpG methylation, CpGs covered and depth) leave out spike-ins by using contigs with chromosome-like names. If your reference has no chromosome-like names (for example a scaffold-level assembly), list the spike-ins and controls with `--rastair2_control_contigs` (for example `--rastair2_control_contigs J02459.1,pUC19`) so they are left out too.
 
