@@ -7,7 +7,7 @@
                 "nf-core": {
                     "bcftools/stats": {
                         "branch": "master",
-                        "git_sha": "ed7a2286df416088793e62fa6a740d07974d0ff8",
+                        "git_sha": "b489eb2587cb508cc9eef65c53f04f7419b5f6d9",
                         "installed_by": ["bam_taps_conversion"]
                     },
                     "bedtools/intersect": {
@@ -196,7 +196,7 @@
                     },
                     "rastair2/call": {
                         "branch": "master",
-                        "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
+                        "git_sha": "efe94a0ea5cad01b5cad21f7112644bfab4ea2b7",
                         "installed_by": ["bam_taps_conversion"],
                         "patch": "modules/nf-core/rastair2/call/rastair2-call.diff"
                     },
@@ -276,7 +276,7 @@
                     },
                     "bam_taps_conversion": {
                         "branch": "master",
-                        "git_sha": "9b7485dc7a1b3f43a36b54a3e4a77e1ed17d5bc5",
+                        "git_sha": "72c1d093808e760759daf430ac3c315c7d85796e",
                         "installed_by": ["subworkflows"],
                         "patch": "subworkflows/nf-core/bam_taps_conversion/bam_taps_conversion.diff"
                     },
