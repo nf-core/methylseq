@@ -1,0 +1,218 @@
+{
+    "sarscov2 - vcf_gz - reference": {
+        "content": [
+            [
+                "# This file was produced by bcftools stats (1.25+htslib-1.25) and can be plotted using plot-vcfstats.",
+                "# The command line was:\tbcftools stats  --fasta-ref genome.fasta test.vcf.gz",
+                "#",
+                "# Definition of sets:",
+                "# ID\t[2]id\t[3]tab-separated file names",
+                "ID\t0\ttest.vcf.gz"
+            ]
+        ],
+        "timestamp": "2026-10-28T10:35:54.678049",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "sarscov2 - vcf_gz - exons": {
+        "content": [
+            [
+                "# This file was produced by bcftools stats (1.25+htslib-1.25) and can be plotted using plot-vcfstats.",
+                "# The command line was:\tbcftools stats  --exons exons.tsv.gz test.vcf.gz",
+                "#",
+                "# Definition of sets:",
+                "# ID\t[2]id\t[3]tab-separated file names",
+                "ID\t0\ttest.vcf.gz"
+            ]
+        ],
+        "timestamp": "2026-10-28T10:35:49.090863",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "versions": {
+        "content": [
+            {
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:34.173732",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "sarscov2 - vcf_gz - targets": {
+        "content": [
+            [
+                "# This file was produced by bcftools stats (1.25+htslib-1.25) and can be plotted using plot-vcfstats.",
+                "# The command line was:\tbcftools stats  --targets-file test2.targets.tsv.gz test.vcf.gz",
+                "#",
+                "# Definition of sets:",
+                "# ID\t[2]id\t[3]tab-separated file names",
+                "ID\t0\ttest.vcf.gz"
+            ]
+        ],
+        "timestamp": "2026-10-28T10:35:44.316494",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "regions_versions": {
+        "content": [
+            {
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:39.543877",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "targets_versions": {
+        "content": [
+            {
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:44.304696",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "sarscov2 - vcf_gz - stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.bcftools_stats.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "1": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ],
+                "stats": [
+                    [
+                        {
+                            "id": "test"
+                        },
+                        "test.bcftools_stats.txt:md5,d41d8cd98f00b204e9800998ecf8427e"
+                    ]
+                ],
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:59.641001",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "exon_versions": {
+        "content": [
+            {
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:49.077621",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "ref_versions": {
+        "content": [
+            {
+                "versions_bcftools": [
+                    [
+                        "BCFTOOLS_STATS",
+                        "bcftools",
+                        "1.25"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-10-28T10:35:54.665067",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "sarscov2 - vcf_gz": {
+        "content": [
+            [
+                "# This file was produced by bcftools stats (1.25+htslib-1.25) and can be plotted using plot-vcfstats.",
+                "# The command line was:\tbcftools stats  test.vcf.gz",
+                "#",
+                "# Definition of sets:",
+                "# ID\t[2]id\t[3]tab-separated file names",
+                "ID\t0\ttest.vcf.gz"
+            ]
+        ],
+        "timestamp": "2026-10-28T10:35:34.190383",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    },
+    "sarscov2 - vcf_gz - regions": {
+        "content": [
+            [
+                "# This file was produced by bcftools stats (1.25+htslib-1.25) and can be plotted using plot-vcfstats.",
+                "# The command line was:\tbcftools stats  --regions-file test3.vcf.gz test.vcf.gz",
+                "#",
+                "# Definition of sets:",
+                "# ID\t[2]id\t[3]tab-separated file names",
+                "ID\t0\ttest.vcf.gz"
+            ]
+        ],
+        "timestamp": "2026-10-28T10:35:39.554065",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.4"
+        }
+    }
+}

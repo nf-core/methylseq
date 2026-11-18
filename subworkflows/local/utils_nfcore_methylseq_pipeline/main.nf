@@ -203,6 +203,116 @@ def validateInputParameters() {
             log.warn("--combined_index with a pre-built --bismark_index: the index must have been built with 'bismark_genome_preparation --combined_genome', otherwise alignment will fail (pre-built iGenomes indexes are not compatible).")
         }
     }
+    // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
+    // point users with large genomes at a pre-built --bwamem3_index.
+    // `params` here is the copy taken at include time: it lacks the --genome attributes main.nf sets later
+    def fasta = (params.containsKey('fasta') && params.fasta) ? params.fasta : getGenomeAttribute('fasta')
+    def bwamem3_index = (params.containsKey('bwamem3_index') && params.bwamem3_index) ? params.bwamem3_index : getGenomeAttribute('bwamem3')
+    if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
+        def fasta_bytes = 0L
+        try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
+        // A gzipped FASTA is about a third of its uncompressed size, which is what the index build scales with
+        def gzipped = fasta.toString().endsWith('.gz')
+        def uncompressed_bytes = gzipped ? fasta_bytes * 3 : fasta_bytes
+        if (uncompressed_bytes > 300_000_000L) {
+            def size_text = gzipped ? "about ${Math.round(uncompressed_bytes / 1e6)} MB uncompressed" : "${Math.round(fasta_bytes / 1e6)} MB"
+            log.warn(
+                "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${size_text}). " +
+                "The index build requests 560 MB of memory per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry: " +
+                "consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
+                "Use --save_reference to keep the index built by this run."
+            )
+        }
+    }
+    // --pbat, --non_directional and the non-directional presets (--zymo, --single_cell) only change alignment for Bismark
+    def non_directional_options = ['pbat', 'non_directional', 'zymo', 'single_cell'].findAll { option -> params[option] }.collect { option -> "--${option}" }
+    if (non_directional_options) {
+        // bwa-mem3 `--meth` seeds read 1 as C->T and read 2 as G->A, so it only handles directional libraries
+        if (params.aligner == 'bwamem3') {
+            error(
+                "--aligner bwamem3 only supports directional libraries: ${non_directional_options.join(', ')} not supported. " +
+                "Use --aligner bismark for PBAT or non-directional libraries."
+            )
+        }
+        if (params.aligner == 'bwameth') {
+            log.warn("bwa-meth aligns directional libraries only: ${non_directional_options.join(', ')} only change trimming with --aligner bwameth. Use --aligner bismark for PBAT or non-directional libraries.")
+        }
+        if (isTaps() && params.taps_caller == 'rastair') {
+            log.warn("rastair 0.8 (--taps_caller rastair) assumes directional libraries: ${non_directional_options.join(', ')} are ignored when calling. --taps_caller rastair2 guesses each read's orientation instead.")
+        }
+    }
+    // TAPS calling needs a FASTA index and an aligner without bisulfite methylation extraction
+    // nextflow.config defaults --aligner to bwamem3 for --taps, but only sees --taps given on the command line or
+    // in -params-file: a config or profile that sets `taps = true` leaves the aligner at bismark.
+    if (params.taps && params.aligner.startsWith('bismark')) {
+        error(
+            "--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem. " +
+            "If you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too: " +
+            "--taps only changes the default aligner when given on the command line or in -params-file."
+        )
+    }
+    // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
+    if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
+        error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
+    }
+    // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
+    if (params.run_targeted_sequencing && isTaps()) {
+        error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
+    }
+    if (params.run_targeted_sequencing && !params.target_regions_file) {
+        error("--target_regions_file must be specified when using --run_targeted_sequencing.")
+    }
+    if (params.run_methurator && isTaps()) {
+        error("--run_methurator is not supported with TAPS data (--taps or --aligner bwamem): methurator relies on MethylDackel.")
+    }
+    // Options that only apply to some steps: say so instead of ignoring them
+    def ignored_options = [
+        [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
+        [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
+        [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
+        [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
+        [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
+        [userParam('bismark_index') && !params.aligner.startsWith('bismark'), "--bismark_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bwameth_index') && params.aligner != 'bwameth', "--bwameth_index only applies to --aligner bwameth; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bwamem_index') && params.aligner != 'bwamem', "--bwamem_index only applies to --aligner bwamem${params.aligner == 'bwamem3' ? ' (use --bwamem3_index for bwa-mem3)' : ''}; it is ignored"],
+        [userParam('bwamem3_index') && params.aligner != 'bwamem3', "--bwamem3_index only applies to --aligner bwamem3; it is ignored for --aligner ${params.aligner}"],
+    ]
+    ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
+    // rastair 2 and newer is distributed under a non-commercial license: require an explicit opt-in.
+    if (params.taps_caller == 'rastair2') {
+        if (!isTaps()) {
+            log.warn("--taps_caller rastair2 only applies to TAPS data (--taps or --aligner bwamem); it is ignored.")
+        }
+        else if (!params.accept_rastair2_license) {
+            error(
+                "--taps_caller rastair2 uses rastair version 2, which is free for non-commercial research use only. " +
+                "Commercial use requires a license from Oxford University Innovation (enquiries@innovation.ox.ac.uk, reference 24811). " +
+                "Run `rastair license` for the full terms. Set --accept_rastair2_license to confirm your use complies, or use --taps_caller rastair."
+            )
+        }
+        else {
+            log.warn(
+                "rastair version 2 is free for non-commercial research use only; commercial use requires a license from Oxford University Innovation " +
+                "(enquiries@innovation.ox.ac.uk, reference 24811). Publications using its results must include the notice \"Copyright © 2025, University of Oxford\"."
+            )
+        }
+    }
+}
+
+//
+// TAPS data: --taps, or --aligner bwamem (TAPS only). --taps_caller picks the methylation caller.
+//
+def isTaps() {
+    return params.taps || params.aligner == 'bwamem'
+}
+
+//
+// A parameter the user set: --genome attributes are added to `params` after this file's copy of it is taken
+//
+def userParam(name) {
+    return params.containsKey(name) && params[name]
 }
 
 //
@@ -229,6 +339,36 @@ def getGenomeAttribute(attribute) {
         }
     }
     return null
+}
+
+//
+// bwa-mem3 `--meth` index as [ meta, index ]: a directory or .tar.gz, or an index prefix
+// (e.g. s3://bucket/genomes/hg38.fa) whose <prefix>.* and <prefix>.meth.* files are staged together
+//
+def bwamem3IndexChannel(index) {
+    if (!index) {
+        return []
+    }
+    def index_name = index.toString()
+    def usage = "--bwamem3_index must be a directory, a .tar.gz archive or an index prefix (see https://nf-co.re/methylseq/usage)"
+    if (index_name.contains('?')) {
+        error("${usage}: '${index_name}' has a query string, which hides its file name. Use a URL without one.")
+    }
+    def index_path = file(index)
+    // Only archives go to UNTAR: an index prefix may itself end in .gz (bwa-mem3 index genome.fa.gz writes genome.fa.gz.amb, ...)
+    if (index_name.endsWith('.tar.gz') || index_path.isDirectory()) {
+        return channel.of([[id: index_path.baseName], index_path])
+    }
+    if (index_name =~ /\.(tgz|tar|tar\.bz2|tbz2|tar\.xz|txz|zip)$/) {
+        error("${usage}: '${index_name}' is an archive format the pipeline can't unpack. Repack it as .tar.gz or unpack it and pass the directory.")
+    }
+    // `mem --meth` reads only .amb/.ann/.pac from the plain prefix; it seeds from the .meth index
+    def index_files = ['amb', 'ann', 'pac', 'meth.amb', 'meth.ann', 'meth.bwt.2bit.64', 'meth.pac'].collect { ext -> file("${index}.${ext}") }
+    def missing = index_files.findAll { index_file -> !index_file.exists() }
+    if (missing) {
+        error("${usage}: treated '${index_name}' as an index prefix, but these files are missing: ${missing.collect { index_file -> index_file.name }.join(', ')}.")
+    }
+    return channel.of([[id: index_path.name], index_files])
 }
 
 //

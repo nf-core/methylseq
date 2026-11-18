@@ -19,3 +19,8 @@ table_columns_visible:
     percentage_aligned: false
 top_modules:
   - "bismark"
+
+custom_content:
+  order:
+    - rastair2_contigs
+    - rastair2_beta_hist

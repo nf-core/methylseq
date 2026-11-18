@@ -30,4 +30,31 @@ nextflow_pipeline {
         }
     }
 
+    test("Params: bwamem | taps | skip_deduplication") {
+        when {
+            params {
+                aligner            = "bwamem"
+                taps               = true
+                skip_deduplication = true
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            // TAPS calling reads the alignment BAM and its index straight from alignment
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet'], ignoreFile: 'tests/.nftignore')
+            assertAll(
+                { assert workflow.success },
+                { assert !file("$outputDir/bwamem/deduplicated").exists() },
+                { assert file("$outputDir/rastair/call").listFiles().size() > 0 },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path
+                ).match() }
+            )
+        }
+    }
+
 }

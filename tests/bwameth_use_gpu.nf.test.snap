@@ -21,25 +21,25 @@
                     "multiqc": 1.34
                 },
                 "PARABRICKS_FQ2BAMMETH": {
-                    "parabricks": "4.6.0-1"
+                    "parabricks": "4.8.0-1"
                 },
                 "PICARD_MARKDUPLICATES": {
-                    "picard": "3.4.0"
+                    "picard": "3.5.0"
                 },
                 "SAMTOOLS_FLAGSTAT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_ALIGNMENTS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX_DEDUPLICATED": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_STATS": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -141,11 +141,11 @@
             ],
             [
                 "SRR389222_sub1.flagstat:md5,ad8159a7683b9c3057bf54ccb77a2ddc",
-                "SRR389222_sub1.stats:md5,fe4631170b2284cd3cfc056fb7eb2a1a",
+                "SRR389222_sub1.stats:md5,a8d9919098f1eb132062b8bfc25c749e",
                 "SRR389222_sub2.flagstat:md5,e768b4f54014d62b096152c44f920bc1",
-                "SRR389222_sub2.stats:md5,7e167ca85f23dccbd4e879da2ec5513e",
+                "SRR389222_sub2.stats:md5,f0190527941dc28f1d2e932c1ba5eb1e",
                 "SRR389222_sub3.flagstat:md5,39516f7d2c77e6fef9543edf8cddbcd6",
-                "SRR389222_sub3.stats:md5,27c11ef0e956c0f0c1fe52f50d1527db",
+                "SRR389222_sub3.stats:md5,187d51d95fbdf3b1c2210ef9202738ff",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
                 "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
@@ -195,8 +195,8 @@
         ],
         "meta": {
             "nf-test": "0.9.3",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         },
-        "timestamp": "2026-07-20T19:50:12.365714943"
+        "timestamp": "2026-11-11T13:44:52.325000"
     }
 }

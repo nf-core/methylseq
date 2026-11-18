@@ -40,11 +40,19 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bwamem3_with_bwamem3_index",
+            description: "Params: bwamem3 with bwamem3-index",
+            params: [
+                aligner: "bwamem3",
+                bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz"
+            ]
+        ],
+        [
             name: "bismark_hisat_with_hisat2_index",
             description: "Params: bismark_hisat with hisat2-index",
             params: [
                 aligner: "bismark_hisat",
-                hisat2_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/HISAT2_Index.tar.gz"
+                bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Hisat2_Index.tar.gz"
             ]
         ]
     ]
@@ -68,6 +76,41 @@ nextflow_pipeline {
                     { assert snapshot(
                         removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                         ).match() }
+                )
+            }
+        }
+    }
+
+    // A local, unpacked bwa-mem3 index, passed as its directory or as its prefix (the documented route for large genomes)
+    def unpackBwamem3Index = { File dest ->
+        dest.mkdirs()
+        def tarball = new File(dest, 'Bwamem3_Index.tar.gz')
+        new URL('https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz').withInputStream { input -> tarball.withOutputStream { output -> output << input } }
+        def untar = ['tar', 'xzf', tarball.path, '-C', dest.path].execute()
+        untar.waitFor()
+        assert untar.exitValue() == 0
+        return new File(dest, 'bwamem3')
+    }
+
+    [
+        [ description: "Params: bwamem3 with bwamem3-index directory", index: { File dir -> dir.path } ],
+        [ description: "Params: bwamem3 with bwamem3-index prefix", index: { File dir -> "${dir.path}/genome.fa" } ]
+    ].each { scenario ->
+        test(scenario.description) {
+            when {
+                def index_dir = unpackBwamem3Index(new File("${outputDir}/../bwamem3_index"))
+                params {
+                    outdir        = "${outputDir}"
+                    aligner       = "bwamem3"
+                    bwamem3_index = scenario.index(index_dir)
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert !workflow.trace.tasks().any { task -> task.name.contains('BWAMEM3_INDEX') } },
+                    { assert file("${outputDir}/bwamem3/deduplicated").listFiles().any { file -> file.name.endsWith('.bam') } }
                 )
             }
         }

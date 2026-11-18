@@ -1,0 +1,118 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - parameter validation errors"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Combinations the pipeline can't run: each must stop at launch with a message naming the problem
+    def errorScenarios = [
+        [
+            description: "Params: bwamem3 | non_directional - not supported",
+            params: [ aligner: "bwamem3", non_directional: true ],
+            message: "--aligner bwamem3 only supports directional libraries: --non_directional not supported"
+        ],
+        [
+            description: "Params: bwamem3 | zymo - not supported",
+            params: [ aligner: "bwamem3", zymo: true ],
+            message: "--aligner bwamem3 only supports directional libraries: --zymo not supported"
+        ],
+        [
+            description: "Params: bwamem3 | single_cell - not supported",
+            params: [ aligner: "bwamem3", single_cell: true ],
+            message: "--aligner bwamem3 only supports directional libraries: --single_cell not supported"
+        ],
+        [
+            // No --aligner: --taps defaults to bwa-mem3, which only aligns directional libraries
+            description: "Params: taps (default aligner bwamem3) | non_directional - not supported",
+            params: [ taps: true, non_directional: true ],
+            message: "--aligner bwamem3 only supports directional libraries: --non_directional not supported"
+        ],
+        [
+            description: "Params: bismark | taps - not supported",
+            params: [ aligner: "bismark", taps: true ],
+            message: "--taps is not supported with --aligner bismark"
+        ],
+        [
+            description: "Params: bwameth | methyl_kit | run_targeted_sequencing - not supported",
+            params: [ aligner: "bwameth", methyl_kit: true, run_targeted_sequencing: true ],
+            message: "--methyl_kit can't be combined with --run_targeted_sequencing"
+        ],
+        [
+            description: "Params: bwamem3 | taps | run_targeted_sequencing - not supported",
+            params: [ aligner: "bwamem3", taps: true, run_targeted_sequencing: true ],
+            message: "--run_targeted_sequencing is not supported with TAPS data"
+        ],
+        [
+            description: "Params: bwamem | run_methurator - not supported",
+            params: [ aligner: "bwamem", run_methurator: true ],
+            message: "--run_methurator is not supported with TAPS data"
+        ],
+        [
+            description: "Params: bismark | run_targeted_sequencing without target_regions_file",
+            params: [ aligner: "bismark", run_targeted_sequencing: true, target_regions_file: null ],
+            message: "--target_regions_file must be specified"
+        ],
+        [
+            description: "Params: bwamem3 | bwamem3_index .tgz - not supported",
+            params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tgz" ],
+            message: "is an archive format the pipeline can't unpack"
+        ],
+        [
+            description: "Params: bwamem3 | bwamem3_index prefix with missing files",
+            params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome.fa" ],
+            message: "treated 'https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome.fa' as an index prefix, but these files are missing"
+        ],
+        [
+            description: "Params: bwamem3 | bwamem3_index URL with a query string",
+            params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz?download=1" ],
+            message: "has a query string"
+        ]
+    ]
+
+    test("Params: bismark | options for other steps - warn and run") {
+        when {
+            params {
+                outdir                   = "${outputDir}"
+                aligner                  = "bismark"
+                trim_OT                  = "0,0,10,0"
+                collecthsmetrics         = true
+                bwamem3_index            = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz"
+                rastair2_control_contigs = "bacteriophage_lambda_CpG"
+            }
+        }
+
+        then {
+            def log_text = file("${metaDir}/nextflow.log").text
+            assertAll(
+                { assert workflow.success },
+                { assert log_text.contains('--trim_OT/--trim_OB only apply to TAPS data') },
+                { assert log_text.contains('--collecthsmetrics only applies with --run_targeted_sequencing') },
+                { assert log_text.contains('--bwamem3_index only applies to --aligner bwamem3') },
+                { assert log_text.contains('--rastair2_control_contigs only applies with --taps_caller rastair2') },
+                { assert snapshot(
+                    removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                ).match() }
+            )
+        }
+    }
+
+    errorScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.failed },
+                    { assert (workflow.stdout + workflow.stderr).any { line -> line.contains(scenario.message) } }
+                )
+            }
+        }
+    }
+}

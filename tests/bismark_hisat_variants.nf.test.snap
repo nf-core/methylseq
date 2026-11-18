@@ -27,10 +27,10 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -291,10 +291,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:16:41.508363954",
+        "timestamp": "2026-11-11T20:27:32.005208386",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bismark_hisat with save_reference and save_align_intermeds": {
@@ -328,10 +328,10 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -643,10 +643,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:17:19.329231913",
+        "timestamp": "2026-11-11T20:28:25.878822611",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bismark_hisat": {
@@ -680,10 +680,10 @@
                     "multiqc": 1.34
                 },
                 "SAMTOOLS_INDEX": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_SORT": {
-                    "samtools": "1.23.1"
+                    "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.3.0"
@@ -934,10 +934,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-07-20T19:16:06.36468586",
+        "timestamp": "2026-11-11T20:26:40.593986768",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.04.0"
+            "nextflow": "25.10.4"
         }
     }
 }
