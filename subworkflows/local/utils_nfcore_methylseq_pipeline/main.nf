@@ -191,6 +191,11 @@ workflow PIPELINE_COMPLETION {
 def validateInputParameters() {
     genomeExistsError()
 
+    // --relax_mismatches sets an L,... --score_min, which Bowtie 2 --local rejects
+    if (params.aligner == 'bismark' && params.local_alignment && params.relax_mismatches) {
+        error("--relax_mismatches can't be combined with --local_alignment for --aligner bismark: Bowtie 2 --local needs a G,... --score_min. Drop --relax_mismatches (Bowtie 2's local default G,20,8 applies) or use --aligner bismark_hisat.")
+    }
+
     // --combined_index (opt-in, nf-core/methylseq#615) launch-time sanity warnings.
     if (params.combined_index) {
         if (!params.aligner.startsWith('bismark')) {
