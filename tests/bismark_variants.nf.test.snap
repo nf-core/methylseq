@@ -2840,7 +2840,7 @@
             "nextflow": "25.10.4"
         }
     },
-    "Params: bismark with save_reference and save_align_intermeds": {
+    "Params: bismark with save_reference, save_align_intermeds and unmapped": {
         "content": [
             {
                 "BISMARK_ALIGN": {
@@ -2895,6 +2895,12 @@
                 "bismark/alignments/logs/SRR389222_sub1_trimmed_bismark_bt2_SE_report.txt",
                 "bismark/alignments/logs/SRR389222_sub2_trimmed_bismark_bt2_SE_report.txt",
                 "bismark/alignments/logs/SRR389222_sub3_trimmed_bismark_bt2_SE_report.txt",
+                "bismark/alignments/unmapped",
+                "bismark/alignments/unmapped/Ecoli_10K_methylated_1_val_1.fq.gz_unmapped_reads_1.fq.gz",
+                "bismark/alignments/unmapped/Ecoli_10K_methylated_2_val_2.fq.gz_unmapped_reads_2.fq.gz",
+                "bismark/alignments/unmapped/SRR389222_sub1_trimmed.fq.gz_unmapped_reads.fq.gz",
+                "bismark/alignments/unmapped/SRR389222_sub2_trimmed.fq.gz_unmapped_reads.fq.gz",
+                "bismark/alignments/unmapped/SRR389222_sub3_trimmed.fq.gz_unmapped_reads.fq.gz",
                 "bismark/deduplicated",
                 "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam",
                 "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam.bai",
@@ -3060,6 +3066,11 @@
                 "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
+                "Ecoli_10K_methylated_1_val_1.fq.gz_unmapped_reads_1.fq.gz:md5,67413f33470ac386871af3fb25d383f3",
+                "Ecoli_10K_methylated_2_val_2.fq.gz_unmapped_reads_2.fq.gz:md5,f12225f20278137e41d84bd63dcd105a",
+                "SRR389222_sub1_trimmed.fq.gz_unmapped_reads.fq.gz:md5,896917bddf37057092dec9cbcb58ba0c",
+                "SRR389222_sub2_trimmed.fq.gz_unmapped_reads.fq.gz:md5,75b67887bd18baa0728bf63a359d4239",
+                "SRR389222_sub3_trimmed.fq.gz_unmapped_reads.fq.gz:md5,f15004b1d3dcc3af5bd947e6c842aa71",
                 "Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz:md5,58c9ba98d0638c26a30233b006a81172",
                 "SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,d31df76c1c9128299367ebfe740357b9",
                 "SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz:md5,010f32001bbc7805f8e041f3ef0d9ea9",
@@ -3180,10 +3191,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:32:24.994270622",
+        "timestamp": "2026-11-18T18:52:00.769916017",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark with run_methurator": {

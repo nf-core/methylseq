@@ -55,11 +55,12 @@ nextflow_pipeline {
             ]
         ],
         [
-            name: "bismark_save_reference_save_align_intermeds",
-            description: "Params: bismark with save_reference and save_align_intermeds",
+            name: "bismark_save_reference_save_align_intermeds_unmapped",
+            description: "Params: bismark with save_reference, save_align_intermeds and unmapped",
             params: [
                 save_reference: true,
-                save_align_intermeds: true
+                save_align_intermeds: true,
+                unmapped: true
             ]
         ],
         [
