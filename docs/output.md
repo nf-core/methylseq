@@ -320,7 +320,7 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.mbias.html`
   - rastair version 2 M-bias report: methylation by position in read for each contig in `--rastair2_mbias_region`, with the suggested trims drawn on the plots.
 - `sample.<contig>.cutoffs.txt`
-  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed.
+  - Suggested trims for that contig, passed to `rastair call`: line 1 is `--nOT`, line 2 is `--nOB`, each as `R1 start,R1 end,R2 start,R2 end` bases to ignore. With several contigs, the longest one is used. No file means the trims could not be estimated, so nothing was trimmed; a file with one line (reads from one strand only in the region) is not used either, and the call task logs a warning.
 
 **`results/rastair2/bcftools_stats/`**
 
