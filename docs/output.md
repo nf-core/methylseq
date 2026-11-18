@@ -21,6 +21,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
+- [riker](#riker) - Alignment, insert size, coverage and GC bias metrics in one BAM pass [OPTIONAL]
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
 - [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
 - [Reference Genome Preparation](#reference-genome-preparation) - Preparing indices for alignment [OPTIONAL]
@@ -370,6 +371,29 @@ Bismark generates a HTML reports describing results for each sample, as well as 
   - Qualimap HTML report
 - `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
   - Text-based statistics that can be loaded into downstream programs
+
+## riker
+
+[riker](https://github.com/fulcrumgenomics/riker) collects several sets of sequencing QC metrics in one pass over each final BAM file. It ports the matching Picard collectors, with lower-case column names in its tables. The pipeline runs it with `--run_riker`. The metrics are not shown in the MultiQC report yet: riker support starts with MultiQC 1.35.
+
+The `wgs` collector counts coverage over the whole reference, so its metrics are of little use for targeted data. The `error` collector is not run: on converted reads it would count conversions as mismatches.
+
+**Output directory: `results/riker`**
+
+- `*.alignment-metrics.txt`
+  - Alignment summary metrics, per read and per pair.
+- `*.base-distribution-by-cycle.txt`, `*.mean-quality-by-cycle.txt`, `*.quality-score-distribution.txt`
+  - Base composition and base quality metrics.
+- `*.isize-metrics.txt`, `*.isize-histogram.txt`
+  - Insert size metrics and histogram.
+- `*.wgs-metrics.txt`, `*.wgs-coverage.txt`
+  - Genome-wide coverage metrics and histogram.
+- `*.gcbias-summary.txt`, `*.gcbias-detail.txt`
+  - GC bias metrics.
+- `*.hybcap-metrics.txt`
+  - Hybrid capture metrics, as an alternative to Picard CollectHsMetrics. Only with `--run_targeted_sequencing`. The target regions are used as both baits and targets.
+- `*.pdf`
+  - Plots of the metrics above.
 
 ## Preseq
 

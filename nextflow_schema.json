@@ -601,6 +601,12 @@
                     "description": "Run qualimap/bamqc tool",
                     "fa_icon": "fas fa-fast-forward"
                 },
+                "run_riker": {
+                    "type": "boolean",
+                    "description": "Run riker multi for alignment, insert size, coverage and GC bias metrics",
+                    "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
                 "run_targeted_sequencing": {
                     "type": "boolean",
                     "description": "Run advanced analysis for targeted methylation kits with enrichment of specific regions",

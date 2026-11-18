@@ -1,0 +1,70 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - riker variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    def testScenarios = [
+        [
+            name: "bwamem3_run_riker",
+            description: "Params: bwamem3 with run_riker",
+            params: [
+                aligner: "bwamem3",
+                run_riker: true
+            ]
+        ],
+        [
+            // Bismark needs the FASTA index built for riker; the targeted analysis adds the hybcap collector
+            name: "bismark_run_targeted_sequencing_run_riker",
+            description: "Params: bismark with run_targeted_sequencing and run_riker",
+            params: [
+                aligner: "bismark",
+                run_targeted_sequencing: true,
+                run_riker: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        if (key == 'input') {
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
+                        } else {
+                            delegate."$key" = value
+                        }
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

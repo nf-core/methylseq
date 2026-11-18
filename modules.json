@@ -205,6 +205,11 @@
                         "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
                         "installed_by": ["bam_taps_conversion"]
                     },
+                    "riker/multi": {
+                        "branch": "master",
+                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["modules"]
+                    },
                     "samtools/faidx": {
                         "branch": "master",
                         "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
