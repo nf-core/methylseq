@@ -40,6 +40,7 @@ nextflow_pipeline {
                 { assert workflow.success },
                 { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
                 // TAPS reads methylated C as T: the methylated lambda spike-in should be high and the unmodified one low
+                { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                 { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
                 { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert snapshot(
@@ -48,6 +49,40 @@ nextflow_pipeline {
                     stable_path,
                     bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
                 ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | trim_OT, trim_OB") {
+        when {
+            params {
+                input       = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta       = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner     = "bwamem3"
+                taps        = true
+                trim_OT     = "0,0,10,0"
+                trim_OB     = "0,0,3,0"
+                outdir      = "$outputDir"
+            }
+        }
+
+        then {
+            // rastair 0.8 call does not record its command line, so read it from the task scripts
+            def call_scripts = []
+            new File(workDir.toString()).eachFileRecurse { script ->
+                if (script.name == '.command.sh' && script.text.contains('rastair call')) {
+                    call_scripts << script.text
+                }
+            }
+            assertAll(
+                { assert workflow.success },
+                // given trims replace the M-bias estimate
+                { assert !file("$outputDir/rastair/mbias").exists() },
+                { assert !file("$outputDir/rastair/mbiasparser").exists() },
+                // with given trims, rastair 0.8 call runs for both samples (taps_pe and taps_se)
+                { assert call_scripts.size() == 2 },
+                { assert call_scripts.every { script -> script.contains('--nOT 0,0,10,0') && script.contains('--nOB 0,0,3,0') } }
             )
         }
     }
@@ -102,6 +137,7 @@ nextflow_pipeline {
             )
             assertAll(
                 { assert workflow.success },
+                { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                 { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
                 { assert methylation['2kb_3_Unmodified'] < 0.1 },
                 { assert file("$outputDir/rastair2/mbias/taps_pe.mbias.html").exists() },
