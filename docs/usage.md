@@ -11,6 +11,7 @@
 - [Workflow: Bismark](#workflow-bismark)
 - [Workflow: BWA-Meth](#workflow-bwa-meth)
 - [Workflow: BWA-MEM + TAPS](#workflow-bwa-mem-taps-tet-assisted-pyridine-borane-sequencing)
+- [UMIs (optional)](#umis-optional)
 - [Targeted sequencing (optional)](#targeted-sequencing-optional)
 - [Samplesheet input](#samplesheet-input)
 - [Running the pipeline](#running-the-pipeline)
@@ -217,6 +218,39 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
+
+### UMIs (optional)
+
+`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too.
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --genome GRCh38 \
+  --aligner bwamem3 \
+  --with_umi \
+  --umi_read_structure "8M+T 8M+T"
+```
+
+[fgumi](https://github.com/fulcrumgenomics/fgumi) moves the UMIs out of the reads before trimming, so the trimming presets can't clip them. The pipeline can find the UMIs in two places:
+
+- **Inline in the reads.** Give one [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file with `--umi_read_structure`. `8M+T +T` is an 8 bp UMI at the start of read 1, and `8M+T 8M+T` is one on each read. `S` skips bases, so `8M2S+T` also drops a 2 bp spacer. Single-end samples use the first read structure only.
+- **In the read names.** Without `--umi_read_structure`, the UMI is the last colon-separated field of the read name, as BCL Convert writes it (`...:ACGTACGT` or `...:ACGTACGT+TGCATGCA`).
+
+Duplicate marking depends on the aligner:
+
+| Aligner                        | Tool                            | UMI matching                                                       |
+| ------------------------------ | ------------------------------- | ------------------------------------------------------------------ |
+| `bwameth`, `bwamem`, `bwamem3` | `fgumi dedup`                   | One mismatch allowed by default (`--umi_dedup_strategy adjacency`) |
+| `bismark`, `bismark_hisat`     | `deduplicate_bismark --barcode` | Exact match only                                                   |
+
+For the bwa-based aligners, the alignments keep the UMI in the `RX` tag and the molecule ID in the `MI` tag. As with Picard MarkDuplicates, duplicates are flagged and not removed. Bismark removes them, and keeps the UMI at the end of the read name.
+
+> [!NOTE]
+> For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
+
+> [!WARNING]
+> `--with_umi` is not supported with the `gpu` profile. With `--rrbs`, deduplication is still skipped, so `--with_umi` only removes the UMIs from the reads. The pipeline marks duplicates and does not call consensus reads.
 
 ### Targeted sequencing (optional)
 

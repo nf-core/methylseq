@@ -90,6 +90,31 @@
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
+                    "fgumi/dedup": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/extract": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/fastq": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/sort": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/zipper": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
                     "gunzip": {
                         "branch": "master",
                         "git_sha": "0902eac3012baaf4f9ab6513c8c55acc9353c96c",
@@ -204,6 +229,11 @@
                         "branch": "master",
                         "git_sha": "0f229656d4350689c7e85b956a17b31742f1f42c",
                         "installed_by": ["bam_taps_conversion"]
+                    },
+                    "samtools/dict": {
+                        "branch": "master",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
+                        "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
                         "branch": "master",

@@ -1,0 +1,80 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - UMI variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // The test reads have no UMIs: the first 8 bases of each read stand in for them, which exercises every UMI step
+    def testScenarios = [
+        [
+            name: "bwamem3_with_umi",
+            description: "Params: bwamem3 with_umi",
+            params: [
+                aligner: "bwamem3",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ],
+        [
+            name: "bwameth_with_umi",
+            description: "Params: bwameth with_umi",
+            params: [
+                aligner: "bwameth",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ],
+        [
+            name: "bismark_with_umi",
+            description: "Params: bismark with_umi",
+            params: [
+                aligner: "bismark",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        if (key == 'input') {
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
+                        } else {
+                            delegate."$key" = value
+                        }
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+}

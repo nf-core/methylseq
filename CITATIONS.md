@@ -45,6 +45,10 @@
 
   > Picard Tools, Broad Institute. <http://broadinstitute.github.io/picard/>
 
+- [fgumi](https://github.com/fulcrumgenomics/fgumi)
+
+  > fgumi, Fulcrum Genomics. <https://github.com/fulcrumgenomics/fgumi>
+
 - [Qualimap](https://doi.org/10.1093/bioinformatics/btv566)
 
   > Konstantin Okonechnikov, Ana Conesa, Fernando García-Alcalde, Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data, Bioinformatics, Volume 32, Issue 2, 15 January 2016, Pages 292–294, doi: [10.1093/bioinformatics/btv566](https://doi.org/10.1093/bioinformatics/btv566)

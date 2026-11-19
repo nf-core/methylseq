@@ -264,6 +264,13 @@ def validateInputParameters() {
     if (params.run_targeted_sequencing && isTaps()) {
         error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
     }
+    // fgumi dedup needs the alignments zipped with the unmapped BAM, which the Parabricks steps don't take
+    if (params.with_umi && params.aligner in ['bwameth', 'bwamem'] && workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1) {
+        error("--with_umi is not supported with the gpu profile (Parabricks). Run on CPU, or drop --with_umi.")
+    }
+    if (params.with_umi && params.rrbs) {
+        log.warn("--rrbs skips deduplication, so --with_umi only removes the UMIs from the reads.")
+    }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
     }
@@ -275,6 +282,8 @@ def validateInputParameters() {
         [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
+        [params.with_umi && params.umi_dedup_strategy != 'adjacency' && params.aligner.startsWith('bismark'), '--umi_dedup_strategy only applies to fgumi dedup (bwameth, bwamem, bwamem3); Bismark needs identical UMIs'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],

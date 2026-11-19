@@ -28,6 +28,8 @@ include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_t
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { FASTQ_EXTRACT_UMI_FGUMI       } from '../../subworkflows/local/fastq_extract_umi_fgumi'
+include { BAM_DEDUP_UMI_FGUMI           } from '../../subworkflows/local/bam_dedup_umi_fgumi'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
 
@@ -105,6 +107,19 @@ workflow METHYLSEQ {
     }
 
     //
+    // SUBWORKFLOW: Move UMIs from the reads (or read names) into an unmapped BAM, before trimming can clip them
+    //
+    def skip_deduplication = params.skip_deduplication || params.rrbs
+    // Bismark deduplicates on the UMI itself; the other aligners get fgumi dedup after alignment
+    def umi_dedup_fgumi = params.with_umi && !skip_deduplication && !(params.aligner =~ /bismark/)
+    ch_umi_ubam = channel.empty()
+    if (params.with_umi) {
+        FASTQ_EXTRACT_UMI_FGUMI(ch_fastq)
+        ch_fastq = FASTQ_EXTRACT_UMI_FGUMI.out.reads
+        ch_umi_ubam = FASTQ_EXTRACT_UMI_FGUMI.out.ubam
+    }
+
+    //
     // MODULE: Run TrimGalore!
     //
     if (!params.skip_trimming) {
@@ -139,7 +154,7 @@ workflow METHYLSEQ {
             ch_bismark_inputs.reads,
             ch_bismark_inputs.fasta_fai,
             ch_bismark_inputs.bismark_index,
-            params.skip_deduplication || params.rrbs,
+            skip_deduplication,
             params.cytosine_report || params.nomeseq,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BISMARK.out.bam
@@ -164,7 +179,7 @@ workflow METHYLSEQ {
             ch_bwameth_inputs.reads,
             ch_bwameth_inputs.fasta_fai,
             ch_bwameth_inputs.bwameth_index,
-            params.skip_deduplication || params.rrbs,
+            skip_deduplication || umi_dedup_fgumi,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
@@ -187,7 +202,7 @@ workflow METHYLSEQ {
             ch_bwamem_inputs.reads,
             ch_bwamem_inputs.fasta_fai,
             ch_bwamem_inputs.bwamem_index,
-            params.skip_deduplication || params.rrbs,
+            skip_deduplication || umi_dedup_fgumi,
             workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
             'bam',
             [[:], []],
@@ -214,7 +229,7 @@ workflow METHYLSEQ {
             ch_bwamem3_inputs.reads,
             ch_bwamem3_inputs.fasta_fai,
             ch_bwamem3_inputs.bwamem3_index,
-            params.skip_deduplication || params.rrbs,
+            skip_deduplication || umi_dedup_fgumi,
         )
         ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
         ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index
@@ -222,6 +237,19 @@ workflow METHYLSEQ {
     }
     else {
         error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth', 'bwamem' or 'bwamem3'.")
+    }
+
+    //
+    // SUBWORKFLOW: UMI-aware duplicate marking with fgumi (bwameth, bwamem, bwamem3)
+    //
+    if (umi_dedup_fgumi) {
+        BAM_DEDUP_UMI_FGUMI(
+            ch_bam,
+            ch_umi_ubam,
+            ch_fasta.combine(ch_fasta_index).map { meta, fasta, _meta_fai, fai -> [meta, fasta, fai] },
+        )
+        ch_bam = BAM_DEDUP_UMI_FGUMI.out.bam
+        ch_bai = BAM_DEDUP_UMI_FGUMI.out.index
     }
 
     //
