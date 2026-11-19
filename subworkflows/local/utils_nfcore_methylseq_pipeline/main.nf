@@ -268,6 +268,15 @@ def validateInputParameters() {
     if (params.with_umi && params.aligner in ['bwameth', 'bwamem'] && workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1) {
         error("--with_umi is not supported with the gpu profile (Parabricks). Run on CPU, or drop --with_umi.")
     }
+    // bwa-mem3 extracts the UMIs after trimming (fgumi runall aligns straight after extraction)
+    def five_prime_clip = !params.skip_trimming && (params.clip_r1 > 0 || params.clip_r2 > 0 ||
+        (!params.skip_trimming_presets && (params.pbat || params.single_cell || params.accel || params.zymo || params.em_seq)))
+    if (params.with_umi && params.aligner == 'bwamem3' && params.umi_read_structure && five_prime_clip) {
+        error(
+            "--with_umi with --aligner bwamem3 takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
+            "Use --skip_trimming_presets without --clip_r1/--clip_r2, and skip the clipped bases in --umi_read_structure instead, e.g. '8M10S+T 8M10S+T'."
+        )
+    }
     if (params.with_umi && params.rrbs) {
         log.warn("--rrbs skips deduplication, so --with_umi only removes the UMIs from the reads.")
     }
