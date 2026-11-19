@@ -24,6 +24,17 @@ nextflow_pipeline {
                 umi_read_structure: "8M+T 8M+T",
                 skip_deduplication: true
             ]
+        ],
+        [
+            // --rrbs does not skip deduplication when there are UMIs
+            name: "bwamem3_with_umi_rrbs",
+            description: "Params: bwamem3 with_umi rrbs",
+            params: [
+                aligner: "bwamem3",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T",
+                rrbs: true
+            ]
         ]
     ]
 
@@ -83,6 +94,41 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.failed },
                 { assert workflow.stdout.any { line -> line.contains('--with_umi is only supported with --aligner bwamem3') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | read names without UMIs") {
+        when {
+            params {
+                aligner  = "bwamem3"
+                with_umi = true
+                outdir   = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('reads the UMI from the last colon-separated field of the read name') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | one read structure for paired-end reads") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T"
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("has 1 read structure(s)") } }
             )
         }
     }

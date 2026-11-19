@@ -24,6 +24,7 @@ include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
@@ -88,6 +89,13 @@ workflow METHYLSEQ {
         ch_samplesheet.multiple
     )
     ch_fastq = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
+
+    if (params.with_umi) {
+        ch_fastq = ch_fastq.map { meta, reads ->
+            checkUmiInput(meta, reads)
+            [meta, reads]
+        }
+    }
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
@@ -212,12 +220,13 @@ workflow METHYLSEQ {
             }
 
         if (params.with_umi) {
-            // fgumi runall extracts the UMIs and aligns in one step; fgumi dedup replaces Picard MarkDuplicates
+            // fgumi runall extracts the UMIs and aligns in one step; fgumi dedup replaces Picard MarkDuplicates.
+            // --rrbs does not skip it: with UMIs, reads sharing a restriction site are no longer all duplicates
             FASTQ_ALIGN_DEDUP_UMI_BWAMEM3(
                 ch_bwamem3_inputs.reads,
                 ch_bwamem3_inputs.fasta_fai,
                 ch_bwamem3_inputs.bwamem3_index,
-                params.skip_deduplication || params.rrbs,
+                params.skip_deduplication,
             )
             ch_bam = FASTQ_ALIGN_DEDUP_UMI_BWAMEM3.out.bam
             ch_bai = FASTQ_ALIGN_DEDUP_UMI_BWAMEM3.out.index

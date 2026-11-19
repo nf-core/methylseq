@@ -595,7 +595,7 @@
                 "skip_deduplication": {
                     "type": "boolean",
                     "description": "Skip deduplication step after alignment.",
-                    "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified.",
+                    "help_text": "Deduplication removes PCR duplicate reads after alignment. Specifying this option will skip this step, leaving duplicate reads in your data.\n\nNote that this is turned on automatically if `--rrbs` is specified, unless `--with_umi` is set.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "skip_fastqc": {

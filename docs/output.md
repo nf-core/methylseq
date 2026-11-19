@@ -271,7 +271,7 @@ This step removes alignments with identical mapping position to avoid technical 
 - `sample.markdup.sorted.bam.bai`
   - Index for the markdup BAM file.
 - `fgumi_metrics/sample.umi_dedup.metrics.txt`
-  - Duplicate counts and rates, and the templates that were filtered or passed through.
+  - Duplicate counts and rates. The `filtered_missing_umi` and `filtered_ns_in_umi` columns count the read pairs removed because their UMI was missing or had an `N` in it.
 - `fgumi_metrics/sample.umi_dedup.family_size_histogram.txt`
   - Number of UMI families of each size.
 
