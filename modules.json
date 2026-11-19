@@ -247,7 +247,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "2a30bfb6a1b4667692d734e33e000a3bd1d74a0d",
+                        "git_sha": "6b4353bb630d17b9e6099c4b8dd281532ecb718e",
                         "installed_by": ["modules"]
                     },
                     "untar": {

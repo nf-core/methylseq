@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Update Parabricks to 4.8.0-1, samtools to 1.25 and Picard to 3.5.0, with the nf-core modules and subworkflows that use them; alignments are unchanged apart from the `MC` tag that Parabricks 4.8 `fq2bam` adds to unmapped reads with a mapped mate, while samtools `stats` output changes with samtools 1.25 ([#641](https://github.com/nf-core/methylseq/pull/641))
 - 🔄 Update template to nf-core/tools v4.2.1 (includes v4.1.0); minimum Nextflow version is now 25.10.4 and nf-schema is bumped to 2.7.3 ([#634](https://github.com/nf-core/methylseq/pull/634))
 - 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
+- 🔧 Update Trim Galore to v2.6.0; trimming output is unchanged, but TRIMGALORE now requests `process_medium` memory (1 GB → 36 GB per attempt) after the `process_low_memory` label was dropped upstream to stop OOM kills on paired-end 150 bp runs ([nf-core/modules#13831](https://github.com/nf-core/modules/pull/13831))
 
 ### Bug fixes & refactoring
 

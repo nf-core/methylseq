@@ -45,7 +45,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -382,7 +382,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -630,7 +630,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -963,7 +963,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1289,7 +1289,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1544,7 +1544,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
