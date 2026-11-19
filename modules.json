@@ -95,12 +95,27 @@
                         "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
                         "installed_by": ["modules"]
                     },
+                    "fgumi/extract": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/fastq": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
                     "fgumi/runall": {
                         "branch": "fgumi-runall",
                         "git_sha": "acae0f7735e69e7d6d7184758378a5fd5ec8eb99",
                         "installed_by": ["modules"]
                     },
                     "fgumi/sort": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/zipper": {
                         "branch": "master",
                         "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
                         "installed_by": ["modules"]

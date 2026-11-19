@@ -26,6 +26,34 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bwameth_with_umi",
+            description: "Params: bwameth with_umi",
+            params: [
+                aligner: "bwameth",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ],
+        [
+            name: "bwameth_with_umi_rrbs",
+            description: "Params: bwameth with_umi rrbs",
+            params: [
+                aligner: "bwameth",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T",
+                rrbs: true
+            ]
+        ],
+        [
+            name: "bismark_with_umi",
+            description: "Params: bismark with_umi",
+            params: [
+                aligner: "bismark",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ],
+        [
             // --rrbs does not skip deduplication when there are UMIs
             name: "bwamem3_with_umi_rrbs",
             description: "Params: bwamem3 with_umi rrbs",
@@ -81,27 +109,10 @@ nextflow_pipeline {
         }
     }
 
-    test("Params: bismark with_umi - not supported") {
+    test("Params: bismark with_umi | read names without UMIs") {
         when {
             params {
                 aligner  = "bismark"
-                with_umi = true
-                outdir   = "$outputDir"
-            }
-        }
-
-        then {
-            assertAll(
-                { assert workflow.failed },
-                { assert workflow.stdout.any { line -> line.contains('--with_umi is only supported with --aligner bwamem3') } }
-            )
-        }
-    }
-
-    test("Params: bwamem3 with_umi | read names without UMIs") {
-        when {
-            params {
-                aligner  = "bwamem3"
                 with_umi = true
                 outdir   = "$outputDir"
             }
@@ -147,7 +158,7 @@ nextflow_pipeline {
         then {
             assertAll(
                 { assert workflow.failed },
-                { assert workflow.stdout.any { line -> line.contains("--with_umi takes inline UMIs from the reads after trimming") } }
+                { assert workflow.stdout.any { line -> line.contains("takes inline UMIs from the reads after trimming") } }
             )
         }
     }
