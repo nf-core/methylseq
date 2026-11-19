@@ -16,21 +16,13 @@ nextflow_pipeline {
             ]
         ],
         [
-            name: "bwameth_with_umi",
-            description: "Params: bwameth with_umi",
+            name: "bwamem3_with_umi_skip_deduplication",
+            description: "Params: bwamem3 with_umi skip_deduplication",
             params: [
-                aligner: "bwameth",
+                aligner: "bwamem3",
                 with_umi: true,
-                umi_read_structure: "8M+T 8M+T"
-            ]
-        ],
-        [
-            name: "bismark_with_umi",
-            description: "Params: bismark with_umi",
-            params: [
-                aligner: "bismark",
-                with_umi: true,
-                umi_read_structure: "8M+T 8M+T"
+                umi_read_structure: "8M+T 8M+T",
+                skip_deduplication: true
             ]
         ]
     ]
@@ -77,4 +69,41 @@ nextflow_pipeline {
             }
         }
     }
+
+    test("Params: bismark with_umi - not supported") {
+        when {
+            params {
+                aligner  = "bismark"
+                with_umi = true
+                outdir   = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('--with_umi is only supported with --aligner bwamem3') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | inline UMIs with em_seq - not supported") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T 8M+T"
+                em_seq             = true
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("--with_umi takes inline UMIs from the reads after trimming") } }
+            )
+        }
+    }
+
 }

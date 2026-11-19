@@ -4,7 +4,7 @@
 //
 
 include { SAMTOOLS_DICT      } from '../../../modules/nf-core/samtools/dict/main'
-include { FGUMI_RUNALL       } from '../../../modules/local/fgumi_runall/main'
+include { FGUMI_RUNALL       } from '../../../modules/nf-core/fgumi/runall/main'
 include { FGUMI_DEDUP        } from '../../../modules/nf-core/fgumi/dedup/main'
 include { FGUMI_SORT         } from '../../../modules/nf-core/fgumi/sort/main'
 include { BAM_STATS_SAMTOOLS } from '../../nf-core/bam_stats_samtools/main'

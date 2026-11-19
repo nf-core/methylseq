@@ -221,7 +221,7 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 ### UMIs (optional)
 
-`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too.
+`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It is only supported with `--aligner bwamem3`, for TAPS (`--taps`) and for bisulfite or EM-seq data.
 
 ```bash
 nextflow run nf-core/methylseq \
@@ -232,25 +232,22 @@ nextflow run nf-core/methylseq \
   --umi_read_structure "8M+T 8M+T"
 ```
 
-[fgumi](https://github.com/fulcrumgenomics/fgumi) moves the UMIs out of the reads before trimming, so the trimming presets can't clip them. The pipeline can find the UMIs in two places:
+After trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The alignments are the same as without `--with_umi`. They also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard.
+
+The pipeline can find the UMIs in two places:
 
 - **Inline in the reads.** Give one [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file with `--umi_read_structure`. `8M+T +T` is an 8 bp UMI at the start of read 1, and `8M+T 8M+T` is one on each read. `S` skips bases, so `8M2S+T` also drops a 2 bp spacer. Single-end samples use the first read structure only.
 - **In the read names.** Without `--umi_read_structure`, the UMI is the last colon-separated field of the read name, as BCL Convert writes it (`...:ACGTACGT` or `...:ACGTACGT+TGCATGCA`).
 
-Duplicate marking depends on the aligner:
+By default, UMIs that differ by one base are treated as the same molecule (`--umi_dedup_strategy adjacency`). Use `identity` for exact matches, or `paired` for duplex UMIs.
 
-| Aligner                        | Tool                            | UMI matching                                                       |
-| ------------------------------ | ------------------------------- | ------------------------------------------------------------------ |
-| `bwameth`, `bwamem`, `bwamem3` | `fgumi dedup`                   | One mismatch allowed by default (`--umi_dedup_strategy adjacency`) |
-| `bismark`, `bismark_hisat`     | `deduplicate_bismark --barcode` | Exact match only                                                   |
-
-For the bwa-based aligners, the alignments keep the UMI in the `RX` tag and the molecule ID in the `MI` tag. As with Picard MarkDuplicates, duplicates are flagged and not removed. Bismark removes them, and keeps the UMI at the end of the read name.
+> [!WARNING]
+> Inline UMIs are extracted after trimming, so 5' clipping would remove them. The pipeline stops if `--umi_read_structure` is combined with `--clip_r1`, `--clip_r2` or a library preset that clips the 5' end (`--em_seq`, `--zymo`, `--accel`, `--pbat`, `--single_cell`). Use `--skip_trimming_presets`, set any 3' clipping yourself, and skip the 5' bases in the read structure, for example `8M10S+T 8M10S+T`. UMIs in the read names are not affected.
 
 > [!NOTE]
 > For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
 
-> [!WARNING]
-> `--with_umi` is not supported with the `gpu` profile. With `--rrbs`, deduplication is still skipped, so `--with_umi` only removes the UMIs from the reads. The pipeline marks duplicates and does not call consensus reads.
+With `--rrbs` or `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
 
 ### Targeted sequencing (optional)
 
