@@ -101,6 +101,22 @@ nextflow_pipeline {
         }
     }
 
+    test("Params: samplesheet genome column filled - not used") {
+        when {
+            params {
+                outdir = "${outputDir}"
+                input  = "${projectDir}/tests/samplesheet_genome_column.csv"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("The samplesheet 'genome' column is not used") } }
+            )
+        }
+    }
+
     errorScenarios.each { scenario ->
         test(scenario.description) {
             when {
