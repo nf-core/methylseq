@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Stop at launch when `--relax_mismatches` is combined with `--local_alignment` for `--aligner bismark`, which Bowtie 2 rejects ([#472](https://github.com/nf-core/methylseq/issues/472))
 - 🐛 Fix the unmapped-read file names in `docs/output.md` and test `--unmapped` ([#595](https://github.com/nf-core/methylseq/issues/595))
 - 📖 The trimming preset table in the parameter docs gives 10 bp for `--zymo` 5' R2 clipping, as the pipeline applies, and lists `--em_seq` ([#591](https://github.com/nf-core/methylseq/issues/591))
+- 🐛 A filled-in samplesheet `genome` column stops the run saying the column isn't used, instead of "Invalid reference genome name" ([#587](https://github.com/nf-core/methylseq/issues/587))
 - 📖 The `--input` help names the samplesheet columns and links to the methylseq usage docs ([#662](https://github.com/nf-core/methylseq/pull/662))
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
