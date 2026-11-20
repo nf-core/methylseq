@@ -332,6 +332,16 @@ def validateInputSamplesheet(input) {
         error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
     }
 
+    // Trim Galore's --fastqc_raw stages each input as <sample>[_1|_2]_raw.fastq.gz and refuses to overwrite it
+    if (!params.skip_trimming && !params.skip_fastqc && fastqs.size() == 1) {
+        def id = metas[0].id
+        def aliases = metas[0].single_end ? ["${id}_raw.fastq.gz".toString()] : ["${id}_1_raw.fastq.gz".toString(), "${id}_2_raw.fastq.gz".toString()]
+        def clashing = fastqs[0].collect { fastq -> file(fastq).name }.findAll { name -> name in aliases }
+        if (clashing) {
+            error("Please check input samplesheet -> sample ${id}: rename ${clashing.join(' and ')}, the name Trim Galore uses for its raw FastQC report, or trimming fails.")
+        }
+    }
+
     return [metas[0], fastqs]
 }
 //
