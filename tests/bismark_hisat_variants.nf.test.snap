@@ -188,11 +188,11 @@
                 "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
-                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.bedGraph.gz:md5,2a7ce2fa94f55ee50edaf8d3f8443d5c",
+                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.bedGraph.gz:md5,807e5ec74f54541ab1f8d145c605f3ae",
                 "SRR389222_sub1_trimmed_bismark_hisat2.bedGraph.gz:md5,c4996062e2205ef8e0d93d1b5de02f23",
                 "SRR389222_sub2_trimmed_bismark_hisat2.bedGraph.gz:md5,506e1a5c19e55928c6d78040a4d153f9",
                 "SRR389222_sub3_trimmed_bismark_hisat2.bedGraph.gz:md5,67f9aefdec2951f0823ccfe89f9f1894",
-                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.M-bias.txt:md5,bae28e629abe7f96d5cf91290a78c804",
+                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.M-bias.txt:md5,c103cdfe38251b00e48781d1c4f18b00",
                 "SRR389222_sub1_trimmed_bismark_hisat2.M-bias.txt:md5,f7cc37d3dfdecd62c5f32b6ae086b4e3",
                 "SRR389222_sub2_trimmed_bismark_hisat2.M-bias.txt:md5,33ce1d8bc3df953b22ef2b68a4942266",
                 "SRR389222_sub3_trimmed_bismark_hisat2.M-bias.txt:md5,11295dffff67d052074952cb39f1f851",
@@ -204,7 +204,7 @@
                 "CHG_OT_SRR389222_sub1_trimmed_bismark_hisat2.txt.gz:md5,e588334e91f6a4aeec1d9f7169a2eacf",
                 "CHG_OT_SRR389222_sub2_trimmed_bismark_hisat2.txt.gz:md5,b41e5e8b27ea3cac4844699863c3b3c6",
                 "CHG_OT_SRR389222_sub3_trimmed_bismark_hisat2.txt.gz:md5,a887f5724226c0a836c5327b3a1adfc4",
-                "CHH_OB_Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.txt.gz:md5,aa0389b179c1a61f1e6cc836505f5594",
+                "CHH_OB_Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.txt.gz:md5,9c851790e90cf49cd07df3c2671796dc",
                 "CHH_OB_SRR389222_sub1_trimmed_bismark_hisat2.txt.gz:md5,db934312aff973d98a0d38a6af72cf77",
                 "CHH_OB_SRR389222_sub2_trimmed_bismark_hisat2.txt.gz:md5,ab8228a4d89d2db1ad25f0adb6c40e13",
                 "CHH_OB_SRR389222_sub3_trimmed_bismark_hisat2.txt.gz:md5,26b852df44d4cb225366c9b01a3deec3",
@@ -216,26 +216,26 @@
                 "CpG_OB_SRR389222_sub1_trimmed_bismark_hisat2.txt.gz:md5,3a7630f1871602b8869446079d99f068",
                 "CpG_OB_SRR389222_sub2_trimmed_bismark_hisat2.txt.gz:md5,2b45be05e5f73e71d9d72010733f526a",
                 "CpG_OB_SRR389222_sub3_trimmed_bismark_hisat2.txt.gz:md5,79726f1bd2f36a5307761eaf67b92dc8",
-                "CpG_OT_Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.txt.gz:md5,421278ad8ebecee36102ee3b0578cb12",
+                "CpG_OT_Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.txt.gz:md5,9c964be8061710e61f9bda2209f725ed",
                 "CpG_OT_SRR389222_sub1_trimmed_bismark_hisat2.txt.gz:md5,003e5fb7a53f305fd97c386ea3f678fb",
                 "CpG_OT_SRR389222_sub2_trimmed_bismark_hisat2.txt.gz:md5,f9b88a5aef978c3282ced02621b15f17",
                 "CpG_OT_SRR389222_sub3_trimmed_bismark_hisat2.txt.gz:md5,229062f044fd48d4273079e1766aa2bd",
-                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.bismark.cov.gz:md5,8a41b5bf3c33a43712cc148dbc787648",
+                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe.bismark.cov.gz:md5,2b81d4ee426b58f25732fc2398759a2d",
                 "SRR389222_sub1_trimmed_bismark_hisat2.bismark.cov.gz:md5,83ef8455fd0e7d5c7a79180fe078a428",
                 "SRR389222_sub2_trimmed_bismark_hisat2.bismark.cov.gz:md5,00b8c3211d283175a86c410715e6890e",
                 "SRR389222_sub3_trimmed_bismark_hisat2.bismark.cov.gz:md5,35dec1457f32eb9bbbb3b6cceeae2480",
-                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe_splitting_report.txt:md5,c924f9ae17e937f57731d92c57a51b4a",
+                "Ecoli_10K_methylated_1_val_1_bismark_hisat2_pe_splitting_report.txt:md5,d81a58ea6c3ee51a1f6f0ad394eb72bc",
                 "SRR389222_sub1_trimmed_bismark_hisat2_splitting_report.txt:md5,787061c5745f72f9816244e1846c0bd9",
                 "SRR389222_sub2_trimmed_bismark_hisat2_splitting_report.txt:md5,67254bd7d4c43c39a31e5e6d6f746194",
                 "SRR389222_sub3_trimmed_bismark_hisat2_splitting_report.txt:md5,9b0e74584dd03d02c8580d494950238a",
-                "bismark-methylation-dp.txt:md5,2ed19dff17c089738a62de166f44cf97",
+                "bismark-methylation-dp.txt:md5,7e74b4e625f653c68b1767acdd8eb1d0",
                 "bismark_alignment.txt:md5,0e1ef7bfb853be4fe2471ee1082865c0",
                 "bismark_mbias_CHG_R1.txt:md5,cc89b38a24adcd51363a934964b03892",
-                "bismark_mbias_CHG_R2.txt:md5,562dee654a3b88dad736516b454ca9fe",
+                "bismark_mbias_CHG_R2.txt:md5,3e88105d01fb2a353ecdf7fca1fe7b77",
                 "bismark_mbias_CHH_R1.txt:md5,2e3285829e102e9674de462c9004aea6",
-                "bismark_mbias_CHH_R2.txt:md5,a2b424024427c8c7a79ab955c0d5a974",
+                "bismark_mbias_CHH_R2.txt:md5,b116f2327c48e9ae31a23cb4f6fdc718",
                 "bismark_mbias_CpG_R1.txt:md5,4051f0d1ad5d4af6b7843ec25965955a",
-                "bismark_mbias_CpG_R2.txt:md5,390b82c4d50ee44e5e2e7f8013010826",
+                "bismark_mbias_CpG_R2.txt:md5,e72c3bbe8c34ed84179910f3d079d3d3",
                 "bismark_strand_alignment.txt:md5,9a00de25da7cbc6e3fe70192ad1fc191",
                 "cutadapt_filtered_reads_plot.txt:md5,ff1b6d4011a5be5410b9404f7ff56c56",
                 "cutadapt_trimmed_sequences_plot_3_Counts.txt:md5,57d07c19b0c30dc88df96c30bedcdc33",
@@ -252,7 +252,7 @@
                 "fastqc_sequence_duplication_levels_plot.txt:md5,9e5712db9aa39b5754ea1e0c49cfff15",
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_bismark_alignment.txt:md5,3a53587ae3dbd351028bcc783f1403c4",
-                "multiqc_bismark_methextract.txt:md5,49c773a9e0f10291974cf55ea095208c",
+                "multiqc_bismark_methextract.txt:md5,48e582564b229fcc02b52e49abb7d97a",
                 "multiqc_citations.txt:md5,73a6d29705d5a07f17f99c92e3a0f148",
                 "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac"
             ],
@@ -291,10 +291,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-11T20:27:32.005208386",
+        "timestamp": "2026-11-19T23:35:08.815738853",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bismark_hisat with save_reference and save_align_intermeds": {
