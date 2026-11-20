@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Fix `RASTAIR_MBIASPARSER` strict-parser error: the rastair 0.8 modules are updated to nf-core master, which quotes the `env()` outputs and reports versions through topic channels (the local patch is dropped); the pipeline now lints cleanly under Nextflow's strict parser (≥25.10)
 - 🐛 Stop at launch when `--relax_mismatches` is combined with `--local_alignment` for `--aligner bismark`, which Bowtie 2 rejects ([#472](https://github.com/nf-core/methylseq/issues/472))
 - 🐛 Fix the unmapped-read file names in `docs/output.md` and test `--unmapped` ([#595](https://github.com/nf-core/methylseq/issues/595))
+- 📖 The trimming preset table in the parameter docs gives 10 bp for `--zymo` 5' R2 clipping, as the pipeline applies, and lists `--em_seq` ([#591](https://github.com/nf-core/methylseq/issues/591))
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
