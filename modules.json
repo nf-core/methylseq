@@ -117,7 +117,7 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "008f9d3e61209bf995edac3ba531f54e269e1215",
+                        "git_sha": "868791e991feaaeff234b79f7910b6b442627529",
                         "installed_by": ["modules"]
                     },
                     "parabricks/fq2bam": {
