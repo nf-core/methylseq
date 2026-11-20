@@ -217,7 +217,7 @@ def validateInputParameters() {
     }
     // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
     // point users with large genomes at a pre-built --bwamem3_index.
-    def bwamem3_index = (params.containsKey('bwamem3_index') && params.bwamem3_index) ? params.bwamem3_index : getGenomeAttribute('bwamem3')
+    def bwamem3_index = params.containsKey('bwamem3_index') ? params.bwamem3_index : getGenomeAttribute('bwamem3')
     if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
         def fasta_bytes = 0L
         try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
