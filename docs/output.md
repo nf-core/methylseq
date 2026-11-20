@@ -21,6 +21,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Methylation Extraction](#methylation-extraction) - Calling cytosine methylation steps
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
+- [riker](#riker) - Alignment, insert size, coverage and GC bias metrics in one BAM pass [OPTIONAL]
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
 - [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
 - [Reference Genome Preparation](#reference-genome-preparation) - Preparing indices for alignment [OPTIONAL]
@@ -40,8 +41,8 @@ bismark/
 │   ├── reports
 │   └── summary
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── multiqc
 │   └── bismark
@@ -65,8 +66,8 @@ bwameth/
 │   ├── alignments
 │   └── deduplicated
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── methyldackel
 │   ├── Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph
@@ -95,8 +96,8 @@ bwamem/
 │   └── deduplicated
 │       └── picard_metrics
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── multiqc
 │   └── bwamem
@@ -125,13 +126,13 @@ bwamem/
 
 ### Reference Genome Preparation
 
-If you provide a FASTA file as input (`--fasta`), the pipeline will automatically generate the necessary reference genome files for your chosen aligner. These files are saved in the `results` directory.
+Unless you give a pre-built index, the pipeline builds the reference files for your chosen aligner from the FASTA (`--fasta` or `--genome`), and saves them with `--save_reference`.
 
 **Output directory: `results/<aligner>/reference_genome/`**
 
 - This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3. The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
 
-> **NB:** These files are only generated if a FASTA file is provided as input and `--save_reference` is specified.
+> **NB:** These files are only built when no pre-built index is given, and only saved with `--save_reference`.
 
 ### FastQC
 
@@ -139,12 +140,14 @@ If you provide a FASTA file as input (`--fasta`), the pipeline will automaticall
 <summary>Output files</summary>
 
 - `fastqc/`
-  - `*_fastqc.html`: FastQC report containing quality metrics.
-  - `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
+  - `*_raw_fastqc.html`: FastQC report on the input reads.
+  - `zips/*_raw_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
 
 </details>
 
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
+
+When trimming runs, Trim Galore writes these reports with its bundled FastQC engine ([FastQC-Rust](https://github.com/ewels/FastQC-Rust) 1.1.1 in Trim Galore 2.6.0) before trimming, and their names end in `_raw_fastqc`. With `--skip_trimming`, the pipeline runs FastQC itself and the names end in `_fastqc`. `--skip_fastqc` skips all FastQC reports, including Trim Galore's.
 
 ![MultiQC - FastQC sequence counts plot](images/mqc_fastqc_counts.png)
 
@@ -152,28 +155,24 @@ If you provide a FASTA file as input (`--fasta`), the pipeline will automaticall
 
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
-**NB:** The FastQC plots in this directory are generated relative to the raw, input reads. They may contain adapter sequence and regions of low quality. To see how your reads look after adapter and quality trimming please refer to the FastQC reports in the `trimgalore/fastqc/` directory.
-
-</details>
-
-[FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
+**NB:** The FastQC reports in this directory are for the raw input reads. They may contain adapter sequence and regions of low quality. The reports on the trimmed reads are in `trimgalore/fastqc/`.
 
 ## TrimGalore
 
-The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore is a wrapper around [Cutadapt](https://github.com/marcelm/cutadapt) and runs FastQC after it finishes.
+The nf-core/methylseq pipeline uses [Trim Galore](https://github.com/FelixKrueger/TrimGalore) for removal of adapter contamination and trimming of low quality regions. Trim Galore also runs FastQC on the reads before trimming (see [FastQC](#fastqc)) and after it.
 
-MultiQC reports the percentage of bases removed by Cutadapt in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
+MultiQC reads Trim Galore's JSON reports for its Trim Galore section.
 
 **Output directory: `results/trimgalore`**
 
-Contains FastQ files with quality and adapter trimmed reads for each sample, along with a log file describing the trimming.
+Contains FastQ files with quality and adapter trimmed reads for each sample, along with reports describing the trimming.
 
-- `sample_val_1.fq.gz`, `sample_val_2.fq.gz`
+- `sample_1_val_1.fq.gz`, `sample_2_val_2.fq.gz`
   - Trimmed FastQ data, reads 1 and 2.
   - **NB:** Only saved if `--save_trimmed` has been specified.
-- `logs/sample_val_1.fq.gz_trimming_report.txt`
-  - Trimming report (describes which parameters that were used)
-- `fastQC/sample_val_1_fastqc.zip`
+- `logs/sample_1.fastq.gz_trimming_report.txt`, `logs/sample_1.fastq.gz_trimming_report.json`
+  - Trimming report as text and JSON (describes which parameters were used)
+- `fastqc/sample_1_val_1_fastqc.html`, `fastqc/zips/sample_1_val_1_fastqc.zip`
   - FastQC report for trimmed reads
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
@@ -372,6 +371,35 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 - `sample/genome_results.txt`, `sample/raw_data_qualimapReport/*.txt`
   - Text-based statistics that can be loaded into downstream programs
 
+## riker
+
+[riker](https://github.com/fulcrumgenomics/riker) collects several sets of sequencing QC metrics in one pass over each final BAM file. It ports the matching Picard collectors, with lower-case column names in its tables. The pipeline runs it with `--run_riker`. The metrics are not shown in the MultiQC report yet: riker support starts with MultiQC 1.35.
+
+Some metrics need care on converted reads:
+
+- The `error` collector is not run: it would count conversions as mismatches.
+- The mismatch rate of the `alignment` collector comes from the `NM` tag. Where the aligner counts conversions in `NM`, as Bismark does, the rate includes every conversion.
+- Bismark BAM files contain no unmapped reads, so the aligned fraction is close to 100 %.
+- The `wgs` collector counts coverage over the whole reference, so its metrics are of little use for targeted and RRBS data.
+- The `hybcap` collector has no coverage cap, unlike Picard CollectHsMetrics here (`--COVERAGE_CAP 1000`), so coverage figures can differ on deep panels.
+
+**Output directory: `results/riker`**
+
+- `*.alignment-metrics.txt`
+  - Alignment summary metrics, per read and per pair.
+- `*.base-distribution-by-cycle.txt`, `*.mean-quality-by-cycle.txt`, `*.quality-score-distribution.txt`
+  - Base composition and base quality metrics.
+- `*.isize-metrics.txt`, `*.isize-histogram.txt`
+  - Insert size metrics and histogram. Paired-end samples only.
+- `*.wgs-metrics.txt`, `*.wgs-coverage.txt`
+  - Genome-wide coverage metrics and histogram.
+- `*.gcbias-summary.txt`, `*.gcbias-detail.txt`
+  - GC bias metrics.
+- `*.hybcap-metrics.txt`
+  - Hybrid capture metrics, as an alternative to Picard CollectHsMetrics. Only with `--run_targeted_sequencing`. The target regions are used as both baits and targets.
+- `*.pdf`
+  - Plots of the metrics above.
+
 ## Preseq
 
 [Preseq](http://smithlabresearch.org/software/preseq/) estimates the complexity of a library, showing how many additional unique reads are sequenced for increasing the total read count. A shallow curve indicates that the library has reached complexity saturation and further sequencing would likely not add further unique reads. The dashed line shows a perfectly complex library where total reads = unique reads.
@@ -403,7 +431,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
 :::note
-The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
+With trimming, the MultiQC report has two FastQC sections: _FastQC (raw)_ for the input reads and _FastQC (trimmed)_ for the reads after Trim Galore. With `--skip_trimming` it has one, for the input reads. A `--multiqc_config` that sets its own `module_order` replaces the pipeline's, and with it the split into two sections.
 :::
 
 ### MultiQC

@@ -26,6 +26,8 @@ nextflow_pipeline {
                 { assert workflow.success},
                 { assert align_reports.size() > 0 },
                 { assert align_reports.every { report -> report.text.contains('-p 2 --reorder') } },
+                // Trim Galore writes the raw and trimmed FastQC reports
+                { assert !workflow.trace.tasks().any { task -> task.name.contains(':FASTQC (') } },
                 { assert snapshot(
                     // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),

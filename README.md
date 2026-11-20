@@ -45,7 +45,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | -------------------------------------------- | ------------------------ | ----------------------- | -------------------------- | --------------------------------------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth                | bwa index                  | bwa-mem3 index --meth                               |
 | Merge re-sequenced FastQ files               | cat                      | cat                     | cat                        | cat                                                 |
-| Raw data QC                                  | FastQC                   | FastQC                  | FastQC                     | FastQC                                              |
+| Raw data QC                                  | FastQC (in Trim Galore)  | FastQC (in Trim Galore) | FastQC (in Trim Galore)    | FastQC (in Trim Galore)                             |
 | Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               | Trim Galore!                                        |
 | Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    | bwa-mem3 (`--meth=taps` or `--meth`)                |
 | Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      | Picard MarkDuplicates                               |
@@ -53,6 +53,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | Sample report                                | Bismark                  | -                       | -                          | -                                                   |
 | Summary Report                               | Bismark                  | -                       | -                          | -                                                   |
 | Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      | Qualimap _(optional)_                               |
+| Sequencing QC metrics                        | riker _(optional)_       | riker _(optional)_      | riker _(optional)_         | riker _(optional)_                                  |
 | Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        | Preseq _(optional)_                                 |
 | CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | -                          | methurator _(optional, bisulfite/EM-seq only)_      |
 | Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    | MultiQC (with bcftools stats for rastair version 2) |

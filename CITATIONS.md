@@ -18,6 +18,10 @@
 
   > Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
 
+- [FastQC-Rust](https://github.com/ewels/FastQC-Rust)
+
+  > <https://github.com/ewels/FastQC-Rust>
+
 - [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
 
   > Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
@@ -48,6 +52,10 @@
 - [Qualimap](https://doi.org/10.1093/bioinformatics/btv566)
 
   > Konstantin Okonechnikov, Ana Conesa, Fernando García-Alcalde, Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data, Bioinformatics, Volume 32, Issue 2, 15 January 2016, Pages 292–294, doi: [10.1093/bioinformatics/btv566](https://doi.org/10.1093/bioinformatics/btv566)
+
+- [riker](https://github.com/fulcrumgenomics/riker)
+
+  > riker, Fulcrum Genomics. <https://github.com/fulcrumgenomics/riker>
 
 - [Preseq](https://doi.org/10.1038/nmeth.2375)
 

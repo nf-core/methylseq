@@ -31,7 +31,7 @@ The nf-core/methylseq pipeline provides three distinct workflows for DNA methyla
 ```mermaid
 flowchart TD
     subgraph Stage1[Pre-processing]
-        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+        A["cat fastq (optional)"] --> C["Trim Galore<br/>+ FastQC before and after trimming"]
     end
 
     subgraph Stage2[Genome Alignment + Deduplication]
@@ -71,6 +71,9 @@ flowchart TD
         D1 --> J3["Qualimap (optional)"]
         D2 --> J3
         D3 --> J3
+        D1 --> J4["riker (optional)"]
+        D2 --> J4
+        D3 --> J4
     end
 
     subgraph Stage4[Final QC]
@@ -83,6 +86,7 @@ flowchart TD
         I2 --> H1
         J1 --> H1
         J2 --> H1
+        J4 --> H1
     end
 
     %% Styling for TAPS workflows
@@ -232,7 +236,7 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. For TAPS data it filters the rastair 2 CpG BED instead, so it needs `--taps_caller rastair2`.
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair 2 CpG BED instead, so it needs `--taps_caller rastair2`.
 
 ## Samplesheet input
 
@@ -284,7 +288,7 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 | `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
 | `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
+| `genome`  | Not used: leave it empty. The reference for all samples is set with `--genome`, `--fasta` or an index option such as `--bismark_index`.                                                |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -304,7 +308,7 @@ Check out the full list of parameters required, available for multiple aligners 
 - [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
 - [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
 
-> It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
+> Every run needs a reference FASTA, from `--fasta` or `--genome`, even with a pre-built index (`--bismark_index`, `--bwameth_index`, `--bwamem_index`, `--bwamem3_index`). Without one the pipeline stops at launch.
 
 ## Running the pipeline
 
@@ -362,6 +366,8 @@ To bypass this limitation, the `--scaffolds` option can be added as an additiona
 This prevents methylation calls from being pre-sorted into individual chromosome files.
 
 Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+
+If you replace the `ext.args` of `TRIMGALORE`, keep `--fastqc_raw --fastqc` in them: with trimming, Trim Galore writes all FastQC reports and the pipeline's own FastQC doesn't run.
 
 For a detailed list of different options available, please refer to the official docs of:
 
