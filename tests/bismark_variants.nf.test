@@ -9,14 +9,16 @@ nextflow_pipeline {
         [
             name: "bismark_default",
             description: "Params: bismark (default)",
-            params: [:]
+            params: [:],
+            r2_ignores: [first: 2, last: 2]
         ],
         [
             name: "bismark_skip_trimming",
             description: "Params: bismark with skip_trimming",
             params: [
                 skip_trimming: true
-            ]
+            ],
+            r2_ignores: [first: 2, last: 2]
         ],
         [
             name: "bismark_skip_deduplication",
@@ -37,7 +39,8 @@ nextflow_pipeline {
             description: "Params: bismark with rrbs",
             params: [
                 rrbs: true
-            ]
+            ],
+            r2_ignores: [first: null, last: null]
         ],
         [
             name: "bismark_emseq_clip_r1",
@@ -45,7 +48,35 @@ nextflow_pipeline {
             params: [
                 em_seq: true,
                 clip_r1: 2
-            ]
+            ],
+            r2_ignores: [first: null, last: null]
+        ],
+        [
+            name: "bismark_three_prime_clip_r2_ignore_r2",
+            description: "Params: bismark with three_prime_clip_r2 and ignore_r2",
+            params: [
+                three_prime_clip_r2: 5,
+                ignore_r2: 3
+            ],
+            r2_ignores: [first: 3, last: null]
+        ],
+        [
+            name: "bismark_clip_r2_ignore_3prime_r2_zero",
+            description: "Params: bismark with clip_r2 and ignore_3prime_r2 0",
+            params: [
+                clip_r2: 5,
+                ignore_3prime_r2: 0
+            ],
+            r2_ignores: [first: null, last: null]
+        ],
+        [
+            name: "bismark_rrbs_non_directional",
+            description: "Params: bismark with rrbs and non_directional",
+            params: [
+                rrbs: true,
+                non_directional: true
+            ],
+            r2_ignores: [first: null, last: null]
         ],
         [
             name: "bismark_nomeseq",
@@ -150,9 +181,17 @@ nextflow_pipeline {
                         .collect { file -> [file.getName(), path(file.toString()).readLines()[3..10].join('\n').md5() ] }
                 }
 
+                // R2 ignores the extractor applied, from the paired-end sample's splitting report
+                def r2_reports = scenario.r2_ignores ? getAllFilesFromDir(params.outdir, include: ['**/*_pe*splitting_report.txt'])
+                    .collect { file -> path(file.toString()).text } : []
+
                 assertAll(
                     { assert workflow.success },
-                    { assert snapshot(*snapshotArgs).match() }
+                    { assert snapshot(*snapshotArgs).match() },
+                    { assert !scenario.r2_ignores || r2_reports.size() == 1 },
+                    { assert !scenario.r2_ignores || scenario.r2_ignores.every { end, n ->
+                        n ? r2_reports[0].contains("Ignoring ${end} ${n} bp of Read 2") : !(r2_reports[0] =~ /Ignoring ${end} \d+ bp of Read 2/)
+                    } }
                 )
             }
         }
