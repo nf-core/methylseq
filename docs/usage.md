@@ -225,7 +225,7 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 ### UMIs (optional)
 
-`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It is only supported with `--aligner bwamem3`, for TAPS (`--taps`) and for bisulfite or EM-seq data.
+`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It works with every aligner, on CPU. bwa-mem3 has the shortest route, described first.
 
 ```bash
 nextflow run nf-core/methylseq \
@@ -236,7 +236,7 @@ nextflow run nf-core/methylseq \
   --umi_read_structure "8M+T 8M+T"
 ```
 
-After trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The aligner and its mode are the same as without `--with_umi`, and the alignments also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard. Read pairs without a usable UMI are the exception (see the note below). `--save_align_intermeds` has no effect on this route, which writes no BAM before the final one.
+With `--aligner bwamem3`, after trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The aligner and its mode are the same as without `--with_umi`, and the alignments also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard. Read pairs without a usable UMI are the exception (see the note below). `--save_align_intermeds` has no effect on this route, which writes no BAM before the final one.
 
 UMI-tools, which other nf-core pipelines use, calls duplicates just as well on this kind of data. fgumi is used here because it flags duplicates and keeps every other read, as Picard does on the non-UMI route, where `umi_tools dedup` removes duplicates and unmapped reads. It also extracts, aligns and sorts in one multi-threaded step, and it can call methylation-aware consensus reads, which a later release could add.
 
@@ -247,8 +247,17 @@ The pipeline can find the UMIs in two places:
 
 By default, UMIs that differ by one base are treated as the same molecule (`--umi_dedup_strategy adjacency`). Use `identity` for exact matches, or `paired` for duplex UMIs.
 
+The other aligners take a longer route, which extracts the UMIs before trimming:
+
+| Aligner                    | Steps                                                                                           | UMI matching                        |
+| -------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `bwameth`, `bwamem`        | `fgumi extract`, trimming, alignment, then `fgumi zipper`, `sort` and `dedup`                   | As for bwa-mem3                     |
+| `bismark`, `bismark_hisat` | `fgumi extract`, which also puts the UMI in the read name, then `deduplicate_bismark --barcode` | Exact match only; reads are removed |
+
+Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth sets on reads aligned to the wrong strand, the samtools stats in MultiQC are from before duplicate marking, and it is not supported with `-profile gpu`.
+
 > [!WARNING]
-> Inline UMIs are extracted after trimming, so 5' clipping would remove them. The pipeline stops if `--umi_read_structure` is combined with `--clip_r1`, `--clip_r2` or a library preset that clips the 5' end (`--em_seq`, `--zymo`, `--accel`, `--pbat`, `--single_cell`). Use `--skip_trimming_presets`, set any 3' clipping yourself, and skip the 5' bases in the read structure, for example `8M10S+T 8M10S+T`. UMIs in the read names are not affected.
+> With `--aligner bwamem3`, inline UMIs are extracted after trimming, so 5' clipping would remove them. The pipeline stops if `--umi_read_structure` is combined with `--clip_r1`, `--clip_r2` or a library preset that clips the 5' end (`--em_seq`, `--zymo`, `--accel`, `--pbat`, `--single_cell`). Use `--skip_trimming_presets`, set any 3' clipping yourself, and skip the 5' bases in the read structure, for example `8M10S+T 8M10S+T`. UMIs in the read names are not affected.
 
 > [!NOTE]
 > For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
@@ -256,7 +265,7 @@ By default, UMIs that differ by one base are treated as the same molecule (`--um
 > [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
 
-`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
+`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too, except with the Bismark aligners. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
 
 ### Targeted sequencing (optional)
 

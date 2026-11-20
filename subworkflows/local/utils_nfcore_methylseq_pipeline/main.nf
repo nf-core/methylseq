@@ -264,16 +264,19 @@ def validateInputParameters() {
     if (params.run_targeted_sequencing && isTaps()) {
         error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
     }
-    // UMIs are handled by fgumi runall, which drives bwa-mem3 itself
-    if (params.with_umi && params.aligner != 'bwamem3') {
-        error("--with_umi is only supported with --aligner bwamem3 (got --aligner ${params.aligner}).")
+    // fgumi dedup needs the alignments zipped with the unmapped BAM, which the Parabricks steps don't take
+    if (params.with_umi && params.aligner in ['bwameth', 'bwamem'] && workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1) {
+        error("--with_umi is not supported with the gpu profile (Parabricks). Run on CPU, or drop --with_umi.")
     }
-    // The UMIs are extracted after trimming: fgumi runall aligns straight after extraction
+    if (params.with_umi && params.rrbs && params.aligner.startsWith('bismark')) {
+        log.warn("--rrbs skips deduplication for the Bismark aligners, so --with_umi only moves the UMIs into the read names.")
+    }
+    // bwa-mem3 extracts the UMIs after trimming: fgumi runall aligns straight after extraction
     def five_prime_clip = !params.skip_trimming && (params.clip_r1 > 0 || params.clip_r2 > 0 ||
         (!params.skip_trimming_presets && (params.pbat || params.single_cell || params.accel || params.zymo || params.em_seq)))
-    if (params.with_umi && params.umi_read_structure && five_prime_clip) {
+    if (params.with_umi && params.aligner == 'bwamem3' && params.umi_read_structure && five_prime_clip) {
         error(
-            "--with_umi takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
+            "--with_umi with --aligner bwamem3 takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
             "Use --skip_trimming_presets without --clip_r1/--clip_r2, and skip the clipped bases in --umi_read_structure instead, e.g. '8M10S+T 8M10S+T'."
         )
     }
@@ -292,6 +295,7 @@ def validateInputParameters() {
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
+        [params.with_umi && params.umi_dedup_strategy != 'adjacency' && params.aligner.startsWith('bismark'), '--umi_dedup_strategy only applies to fgumi dedup (bwameth, bwamem, bwamem3); Bismark needs identical UMIs'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],

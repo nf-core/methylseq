@@ -558,13 +558,13 @@
                 "with_umi": {
                     "type": "boolean",
                     "description": "Use UMIs to mark duplicates.",
-                    "help_text": "Only supported with `--aligner bwamem3`. After trimming, `fgumi runall` takes the UMIs out of the reads, aligns with bwa-mem3 and stores each UMI in the `RX` tag. `fgumi dedup` then replaces Picard MarkDuplicates: reads are duplicates only if they share mapping position, strand and UMI.\n\nWithout `--umi_read_structure`, the UMI is read from the last colon-separated field of the read name, as written by BCL Convert.\n\nFor bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines so that conversion leaves them intact.",
+                    "help_text": "Reads are duplicates only if they share mapping position, strand and UMI. With `--aligner bwamem3`, `fgumi runall` takes the UMIs out of the trimmed reads, aligns and stores each UMI in the `RX` tag, and `fgumi dedup` replaces Picard MarkDuplicates. With `bwameth` and `bwamem`, fgumi takes the UMIs out before trimming and `fgumi dedup` runs after alignment. The Bismark aligners use `deduplicate_bismark --barcode`.\n\nWithout `--umi_read_structure`, the UMI is read from the last colon-separated field of the read name, as written by BCL Convert.\n\nFor bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines so that conversion leaves them intact.",
                     "fa_icon": "fas fa-barcode"
                 },
                 "umi_read_structure": {
                     "type": "string",
                     "description": "Read structure of each FASTQ file, when the UMIs are inline in the reads.",
-                    "help_text": "One [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file, separated by a space. For example `8M+T +T` for an 8 bp UMI at the start of read 1, or `8M+T 8M+T` for an 8 bp UMI at the start of each read. Use `S` to skip bases, for example `8M2S+T` to drop a 2 bp spacer after the UMI. The UMIs are extracted after trimming, so 5' clipping (`--clip_r1`, `--clip_r2` or a library preset) can't be combined with inline UMIs: skip those bases in the read structure instead. Requires `--with_umi`.",
+                    "help_text": "One [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file, separated by a space. For example `8M+T +T` for an 8 bp UMI at the start of read 1, or `8M+T 8M+T` for an 8 bp UMI at the start of each read. Use `S` to skip bases, for example `8M2S+T` to drop a 2 bp spacer after the UMI. With `--aligner bwamem3` the UMIs are extracted after trimming, so 5' clipping (`--clip_r1`, `--clip_r2` or a library preset) can't be combined with inline UMIs: skip those bases in the read structure instead. Requires `--with_umi`.",
                     "pattern": "^[0-9+MTSBC ]+$",
                     "fa_icon": "fas fa-ruler-horizontal"
                 },
@@ -573,7 +573,7 @@
                     "default": "adjacency",
                     "enum": ["identity", "edit", "adjacency", "paired"],
                     "description": "UMI grouping strategy for `fgumi dedup`.",
-                    "help_text": "`adjacency` (default) and `edit` tolerate one mismatch between UMIs, `identity` needs an exact match, and `paired` is for duplex UMIs (one on each end).",
+                    "help_text": "`adjacency` (default) and `edit` tolerate one mismatch between UMIs, `identity` needs an exact match, and `paired` is for duplex UMIs (one on each end). Not used by the Bismark aligners, which always need an exact match.",
                     "fa_icon": "fas fa-object-group"
                 }
             },
