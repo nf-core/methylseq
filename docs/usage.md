@@ -284,7 +284,7 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 | `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
 | `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
+| `genome`  | Not used: leave it empty. The reference for all samples is set with `--genome`, `--fasta` or an index option such as `--bismark_index`.                                                |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
