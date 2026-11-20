@@ -540,7 +540,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+|\\.bed(\\.gz)?$",
                     "description": "A BED file containing the target regions",
-                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. For TAPS data it filters the rastair 2 CpG BED (`--taps_caller rastair2`).",
                     "fa_icon": "fas fa-file"
                 },
                 "collecthsmetrics": {

@@ -33,25 +33,27 @@ process FILTER_BEDGRAPH_TARGETS {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) and extend the end
-    # coordinate by 1 bp so the interval covers the full CpG dinucleotide.
-    # Skip any track/header lines to avoid corrupting them
+    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) or rastair 2 CpG BED (gzipped)
+    # and extend each single-base entry by 1 bp so it covers the full CpG dinucleotide. rastair 2 writes the
+    # G of each CpG as its own minus-strand row (column 6), which extends to the left.
+    # Drop track lines and keep # header lines: rastair 2 names its columns in a # header
     case "${bedgraph}" in
         *.gz) zcat ${bedgraph} ;;
         *) cat ${bedgraph} ;;
     esac \\
-        | awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
+        | awk 'BEGIN{OFS="\t"} /^track/{next} /^#/{print; next} {if(\$6=="-") \$2=\$2-1; else if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
 
-    # Intersect with target regions (-wa: write original -a entry; -u: unique hits only)
+    # Intersect with target regions (-wa: write original -a entry; -u: unique hits only; -header: keep the -a header)
     bedtools intersect \\
+        -header \\
         -a extended.bedGraph \\
         -b ${targets} \\
         -wa \\
         -u \\
         > intersected.bedGraph
 
-    # Restore original single-base end coordinates
-    awk 'BEGIN{OFS="\t"} /^track/{print; next} {if(NF>=3) \$3=\$3-1; print}' intersected.bedGraph \\
+    # Restore original single-base coordinates
+    awk 'BEGIN{OFS="\t"} /^#/{print; next} {if(\$6=="-") \$2=\$2+1; else if(NF>=3) \$3=\$3-1; print}' intersected.bedGraph \\
         > ${prefix}.targeted.bedGraph
 
     cat <<-END_VERSIONS > versions.yml

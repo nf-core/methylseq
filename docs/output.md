@@ -335,13 +335,14 @@ If `--run_targeted_sequencing` is set to `true`, the pipeline performs additiona
 
 #### Filtered Methylation Calls
 
-BedGraph files are filtered using the BED file passed to `--target_regions_file`.
+BedGraph files are filtered using the BED file passed to `--target_regions_file`. For TAPS data (`--taps_caller rastair2`) the rastair version 2 CpG BED is filtered instead. A CpG is kept if its C or G falls in a target.
 
 **Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
 **bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**
+**TAPS (`--taps_caller rastair2`) output directory: `results/rastair2/call/`**
 
 - `*.targeted.bedGraph`
-  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file. For TAPS the file keeps the rastair version 2 CpG BED columns and header, despite the extension.
 
 #### Hybrid-selection (HS) Metrics
 
