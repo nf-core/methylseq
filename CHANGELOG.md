@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔄 Update template to nf-core/tools v4.2.1 (includes v4.1.0); minimum Nextflow version is now 25.10.4 and nf-schema is bumped to 2.7.3 ([#634](https://github.com/nf-core/methylseq/pull/634))
 - 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
 - 🔧 Update Trim Galore to v2.6.0; trimming output is unchanged, but TRIMGALORE now requests `process_medium` memory (1 GB → 36 GB per attempt) after the `process_low_memory` label was dropped upstream to stop OOM kills on paired-end 150 bp runs ([nf-core/modules#13831](https://github.com/nf-core/modules/pull/13831))
+- 🔧 With trimming, Trim Galore writes the raw and trimmed FastQC reports (the raw ones now named `*_raw_fastqc`) and the FastQC process runs only with `--skip_trimming`; MultiQC shows them as FastQC (raw) and FastQC (trimmed) ([#657](https://github.com/nf-core/methylseq/pull/657))
+- 🔧 Update MultiQC to 1.35, which reads Trim Galore's JSON reports ([#657](https://github.com/nf-core/methylseq/pull/657))
+- ⚠️ `--skip_fastqc` now also skips Trim Galore's FastQC reports ([#657](https://github.com/nf-core/methylseq/pull/657))
 
 ### Bug fixes & refactoring
 

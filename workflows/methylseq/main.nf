@@ -92,9 +92,9 @@ workflow METHYLSEQ {
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
-    // MODULE: Run FastQC
+    // MODULE: Run FastQC (with trimming, Trim Galore writes the raw and trimmed reports)
     //
-    if (!params.skip_fastqc) {
+    if (!params.skip_fastqc && params.skip_trimming) {
         FASTQC(
             ch_fastq
         )
@@ -454,16 +454,22 @@ workflow METHYLSEQ {
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_rastair2_mqc.collect().ifEmpty([]))
         if (!params.skip_trimming) {
-            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.log.collect { it[1] })
+            ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.json.collect { _meta, reports -> reports }.ifEmpty([]))
+            if (!params.skip_fastqc) {
+                ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.zip.collect { _meta, zips -> zips }.ifEmpty([]))
+            }
         }
         if (params.run_targeted_sequencing) {
             if (params.collecthsmetrics) {
                 ch_multiqc_files = ch_multiqc_files.mix(TARGETED_SEQUENCING.out.picard_metrics.collect { it[1] }.ifEmpty([]))
             }
         }
-        if (!params.skip_fastqc) {
-            ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect { it[1] }.ifEmpty([]))
-        }
+        ch_multiqc_files = ch_multiqc_files.mix(ch_fastqc_zip.collect { _meta, zips -> zips }.ifEmpty([]))
+
+        // The raw/trimmed FastQC sections apply only when Trim Galore writes both reports
+        multiqc_configs = [file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)] +
+            (!params.skip_trimming && !params.skip_fastqc ? [file("${projectDir}/assets/multiqc_config_trimgalore_fastqc.yml", checkIfExists: true)] : []) +
+            (params.multiqc_config ? [file(params.multiqc_config, checkIfExists: true)] : [])
 
         // New nf-core MULTIQC (v4.0.2 template): single meta-based tuple input,
         // config passed as a list, logo/replace/sample resolved as values.
@@ -472,7 +478,7 @@ workflow METHYLSEQ {
                 [
                     [id: 'multiqc'],
                     files,
-                    [file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true)] + (params.multiqc_config ? [file(params.multiqc_config, checkIfExists: true)] : []),
+                    multiqc_configs,
                     params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
                     [],
                     [],

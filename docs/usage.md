@@ -31,7 +31,7 @@ The nf-core/methylseq pipeline provides three distinct workflows for DNA methyla
 ```mermaid
 flowchart TD
     subgraph Stage1[Pre-processing]
-        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+        A["cat fastq (optional)"] --> C["Trim Galore<br/>+ FastQC before and after trimming"]
     end
 
     subgraph Stage2[Genome Alignment + Deduplication]
@@ -366,6 +366,8 @@ To bypass this limitation, the `--scaffolds` option can be added as an additiona
 This prevents methylation calls from being pre-sorted into individual chromosome files.
 
 Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+
+If you replace the `ext.args` of `TRIMGALORE`, keep `--fastqc_raw --fastqc` in them: with trimming, Trim Galore writes all FastQC reports and the pipeline's own FastQC doesn't run.
 
 For a detailed list of different options available, please refer to the official docs of:
 
