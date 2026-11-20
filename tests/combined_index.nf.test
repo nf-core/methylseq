@@ -12,7 +12,7 @@ nextflow_pipeline {
     // gate is the same boolean as the genome-prep gate, so a published Combined/ reference
     // implies the aligner ran with --combined_index. Output is concordance-gated (NOT
     // byte-identical) vs classic; numerical correctness is inherited from Bismark's own
-    // upstream concordance gate. PE combined is not exercised here (the test data is SE).
+    // upstream concordance gate.
     def testScenarios = [
         [
             name: "bismark_combined_index_directional",

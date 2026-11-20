@@ -9,14 +9,16 @@ nextflow_pipeline {
         [
             name: "bismark_default",
             description: "Params: bismark (default)",
-            params: [:]
+            params: [:],
+            r2_ignores: [first: 2, last: 2]
         ],
         [
             name: "bismark_skip_trimming",
             description: "Params: bismark with skip_trimming",
             params: [
                 skip_trimming: true
-            ]
+            ],
+            r2_ignores: [first: 2, last: 2]
         ],
         [
             name: "bismark_skip_deduplication",
@@ -37,7 +39,8 @@ nextflow_pipeline {
             description: "Params: bismark with rrbs",
             params: [
                 rrbs: true
-            ]
+            ],
+            r2_ignores: [first: null, last: null]
         ],
         [
             name: "bismark_emseq_clip_r1",
@@ -45,7 +48,26 @@ nextflow_pipeline {
             params: [
                 em_seq: true,
                 clip_r1: 2
-            ]
+            ],
+            r2_ignores: [first: null, last: null]
+        ],
+        [
+            name: "bismark_three_prime_clip_r2_ignore_r2",
+            description: "Params: bismark with three_prime_clip_r2 and ignore_r2",
+            params: [
+                three_prime_clip_r2: 5,
+                ignore_r2: 3
+            ],
+            r2_ignores: [first: 3, last: null]
+        ],
+        [
+            name: "bismark_clip_r2_ignore_3prime_r2_zero",
+            description: "Params: bismark with clip_r2 and ignore_3prime_r2 0",
+            params: [
+                clip_r2: 5,
+                ignore_3prime_r2: 0
+            ],
+            r2_ignores: [first: null, last: null]
         ],
         [
             name: "bismark_nomeseq",
@@ -168,6 +190,10 @@ nextflow_pipeline {
                 def fastqc_files = getAllFilesFromDir(params.outdir, include: ['**/*fastqc*'])
                 def trimmed_table = file("${params.outdir}/multiqc/bismark/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt")
 
+                // R2 ignores the extractor applied, from the paired-end sample's splitting report
+                def r2_reports = scenario.r2_ignores ? getAllFilesFromDir(params.outdir, include: ['**/*_pe*splitting_report.txt'])
+                    .collect { file -> path(file.toString()).text } : []
+
                 assertAll(
                     { assert workflow.success },
                     // one FASTQC task per sample with --skip_trimming, none otherwise
@@ -177,7 +203,11 @@ nextflow_pipeline {
                     { assert trimmed_reports.every { report -> !report.getName().contains('_raw_fastqc') } },
                     { assert !scenario.params.skip_fastqc || fastqc_files.isEmpty() },
                     { assert !trimgalore_fastqc || scenario.params.skip_multiqc || (trimmed_table.readLines().size() > 1 && trimmed_table.readLines().drop(1).every { line -> !(line.tokenize('\t')[0] =~ /_(val_[12]|trimmed)$/) }) },
-                    { assert snapshot(*snapshotArgs).match() }
+                    { assert snapshot(*snapshotArgs).match() },
+                    { assert !scenario.r2_ignores || r2_reports.size() == 1 },
+                    { assert !scenario.r2_ignores || scenario.r2_ignores.every { end, n ->
+                        n ? r2_reports[0].contains("Ignoring ${end} ${n} bp of Read 2") : !(r2_reports[0] =~ /Ignoring ${end} \d+ bp of Read 2/)
+                    } }
                 )
             }
         }
