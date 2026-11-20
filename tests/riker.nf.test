@@ -14,7 +14,7 @@ nextflow_pipeline {
             ]
         ],
         [
-            // Bismark needs the FASTA index built for riker; the targeted analysis adds the hybcap collector
+            // The targeted analysis adds the hybcap collector
             name: "bismark_run_targeted_sequencing_run_riker",
             description: "Params: bismark with run_targeted_sequencing and run_riker",
             params: [

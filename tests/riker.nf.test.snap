@@ -45,7 +45,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -216,12 +216,11 @@
                 "riker/SRR389222_sub1.gcbias-detail.txt",
                 "riker/SRR389222_sub1.gcbias-summary.txt",
                 "riker/SRR389222_sub1.hybcap-metrics.txt",
-                "riker/SRR389222_sub1.isize-histogram.txt",
-                "riker/SRR389222_sub1.isize-metrics.txt",
                 "riker/SRR389222_sub1.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub1.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub1.quality-score-distribution.pdf",
                 "riker/SRR389222_sub1.quality-score-distribution.txt",
+                "riker/SRR389222_sub1.wgs-coverage.pdf",
                 "riker/SRR389222_sub1.wgs-coverage.txt",
                 "riker/SRR389222_sub1.wgs-metrics.txt",
                 "riker/SRR389222_sub2.alignment-metrics.txt",
@@ -231,12 +230,11 @@
                 "riker/SRR389222_sub2.gcbias-detail.txt",
                 "riker/SRR389222_sub2.gcbias-summary.txt",
                 "riker/SRR389222_sub2.hybcap-metrics.txt",
-                "riker/SRR389222_sub2.isize-histogram.txt",
-                "riker/SRR389222_sub2.isize-metrics.txt",
                 "riker/SRR389222_sub2.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub2.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub2.quality-score-distribution.pdf",
                 "riker/SRR389222_sub2.quality-score-distribution.txt",
+                "riker/SRR389222_sub2.wgs-coverage.pdf",
                 "riker/SRR389222_sub2.wgs-coverage.txt",
                 "riker/SRR389222_sub2.wgs-metrics.txt",
                 "riker/SRR389222_sub3.alignment-metrics.txt",
@@ -246,12 +244,11 @@
                 "riker/SRR389222_sub3.gcbias-detail.txt",
                 "riker/SRR389222_sub3.gcbias-summary.txt",
                 "riker/SRR389222_sub3.hybcap-metrics.txt",
-                "riker/SRR389222_sub3.isize-histogram.txt",
-                "riker/SRR389222_sub3.isize-metrics.txt",
                 "riker/SRR389222_sub3.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub3.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub3.quality-score-distribution.pdf",
                 "riker/SRR389222_sub3.quality-score-distribution.txt",
+                "riker/SRR389222_sub3.wgs-coverage.pdf",
                 "riker/SRR389222_sub3.wgs-coverage.txt",
                 "riker/SRR389222_sub3.wgs-metrics.txt",
                 "trimgalore",
@@ -368,34 +365,28 @@
                 "SRR389222_sub1.gcbias-detail.txt:md5,a57c23b06a12f7cf27e38baf0f8e5fcf",
                 "SRR389222_sub1.gcbias-summary.txt:md5,d33cee939d76a86bec32b5f0ee6d50d9",
                 "SRR389222_sub1.hybcap-metrics.txt:md5,581f40239dd4d322650e72fec5b5fdbd",
-                "SRR389222_sub1.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub1.mean-quality-by-cycle.txt:md5,2892433e45420c845db5c17b380412a3",
                 "SRR389222_sub1.quality-score-distribution.txt:md5,109d3fbee5ac3b933e5554c8474c44c3",
-                "SRR389222_sub1.wgs-coverage.txt:md5,ddae91a2f931de0f4dd878ab4da686b0",
-                "SRR389222_sub1.wgs-metrics.txt:md5,0f4ef9a919a28a7eb4b87ac98d7d9bed",
+                "SRR389222_sub1.wgs-coverage.txt:md5,6ae49a48c5969666e02cd398706855ed",
+                "SRR389222_sub1.wgs-metrics.txt:md5,bdc0332fb521e6a02819c37b0b154acd",
                 "SRR389222_sub2.alignment-metrics.txt:md5,9b2e8421b5082b7289a1aba6e70849c1",
                 "SRR389222_sub2.base-distribution-by-cycle.txt:md5,095de0280b461e0694ff6af26ba9d318",
                 "SRR389222_sub2.gcbias-detail.txt:md5,04bd8e049eadb1c589b32506cf6ae2c7",
                 "SRR389222_sub2.gcbias-summary.txt:md5,179bddd4ba095dae80d8e91c72e7fba6",
                 "SRR389222_sub2.hybcap-metrics.txt:md5,7eda3aff333c45092e30a21336d323d3",
-                "SRR389222_sub2.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub2.mean-quality-by-cycle.txt:md5,19a732960080b9948bc561ac25a79fad",
                 "SRR389222_sub2.quality-score-distribution.txt:md5,6124905823d3af61f280aae69cd1713c",
-                "SRR389222_sub2.wgs-coverage.txt:md5,6ba60a29fd938d30ae23b1b94026edd0",
-                "SRR389222_sub2.wgs-metrics.txt:md5,4fafab439932cadec100cd807478c3fa",
+                "SRR389222_sub2.wgs-coverage.txt:md5,2c7a97e66f3673dbba7766573aa262e5",
+                "SRR389222_sub2.wgs-metrics.txt:md5,6419284c689753a604271b2f3b7ba9ca",
                 "SRR389222_sub3.alignment-metrics.txt:md5,b5c1bd3e63a86aa020f849c72e134878",
                 "SRR389222_sub3.base-distribution-by-cycle.txt:md5,d00fd89967fdb220926d7cc210da880b",
                 "SRR389222_sub3.gcbias-detail.txt:md5,3ab87c70d9104ee1e82b56007c121dd5",
                 "SRR389222_sub3.gcbias-summary.txt:md5,bf671314522f0b25fe92edfb39465cf9",
                 "SRR389222_sub3.hybcap-metrics.txt:md5,d971dd3d0676c5aa1095b8b5b85e23b0",
-                "SRR389222_sub3.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub3.mean-quality-by-cycle.txt:md5,6f8d70cd1f7db3aedc90d19e43b89420",
                 "SRR389222_sub3.quality-score-distribution.txt:md5,59235096358dc48ff0c8ce10ccbb1830",
-                "SRR389222_sub3.wgs-coverage.txt:md5,ce5d2457e6f0c64f2c40592ff9efa1fb",
-                "SRR389222_sub3.wgs-metrics.txt:md5,17cf4fbcae4e8b9581a8d69ad02171c0"
+                "SRR389222_sub3.wgs-coverage.txt:md5,0b63843c5ee7344552b9b6a301caeb67",
+                "SRR389222_sub3.wgs-metrics.txt:md5,4859e72161fe35d49d016deb93483d7c"
             ],
             [
                 [
@@ -416,7 +407,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-18T11:55:01.546291",
+        "timestamp": "2026-11-19T23:20:33.124607",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
@@ -466,7 +457,7 @@
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
-                    "trimgalore": "2.3.0"
+                    "trimgalore": "2.6.0"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -594,8 +585,6 @@
                 "riker/SRR389222_sub1.gcbias-chart.pdf",
                 "riker/SRR389222_sub1.gcbias-detail.txt",
                 "riker/SRR389222_sub1.gcbias-summary.txt",
-                "riker/SRR389222_sub1.isize-histogram.txt",
-                "riker/SRR389222_sub1.isize-metrics.txt",
                 "riker/SRR389222_sub1.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub1.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub1.quality-score-distribution.pdf",
@@ -608,8 +597,6 @@
                 "riker/SRR389222_sub2.gcbias-chart.pdf",
                 "riker/SRR389222_sub2.gcbias-detail.txt",
                 "riker/SRR389222_sub2.gcbias-summary.txt",
-                "riker/SRR389222_sub2.isize-histogram.txt",
-                "riker/SRR389222_sub2.isize-metrics.txt",
                 "riker/SRR389222_sub2.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub2.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub2.quality-score-distribution.pdf",
@@ -622,8 +609,6 @@
                 "riker/SRR389222_sub3.gcbias-chart.pdf",
                 "riker/SRR389222_sub3.gcbias-detail.txt",
                 "riker/SRR389222_sub3.gcbias-summary.txt",
-                "riker/SRR389222_sub3.isize-histogram.txt",
-                "riker/SRR389222_sub3.isize-metrics.txt",
                 "riker/SRR389222_sub3.mean-quality-by-cycle.pdf",
                 "riker/SRR389222_sub3.mean-quality-by-cycle.txt",
                 "riker/SRR389222_sub3.quality-score-distribution.pdf",
@@ -717,8 +702,6 @@
                 "SRR389222_sub1.base-distribution-by-cycle.txt:md5,656e53bb9cb0f65bd055f6d61fa74082",
                 "SRR389222_sub1.gcbias-detail.txt:md5,eaa9ef653483bf36c86082ae8b85cc8a",
                 "SRR389222_sub1.gcbias-summary.txt:md5,168eee0cda5aef9f67a4e81843f6cdf7",
-                "SRR389222_sub1.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub1.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub1.mean-quality-by-cycle.txt:md5,e1ec354032422a96a665107df8a05935",
                 "SRR389222_sub1.quality-score-distribution.txt:md5,0ce932b0bded8e9bc43cf1bb8b174682",
                 "SRR389222_sub1.wgs-coverage.txt:md5,45e7ebded4a6abd054554a8fd288b7bc",
@@ -727,8 +710,6 @@
                 "SRR389222_sub2.base-distribution-by-cycle.txt:md5,d21cfad37272d683c23dfd71d9014806",
                 "SRR389222_sub2.gcbias-detail.txt:md5,7fe1d1a709e68e624274b9d05ef6f895",
                 "SRR389222_sub2.gcbias-summary.txt:md5,cca4edfc3e33384b8951a53f1523fb40",
-                "SRR389222_sub2.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub2.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub2.mean-quality-by-cycle.txt:md5,0c640afa33ad68005eaaebdcc4884e30",
                 "SRR389222_sub2.quality-score-distribution.txt:md5,2e7a22730ac39bb2332c9e39d04f55c6",
                 "SRR389222_sub2.wgs-coverage.txt:md5,d7c4d3ac8faebcc3e91b755386684bc3",
@@ -737,8 +718,6 @@
                 "SRR389222_sub3.base-distribution-by-cycle.txt:md5,17079bf20544a4d06c6f6249f00d03e7",
                 "SRR389222_sub3.gcbias-detail.txt:md5,872afc074deacbaf1670c46574c3d309",
                 "SRR389222_sub3.gcbias-summary.txt:md5,ecdaa8aade6fbbaf75843496dd1deb3f",
-                "SRR389222_sub3.isize-histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
-                "SRR389222_sub3.isize-metrics.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
                 "SRR389222_sub3.mean-quality-by-cycle.txt:md5,21fd2eaca22052809f181b7421372c42",
                 "SRR389222_sub3.quality-score-distribution.txt:md5,43e356fb656cbaae394b59387ef2f5a7",
                 "SRR389222_sub3.wgs-coverage.txt:md5,aedb6d0afacb246bb3e225a4a5a52ebc",
@@ -763,7 +742,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-18T11:54:10.562615",
+        "timestamp": "2026-11-19T23:19:01.561157",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"

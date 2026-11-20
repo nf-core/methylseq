@@ -75,6 +75,7 @@ workflow NFCORE_METHYLSEQ {
         ch_or_val_bwameth_index,
         ch_or_val_bwamem_index,
         params.aligner,
+        // riker needs the FASTA index too
         params.collecthsmetrics || params.run_riker,
         params.run_methurator,
         params.use_mem2

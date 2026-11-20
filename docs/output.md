@@ -376,7 +376,13 @@ Bismark generates a HTML reports describing results for each sample, as well as 
 
 [riker](https://github.com/fulcrumgenomics/riker) collects several sets of sequencing QC metrics in one pass over each final BAM file. It ports the matching Picard collectors, with lower-case column names in its tables. The pipeline runs it with `--run_riker`. The metrics are not shown in the MultiQC report yet: riker support starts with MultiQC 1.35.
 
-The `wgs` collector counts coverage over the whole reference, so its metrics are of little use for targeted data. The `error` collector is not run: on converted reads it would count conversions as mismatches.
+Some metrics need care on converted reads:
+
+- The `error` collector is not run: it would count conversions as mismatches.
+- The mismatch rate of the `alignment` collector comes from the `NM` tag. Where the aligner counts conversions in `NM`, as Bismark does, the rate includes every conversion.
+- Bismark BAM files contain no unmapped reads, so the aligned fraction is close to 100 %.
+- The `wgs` collector counts coverage over the whole reference, so its metrics are of little use for targeted and RRBS data.
+- The `hybcap` collector has no coverage cap, unlike Picard CollectHsMetrics here (`--COVERAGE_CAP 1000`), so coverage figures can differ on deep panels.
 
 **Output directory: `results/riker`**
 
@@ -385,7 +391,7 @@ The `wgs` collector counts coverage over the whole reference, so its metrics are
 - `*.base-distribution-by-cycle.txt`, `*.mean-quality-by-cycle.txt`, `*.quality-score-distribution.txt`
   - Base composition and base quality metrics.
 - `*.isize-metrics.txt`, `*.isize-histogram.txt`
-  - Insert size metrics and histogram.
+  - Insert size metrics and histogram. Paired-end samples only.
 - `*.wgs-metrics.txt`, `*.wgs-coverage.txt`
   - Genome-wide coverage metrics and histogram.
 - `*.gcbias-summary.txt`, `*.gcbias-detail.txt`
