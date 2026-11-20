@@ -3,19 +3,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0",
+                    "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -43,7 +44,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-11T20:32:07.957401335",
+        "timestamp": "2026-11-20T11:23:18.981038587",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -107,19 +108,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0",
+                    "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -147,7 +149,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-12T16:27:51.97218936",
+        "timestamp": "2026-11-20T11:26:08.601656876",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -157,19 +159,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0",
+                    "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -200,7 +203,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-11T20:32:55.891959978",
+        "timestamp": "2026-11-20T11:23:52.074643693",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -267,19 +270,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0",
+                    "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.1.0"
+                    "bismark": "3.3.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -313,7 +317,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-11T20:34:09.84246957",
+        "timestamp": "2026-11-20T11:24:39.23477643",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
