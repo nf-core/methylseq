@@ -394,9 +394,9 @@
                 "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
             ],
             [
-                "Ecoli_10K_methylated.flagstat:md5,1745957865501c793c3e8f4b7219640b",
-                "Ecoli_10K_methylated.idxstats:md5,64ebba1e8e338cae970e4735d4a3442d",
-                "Ecoli_10K_methylated.stats:md5,f0746f42105c05847214bdaf1f38818b",
+                "Ecoli_10K_methylated.flagstat:md5,a36028e1875f5fa3e5e6919f71d34e5a",
+                "Ecoli_10K_methylated.idxstats:md5,4096050b3feaf6c97f4855ad887196e4",
+                "Ecoli_10K_methylated.stats:md5,d1836fc661c83e11e7871d497a39f77d",
                 "SRR389222_sub1.flagstat:md5,cccae088e2f8686b890d019b60f63065",
                 "SRR389222_sub1.idxstats:md5,abaa66b85b7bea440c9db5d143a6e564",
                 "SRR389222_sub1.stats:md5,b420bdb9fd03587e1e293fcb609304b9",
@@ -406,19 +406,19 @@
                 "SRR389222_sub3.flagstat:md5,73a5cb246f6388d5d449775d6e35f5fa",
                 "SRR389222_sub3.idxstats:md5,ce0a7c38bedcd7792eb8900a9a8f3b16",
                 "SRR389222_sub3.stats:md5,5ac675211d1556fd7df6de5a0dd3562c",
-                "Ecoli_10K_methylated.umi_dedup.family_size_histogram.txt:md5,04584bc43f02a75c6782177442fa97d9",
-                "Ecoli_10K_methylated.umi_dedup.metrics.txt:md5,3a93caad7e0f8dfbd0a48fea1c524e86",
+                "Ecoli_10K_methylated.umi_dedup.family_size_histogram.txt:md5,e67ce2a7646f7bb2a6c67ac3e7826f57",
+                "Ecoli_10K_methylated.umi_dedup.metrics.txt:md5,a9eb6ba2a7f874e95c7fbc02bde49923",
                 "SRR389222_sub1.umi_dedup.family_size_histogram.txt:md5,9a28f4f2ca56465168428feaca084016",
                 "SRR389222_sub1.umi_dedup.metrics.txt:md5,b7b1a09708a197ef91b33470d9a3c6bb",
                 "SRR389222_sub2.umi_dedup.family_size_histogram.txt:md5,9a28f4f2ca56465168428feaca084016",
                 "SRR389222_sub2.umi_dedup.metrics.txt:md5,f9e8f13a2ed55c33a53c69d17392b5c7",
                 "SRR389222_sub3.umi_dedup.family_size_histogram.txt:md5,9a28f4f2ca56465168428feaca084016",
                 "SRR389222_sub3.umi_dedup.metrics.txt:md5,e95bb4e5db72c0bbe7ef787f1e335824",
-                "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,2f802dec0fcc92c35892dc07cd063384",
+                "Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph:md5,cc993389eeb93e6eee2f0de76b21a844",
                 "SRR389222_sub1.markdup.sorted_CpG.bedGraph:md5,0944ad0e3b05791bf6dfd06be7ca4af1",
                 "SRR389222_sub2.markdup.sorted_CpG.bedGraph:md5,0a3c19af55d1625e91903ae25d1d2098",
                 "SRR389222_sub3.markdup.sorted_CpG.bedGraph:md5,a91e6b039e9581a9d2ef6f6057918b39",
-                "Ecoli_10K_methylated.mbias.txt:md5,2bc85669677259feb53fc3570b51c6b1",
+                "Ecoli_10K_methylated.mbias.txt:md5,b70dbe1690de00117757e54b20898258",
                 "SRR389222_sub1.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub2.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
                 "SRR389222_sub3.mbias.txt:md5,fce04d733e066d0b933cedc602e2af81",
@@ -438,21 +438,21 @@
                 "fastqc_top_overrepresented_sequences_table.txt:md5,6dfc5334a09c05392ea17369aa742d01",
                 "multiqc_citations.txt:md5,ad6c1e326b4276501a3b42eaad747de1",
                 "multiqc_cutadapt.txt:md5,7ea4af4e9cecb17dd264d60d5975b6ac",
-                "multiqc_samtools_flagstat.txt:md5,e25d7e8404a0b1521a0dcbd70fbdba80",
-                "multiqc_samtools_idxstats.txt:md5,40ec4f9ece8c9a15510c9b6681ab9e9e",
-                "multiqc_samtools_stats.txt:md5,a4c0c54b224b1ae1def728d53b877599",
-                "samtools-flagstat-pct-table.txt:md5,dad8e6d59518f184a3844a9042ebac65",
-                "samtools-flagstat-table.txt:md5,651f139d92f70e9fea1596494a61150e",
+                "multiqc_samtools_flagstat.txt:md5,aa7ac1b31abdedb6b6cec4b2b7e80292",
+                "multiqc_samtools_idxstats.txt:md5,d00a358afc645b2369485a16888da8b6",
+                "multiqc_samtools_stats.txt:md5,ac97232d66602fb956f7bf31c531668f",
+                "samtools-flagstat-pct-table.txt:md5,3caba9e8f3bec73c20a9e05aff67976e",
+                "samtools-flagstat-table.txt:md5,233e1a28663500270540b52d748ea18f",
                 "samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt:md5,8059a5be67c72bd01d1080efbebd0943",
                 "samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt:md5,8059a5be67c72bd01d1080efbebd0943",
-                "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,ff4378be043dbf42133101902540aee6",
-                "samtools-stats-dp.txt:md5,da1f8cde55ef0b1996ee3adc10ba7f83",
-                "samtools_alignment_plot.txt:md5,82ad7527f3bf8281b62b7f4f6c9f8a7c"
+                "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,b0875f008b0104778a06c82bf53c5b6b",
+                "samtools-stats-dp.txt:md5,43524e9a451b0ca5742b64de95ecde9a",
+                "samtools_alignment_plot.txt:md5,25a3b75f5c911ef6dc3d98d302ae8357"
             ],
             [
                 [
                     "Ecoli_10K_methylated.markdup.sorted.bam",
-                    "bafd7ceccd7f85900286288f2292d960"
+                    "27fc77267864221365d1ac484d4412eb"
                 ],
                 [
                     "SRR389222_sub1.markdup.sorted.bam",
@@ -468,7 +468,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-19T15:39:55.052204",
+        "timestamp": "2026-11-19T23:24:49.851394",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"

@@ -8,6 +8,7 @@ include { paramsSummaryMap              } from 'plugin/nf-schema'
 include { FASTQC                        } from '../../modules/nf-core/fastqc/main'
 include { TRIMGALORE                    } from '../../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC                } from '../../modules/nf-core/qualimap/bamqc/main'
+include { RIKER_MULTI                   } from '../../modules/nf-core/riker/multi/main'
 include { PRESEQ_LCEXTRAP               } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                       } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                     } from '../../modules/nf-core/cat/fastq/main'
@@ -71,6 +72,7 @@ workflow METHYLSEQ {
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()
+    ch_riker = channel.empty()
     ch_preseq = channel.empty()
     ch_multiqc_files = channel.empty()
 
@@ -367,6 +369,31 @@ workflow METHYLSEQ {
     }
 
     //
+    // MODULE: riker multi
+    // skipped by default. to use run with `--run_riker` param.
+    //
+    if (params.run_riker) {
+        // Targets double as baits, as for Picard CollectHsMetrics
+        def riker_targets = params.run_targeted_sequencing ? file(params.target_regions_file, checkIfExists: true) : []
+        RIKER_MULTI(
+            ch_bam.join(ch_bai).map { meta, bam, bai -> [meta, bam, bai, [], [], [], [], riker_targets, riker_targets, [], [], []] },
+            ch_fasta.combine(ch_fasta_index).map { meta, fasta, _meta_fai, fai -> [meta, fasta, fai] }.first(),
+        )
+        ch_riker = RIKER_MULTI.out.alignment_metrics.mix(
+            RIKER_MULTI.out.base_dist,
+            RIKER_MULTI.out.mean_qual,
+            RIKER_MULTI.out.qual_dist,
+            RIKER_MULTI.out.isize_metrics,
+            RIKER_MULTI.out.isize_histogram,
+            RIKER_MULTI.out.wgs_metrics,
+            RIKER_MULTI.out.wgs_coverage,
+            RIKER_MULTI.out.gcbias_detail,
+            RIKER_MULTI.out.gcbias_summary,
+            RIKER_MULTI.out.hybcap_metrics,
+        )
+    }
+
+    //
     // MODULE: Targeted sequencing analysis
     // skipped by default. to use run with `--run_targeted_sequencing` param.
     //
@@ -471,6 +498,8 @@ workflow METHYLSEQ {
         if (params.run_qualimap) {
             ch_multiqc_files = ch_multiqc_files.mix(QUALIMAP_BAMQC.out.results.collect { it[1] }.ifEmpty([]))
         }
+        // Parsed from MultiQC 1.35 on
+        ch_multiqc_files = ch_multiqc_files.mix(ch_riker.collect { it[1] }.ifEmpty([]))
         if (params.run_preseq) {
             ch_multiqc_files = ch_multiqc_files.mix(PRESEQ_LCEXTRAP.out.log.collect { it[1] }.ifEmpty([]))
         }

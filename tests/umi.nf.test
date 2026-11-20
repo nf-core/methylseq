@@ -40,7 +40,7 @@ nextflow_pipeline {
             params: [
                 aligner: "bwameth",
                 with_umi: true,
-                umi_read_structure: "8M+T 8M+T",
+                umi_read_structure: "8M+T +T",
                 rrbs: true
             ]
         ],
@@ -54,13 +54,13 @@ nextflow_pipeline {
             ]
         ],
         [
-            // --rrbs does not skip deduplication when there are UMIs
+            // With UMIs, --rrbs does not skip deduplication. Read 2 has no UMI: Trim Galore --rrbs clips its 5' end
             name: "bwamem3_with_umi_rrbs",
             description: "Params: bwamem3 with_umi rrbs",
             params: [
                 aligner: "bwamem3",
                 with_umi: true,
-                umi_read_structure: "8M+T 8M+T",
+                umi_read_structure: "8M+T +T",
                 rrbs: true
             ]
         ]
@@ -140,6 +140,43 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.failed },
                 { assert workflow.stdout.any { line -> line.contains("has 1 read structure(s)") } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | read structure without a UMI") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "+T 8M+T"
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("which has no M segment") } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | rrbs with a read 2 UMI - not supported") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T 8M+T"
+                rrbs               = true
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("would remove the start of an inline read 2 UMI") } }
             )
         }
     }
