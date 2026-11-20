@@ -126,13 +126,13 @@ bwamem/
 
 ### Reference Genome Preparation
 
-If you provide a FASTA file as input (`--fasta`), the pipeline will automatically generate the necessary reference genome files for your chosen aligner. These files are saved in the `results` directory.
+Unless you give a pre-built index, the pipeline builds the reference files for your chosen aligner from the FASTA (`--fasta` or `--genome`), and saves them with `--save_reference`.
 
 **Output directory: `results/<aligner>/reference_genome/`**
 
 - This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3. The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
 
-> **NB:** These files are only generated if a FASTA file is provided as input and `--save_reference` is specified.
+> **NB:** These files are only built when no pre-built index is given, and only saved with `--save_reference`.
 
 ### FastQC
 

@@ -308,7 +308,7 @@ Check out the full list of parameters required, available for multiple aligners 
 - [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
 - [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
 
-> It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
+> Every run needs a reference FASTA, from `--fasta` or `--genome`, even with a pre-built index (`--bismark_index`, `--bwameth_index`, `--bwamem_index`, `--bwamem3_index`). Without one the pipeline stops at launch.
 
 ## Running the pipeline
 
