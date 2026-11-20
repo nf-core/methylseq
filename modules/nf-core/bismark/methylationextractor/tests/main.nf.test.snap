@@ -36,12 +36,12 @@
                             "single_end": false
                         },
                         [
-                            "CHG_OB_test.paired_end.methylated.txt.gz:md5,dfd299b7d7661fc6e331bd4fe60c7c07",
-                            "CHG_OT_test.paired_end.methylated.txt.gz:md5,9a85dc0b1650f06ecda55643e081a66e",
-                            "CHH_OB_test.paired_end.methylated.txt.gz:md5,20d937df40f2fa9a1bd878873335d3c3",
-                            "CHH_OT_test.paired_end.methylated.txt.gz:md5,d3705b17290e017eb1244808dae2ef23",
-                            "CpG_OB_test.paired_end.methylated.txt.gz:md5,4c3619590c86e408dd60d0075fe08d1a",
-                            "CpG_OT_test.paired_end.methylated.txt.gz:md5,90b9b96895fcdae9785a7c35d829d379"
+                            "CHG_OB_test.paired_end.methylated.txt.gz:md5,59714a13816386529a71ed2747b7afc7",
+                            "CHG_OT_test.paired_end.methylated.txt.gz:md5,359bfe38b20413635935ef1e1d241cc8",
+                            "CHH_OB_test.paired_end.methylated.txt.gz:md5,a3bf4e826b463762557a4a99b9782c19",
+                            "CHH_OT_test.paired_end.methylated.txt.gz:md5,e09a1f0ae77114cbef1b31a81822651b",
+                            "CpG_OB_test.paired_end.methylated.txt.gz:md5,da8acc62200f7e6a7f966ea9154ce6f4",
+                            "CpG_OT_test.paired_end.methylated.txt.gz:md5,03671406afb7bcb30e8356c9267b898b"
                         ]
                     ]
                 ],
@@ -51,22 +51,22 @@
                             "id": "test",
                             "single_end": false
                         },
-                        "test.paired_end.methylated_splitting_report.txt:md5,e09d4e72fb8752df4ad46a9ed2894943"
+                        "test.paired_end.methylated_splitting_report.txt:md5,265d7cb8c6c6e62000fd811bce1a9520"
                     ]
                 ],
                 "versions_bismark": [
                     [
                         "BISMARK_METHYLATIONEXTRACTOR",
                         "bismark",
-                        "3.1.0"
+                        "3.3.0"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-03-12T17:33:14.934581984",
+        "timestamp": "2026-11-20T01:11:19.725960363",
         "meta": {
-            "nf-test": "0.9.4",
-            "nextflow": "25.10.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
         }
     },
     "sarscov2 paired-end methylated [bam] | sarscov2 genome [fasta] | stub": {
@@ -121,15 +121,15 @@
                     [
                         "BISMARK_METHYLATIONEXTRACTOR",
                         "bismark",
-                        "3.1.0"
+                        "3.3.0"
                     ]
                 ]
             }
         ],
-        "timestamp": "2026-03-12T17:33:23.042747608",
+        "timestamp": "2026-11-20T01:11:32.235936798",
         "meta": {
-            "nf-test": "0.9.4",
-            "nextflow": "25.10.4"
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.3"
         }
     }
 }
