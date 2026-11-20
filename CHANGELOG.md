@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Update Parabricks to 4.8.0-1, samtools to 1.25 and Picard to 3.5.0, with the nf-core modules and subworkflows that use them; alignments are unchanged apart from the `MC` tag that Parabricks 4.8 `fq2bam` adds to unmapped reads with a mapped mate, while samtools `stats` output changes with samtools 1.25 ([#641](https://github.com/nf-core/methylseq/pull/641))
 - 🔄 Update template to nf-core/tools v4.2.1 (includes v4.1.0); minimum Nextflow version is now 25.10.4 and nf-schema is bumped to 2.7.3 ([#634](https://github.com/nf-core/methylseq/pull/634))
 - 🔧 Merge the nf-core/tools v4.0.2 template; drops the Slack/Teams webhook notification feature (`imNotification`/`hook_url`) in line with the template ([#606](https://github.com/nf-core/methylseq/pull/606))
+- 🔧 Update Trim Galore to v2.6.0; trimming output is unchanged, but TRIMGALORE now requests `process_medium` memory (1 GB → 36 GB per attempt) after the `process_low_memory` label was dropped upstream to stop OOM kills on paired-end 150 bp runs ([nf-core/modules#13831](https://github.com/nf-core/modules/pull/13831))
 
 ### Bug fixes & refactoring
 
@@ -51,13 +52,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Make `.hooks/block_pipeline_outdir.sh` executable again (as in the nf-core template); the template sync dropped the bit, so the `block-pipeline-outdir` pre-commit hook failed on every commit
 - 🐛 The software versions list every tool of a process (for example bwa-mem3 and samtools for `BWAMEM3_MEM`, bwa-meth and samtools for `BWAMETH_ALIGN`); each tool was written as its own copy of the process key, so only the last one was kept
 - 🐛 rastair version 2 calls a sample without M-bias trims when its M-bias region only has reads from one strand, instead of failing on an empty `--nOB` (local patch to `rastair2/call` until [nf-core/modules#13820](https://github.com/nf-core/modules/pull/13820) merges)
-- 🐛 `bam_taps_conversion` combines one FASTA with one index, instead of every per-sample copy with every other, which grew with the square of the number of samples (local patch until [nf-core/modules#13821](https://github.com/nf-core/modules/pull/13821) merges)
+- 🐛 `bam_taps_conversion` combines one FASTA with one index, instead of every per-sample copy with every other, which grew with the square of the number of samples ([nf-core/modules#13821](https://github.com/nf-core/modules/pull/13821))
 - 🐛 The rastair version 2 MultiQC summary leaves organelles, decoys and EBV out of the genome-wide figures, recognises fly, worm and yeast chromosome names and Ensembl/NCBI unplaced contigs, logs the contigs it used, and picks the 50 contigs for the per-contig table in linear time. A sample whose only covered CpGs are on organelles or controls now gets no General Statistics row instead of the controls' methylation
 - 📖 Explain that `--taps` set in a config file or profile doesn't change the default aligner, and that several `--rastair2_mbias_region` contigs use the trims from the longest; the large-genome warning estimates the uncompressed size of a gzipped FASTA
 - 🐛 Run Preseq on the pre-deduplication BAM for `--aligner bismark` / `bismark_hisat`; it was given the deduplicated BAM. The `fastq_align_dedup_bismark` subworkflow now emits the raw aligned BAM (`bam_aligned`, from [nf-core/modules#13643](https://github.com/nf-core/modules/pull/13643)), which is sorted by `SAMTOOLS_SORT_PRESEQ` before Preseq ([#632](https://github.com/nf-core/methylseq/issues/632))
 - 🐛 Fix `FILTER_BEDGRAPH_TARGETS` failing on uncompressed (MethylDackel) bedGraph files during targeted sequencing analysis ([#610](https://github.com/nf-core/methylseq/pull/610))
 - 🐛 Remove the `aws_batch` profile, which referenced a deleted config file and broke config parsing (and linting) on recent Nextflow versions ([#610](https://github.com/nf-core/methylseq/pull/610))
 - 🐛 Fix `RASTAIR_MBIASPARSER` strict-parser error: the rastair 0.8 modules are updated to nf-core master, which quotes the `env()` outputs and reports versions through topic channels (the local patch is dropped); the pipeline now lints cleanly under Nextflow's strict parser (≥25.10)
+- 🐛 Stop at launch when `--relax_mismatches` is combined with `--local_alignment` for `--aligner bismark`, which Bowtie 2 rejects ([#472](https://github.com/nf-core/methylseq/issues/472))
+- 🐛 Fix the unmapped-read file names in `docs/output.md` and test `--unmapped` ([#595](https://github.com/nf-core/methylseq/issues/595))
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 

@@ -194,7 +194,7 @@ _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment t
   - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified.
 - `logs/sample_PE_report.txt`
   - Log file giving summary statistics about alignment.
-- `unmapped/unmapped_reads_1.fq.gz`, `unmapped/unmapped_reads_2.fq.gz`
+- `unmapped/<input>_unmapped_reads.fq.gz` (single-end) or `unmapped/<input>_unmapped_reads_1.fq.gz`, `unmapped/<input>_unmapped_reads_2.fq.gz` (paired-end), each named after the FastQ file given to Bismark, e.g. `sample_1_val_1.fq.gz_unmapped_reads_1.fq.gz` and `sample_2_val_2.fq.gz_unmapped_reads_2.fq.gz`
   - Unmapped reads in FastQ format.
   - Only saved if `--unmapped` specified when running the pipeline.
 

@@ -252,7 +252,7 @@
                     },
                     "trimgalore": {
                         "branch": "master",
-                        "git_sha": "2a30bfb6a1b4667692d734e33e000a3bd1d74a0d",
+                        "git_sha": "6b4353bb630d17b9e6099c4b8dd281532ecb718e",
                         "installed_by": ["modules"]
                     },
                     "untar": {
@@ -281,9 +281,8 @@
                     },
                     "bam_taps_conversion": {
                         "branch": "master",
-                        "git_sha": "72c1d093808e760759daf430ac3c315c7d85796e",
-                        "installed_by": ["subworkflows"],
-                        "patch": "subworkflows/nf-core/bam_taps_conversion/bam_taps_conversion.diff"
+                        "git_sha": "bd053d5d5751605d88278c7144dedbbd597cdea0",
+                        "installed_by": ["subworkflows"]
                     },
                     "fasta_index_bismark_bwameth": {
                         "branch": "master",

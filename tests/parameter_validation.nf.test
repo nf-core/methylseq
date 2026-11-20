@@ -66,6 +66,11 @@ nextflow_pipeline {
             description: "Params: bwamem3 | bwamem3_index URL with a query string",
             params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz?download=1" ],
             message: "has a query string"
+        ],
+        [
+            description: "Params: bismark | local_alignment | relax_mismatches - not supported",
+            params: [ aligner: "bismark", local_alignment: true, relax_mismatches: true ],
+            message: "--relax_mismatches can't be combined with --local_alignment for --aligner bismark"
         ]
     ]
 
