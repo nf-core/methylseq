@@ -90,6 +90,21 @@
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
+                    "fgumi/dedup": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/runall": {
+                        "branch": "fgumi-runall",
+                        "git_sha": "7ee7c15fc477fcbae7ee8f51b6fb528cedfbe5ec",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/sort": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
                     "gunzip": {
                         "branch": "master",
                         "git_sha": "0902eac3012baaf4f9ab6513c8c55acc9353c96c",
@@ -208,6 +223,11 @@
                     "riker/multi": {
                         "branch": "master",
                         "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/dict": {
+                        "branch": "master",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {
