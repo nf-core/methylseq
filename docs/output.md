@@ -40,8 +40,8 @@ bismark/
 │   ├── reports
 │   └── summary
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── multiqc
 │   └── bismark
@@ -65,8 +65,8 @@ bwameth/
 │   ├── alignments
 │   └── deduplicated
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── methyldackel
 │   ├── Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph
@@ -95,8 +95,8 @@ bwamem/
 │   └── deduplicated
 │       └── picard_metrics
 ├── fastqc
-│   ├── Ecoli_10K_methylated_1_fastqc.html
-│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   ├── Ecoli_10K_methylated_1_raw_fastqc.html
+│   ├── Ecoli_10K_methylated_2_raw_fastqc.html
 │   └── zips
 ├── multiqc
 │   └── bwamem
@@ -139,12 +139,14 @@ If you provide a FASTA file as input (`--fasta`), the pipeline will automaticall
 <summary>Output files</summary>
 
 - `fastqc/`
-  - `*_fastqc.html`: FastQC report containing quality metrics.
-  - `*_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
+  - `*_raw_fastqc.html`: FastQC report on the input reads.
+  - `zips/*_raw_fastqc.zip`: Zip archive containing the FastQC report, tab-delimited data file and plot images.
 
 </details>
 
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
+
+When trimming runs, Trim Galore writes these reports with its bundled FastQC engine ([FastQC-Rust](https://github.com/ewels/FastQC-Rust) 1.1.1 in Trim Galore 2.6.0) before trimming, and their names end in `_raw_fastqc`. With `--skip_trimming`, the pipeline runs FastQC itself and the names end in `_fastqc`. `--skip_fastqc` skips all FastQC reports, including Trim Galore's.
 
 ![MultiQC - FastQC sequence counts plot](images/mqc_fastqc_counts.png)
 
@@ -152,28 +154,24 @@ If you provide a FASTA file as input (`--fasta`), the pipeline will automaticall
 
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
-**NB:** The FastQC plots in this directory are generated relative to the raw, input reads. They may contain adapter sequence and regions of low quality. To see how your reads look after adapter and quality trimming please refer to the FastQC reports in the `trimgalore/fastqc/` directory.
-
-</details>
-
-[FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) gives general quality metrics about your sequenced reads. It provides information about the quality score distribution across your reads, per base sequence content (%A/T/G/C), adapter contamination and overrepresented sequences. For further reading and documentation see the [FastQC help pages](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/).
+**NB:** The FastQC reports in this directory are for the raw input reads. They may contain adapter sequence and regions of low quality. The reports on the trimmed reads are in `trimgalore/fastqc/`.
 
 ## TrimGalore
 
-The nf-core/methylseq pipeline uses [TrimGalore!](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) for removal of adapter contamination and trimming of low quality regions. TrimGalore is a wrapper around [Cutadapt](https://github.com/marcelm/cutadapt) and runs FastQC after it finishes.
+The nf-core/methylseq pipeline uses [Trim Galore](https://github.com/FelixKrueger/TrimGalore) for removal of adapter contamination and trimming of low quality regions. Trim Galore also runs FastQC on the reads before trimming (see [FastQC](#fastqc)) and after it.
 
-MultiQC reports the percentage of bases removed by Cutadapt in the _General Statistics_ table, along with a line plot showing where reads were trimmed.
+MultiQC reads Trim Galore's JSON reports for its Trim Galore section.
 
 **Output directory: `results/trimgalore`**
 
-Contains FastQ files with quality and adapter trimmed reads for each sample, along with a log file describing the trimming.
+Contains FastQ files with quality and adapter trimmed reads for each sample, along with reports describing the trimming.
 
-- `sample_val_1.fq.gz`, `sample_val_2.fq.gz`
+- `sample_1_val_1.fq.gz`, `sample_2_val_2.fq.gz`
   - Trimmed FastQ data, reads 1 and 2.
   - **NB:** Only saved if `--save_trimmed` has been specified.
-- `logs/sample_val_1.fq.gz_trimming_report.txt`
-  - Trimming report (describes which parameters that were used)
-- `fastQC/sample_val_1_fastqc.zip`
+- `logs/sample_1.fastq.gz_trimming_report.txt`, `logs/sample_1.fastq.gz_trimming_report.json`
+  - Trimming report as text and JSON (describes which parameters were used)
+- `fastqc/sample_1_val_1_fastqc.html`, `fastqc/zips/sample_1_val_1_fastqc.zip`
   - FastQC report for trimmed reads
 
 Single-end data will have slightly different file names and only one FastQ file per sample.
@@ -402,7 +400,7 @@ Note that these are predictive numbers only, not absolute. The MultiQC plot can 
 ![MultiQC - FastQC adapter content plot](images/mqc_fastqc_adapter.png)
 
 :::note
-The FastQC plots displayed in the MultiQC report shows _untrimmed_ reads. They may contain adapter sequence and potentially regions with low quality.
+With trimming, the MultiQC report has two FastQC sections: _FastQC (raw)_ for the input reads and _FastQC (trimmed)_ for the reads after Trim Galore. With `--skip_trimming` it has one, for the input reads. A `--multiqc_config` that sets its own `module_order` replaces the pipeline's, and with it the split into two sections.
 :::
 
 ### MultiQC

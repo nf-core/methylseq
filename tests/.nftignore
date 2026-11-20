@@ -17,6 +17,7 @@ multiqc/*/multiqc_data/*.{log,json}
 multiqc/*/multiqc_data/multiqc.parquet
 multiqc/*/multiqc_data/llms-full.txt
 multiqc/*/multiqc_data/multiqc_fastqc.txt
+multiqc/*/multiqc_data/multiqc_fastqc_*.txt
 multiqc/*/multiqc_data/multiqc_general_stats.txt
 multiqc/*/multiqc_data/multiqc_qualimap_bamqc_genome_results.txt
 multiqc/*/multiqc_data/multiqc_software_versions.txt
@@ -28,5 +29,5 @@ qualimap/**/images_qualimapReport/*
 qualimap/**/raw_data_qualimapReport/*
 trimgalore/fastqc/*.html
 trimgalore/fastqc/zips/*.zip
-trimgalore/logs/*.txt
+trimgalore/logs/*.{txt,json}
 */qualimap/bamqc/*/raw_data_qualimapReport/genome_fraction_coverage.txt

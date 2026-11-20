@@ -101,6 +101,13 @@ nextflow_pipeline {
             ]
         ],
         [
+            name: "bismark_cat_fastq",
+            description: "Params: bismark with CAT_FASTQ",
+            params: [
+                input: "assets/samplesheet_replicates.csv"
+            ]
+        ],
+        [
             name: "bismark_cat_fastq_skip_trimming_skip_deduplication",
             description: "Params: bismark with CAT_FASTQ and skip_trimming and skip_deduplication",
             params: [
@@ -150,8 +157,26 @@ nextflow_pipeline {
                         .collect { file -> [file.getName(), path(file.toString()).readLines()[3..10].join('\n').md5() ] }
                 }
 
+                // With trimming, Trim Galore writes the raw and trimmed FastQC reports and FASTQC doesn't run
+                def trimgalore_fastqc = !scenario.params.skip_trimming && !scenario.params.skip_fastqc
+                def java_fastqc = scenario.params.skip_trimming && !scenario.params.skip_fastqc
+                def fastqc_tasks = workflow.trace.tasks().findAll { task -> task.name.contains(':FASTQC (') }
+                def align_tasks = workflow.trace.tasks().findAll { task -> task.name.contains(':BISMARK_ALIGN (') }
+                def raw_zips = getAllFilesFromDir(params.outdir, include: ['fastqc/zips/*_raw_fastqc.zip'])
+                def tg_json = getAllFilesFromDir(params.outdir, include: ['trimgalore/logs/*_trimming_report.json'])
+                def trimmed_reports = getAllFilesFromDir(params.outdir, include: ['trimgalore/fastqc/**'])
+                def fastqc_files = getAllFilesFromDir(params.outdir, include: ['**/*fastqc*'])
+                def trimmed_table = file("${params.outdir}/multiqc/bismark/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt")
+
                 assertAll(
                     { assert workflow.success },
+                    // one FASTQC task per sample with --skip_trimming, none otherwise
+                    { assert java_fastqc ? (!fastqc_tasks.isEmpty() && fastqc_tasks.size() == align_tasks.size()) : fastqc_tasks.isEmpty() },
+                    // one raw report per input read file (Trim Galore writes one JSON report per read file)
+                    { assert !trimgalore_fastqc || (!raw_zips.isEmpty() && raw_zips.size() == tg_json.size()) },
+                    { assert trimmed_reports.every { report -> !report.getName().contains('_raw_fastqc') } },
+                    { assert !scenario.params.skip_fastqc || fastqc_files.isEmpty() },
+                    { assert !trimgalore_fastqc || scenario.params.skip_multiqc || (trimmed_table.readLines().size() > 1 && trimmed_table.readLines().drop(1).every { line -> !(line.tokenize('\t')[0] =~ /_(val_[12]|trimmed)$/) }) },
                     { assert snapshot(*snapshotArgs).match() }
                 )
             }

@@ -101,6 +101,28 @@ nextflow_pipeline {
         }
     }
 
+    test("Params: bismark | input named like Trim Galore's raw FastQC alias - stops at the samplesheet") {
+        when {
+            def fixture = new File("${outputDir}/../raw_alias_fixture")
+            fixture.mkdirs()
+            def fastq = new File(fixture, "S1_raw.fastq.gz")
+            new java.util.zip.GZIPOutputStream(new FileOutputStream(fastq)).withWriter('UTF-8') { writer -> writer.write("@r1\nACGT\n+\nIIII\n") }
+            def samplesheet = new File(fixture, "samplesheet.csv")
+            samplesheet.text = "sample,fastq_1,fastq_2,genome\nS1,${fastq.absolutePath},,\n"
+            params {
+                outdir = "${outputDir}"
+                input  = samplesheet.absolutePath
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("the name Trim Galore uses for its raw FastQC report") } }
+            )
+        }
+    }
+
     errorScenarios.each { scenario ->
         test(scenario.description) {
             when {
