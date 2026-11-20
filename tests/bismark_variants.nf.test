@@ -70,6 +70,15 @@ nextflow_pipeline {
             r2_ignores: [first: null, last: null]
         ],
         [
+            name: "bismark_rrbs_non_directional",
+            description: "Params: bismark with rrbs and non_directional",
+            params: [
+                rrbs: true,
+                non_directional: true
+            ],
+            r2_ignores: [first: null, last: null]
+        ],
+        [
             name: "bismark_nomeseq",
             description: "Params: bismark with nomeseq",
             params: [
