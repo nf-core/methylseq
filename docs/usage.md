@@ -369,6 +369,8 @@ Instead, all input files are temporarily merged into a single file (unless there
 
 If you replace the `ext.args` of `TRIMGALORE`, keep `--fastqc_raw --fastqc` in them: with trimming, Trim Galore writes all FastQC reports and the pipeline's own FastQC doesn't run.
 
+If you replace the `ext.args` of `BISMARK_ALIGN`, keep `--no_stream_converted` in them: Bismark 3.3.0 can hang when it streams the converted reads to the aligner ([FelixKrueger/Bismark#1268](https://github.com/FelixKrueger/Bismark/issues/1268)).
+
 For a detailed list of different options available, please refer to the official docs of:
 
 - [Bismark](https://felixkrueger.github.io/Bismark/options/genome_preparation/)
