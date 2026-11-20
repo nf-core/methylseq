@@ -26,6 +26,7 @@ multiqc/*/multiqc_report.html
 pipeline_info/*.{html,json,txt,yml}
 qualimap/**/images_qualimapReport/*
 qualimap/**/raw_data_qualimapReport/*
+riker/*.pdf
 trimgalore/fastqc/*.html
 trimgalore/fastqc/zips/*.zip
 trimgalore/logs/*.txt
