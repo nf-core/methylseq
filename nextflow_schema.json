@@ -92,8 +92,8 @@
                     "exists": true,
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
-                    "description": "Path to FASTA genome file",
-                    "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible. You can use the command line option `--save_reference` to keep the generated references so that they can be added to your config and used again in the future. If aligner is Bismark and bismark_index is specified, this parameter is ignored."
+                    "description": "Path to the genome FASTA; required unless --genome provides one.",
+                    "help_text": "The genome FASTA. Every run needs it, even with a pre-built index such as `--bismark_index`; `--genome` can provide it instead. Without a pre-built index the pipeline builds one from this FASTA, which takes extra time and resources, so save the index with `--save_reference` and reuse it."
                 },
                 "fasta_index": {
                     "type": "string",
@@ -102,7 +102,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?.fai$",
                     "description": "Path to Fasta index file.",
-                    "help_text": "The FASTA index file (`.fa.fai`) is only needed when using the bwa_meth aligner. It is used by MethylDackel. If using Bismark this parameter is ignored.",
+                    "help_text": "The FASTA index (`.fai`). If it isn't given, the pipeline builds it from the FASTA for the steps that need it.",
                     "fa_icon": "fas fa-bookmark"
                 },
                 "bismark_index": {

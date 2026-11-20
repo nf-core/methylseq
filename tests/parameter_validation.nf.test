@@ -71,6 +71,22 @@ nextflow_pipeline {
             description: "Params: bismark | local_alignment | relax_mismatches - not supported",
             params: [ aligner: "bismark", local_alignment: true, relax_mismatches: true ],
             message: "--relax_mismatches can't be combined with --local_alignment for --aligner bismark"
+        ],
+        [
+            description: "Params: bismark | bismark_index without fasta",
+            params: [ aligner: "bismark", fasta: null, fasta_index: null, bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz" ],
+            message: "No reference FASTA"
+        ],
+        [
+            description: "Params: bwamem3 | bwamem3_index without fasta",
+            params: [ aligner: "bwamem3", fasta: null, fasta_index: null, bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz" ],
+            message: "No reference FASTA"
+        ],
+        [
+            // A fasta set to null wins over --genome; validation is off so the iGenomes S3 paths aren't checked
+            description: "Params: genome | fasta set to null",
+            params: [ genome: "GRCh38", fasta: null, fasta_index: null, validate_params: false ],
+            message: "No reference FASTA"
         ]
     ]
 
