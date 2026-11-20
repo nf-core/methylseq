@@ -242,7 +242,7 @@ This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` i
 
 Before running the pipeline, you must create a samplesheet containing information about the samples to be analyzed. Use the appropriate parameter to specify the location of this file.
 
-The samplesheet must be a comma-separated file (CSV) with four columns and a header row, formatted as shown in the examples below:
+The samplesheet must be a comma-separated file (CSV) with a header row and the columns `sample`, `fastq_1` and `fastq_2`, formatted as shown in the examples below:
 
 ```bash
 --input '[path to samplesheet file]'
