@@ -20,14 +20,11 @@
                 "BISMARK_SUMMARY": {
                     "bismark": "3.1.0"
                 },
-                "FASTQC": {
-                    "fastqc": "0.12.1"
-                },
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
                 "MULTIQC": {
-                    "multiqc": 1.34
+                    "multiqc": 1.35
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": 1.25
@@ -43,10 +40,10 @@
                 }
             }
         ],
-        "timestamp": "2026-11-16T16:59:56.470818122",
+        "timestamp": "2026-11-20T01:01:25.644133692",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.04.3"
         }
     }
 }
