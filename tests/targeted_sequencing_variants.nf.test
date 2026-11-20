@@ -120,20 +120,24 @@ nextflow_pipeline {
             def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
             // the M-bias HTML report embeds its plots; the VCF header records --threads
             def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html', 'rastair2/call/*.vcf.gz', 'rastair2/call/*.vcf.gz.tbi'], ignoreFile: 'tests/.nftignore')
-            def targeted = path("$outputDir/rastair2/call/taps_pe.targeted.bedGraph").readLines()
+            def targeted = path("$outputDir/rastair2/call/taps_pe.targeted.bed").readLines()
             def targets = path("${projectDir}/assets/genome_taps_target_regions.bed").readLines().collect { line -> line.split('\t') }
             // a row is on target if its CpG overlaps a target: rastair 2 writes the C (+) and the G (-) of each CpG as separate rows
             def onTarget = { fields ->
                 def cpg_start = (fields[1] as long) - (fields[5] == '-' ? 1 : 0)
                 targets.any { target -> target[0] == fields[0] && cpg_start + 2 > (target[1] as long) && cpg_start < (target[2] as long) }
             }
-            def records = targeted.findAll { line -> !line.startsWith('#') }.collect { line -> line.split('\t') }
+            // split with -1 to keep an empty beta_est
+            def records = targeted.findAll { line -> !line.startsWith('#') }
+            def expected = path("$outputDir/rastair2/call/taps_pe.bed.gz").linesGzip
+                .findAll { line -> !line.startsWith('#') && onTarget(line.split('\t', -1)) }
             assertAll(
                 { assert workflow.success },
                 // the rastair 2 header names the columns that downstream tools look up
                 { assert targeted[0].startsWith('#') && targeted[0].contains('unmod') },
                 { assert records.size() > 0 },
-                { assert records.every { fields -> onTarget(fields) } },
+                // every on-target row of the full BED is kept, both strands, and nothing else
+                { assert records == expected },
                 { assert file("$outputDir/enrichment_metrics").listFiles().any { metrics -> metrics.name.startsWith('taps_pe') } },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
