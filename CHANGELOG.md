@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Fix the unmapped-read file names in `docs/output.md` and test `--unmapped` ([#595](https://github.com/nf-core/methylseq/issues/595))
 - 📖 The trimming preset table in the parameter docs gives 10 bp for `--zymo` 5' R2 clipping, as the pipeline applies, and lists `--em_seq` ([#591](https://github.com/nf-core/methylseq/issues/591))
 - 🐛 A filled-in samplesheet `genome` column stops the run saying the column isn't used, instead of "Invalid reference genome name" ([#587](https://github.com/nf-core/methylseq/issues/587))
+- 🐛 Stop at launch when there is no reference FASTA from `--fasta` or `--genome`, even with a pre-built index, instead of finishing without aligning anything ([#589](https://github.com/nf-core/methylseq/issues/589), [#588](https://github.com/nf-core/methylseq/issues/588))
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
