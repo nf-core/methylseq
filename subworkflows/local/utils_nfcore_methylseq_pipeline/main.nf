@@ -336,6 +336,15 @@ def checkUmiInput(meta, reads) {
         if (structures.size() != 2 && structures.size() != fastqs.size()) {
             error("--umi_read_structure '${params.umi_read_structure}' has ${structures.size()} read structure(s), but sample ${meta.id} has ${fastqs.size()} FASTQ file(s): give one per FASTQ file, e.g. '8M+T 8M+T' (single-end samples use the first of two).")
         }
+        def used = structures.take(fastqs.size())
+        // Without an M segment the sample gets no UMI, and fgumi dedup then drops every read
+        if (!used.any { structure -> structure.contains('M') }) {
+            error("--umi_read_structure '${params.umi_read_structure}' gives sample ${meta.id} no UMI: its ${fastqs.size() == 1 ? 'single-end reads use' : 'reads use'} '${used.join(' ')}', which has no M segment.")
+        }
+        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads, before the UMIs are extracted
+        if (params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
+            error("--rrbs trims 2 bp from the 5' end of read 2 for paired-end samples such as ${meta.id}, which would remove the start of an inline read 2 UMI ('${used[1]}'). Use a UMI on read 1 only, UMIs in the read names, or --skip_trimming.")
+        }
         return
     }
     // fgumi leaves reads without a UMI untagged, and fgumi dedup then drops them: check the first read name

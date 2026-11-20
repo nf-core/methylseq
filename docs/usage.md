@@ -232,13 +232,13 @@ nextflow run nf-core/methylseq \
   --umi_read_structure "8M+T 8M+T"
 ```
 
-After trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The alignments are the same as without `--with_umi`. They also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard.
+After trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The aligner and its mode are the same as without `--with_umi`, and the alignments also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard. Read pairs without a usable UMI are the exception (see the note below). `--save_align_intermeds` has no effect on this route, which writes no BAM before the final one.
 
 UMI-tools, which other nf-core pipelines use, calls duplicates just as well on this kind of data. fgumi is used here because it flags duplicates and keeps every other read, as Picard does on the non-UMI route, where `umi_tools dedup` removes duplicates and unmapped reads. It also extracts, aligns and sorts in one multi-threaded step, and it can call methylation-aware consensus reads, which a later release could add.
 
 The pipeline can find the UMIs in two places:
 
-- **Inline in the reads.** Give one [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file with `--umi_read_structure`. `8M+T +T` is an 8 bp UMI at the start of read 1, and `8M+T 8M+T` is one on each read. `S` skips bases, so `5M2S+T 5M2S+T` is a 5 bp UMI and a 2 bp spacer on each read (Twist UMI adapters). Single-end samples use the first read structure only, and paired-end samples need two.
+- **Inline in the reads.** Give one [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file with `--umi_read_structure`. `8M+T +T` is an 8 bp UMI at the start of read 1, and `8M+T 8M+T` is one on each read. `S` skips bases, so `5M2S+T 5M2S+T` is a 5 bp UMI and a 2 bp spacer on each read (Twist UMI adapters). Single-end samples use the first read structure only, and paired-end samples need two. Every sample needs a UMI (`M`) in at least one of its read structures.
 - **In the read names.** Without `--umi_read_structure`, the UMI is the last colon-separated field of the read name, as BCL Convert writes it (`...:ACGTACGT` or `...:ACGTACGT+TGCATGCA`). The pipeline checks the first read of each sample and stops if its name has no UMI.
 
 By default, UMIs that differ by one base are treated as the same molecule (`--umi_dedup_strategy adjacency`). Use `identity` for exact matches, or `paired` for duplex UMIs.
@@ -252,7 +252,7 @@ By default, UMIs that differ by one base are treated as the same molecule (`--um
 > [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
 
-`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
+`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
 
 ### Targeted sequencing (optional)
 
