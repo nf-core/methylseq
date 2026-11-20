@@ -1,11 +1,14 @@
+// Copyright (c) the nf-core community under an open-source MIT license.
+// See https://github.com/nf-core/modules for full license, file patching instructions and upstream contributing.
+
 process BISMARK_ALIGN {
     tag "${meta.id}"
     label 'process_high'
 
     conda "${moduleDir}/environment.yml"
     container "${workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container
-        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/bd/bddea334e6ccbce005ce540214747acf822b040185d2198220dcfbb4b258c331/data'
-        : 'community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4'}"
+        ? 'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/5a/5a75fb7f3673720d2d5f5d5e59776f5782797607d6cbcfdb6afd8213151e344f/data'
+        : 'community.wave.seqera.io/library/bismark_bwa-mem3:a48d2651f3b6d1d1'}"
 
     input:
     tuple val(meta), path(reads)
@@ -18,6 +21,7 @@ process BISMARK_ALIGN {
     tuple val(meta), path("*report.txt"), emit: report
     tuple val(meta), path("*fq.gz"), emit: unmapped, optional: true
     tuple val("${task.process}"), val("bismark"), eval("bismark --version 2>&1 | grep -Eo '[0-9]+\\.[0-9]+\\.[0-9]+'"), topic: versions, emit: versions_bismark
+    tuple val("${task.process}"), val('bwamem3'), eval("bwa-mem3 version | sed -nE '1 s/^([0-9]+(\\.[0-9]+)+).*/\\1/p'"), emit: versions_bwamem3, topic: versions
 
     when:
     task.ext.when == null || task.ext.when

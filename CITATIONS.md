@@ -53,6 +53,10 @@
 
   > Konstantin Okonechnikov, Ana Conesa, Fernando García-Alcalde, Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data, Bioinformatics, Volume 32, Issue 2, 15 January 2016, Pages 292–294, doi: [10.1093/bioinformatics/btv566](https://doi.org/10.1093/bioinformatics/btv566)
 
+- [riker](https://github.com/fulcrumgenomics/riker)
+
+  > riker, Fulcrum Genomics. <https://github.com/fulcrumgenomics/riker>
+
 - [Preseq](https://doi.org/10.1038/nmeth.2375)
 
   > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)

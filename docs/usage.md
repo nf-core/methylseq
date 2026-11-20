@@ -72,6 +72,9 @@ flowchart TD
         D1 --> J3["Qualimap (optional)"]
         D2 --> J3
         D3 --> J3
+        D1 --> J4["riker (optional)"]
+        D2 --> J4
+        D3 --> J4
     end
 
     subgraph Stage4[Final QC]
@@ -84,6 +87,7 @@ flowchart TD
         I2 --> H1
         J1 --> H1
         J2 --> H1
+        J4 --> H1
     end
 
     %% Styling for TAPS workflows
@@ -268,7 +272,7 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets.
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets.
 
 ## Samplesheet input
 

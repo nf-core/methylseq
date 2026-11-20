@@ -73,24 +73,24 @@ maintainers:
 containers:
   docker:
     linux/amd64:
-      name: community.wave.seqera.io/library/bismark:3.1.0--9557d6ab108a83e4
-      build_id: bd-9557d6ab108a83e4_1
-      scan_id: sc-8d2a54959fbc873b_1
+      name: community.wave.seqera.io/library/bismark:3.3.0--f5ac4e7eb5a16146
+      build_id: bd-f5ac4e7eb5a16146_1
+      scan_id: sc-df9c6c18f0a60d02_1
     linux/arm64:
-      name: community.wave.seqera.io/library/bismark:3.1.0--f83bc6617fa3cadd
-      build_id: bd-f83bc6617fa3cadd_1
-      scan_id: sc-cf3a320dd51a3a24_1
+      name: community.wave.seqera.io/library/bismark:3.3.0--a344216d17e818ee
+      build_id: bd-a344216d17e818ee_1
+      scan_id: sc-1346c1fb78ca477e_1
   singularity:
     linux/arm64:
-      name: oras://community.wave.seqera.io/library/bismark:3.1.0--4c41a9578c1f2001
-      build_id: bd-4c41a9578c1f2001_1
-      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/9b/9b84d7ddbd3e0bb2240038ce3c9ff9979287d38bf09f2945256eaafba1450096/data
+      name: oras://community.wave.seqera.io/library/bismark:3.3.0--f9a59897887bb0cf
+      build_id: bd-f9a59897887bb0cf_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/df/dfd8ffcbdcdd531118e91bbbbb4427a93f4ffb9caf8b7df373621bb7dc1824e3/data
     linux/amd64:
-      name: oras://community.wave.seqera.io/library/bismark:3.1.0--3abb485fce628c19
-      build_id: bd-3abb485fce628c19_1
-      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/bd/bddea334e6ccbce005ce540214747acf822b040185d2198220dcfbb4b258c331/data
+      name: oras://community.wave.seqera.io/library/bismark:3.3.0--bcf731e913779692
+      build_id: bd-bcf731e913779692_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/59/59db1f1331e9bd80560221e6283dea4e9f14de41e2f028c13b71f0b9e42b8afb/data
   conda:
     linux/amd64:
-      lock_file: modules/nf-core/bismark/genomepreparation/.conda-lock/linux_amd64-bd-9557d6ab108a83e4_1.txt
+      lock_file: modules/nf-core/bismark/genomepreparation/.conda-lock/linux_amd64-bd-f5ac4e7eb5a16146_1.txt
     linux/arm64:
-      lock_file: modules/nf-core/bismark/genomepreparation/.conda-lock/linux_arm64-bd-f83bc6617fa3cadd_1.txt
+      lock_file: modules/nf-core/bismark/genomepreparation/.conda-lock/linux_arm64-bd-a344216d17e818ee_1.txt
