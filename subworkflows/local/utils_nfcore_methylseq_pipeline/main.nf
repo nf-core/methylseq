@@ -224,7 +224,7 @@ def validateInputParameters() {
             log.warn(
                 "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${size_text}). " +
                 "The index build requests 560 MB of memory per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry: " +
-                "consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
+                "consider building it once with `bwa-mem3 index --meth --meth-only` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
                 "Use --save_reference to keep the index built by this run."
             )
         }

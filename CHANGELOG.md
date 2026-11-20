@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
-- ✨ Add `--aligner bwamem3`: [bwa-mem3](https://github.com/fg-labs/bwa-mem3) 0.17.0 aligns TAPS (`--taps`) and directional bisulfite/EM-seq reads against a `bwa-mem3 index --meth` index, built from `--fasta` or given with `--bwamem3_index` (see the [usage docs](https://nf-co.re/methylseq/usage#bwa-mem3-taps-and-bisulfite))
+- ✨ Add `--aligner bwamem3`: [bwa-mem3](https://github.com/fg-labs/bwa-mem3) 0.18.0 aligns TAPS (`--taps`) and directional bisulfite/EM-seq reads against a `bwa-mem3 index --meth` index, built from `--fasta` or given with `--bwamem3_index` (see the [usage docs](https://nf-co.re/methylseq/usage#bwa-mem3-taps-and-bisulfite))
 - ✨ Add `--taps_caller rastair2` to call SNVs, indels and CpG methylation with rastair version 2, which is free for non-commercial use only and needs `--accept_rastair2_license` (see the [usage docs](https://nf-co.re/methylseq/usage#rastair-version-2---taps_caller-rastair2))
 - ✨ Estimate TAPS read-end trims from each sample's M-bias for both rastair callers. `--trim_OT`/`--trim_OB` are now unset by default and, when set, replace the estimate: on earlier releases they never reached rastair, so a params file that sets them now changes the results (see the [usage docs](https://nf-co.re/methylseq/usage#taps-read-end-trimming-m-bias))
 - ⚠️ Warn when `--taps_caller rastair` (rastair 0.8) gets single-end samples, which it can't call

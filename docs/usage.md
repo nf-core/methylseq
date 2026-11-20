@@ -182,10 +182,10 @@ For a human-sized genome, build the index once and pass it with `--bwamem3_index
 To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
 
 ```bash
-bwa-mem3 index --meth hg38.fa
+bwa-mem3 index --meth --meth-only --tmp-dir . hg38.fa
 ```
 
-This writes `hg38.fa.{amb,ann,bwt.2bit.64,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` next to the FASTA. Alignment doesn't read the intermediate `hg38.fa.meth.fa` or the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), so you can delete both. `--bwamem3_index` accepts any of:
+This writes the seven files alignment reads next to the FASTA: `hg38.fa.{amb,ann,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. `--meth-only` (bwa-mem3 0.18.0 or later) skips the plain FM-index, and `--tmp-dir .` writes the temporary converted FASTA to the current directory instead of `$TMPDIR`. An index built without `--meth-only` also has the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), and one built with bwa-mem3 0.17.0 also `hg38.fa.meth.fa`; alignment reads neither, so you can delete them. `--bwamem3_index` accepts any of:
 
 - the index prefix, e.g. `--bwamem3_index s3://bucket/genomes/hg38.fa`. The pipeline then stages only the files alignment reads: `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. This is useful when the index sits in a shared genomes folder.
 - a directory that contains the index files.
