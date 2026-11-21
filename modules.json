@@ -96,8 +96,8 @@
                         "installed_by": ["modules"]
                     },
                     "fgumi/runall": {
-                        "branch": "fgumi-runall",
-                        "git_sha": "7ee7c15fc477fcbae7ee8f51b6fb528cedfbe5ec",
+                        "branch": "master",
+                        "git_sha": "7952a1fb5413f72d63d5d59e2a89141496bb96e0",
                         "installed_by": ["modules"]
                     },
                     "fgumi/sort": {
