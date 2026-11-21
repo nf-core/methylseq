@@ -70,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 A filled-in samplesheet `genome` column stops the run saying the column isn't used, instead of "Invalid reference genome name" ([#587](https://github.com/nf-core/methylseq/issues/587), [#656](https://github.com/nf-core/methylseq/pull/656))
 - 🐛 Stop at launch when there is no reference FASTA from `--fasta` or `--genome`, even with a pre-built index, instead of finishing without aligning anything ([#589](https://github.com/nf-core/methylseq/issues/589), [#588](https://github.com/nf-core/methylseq/issues/588), [#658](https://github.com/nf-core/methylseq/pull/658))
 - 📖 The `--input` help names the samplesheet columns and links to the methylseq usage docs ([#662](https://github.com/nf-core/methylseq/pull/662))
+- 🐛 `--aligner bwamem3` aligns with a fixed batch size (`-K 150000000`), so its output no longer depends on `task.cpus` (PR_LINK)
+- 📖 The bwa-mem3 index docs give the memory bwa-mem3 needs for hg38 (about 152 GiB) and say a `process.resourceLimits` cap below it makes the build fail (PR_LINK)
 
 ## [v4.2.0](https://github.com/nf-core/methylseq/releases/tag/4.2.0) - [2025-12-05]
 
