@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug fixes & refactoring
 
-- 🐛 `--run_targeted_sequencing` keeps both strands of a CpG cut by a target edge and drops CpGs just outside a target, in bedGraphs and Bismark coverage files, and stops a bisulfite run when no target fits the FASTA ([#NNN](https://github.com/nf-core/methylseq/pull/NNN))
+- 🐛 `--run_targeted_sequencing` keeps both strands of a CpG cut by a target edge and drops CpGs just outside a target, in bedGraphs and Bismark coverage files, and stops a bisulfite run when no target fits the FASTA ([#669](https://github.com/nf-core/methylseq/pull/669))
 - 🐛 `--ignore_r2` and `--ignore_3prime_r2` now default to 0 for an R2 end that Trim Galore already handles (trimming presets, `--clip_r2`/`--three_prime_clip_r2`, `--rrbs`) instead of ignoring 2 more bp, so such paired-end runs gain R2 calls compared with 4.x, and `--rrbs --non_directional` now passes `--non_directional` to Trim Galore ([#647](https://github.com/nf-core/methylseq/issues/647), [#654](https://github.com/nf-core/methylseq/pull/654))
 - 🐛 rastair 0.8 now calls each sample with its own M-bias trims: `bam_taps_conversion` paired BAMs and trims by arrival order, so a sample could be called with another sample's trims ([nf-core/modules#13785](https://github.com/nf-core/modules/pull/13785), [#638](https://github.com/nf-core/methylseq/pull/638))
 - 🐛 `--collecthsmetrics` now runs Picard CollectHsMetrics: an empty GZI channel made the targeted analysis drop it ([#638](https://github.com/nf-core/methylseq/pull/638))
