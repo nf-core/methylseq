@@ -1625,10 +1625,10 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
@@ -1876,7 +1876,7 @@
                 "taps_se.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445"
             ]
         ],
-        "timestamp": "2026-11-20T17:41:33.197075",
+        "timestamp": "2026-11-21T11:52:47.42547",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
