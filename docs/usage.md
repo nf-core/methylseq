@@ -254,6 +254,9 @@ By default, UMIs that differ by one base are treated as the same molecule (`--um
 > For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
 
 > [!NOTE]
+> With an inline UMI on read 1 of paired-end data, read 2 runs into that UMI when the insert is shorter than the read. Trim Galore removes the adapter but leaves the UMI bases at the end of read 2, because a read structure only describes the start of each read. These bases can then be aligned or soft-clipped, and on short inserts they can cause false methylation calls.
+
+> [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
 
 `--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
