@@ -1,0 +1,30 @@
+# Added after multiqc_config.yml when Trim Galore writes the raw and trimmed FastQC reports.
+# module_order must list every module the pipeline feeds: unlisted modules are placed first.
+module_order:
+  - bismark
+  - riker
+  - custom_content
+  - qualimap
+  - preseq
+  - bcftools
+  - picard
+  - samtools
+  - fastqc:
+      name: "FastQC (raw)"
+      anchor: "fastqc_raw"
+      info: "FastQC on the input reads, run by Trim Galore before trimming."
+      path_filters:
+        - "*_raw_fastqc.zip"
+  - trim_galore
+  - fastqc:
+      name: "FastQC (trimmed)"
+      anchor: "fastqc_trimmed"
+      info: "FastQC on the trimmed reads, run by Trim Galore."
+      path_filters_exclude:
+        - "*_raw_fastqc.zip"
+
+# Trimmed reads are named <sample>_val_1/_val_2 (paired-end) or <sample>_trimmed (single-end)
+extra_fn_clean_exts:
+  - type: regex
+    pattern: '_(val_[12]|trimmed)(?=\.f(ast)?q(\.gz)?$)'
+    module: fastqc_trimmed

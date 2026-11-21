@@ -32,7 +32,7 @@ The nf-core/methylseq pipeline provides three distinct workflows for DNA methyla
 ```mermaid
 flowchart TD
     subgraph Stage1[Pre-processing]
-        A["cat fastq (optional)"] --> B["FastQC"] --> C["Trim Galore"]
+        A["cat fastq (optional)"] --> C["Trim Galore<br/>+ FastQC before and after trimming"]
     end
 
     subgraph Stage2[Genome Alignment + Deduplication]
@@ -183,10 +183,10 @@ For a human-sized genome, build the index once and pass it with `--bwamem3_index
 To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
 
 ```bash
-bwa-mem3 index --meth hg38.fa
+bwa-mem3 index --meth --meth-only --tmp-dir . hg38.fa
 ```
 
-This writes `hg38.fa.{amb,ann,bwt.2bit.64,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` next to the FASTA. Alignment doesn't read the intermediate `hg38.fa.meth.fa` or the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), so you can delete both. `--bwamem3_index` accepts any of:
+This writes the seven files alignment reads next to the FASTA: `hg38.fa.{amb,ann,pac}` and the converted seed index `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. `--meth-only` (bwa-mem3 0.18.0 or later) skips the plain FM-index, and `--tmp-dir .` writes the temporary converted FASTA to the current directory instead of `$TMPDIR`. An index built without `--meth-only` also has the plain `hg38.fa.bwt.2bit.64` (about 10 GB for hg38), and one built with bwa-mem3 0.17.0 also `hg38.fa.meth.fa`; alignment reads neither, so you can delete them. `--bwamem3_index` accepts any of:
 
 - the index prefix, e.g. `--bwamem3_index s3://bucket/genomes/hg38.fa`. The pipeline then stages only the files alignment reads: `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}`. This is useful when the index sits in a shared genomes folder.
 - a directory that contains the index files.
@@ -263,6 +263,9 @@ Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth
 > For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
 
 > [!NOTE]
+> With an inline UMI on read 1 of paired-end data, read 2 runs into that UMI when the insert is shorter than the read. Trim Galore removes the adapter but leaves the UMI bases at the end of read 2, because a read structure only describes the start of each read. These bases can then be aligned or soft-clipped, and on short inserts they can cause false methylation calls.
+
+> [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
 
 `--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too, except with the Bismark aligners. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
@@ -281,13 +284,13 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets.
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair CpG calls instead, from either `--taps_caller`.
 
 ## Samplesheet input
 
 Before running the pipeline, you must create a samplesheet containing information about the samples to be analyzed. Use the appropriate parameter to specify the location of this file.
 
-The samplesheet must be a comma-separated file (CSV) with four columns and a header row, formatted as shown in the examples below:
+The samplesheet must be a comma-separated file (CSV) with a header row and the columns `sample`, `fastq_1` and `fastq_2`, formatted as shown in the examples below:
 
 ```bash
 --input '[path to samplesheet file]'
@@ -333,7 +336,7 @@ TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,,
 | `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
 | `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
 | `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `genome`  | Reference genome to be used (OPTIONAL)                                                                                                                                                 |
+| `genome`  | Not used: leave it empty. The reference for all samples is set with `--genome`, `--fasta` or an index option such as `--bismark_index`.                                                |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -353,7 +356,7 @@ Check out the full list of parameters required, available for multiple aligners 
 - [Skip pipeline steps](https://nf-co.re/methylseq/parameters/#skip-pipeline-steps)
 - [Run pipeline steps](https://nf-co.re/methylseq/parameters/#run-pipeline-steps)
 
-> It is mandatory to provide `--fasta` along with `--bismark_index`/`--bwameth_index` parameters
+> Every run needs a reference FASTA, from `--fasta` or `--genome`, even with a pre-built index (`--bismark_index`, `--bwameth_index`, `--bwamem_index`, `--bwamem3_index`). Without one the pipeline stops at launch.
 
 ## Running the pipeline
 
@@ -411,6 +414,8 @@ To bypass this limitation, the `--scaffolds` option can be added as an additiona
 This prevents methylation calls from being pre-sorted into individual chromosome files.
 
 Instead, all input files are temporarily merged into a single file (unless there is only one file), which is then sorted by both chromosome and position using the Unix sort command.
+
+If you replace the `ext.args` of `TRIMGALORE`, keep `--fastqc_raw --fastqc` in them: with trimming, Trim Galore writes all FastQC reports and the pipeline's own FastQC doesn't run.
 
 For a detailed list of different options available, please refer to the official docs of:
 

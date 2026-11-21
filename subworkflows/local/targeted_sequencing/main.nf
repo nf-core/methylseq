@@ -32,8 +32,9 @@ workflow TARGETED_SEQUENCING {
     /*
      * Intersect bedGraph files with target regions (CpG-aware boundary handling)
      * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs.
-     * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp before
-     * intersection so that CpGs straddling a target boundary are not lost.
+     * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp to cover the CpG before
+     * intersection, so that CpGs straddling a target boundary are not lost. For a rastair CpG BED,
+     * minus-strand rows (the G) extend to the left.
      */
     ch_bedgraphs_target = ch_bedgraph
         .map { meta, bedgraphs -> tuple(meta, bedgraphs instanceof List ? bedgraphs : [bedgraphs]) }
@@ -116,7 +117,7 @@ workflow TARGETED_SEQUENCING {
     }
 
     emit:
-    bedgraph_filtered = FILTER_BEDGRAPH_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.bedGraph") ]
+    bedgraph_filtered = FILTER_BEDGRAPH_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.{bedGraph,bed}") ]
     coverage_filtered = BEDTOOLS_INTERSECT_COV.out.intersect // channel: [ val(meta), path("*.cov") ]
     picard_metrics    = ch_picard_metrics // channel: [ val(meta), path("*_metrics") ]
     versions          = ch_versions // channel: path("*.version.txt")

@@ -191,6 +191,13 @@ workflow PIPELINE_COMPLETION {
 def validateInputParameters() {
     genomeExistsError()
 
+    // `params` here lacks the --genome attributes main.nf sets later; resolve the FASTA as main.nf does,
+    // where a fasta param that is set, even to null, wins over --genome
+    def fasta = params.containsKey('fasta') ? params.fasta : getGenomeAttribute('fasta')
+    if (!fasta) {
+        error("No reference FASTA: give --fasta, or a --genome with one (a fasta set to null in a config or params file overrides --genome). Every aligner needs it, even with a pre-built index such as --bismark_index or --bwameth_index.")
+    }
+
     // --relax_mismatches sets an L,... --score_min, which Bowtie 2 --local rejects
     if (params.aligner == 'bismark' && params.local_alignment && params.relax_mismatches) {
         error("--relax_mismatches can't be combined with --local_alignment for --aligner bismark: Bowtie 2 --local needs a G,... --score_min. Drop --relax_mismatches (Bowtie 2's local default G,20,8 applies) or use --aligner bismark_hisat.")
@@ -210,9 +217,7 @@ def validateInputParameters() {
     }
     // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
     // point users with large genomes at a pre-built --bwamem3_index.
-    // `params` here is the copy taken at include time: it lacks the --genome attributes main.nf sets later
-    def fasta = (params.containsKey('fasta') && params.fasta) ? params.fasta : getGenomeAttribute('fasta')
-    def bwamem3_index = (params.containsKey('bwamem3_index') && params.bwamem3_index) ? params.bwamem3_index : getGenomeAttribute('bwamem3')
+    def bwamem3_index = params.containsKey('bwamem3_index') ? params.bwamem3_index : getGenomeAttribute('bwamem3')
     if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
         def fasta_bytes = 0L
         try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
@@ -224,7 +229,7 @@ def validateInputParameters() {
             log.warn(
                 "No --bwamem3_index given, so the pipeline will build a bwa-mem3 --meth index from the FASTA (${size_text}). " +
                 "The index build requests 560 MB of memory per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry: " +
-                "consider building it once with `bwa-mem3 index --meth` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
+                "consider building it once with `bwa-mem3 index --meth --meth-only` and passing it with --bwamem3_index (see https://nf-co.re/methylseq/usage). " +
                 "Use --save_reference to keep the index built by this run."
             )
         }
@@ -259,10 +264,6 @@ def validateInputParameters() {
     // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
-    }
-    // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
-    if (params.run_targeted_sequencing && isTaps()) {
-        error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
     }
     // fgumi dedup needs the alignments zipped with the unmapped BAM, which the Parabricks steps don't take
     if (params.with_umi && params.aligner in ['bwameth', 'bwamem'] && workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1) {
@@ -345,8 +346,8 @@ def checkUmiInput(meta, reads) {
         if (!used.any { structure -> structure.contains('M') }) {
             error("--umi_read_structure '${params.umi_read_structure}' gives sample ${meta.id} no UMI: its ${fastqs.size() == 1 ? 'single-end reads use' : 'reads use'} '${used.join(' ')}', which has no M segment.")
         }
-        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads, before the UMIs are extracted
-        if (params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
+        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads; only bwa-mem3 extracts the UMIs after trimming
+        if (params.aligner == 'bwamem3' && params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
             error("--rrbs trims 2 bp from the 5' end of read 2 for paired-end samples such as ${meta.id}, which would remove the start of an inline read 2 UMI ('${used[1]}'). Use a UMI on read 1 only, UMIs in the read names, or --skip_trimming.")
         }
         return
@@ -387,6 +388,16 @@ def validateInputSamplesheet(input) {
     def endedness_ok = metas.collect { meta -> meta.single_end }.unique().size == 1
     if (!endedness_ok) {
         error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+    }
+
+    // Trim Galore's --fastqc_raw stages each input as <sample>[_1|_2]_raw.fastq.gz and refuses to overwrite it
+    if (!params.skip_trimming && !params.skip_fastqc && fastqs.size() == 1) {
+        def id = metas[0].id
+        def aliases = metas[0].single_end ? ["${id}_raw.fastq.gz".toString()] : ["${id}_1_raw.fastq.gz".toString(), "${id}_2_raw.fastq.gz".toString()]
+        def clashing = fastqs[0].collect { fastq -> file(fastq).name }.findAll { name -> name in aliases }
+        if (clashing) {
+            error("Please check input samplesheet -> sample ${id}: rename ${clashing.join(' and ')}, the name Trim Galore uses for its raw FastQC report, or trimming fails.")
+        }
     }
 
     return [metas[0], fastqs]

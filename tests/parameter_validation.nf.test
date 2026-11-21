@@ -38,11 +38,6 @@ nextflow_pipeline {
             message: "--methyl_kit can't be combined with --run_targeted_sequencing"
         ],
         [
-            description: "Params: bwamem3 | taps | run_targeted_sequencing - not supported",
-            params: [ aligner: "bwamem3", taps: true, run_targeted_sequencing: true ],
-            message: "--run_targeted_sequencing is not supported with TAPS data"
-        ],
-        [
             description: "Params: bwamem | run_methurator - not supported",
             params: [ aligner: "bwamem", run_methurator: true ],
             message: "--run_methurator is not supported with TAPS data"
@@ -71,6 +66,22 @@ nextflow_pipeline {
             description: "Params: bismark | local_alignment | relax_mismatches - not supported",
             params: [ aligner: "bismark", local_alignment: true, relax_mismatches: true ],
             message: "--relax_mismatches can't be combined with --local_alignment for --aligner bismark"
+        ],
+        [
+            description: "Params: bismark | bismark_index without fasta",
+            params: [ aligner: "bismark", fasta: null, fasta_index: null, bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz" ],
+            message: "No reference FASTA"
+        ],
+        [
+            description: "Params: bwamem3 | bwamem3_index without fasta",
+            params: [ aligner: "bwamem3", fasta: null, fasta_index: null, bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz" ],
+            message: "No reference FASTA"
+        ],
+        [
+            // A fasta set to null wins over --genome; validation is off so the iGenomes S3 paths aren't checked
+            description: "Params: genome | fasta set to null",
+            params: [ genome: "GRCh38", fasta: null, fasta_index: null, validate_params: false ],
+            message: "No reference FASTA"
         ]
     ]
 
@@ -97,6 +108,44 @@ nextflow_pipeline {
                 { assert snapshot(
                     removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                 ).match() }
+            )
+        }
+    }
+
+    test("Params: bismark | input named like Trim Galore's raw FastQC alias - stops at the samplesheet") {
+        when {
+            def fixture = new File("${outputDir}/../raw_alias_fixture")
+            fixture.mkdirs()
+            def fastq = new File(fixture, "S1_raw.fastq.gz")
+            new java.util.zip.GZIPOutputStream(new FileOutputStream(fastq)).withWriter('UTF-8') { writer -> writer.write("@r1\nACGT\n+\nIIII\n") }
+            def samplesheet = new File(fixture, "samplesheet.csv")
+            samplesheet.text = "sample,fastq_1,fastq_2,genome\nS1,${fastq.absolutePath},,\n"
+            params {
+                outdir = "${outputDir}"
+                input  = samplesheet.absolutePath
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("the name Trim Galore uses for its raw FastQC report") } }
+            )
+        }
+    }
+
+    test("Params: samplesheet genome column filled - not used") {
+        when {
+            params {
+                outdir = "${outputDir}"
+                input  = "${projectDir}/tests/samplesheet_genome_column.csv"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("The samplesheet 'genome' column is not used") } }
             )
         }
     }
