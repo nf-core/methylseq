@@ -20,7 +20,7 @@
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re//usage#samplesheet-input).",
+                    "help_text": "You will need to create a samplesheet with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with a header row and the columns `sample`, `fastq_1` and `fastq_2`. See the [usage docs](https://nf-co.re/methylseq/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
@@ -129,7 +129,7 @@
                     "type": "string",
                     "format": "path",
                     "description": "Path to a bwa-mem3 methylation index (built with `bwa-mem3 index --meth`): a directory, a .tar.gz, or an index prefix.",
-                    "help_text": "Only used with `--aligner bwamem3`; the same index serves TAPS and bisulfite data. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta` (use `--save_reference` to keep it). For human and other large genomes, build it once beforehand (`bwa-mem3 index --meth genome.fa`) and pass it here: the pipeline's index step requests 560 MB of memory per 10 MB of FASTA, about 175 GB for hg38 (see the usage docs).",
+                    "help_text": "Only used with `--aligner bwamem3`; the same index serves TAPS and bisulfite data. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta` (use `--save_reference` to keep it). For human and other large genomes, build it once beforehand (`bwa-mem3 index --meth --meth-only genome.fa`) and pass it here: the pipeline's index step requests 560 MB of memory per 10 MB of FASTA, about 175 GB for hg38 (see the usage docs).",
                     "fa_icon": "far fa-dot-circle"
                 },
                 "igenomes_ignore": {

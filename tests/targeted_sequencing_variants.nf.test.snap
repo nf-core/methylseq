@@ -1006,10 +1006,10 @@
                     "bcftools": 1.25
                 },
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
@@ -1276,7 +1276,7 @@
                 "taps_pe.chr19.cutoffs.txt:md5,d0ac63240920ce4c068167d625da7ca1"
             ]
         ],
-        "timestamp": "2026-11-20T16:03:55.679935",
+        "timestamp": "2026-11-21T09:59:15.156845",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
