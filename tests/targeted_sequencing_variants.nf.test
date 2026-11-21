@@ -99,6 +99,33 @@ nextflow_pipeline {
         }
     }
 
+    test("Params: bismark with run_targeted_sequencing at target edges") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_target_edges.csv"
+                target_regions_file     = "${projectDir}/assets/genome_target_edges.bed"
+                aligner                 = "bismark"
+                run_targeted_sequencing = true
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            // 0-based [39565, 39600) reads TTTACGGGGTGGATCTATGAAAAACATCGCCGCAC: CpGs at 39569, 39592 and 39595
+            def column = { file, index -> path("$outputDir/bismark/methylation_calls/${file}").readLines().findAll { line -> !line.startsWith('#') && !line.startsWith('track') }.collect { line -> line.split('\t')[index] } }
+            def samples = ['SRR389222_sub1', 'SRR389222_sub2']
+            assertAll(
+                { assert workflow.success },
+                // both strands of the CpGs cut at 39592 and 39595 are kept; none of the CpG at 39569, just before the first target
+                { assert samples.every { sample -> column("bedGraph/${sample}_trimmed_bismark_bt2.deduplicated.bedGraph.targeted.bedGraph", 1) == ['39592', '39593', '39595', '39596'] } },
+                // .cov positions are 1-based
+                { assert samples.every { sample -> column("methylation_coverage/${sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.targeted.cov", 1) == ['39593', '39594', '39596', '39597'] } },
+                // a target on a contig the FASTA lacks is skipped with a warning
+                { assert workflow.stdout.any { line -> line.contains('1 target(s) skipped or clipped') && line.contains('chrUn_test') } }
+            )
+        }
+    }
+
     // rastair 0.8 and rastair 2 write the same CpG columns under a # header, one row per strand
     def tapsCallers = [
         [

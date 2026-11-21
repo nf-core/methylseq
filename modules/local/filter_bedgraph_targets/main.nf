@@ -1,19 +1,4 @@
-/*
- * Filter bedGraph files against target regions with CpG-aware boundary handling.
- *
- * Bismark bedGraph files use 0-based half-open coordinates for single-C positions
- * (e.g., chr1 10788 10789 for a CpG at 1-based position 10789). When a CpG
- * straddles a target boundary — C just outside, G just inside — a naive
- * intersection drops it because the single-C interval [10788, 10789) does not
- * overlap the target [10789, …).
- *
- * This process extends each entry by 1 bp to represent the full CpG dinucleotide,
- * intersects with the target BED, then restores the original single-base coordinates.
- * Entries extend to the right, except minus-strand rows of a rastair CpG BED
- * (the G of each CpG), which extend to the left. A rastair CpG BED (rastair 0.8
- * *.rastair_call.txt or rastair 2 *.bed.gz) is written as *.targeted.bed with its
- * # header; bedGraphs as *.targeted.bedGraph.
- */
+// Filter a bedGraph (against widened targets) or a rastair CpG BED (strand rows padded to their CpG) to the targets
 process FILTER_BEDGRAPH_TARGETS {
     tag "${meta.id}"
     label 'process_single'
@@ -24,7 +9,7 @@ process FILTER_BEDGRAPH_TARGETS {
         : 'biocontainers/bedtools:2.31.1--hf5e1c6e_0'}"
 
     input:
-    tuple val(meta), path(bedgraph), path(targets)
+    tuple val(meta), path(bedgraph), path(targets, stageAs: 'targets/*')
 
     output:
     tuple val(meta), path("*.targeted.{bedGraph,bed}"), emit: intersect
@@ -35,34 +20,49 @@ process FILTER_BEDGRAPH_TARGETS {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = bedgraph.name =~ /\.(bed\.gz|rastair_call\.txt)$/ ? 'bed' : 'bedGraph'
-    """
-    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) or rastair CpG BED (plain text
-    # from rastair 0.8, gzipped from rastair 2) and extend each single-base entry by 1 bp so it covers the full
-    # CpG dinucleotide. rastair writes the G of each CpG as its own minus-strand row (column 6), which extends
-    # to the left. Drop track lines and keep # header lines: rastair names its columns in a # header
-    case "${bedgraph}" in
-        *.gz) zcat ${bedgraph} ;;
-        *) cat ${bedgraph} ;;
-    esac \\
-        | awk 'BEGIN{FS=OFS="\t"} /^track/{next} /^#/{print; next} {if(\$6=="-") \$2=\$2-1; else if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
+    if (bedgraph.name =~ /\.(bed\.gz|rastair_call\.txt)$/) {
+        """
+        # Pad each strand row to its CpG (minus-strand rows to the left); keep # header lines, drop track lines
+        case "${bedgraph}" in
+            *.gz) zcat ${bedgraph} ;;
+            *) cat ${bedgraph} ;;
+        esac \\
+            | awk 'BEGIN{FS=OFS="\t"} /^track/{next} /^#/{print; next} {if(\$6=="-") \$2=\$2-1; else if(NF>=3) \$3=\$3+1; print}' > extended.bedGraph
 
-    # Intersect with target regions (-wa: write original -a entry; -u: unique hits only; -header: keep the -a header)
-    bedtools intersect \\
-        -header \\
-        -a extended.bedGraph \\
-        -b ${targets} \\
-        -wa \\
-        -u \\
-        > intersected.bedGraph
+        # Intersect with target regions (-wa: write original -a entry; -u: unique hits only; -header: keep the -a header)
+        bedtools intersect \\
+            -header \\
+            -a extended.bedGraph \\
+            -b ${targets} \\
+            -wa \\
+            -u \\
+            > intersected.bedGraph
 
-    # Restore original single-base coordinates
-    awk 'BEGIN{FS=OFS="\t"} /^#/{print; next} {if(\$6=="-") \$2=\$2+1; else if(NF>=3) \$3=\$3-1; print}' intersected.bedGraph \\
-        > ${prefix}.targeted.${suffix}
+        # Restore original single-base coordinates
+        awk 'BEGIN{FS=OFS="\t"} /^#/{print; next} {if(\$6=="-") \$2=\$2+1; else if(NF>=3) \$3=\$3-1; print}' intersected.bedGraph \\
+            > ${prefix}.targeted.bed
 
-    cat <<-END_VERSIONS > versions.yml
-    "${task.process}":
-        bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
-    END_VERSIONS
-    """
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
+        END_VERSIONS
+        """
+    }
+    else {
+        """
+        # Keep # header lines, drop track lines; -wa -u writes each row once, unchanged
+        case "${bedgraph}" in
+            *.gz) zcat ${bedgraph} ;;
+            *) cat ${bedgraph} ;;
+        esac \\
+            | awk '!/^track/' \\
+            | bedtools intersect -header -a stdin -b ${targets} -wa -u \\
+            > ${prefix}.targeted.bedGraph
+
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            bedtools: \$(bedtools --version | sed -e "s/bedtools v//g")
+        END_VERSIONS
+        """
+    }
 }

@@ -2,9 +2,6 @@
     "Params: bismark_hisat with cytosine_report and run_targeted_sequencing": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT_COV": {
-                    "bedtools": "2.31.1"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.3.0",
                     "bwamem3": "0.18.0"
@@ -30,6 +27,9 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
+                "FILTER_COV_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
@@ -44,6 +44,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -355,7 +358,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:53:07.784647593",
+        "timestamp": "2026-11-21T20:04:19.186440875",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -406,6 +409,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -625,7 +631,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:40:41.608666988",
+        "timestamp": "2026-11-21T19:53:47.356812532",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -634,9 +640,6 @@
     "Params: bismark with run_targeted_sequencing and collecthsmetrics": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT_COV": {
-                    "bedtools": "2.31.1"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.3.0",
                     "bwamem3": "0.18.0"
@@ -657,6 +660,9 @@
                     "bismark": "3.3.0"
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "FILTER_COV_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "GUNZIP": {
@@ -682,6 +688,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -993,7 +1002,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:52:36.946596721",
+        "timestamp": "2026-11-21T20:03:40.000735421",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1285,9 +1294,6 @@
     "Params: bismark with run_targeted_sequencing": {
         "content": [
             {
-                "BEDTOOLS_INTERSECT_COV": {
-                    "bedtools": "2.31.1"
-                },
                 "BISMARK_ALIGN": {
                     "bismark": "3.3.0",
                     "bwamem3": "0.18.0"
@@ -1310,6 +1316,9 @@
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
                 },
+                "FILTER_COV_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
@@ -1324,6 +1333,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -1615,7 +1627,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:39:54.111492",
+        "timestamp": "2026-11-21T19:52:59.183722987",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -1937,6 +1949,9 @@
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
                 },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
+                },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 }
@@ -2167,7 +2182,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:47:43.886209847",
+        "timestamp": "2026-11-21T19:59:16.200167286",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -2218,6 +2233,9 @@
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
@@ -2469,7 +2487,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-20T13:41:30.975414177",
+        "timestamp": "2026-11-21T19:54:37.146233209",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
