@@ -265,9 +265,9 @@ def validateInputParameters() {
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
-    // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
-    if (params.run_targeted_sequencing && isTaps()) {
-        error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
+    // rastair 0.8 writes no CpG BED for the targeted analysis to filter
+    if (params.run_targeted_sequencing && isTaps() && params.taps_caller != 'rastair2') {
+        error("--run_targeted_sequencing is not supported with TAPS data and --taps_caller ${params.taps_caller}: the targeted analysis needs a CpG BED or bedGraph. Use --taps_caller rastair2, which is free for non-commercial use only and needs --accept_rastair2_license.")
     }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
