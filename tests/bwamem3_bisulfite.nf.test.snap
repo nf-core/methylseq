@@ -3,10 +3,10 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "GUNZIP": {
@@ -315,10 +315,10 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "GUNZIP": {
@@ -565,10 +565,10 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "GUNZIP": {
@@ -837,10 +837,10 @@
         "content": [
             {
                 "BWAMEM3_INDEX": {
-                    "bwamem3": "0.17.0"
+                    "bwamem3": "0.18.0"
                 },
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "GUNZIP": {
