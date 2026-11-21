@@ -265,10 +265,6 @@ def validateInputParameters() {
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
-    // Fail before any process is queued: these steps read MethylDackel output, which TAPS runs don't write
-    if (params.run_targeted_sequencing && isTaps()) {
-        error("--run_targeted_sequencing is not supported with TAPS data (--taps or --aligner bwamem): the targeted analysis reads MethylDackel bedGraphs.")
-    }
     // UMIs are handled by fgumi runall, which drives bwa-mem3 itself
     if (params.with_umi && params.aligner != 'bwamem3') {
         error("--with_umi is only supported with --aligner bwamem3 (got --aligner ${params.aligner}).")

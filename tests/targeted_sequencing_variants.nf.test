@@ -98,4 +98,72 @@ nextflow_pipeline {
             }
         }
     }
+
+    // rastair 0.8 and rastair 2 write the same CpG columns under a # header, one row per strand
+    def tapsCallers = [
+        [
+            caller: "rastair2",
+            calls: "rastair2/call/taps_pe.bed.gz",
+            // the M-bias HTML report embeds its plots; the VCF header records --threads
+            ignore: ['**/multiqc.parquet', 'rastair2/mbias/*.html', 'rastair2/call/*.vcf.gz', 'rastair2/call/*.vcf.gz.tbi']
+        ],
+        [
+            caller: "rastair",
+            calls: "rastair/call/taps_pe.rastair_call.txt",
+            // the M-bias PDF embeds its creation date
+            ignore: ['**/multiqc.parquet', 'rastair/mbiasparser/*.pdf']
+        ]
+    ]
+
+    tapsCallers.each { run ->
+        test("Params: bwamem3 | taps | taps_caller ${run.caller} | run_targeted_sequencing | collecthsmetrics") {
+            when {
+                params {
+                    input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                    fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                    fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                    target_regions_file     = "${projectDir}/assets/genome_taps_target_regions.bed"
+                    aligner                 = "bwamem3"
+                    taps                    = true
+                    taps_caller             = run.caller
+                    accept_rastair2_license = run.caller == "rastair2"
+                    run_targeted_sequencing = true
+                    collecthsmetrics        = true
+                    outdir                  = "$outputDir"
+                }
+            }
+
+            then {
+                def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+                def stable_path = getAllFilesFromDir(params.outdir, ignore: run.ignore, ignoreFile: 'tests/.nftignore')
+                def targeted = path("$outputDir/${run.caller}/call/taps_pe.targeted.bed").readLines()
+                def targets = path("${projectDir}/assets/genome_taps_target_regions.bed").readLines().collect { line -> line.split('\t') }
+                // a row is on target if its CpG overlaps a target: the C (+) and the G (-) of each CpG are separate rows
+                def onTarget = { fields ->
+                    def cpg_start = (fields[1] as long) - (fields[5] == '-' ? 1 : 0)
+                    targets.any { target -> target[0] == fields[0] && cpg_start + 2 > (target[1] as long) && cpg_start < (target[2] as long) }
+                }
+                def calls = run.calls.endsWith('.gz') ? path("$outputDir/${run.calls}").linesGzip : path("$outputDir/${run.calls}").readLines()
+                def records = targeted.findAll { line -> !line.startsWith('#') }
+                // split with -1 to keep an empty beta_est
+                def expected = calls.findAll { line -> !line.startsWith('#') && onTarget(line.split('\t', -1)) }
+                assertAll(
+                    { assert workflow.success },
+                    // the header names the columns that downstream tools look up
+                    { assert targeted[0].startsWith('#') && targeted[0].contains('unmod') },
+                    { assert records.size() > 0 },
+                    // every on-target row of the full calls is kept, both strands, and nothing else
+                    { assert records == expected },
+                    // the targets cut two covered CpGs: keep the C at 2499 (its G opens 2500-3000) and the G at 5418 (its C closes 5000-5418)
+                    { assert records.collect { line -> line.split('\t') }.findAll { fields -> fields[0] == 'bacteriophage_lambda_CpG' && ((fields[1] == '2499' && fields[5] == '+') || (fields[1] == '5418' && fields[5] == '-')) }.size() == 2 },
+                    { assert file("$outputDir/enrichment_metrics").listFiles().any { metrics -> metrics.name.startsWith('taps_pe') } },
+                    { assert snapshot(
+                        removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                        stable_name,
+                        stable_path
+                    ).match() }
+                )
+            }
+        }
+    }
 }

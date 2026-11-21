@@ -38,11 +38,6 @@ nextflow_pipeline {
             message: "--methyl_kit can't be combined with --run_targeted_sequencing"
         ],
         [
-            description: "Params: bwamem3 | taps | run_targeted_sequencing - not supported",
-            params: [ aligner: "bwamem3", taps: true, run_targeted_sequencing: true ],
-            message: "--run_targeted_sequencing is not supported with TAPS data"
-        ],
-        [
             description: "Params: bwamem | run_methurator - not supported",
             params: [ aligner: "bwamem", run_methurator: true ],
             message: "--run_methurator is not supported with TAPS data"

@@ -999,6 +999,289 @@
             "nextflow": "25.10.4"
         }
     },
+    "Params: bwamem3 | taps | taps_caller rastair2 | run_targeted_sequencing | collecthsmetrics": {
+        "content": [
+            {
+                "BCFTOOLS_STATS": {
+                    "bcftools": 1.25
+                },
+                "BWAMEM3_INDEX": {
+                    "bwamem3": "0.18.0"
+                },
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
+                },
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_CREATESEQUENCEDICTIONARY": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "RASTAIR2_CALL": {
+                    "rastair": "2.2.0",
+                    "tabix": 1.24
+                },
+                "RASTAIR2_MBIAS": {
+                    "rastair": "2.2.0"
+                },
+                "RASTAIR2_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            [
+                "bwamem3",
+                "bwamem3/alignments",
+                "bwamem3/alignments/samtools_stats",
+                "bwamem3/alignments/samtools_stats/taps_pe.flagstat",
+                "bwamem3/alignments/samtools_stats/taps_pe.idxstats",
+                "bwamem3/alignments/samtools_stats/taps_pe.stats",
+                "bwamem3/alignments/samtools_stats/taps_se.flagstat",
+                "bwamem3/alignments/samtools_stats/taps_se.idxstats",
+                "bwamem3/alignments/samtools_stats/taps_se.stats",
+                "bwamem3/deduplicated",
+                "bwamem3/deduplicated/picard_metrics",
+                "bwamem3/deduplicated/picard_metrics/taps_pe.markdup.sorted.metrics.txt",
+                "bwamem3/deduplicated/picard_metrics/taps_se.markdup.sorted.metrics.txt",
+                "bwamem3/deduplicated/taps_pe.markdup.sorted.bam",
+                "bwamem3/deduplicated/taps_pe.markdup.sorted.bam.bai",
+                "bwamem3/deduplicated/taps_se.markdup.sorted.bam",
+                "bwamem3/deduplicated/taps_se.markdup.sorted.bam.bai",
+                "enrichment_metrics",
+                "enrichment_metrics/genome_taps_target_regions.intervallist",
+                "enrichment_metrics/taps_pe.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/taps_se.CollectHsMetrics.coverage_metrics",
+                "fastqc",
+                "fastqc/taps_pe_1_raw_fastqc.html",
+                "fastqc/taps_pe_2_raw_fastqc.html",
+                "fastqc/taps_se_raw_fastqc.html",
+                "fastqc/zips",
+                "fastqc/zips/taps_pe_1_raw_fastqc.zip",
+                "fastqc/zips/taps_pe_2_raw_fastqc.zip",
+                "fastqc/zips/taps_se_raw_fastqc.zip",
+                "multiqc",
+                "multiqc/bwamem3",
+                "multiqc/bwamem3/multiqc_data",
+                "multiqc/bwamem3/multiqc_data/bcftools-stats-subtypes.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_indel-lengths.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_variant_depths.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_vqc_Count_Indels.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_vqc_Count_SNP.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_vqc_Count_Transitions.txt",
+                "multiqc/bwamem3/multiqc_data/bcftools_stats_vqc_Count_Transversions.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw-status-check-heatmap.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_adapter_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_overrepresented_sequences_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_base_n_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_base_sequence_quality_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_sequence_counts_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_sequence_duplication_levels_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_top_overrepresented_sequences_table.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_sequence_length_distribution_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed-status-check-heatmap.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_adapter_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_overrepresented_sequences_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_base_n_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_base_sequence_quality_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_sequence_counts_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_sequence_duplication_levels_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_top_overrepresented_sequences_table.txt",
+                "multiqc/bwamem3/multiqc_data/llms-full.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc.log",
+                "multiqc/bwamem3/multiqc_data/multiqc_bcftools_stats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_citations.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_data.json",
+                "multiqc/bwamem3/multiqc_data/multiqc_fastqc_fastqc_raw.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_picard_HsMetrics.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_picard_dups.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_rastair2_beta_hist_plot.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_rastair2_contigs_table.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_flagstat.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_idxstats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_stats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_sources.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_trim_galore.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
+                "multiqc/bwamem3/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_deduplication.txt",
+                "multiqc/bwamem3/multiqc_data/picard_hsmetrics_table.txt",
+                "multiqc/bwamem3/multiqc_data/picard_hybrid_selection_penalty.txt",
+                "multiqc/bwamem3/multiqc_data/picard_percentage_target_bases.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-flagstat-pct-table.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-flagstat-table.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Raw_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-stats-dp.txt",
+                "multiqc/bwamem3/multiqc_data/samtools_alignment_plot.txt",
+                "multiqc/bwamem3/multiqc_data/samtools_insert_size.txt",
+                "multiqc/bwamem3/multiqc_data/trim_galore_adapter_length_plot.txt",
+                "multiqc/bwamem3/multiqc_data/trim_galore_filtered_reads_plot.txt",
+                "multiqc/bwamem3/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_topic_versions.yml",
+                "rastair2",
+                "rastair2/bcftools_stats",
+                "rastair2/bcftools_stats/taps_pe.bcftools_stats.txt",
+                "rastair2/bcftools_stats/taps_se.bcftools_stats.txt",
+                "rastair2/call",
+                "rastair2/call/taps_pe.bed.gz",
+                "rastair2/call/taps_pe.bed.gz.tbi",
+                "rastair2/call/taps_pe.targeted.bed",
+                "rastair2/call/taps_pe.vcf.gz",
+                "rastair2/call/taps_pe.vcf.gz.tbi",
+                "rastair2/call/taps_se.bed.gz",
+                "rastair2/call/taps_se.bed.gz.tbi",
+                "rastair2/call/taps_se.targeted.bed",
+                "rastair2/call/taps_se.vcf.gz",
+                "rastair2/call/taps_se.vcf.gz.tbi",
+                "rastair2/mbias",
+                "rastair2/mbias/taps_pe.chr19.cutoffs.txt",
+                "rastair2/mbias/taps_pe.mbias.html",
+                "trimgalore",
+                "trimgalore/fastqc",
+                "trimgalore/fastqc/taps_pe_1_val_1_fastqc.html",
+                "trimgalore/fastqc/taps_pe_2_val_2_fastqc.html",
+                "trimgalore/fastqc/taps_se_trimmed_fastqc.html",
+                "trimgalore/fastqc/zips",
+                "trimgalore/fastqc/zips/taps_pe_1_val_1_fastqc.zip",
+                "trimgalore/fastqc/zips/taps_pe_2_val_2_fastqc.zip",
+                "trimgalore/fastqc/zips/taps_se_trimmed_fastqc.zip",
+                "trimgalore/logs",
+                "trimgalore/logs/taps_pe_1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_pe_1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/taps_pe_2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_pe_2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/taps_se.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_se.fastq.gz_trimming_report.txt"
+            ],
+            [
+                "taps_pe.flagstat:md5,de46769ec7a98e0c36956360e7004ee3",
+                "taps_pe.idxstats:md5,9f883ed7b159eac3517153a4c2175486",
+                "taps_pe.stats:md5,23668adadf25517fd30c2bb78e3d0acb",
+                "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
+                "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
+                "taps_se.stats:md5,94c005937e69c43fa5a42eeddc85aa22",
+                "bcftools-stats-subtypes.txt:md5,29578ebf9f5d30a4649d223775fb798a",
+                "bcftools_stats_indel-lengths.txt:md5,520280af2576dcfa9afe6a2f27385021",
+                "bcftools_stats_variant_depths.txt:md5,1fa7e471d1eddf8bf92fb5efce56699a",
+                "bcftools_stats_vqc_Count_Indels.txt:md5,a44a680d5d1a8acfcaafe5b2a0384d96",
+                "bcftools_stats_vqc_Count_SNP.txt:md5,54c21e97c956c5d211fb97a586c93acf",
+                "bcftools_stats_vqc_Count_Transitions.txt:md5,683698f5999b63d4210f82b1ed882907",
+                "bcftools_stats_vqc_Count_Transversions.txt:md5,5feb935df29ab7c81579a31050572010",
+                "fastqc_raw-status-check-heatmap.txt:md5,300a5f292ab28d70249d3a90ca6ce450",
+                "fastqc_raw_adapter_content_plot.txt:md5,4b7db26edf0703e0848809d3a982eba6",
+                "fastqc_raw_overrepresented_sequences_plot.txt:md5,d525bf778c98c4c8d546e08103831ee7",
+                "fastqc_raw_per_base_n_content_plot.txt:md5,37e071d3b19d4af6f9955e6937059d11",
+                "fastqc_raw_per_base_sequence_quality_plot.txt:md5,f360b53035bb9482e8df5ad57ef1a3d3",
+                "fastqc_raw_per_sequence_gc_content_plot_Counts.txt:md5,650d795c4fc199f151f0d2d6391edb84",
+                "fastqc_raw_per_sequence_gc_content_plot_Percentages.txt:md5,939f21c32b4dce74b4b156eb5e8b2f57",
+                "fastqc_raw_per_sequence_quality_scores_plot.txt:md5,5ddbab5d136ad08d49b07af832cc472c",
+                "fastqc_raw_sequence_counts_plot.txt:md5,bf5a310a83a8c7bf5733df69de04bf2d",
+                "fastqc_raw_sequence_duplication_levels_plot.txt:md5,4e8a8bbaa19265a35a7f17d0d0b7cdc9",
+                "fastqc_raw_top_overrepresented_sequences_table.txt:md5,051ca970ba58049824e8ed5eca42ffad",
+                "fastqc_sequence_length_distribution_plot.txt:md5,00cb32f8d33befd4148eec7317bd6ba0",
+                "fastqc_trimmed-status-check-heatmap.txt:md5,4aa7a7b6d87fc59acf3112af05c6af21",
+                "fastqc_trimmed_adapter_content_plot.txt:md5,5b849a4f12828141424301ca34e34698",
+                "fastqc_trimmed_overrepresented_sequences_plot.txt:md5,1a53e870ba003165b32fbf42d4c994d9",
+                "fastqc_trimmed_per_base_n_content_plot.txt:md5,2460b25fc5db62a930c6c960211cf26f",
+                "fastqc_trimmed_per_base_sequence_quality_plot.txt:md5,9a9b25d12b45cd39b6eda76ed945547c",
+                "fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt:md5,b60ceb1f0be04643892ef2ffa4140096",
+                "fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt:md5,556d4250eceaac4f9f0e3e3f7784c4d9",
+                "fastqc_trimmed_per_sequence_quality_scores_plot.txt:md5,f310a9e165336d2a2a18c44f34e0786c",
+                "fastqc_trimmed_sequence_counts_plot.txt:md5,9946e4d597d19a2f2a97b6852d1337ff",
+                "fastqc_trimmed_sequence_duplication_levels_plot.txt:md5,957b6681871daf224d9aa984e4bf3317",
+                "fastqc_trimmed_top_overrepresented_sequences_table.txt:md5,75579fd8cfb73c85c5d9401afad7ddb0",
+                "multiqc_bcftools_stats.txt:md5,fd2e13da55728661d361bf250ad04fc3",
+                "multiqc_citations.txt:md5,b5ad5eb4a2e13a6764c7c93c236ce969",
+                "multiqc_picard_HsMetrics.txt:md5,bf2165deb884c023223c6a1551b5a2a8",
+                "multiqc_picard_dups.txt:md5,2c2b80facf6cdf4e47990d04c35499ee",
+                "multiqc_rastair2_beta_hist_plot.txt:md5,5a6818ec3e6c93d6525a3b56806440bc",
+                "multiqc_rastair2_contigs_table.txt:md5,38bcf5d05aead37120a2f12bdaacd6ed",
+                "multiqc_samtools_flagstat.txt:md5,2eee9bed255cb17850315201eb8d1870",
+                "multiqc_samtools_idxstats.txt:md5,1384ce93cd58ffb3f812c2808b0542d6",
+                "multiqc_samtools_stats.txt:md5,56b0bc845c7dd286abfb7414ddcf0d46",
+                "multiqc_trim_galore.txt:md5,1b1fff7988448e81b0cb9a0d4839a6f1",
+                "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_deduplication.txt:md5,d786b0ae1772999e5142211563b256b7",
+                "picard_hsmetrics_table.txt:md5,13e4ae53131e215a2da6275b8d04a02a",
+                "picard_hybrid_selection_penalty.txt:md5,b2a90d6deb89486b6f78018aa61e8093",
+                "picard_percentage_target_bases.txt:md5,6b257fb4a83a9a020f9a869aae4e1074",
+                "samtools-flagstat-pct-table.txt:md5,f40a9195d59816e0b45b20b2111207da",
+                "samtools-flagstat-table.txt:md5,3b1e9cf1f20dde321354a59ae478552f",
+                "samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt:md5,33543fb3050954e0c6894b24d85ea800",
+                "samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt:md5,f2610c261431459c900de9d7ecb9228d",
+                "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,a45cc50f5c94d1ac7efbf067a1ad157e",
+                "samtools-stats-dp.txt:md5,4af163f374fe7e3c60bc4710450c22af",
+                "samtools_alignment_plot.txt:md5,bb50cb8139d02ab34c4a92b001466bf4",
+                "samtools_insert_size.txt:md5,39e0fe48933df26c7cc3d247b8b2d02a",
+                "trim_galore_adapter_length_plot.txt:md5,20fb66ee61181a14b165280d50174cca",
+                "trim_galore_filtered_reads_plot.txt:md5,2b3ac003ef2afccd4d0669a85b65ede8",
+                "taps_pe.bcftools_stats.txt:md5,6e5ecf79928281c5763292bb6406cc67",
+                "taps_se.bcftools_stats.txt:md5,f7221ab1e042cae9e2fd8eb23008ac25",
+                "taps_pe.bed.gz:md5,1229ef44d65524b8c32a5e5e00ee0360",
+                "taps_pe.bed.gz.tbi:md5,e2852bee9bf6e0bbed586a909865a4f8",
+                "taps_pe.targeted.bed:md5,e280fd67e960f78d6fb10fdf4179079a",
+                "taps_se.bed.gz:md5,63754247d1c3770292da8a2acdd88a01",
+                "taps_se.bed.gz.tbi:md5,4667580916584029b294937662827e04",
+                "taps_se.targeted.bed:md5,e4b42a133c893000e44c6c1cbe497ce6",
+                "taps_pe.chr19.cutoffs.txt:md5,d0ac63240920ce4c068167d625da7ca1"
+            ]
+        ],
+        "timestamp": "2026-11-21T09:59:15.156845",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
     "Params: bismark with run_targeted_sequencing": {
         "content": [
             {
@@ -1336,6 +1619,267 @@
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
+        }
+    },
+    "Params: bwamem3 | taps | taps_caller rastair | run_targeted_sequencing | collecthsmetrics": {
+        "content": [
+            {
+                "BWAMEM3_INDEX": {
+                    "bwamem3": "0.18.0"
+                },
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
+                },
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_CREATESEQUENCEDICTIONARY": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "RASTAIR_CALL": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "0.8.2"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            [
+                "bwamem3",
+                "bwamem3/alignments",
+                "bwamem3/alignments/samtools_stats",
+                "bwamem3/alignments/samtools_stats/taps_pe.flagstat",
+                "bwamem3/alignments/samtools_stats/taps_pe.idxstats",
+                "bwamem3/alignments/samtools_stats/taps_pe.stats",
+                "bwamem3/alignments/samtools_stats/taps_se.flagstat",
+                "bwamem3/alignments/samtools_stats/taps_se.idxstats",
+                "bwamem3/alignments/samtools_stats/taps_se.stats",
+                "bwamem3/deduplicated",
+                "bwamem3/deduplicated/picard_metrics",
+                "bwamem3/deduplicated/picard_metrics/taps_pe.markdup.sorted.metrics.txt",
+                "bwamem3/deduplicated/picard_metrics/taps_se.markdup.sorted.metrics.txt",
+                "bwamem3/deduplicated/taps_pe.markdup.sorted.bam",
+                "bwamem3/deduplicated/taps_pe.markdup.sorted.bam.bai",
+                "bwamem3/deduplicated/taps_se.markdup.sorted.bam",
+                "bwamem3/deduplicated/taps_se.markdup.sorted.bam.bai",
+                "enrichment_metrics",
+                "enrichment_metrics/genome_taps_target_regions.intervallist",
+                "enrichment_metrics/taps_pe.CollectHsMetrics.coverage_metrics",
+                "enrichment_metrics/taps_se.CollectHsMetrics.coverage_metrics",
+                "fastqc",
+                "fastqc/taps_pe_1_raw_fastqc.html",
+                "fastqc/taps_pe_2_raw_fastqc.html",
+                "fastqc/taps_se_raw_fastqc.html",
+                "fastqc/zips",
+                "fastqc/zips/taps_pe_1_raw_fastqc.zip",
+                "fastqc/zips/taps_pe_2_raw_fastqc.zip",
+                "fastqc/zips/taps_se_raw_fastqc.zip",
+                "multiqc",
+                "multiqc/bwamem3",
+                "multiqc/bwamem3/multiqc_data",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw-status-check-heatmap.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_adapter_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_overrepresented_sequences_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_base_n_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_base_sequence_quality_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_sequence_counts_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_sequence_duplication_levels_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_raw_top_overrepresented_sequences_table.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_sequence_length_distribution_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed-status-check-heatmap.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_adapter_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_overrepresented_sequences_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_base_n_content_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_base_sequence_quality_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_sequence_counts_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_sequence_duplication_levels_plot.txt",
+                "multiqc/bwamem3/multiqc_data/fastqc_trimmed_top_overrepresented_sequences_table.txt",
+                "multiqc/bwamem3/multiqc_data/llms-full.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc.log",
+                "multiqc/bwamem3/multiqc_data/multiqc_citations.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_data.json",
+                "multiqc/bwamem3/multiqc_data/multiqc_fastqc_fastqc_raw.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_picard_HsMetrics.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_picard_dups.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_flagstat.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_idxstats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_samtools_stats.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_sources.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_trim_galore.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
+                "multiqc/bwamem3/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
+                "multiqc/bwamem3/multiqc_data/picard_deduplication.txt",
+                "multiqc/bwamem3/multiqc_data/picard_hsmetrics_table.txt",
+                "multiqc/bwamem3/multiqc_data/picard_hybrid_selection_penalty.txt",
+                "multiqc/bwamem3/multiqc_data/picard_percentage_target_bases.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-flagstat-pct-table.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-flagstat-table.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-idxstats-mapped-reads-plot_Raw_Counts.txt",
+                "multiqc/bwamem3/multiqc_data/samtools-stats-dp.txt",
+                "multiqc/bwamem3/multiqc_data/samtools_alignment_plot.txt",
+                "multiqc/bwamem3/multiqc_data/samtools_insert_size.txt",
+                "multiqc/bwamem3/multiqc_data/trim_galore_adapter_length_plot.txt",
+                "multiqc/bwamem3/multiqc_data/trim_galore_filtered_reads_plot.txt",
+                "multiqc/bwamem3/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_topic_versions.yml",
+                "rastair",
+                "rastair/call",
+                "rastair/call/taps_pe.rastair_call.txt",
+                "rastair/call/taps_pe.targeted.bed",
+                "rastair/call/taps_se.rastair_call.txt",
+                "rastair/call/taps_se.targeted.bed",
+                "rastair/mbias",
+                "rastair/mbias/taps_pe.rastair_mbias.txt",
+                "rastair/mbias/taps_se.rastair_mbias.txt",
+                "rastair/mbiasparser",
+                "rastair/mbiasparser/taps_pe.rastair_mbias_processed.csv",
+                "rastair/mbiasparser/taps_pe.rastair_mbias_processed.pdf",
+                "rastair/mbiasparser/taps_se.rastair_mbias_processed.csv",
+                "rastair/methylkit",
+                "rastair/methylkit/taps_pe.rastair_methylkit.txt.gz",
+                "rastair/methylkit/taps_se.rastair_methylkit.txt.gz",
+                "trimgalore",
+                "trimgalore/fastqc",
+                "trimgalore/fastqc/taps_pe_1_val_1_fastqc.html",
+                "trimgalore/fastqc/taps_pe_2_val_2_fastqc.html",
+                "trimgalore/fastqc/taps_se_trimmed_fastqc.html",
+                "trimgalore/fastqc/zips",
+                "trimgalore/fastqc/zips/taps_pe_1_val_1_fastqc.zip",
+                "trimgalore/fastqc/zips/taps_pe_2_val_2_fastqc.zip",
+                "trimgalore/fastqc/zips/taps_se_trimmed_fastqc.zip",
+                "trimgalore/logs",
+                "trimgalore/logs/taps_pe_1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_pe_1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/taps_pe_2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_pe_2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/taps_se.fastq.gz_trimming_report.json",
+                "trimgalore/logs/taps_se.fastq.gz_trimming_report.txt"
+            ],
+            [
+                "taps_pe.flagstat:md5,de46769ec7a98e0c36956360e7004ee3",
+                "taps_pe.idxstats:md5,9f883ed7b159eac3517153a4c2175486",
+                "taps_pe.stats:md5,23668adadf25517fd30c2bb78e3d0acb",
+                "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
+                "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
+                "taps_se.stats:md5,94c005937e69c43fa5a42eeddc85aa22",
+                "fastqc_raw-status-check-heatmap.txt:md5,300a5f292ab28d70249d3a90ca6ce450",
+                "fastqc_raw_adapter_content_plot.txt:md5,4b7db26edf0703e0848809d3a982eba6",
+                "fastqc_raw_overrepresented_sequences_plot.txt:md5,d525bf778c98c4c8d546e08103831ee7",
+                "fastqc_raw_per_base_n_content_plot.txt:md5,37e071d3b19d4af6f9955e6937059d11",
+                "fastqc_raw_per_base_sequence_quality_plot.txt:md5,f360b53035bb9482e8df5ad57ef1a3d3",
+                "fastqc_raw_per_sequence_gc_content_plot_Counts.txt:md5,650d795c4fc199f151f0d2d6391edb84",
+                "fastqc_raw_per_sequence_gc_content_plot_Percentages.txt:md5,939f21c32b4dce74b4b156eb5e8b2f57",
+                "fastqc_raw_per_sequence_quality_scores_plot.txt:md5,5ddbab5d136ad08d49b07af832cc472c",
+                "fastqc_raw_sequence_counts_plot.txt:md5,bf5a310a83a8c7bf5733df69de04bf2d",
+                "fastqc_raw_sequence_duplication_levels_plot.txt:md5,4e8a8bbaa19265a35a7f17d0d0b7cdc9",
+                "fastqc_raw_top_overrepresented_sequences_table.txt:md5,051ca970ba58049824e8ed5eca42ffad",
+                "fastqc_sequence_length_distribution_plot.txt:md5,00cb32f8d33befd4148eec7317bd6ba0",
+                "fastqc_trimmed-status-check-heatmap.txt:md5,4aa7a7b6d87fc59acf3112af05c6af21",
+                "fastqc_trimmed_adapter_content_plot.txt:md5,5b849a4f12828141424301ca34e34698",
+                "fastqc_trimmed_overrepresented_sequences_plot.txt:md5,1a53e870ba003165b32fbf42d4c994d9",
+                "fastqc_trimmed_per_base_n_content_plot.txt:md5,2460b25fc5db62a930c6c960211cf26f",
+                "fastqc_trimmed_per_base_sequence_quality_plot.txt:md5,9a9b25d12b45cd39b6eda76ed945547c",
+                "fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt:md5,b60ceb1f0be04643892ef2ffa4140096",
+                "fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt:md5,556d4250eceaac4f9f0e3e3f7784c4d9",
+                "fastqc_trimmed_per_sequence_quality_scores_plot.txt:md5,f310a9e165336d2a2a18c44f34e0786c",
+                "fastqc_trimmed_sequence_counts_plot.txt:md5,9946e4d597d19a2f2a97b6852d1337ff",
+                "fastqc_trimmed_sequence_duplication_levels_plot.txt:md5,957b6681871daf224d9aa984e4bf3317",
+                "fastqc_trimmed_top_overrepresented_sequences_table.txt:md5,75579fd8cfb73c85c5d9401afad7ddb0",
+                "multiqc_citations.txt:md5,fd79bdf13e751be45bc8956ca62f247b",
+                "multiqc_picard_HsMetrics.txt:md5,bf2165deb884c023223c6a1551b5a2a8",
+                "multiqc_picard_dups.txt:md5,2c2b80facf6cdf4e47990d04c35499ee",
+                "multiqc_samtools_flagstat.txt:md5,2eee9bed255cb17850315201eb8d1870",
+                "multiqc_samtools_idxstats.txt:md5,1384ce93cd58ffb3f812c2808b0542d6",
+                "multiqc_samtools_stats.txt:md5,56b0bc845c7dd286abfb7414ddcf0d46",
+                "multiqc_trim_galore.txt:md5,1b1fff7988448e81b0cb9a0d4839a6f1",
+                "picard_MarkIlluminaAdapters_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_MeanQualityByCycle_histogram_1.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_QualityScoreDistribution_histogram.txt:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "picard_deduplication.txt:md5,d786b0ae1772999e5142211563b256b7",
+                "picard_hsmetrics_table.txt:md5,13e4ae53131e215a2da6275b8d04a02a",
+                "picard_hybrid_selection_penalty.txt:md5,b2a90d6deb89486b6f78018aa61e8093",
+                "picard_percentage_target_bases.txt:md5,6b257fb4a83a9a020f9a869aae4e1074",
+                "samtools-flagstat-pct-table.txt:md5,f40a9195d59816e0b45b20b2111207da",
+                "samtools-flagstat-table.txt:md5,3b1e9cf1f20dde321354a59ae478552f",
+                "samtools-idxstats-mapped-reads-plot_Normalised_Counts.txt:md5,33543fb3050954e0c6894b24d85ea800",
+                "samtools-idxstats-mapped-reads-plot_Observed_over_Expected_Counts.txt:md5,f2610c261431459c900de9d7ecb9228d",
+                "samtools-idxstats-mapped-reads-plot_Raw_Counts.txt:md5,a45cc50f5c94d1ac7efbf067a1ad157e",
+                "samtools-stats-dp.txt:md5,4af163f374fe7e3c60bc4710450c22af",
+                "samtools_alignment_plot.txt:md5,bb50cb8139d02ab34c4a92b001466bf4",
+                "samtools_insert_size.txt:md5,39e0fe48933df26c7cc3d247b8b2d02a",
+                "trim_galore_adapter_length_plot.txt:md5,20fb66ee61181a14b165280d50174cca",
+                "trim_galore_filtered_reads_plot.txt:md5,2b3ac003ef2afccd4d0669a85b65ede8",
+                "taps_pe.rastair_call.txt:md5,cb04a54eb21fc4fff3b58cea56b1e5b0",
+                "taps_pe.targeted.bed:md5,f94f4a8ce6effebdb78bdf1783728c25",
+                "taps_se.rastair_call.txt:md5,23f789a8fe5a457e368f36e02a87ecb2",
+                "taps_se.targeted.bed:md5,23f789a8fe5a457e368f36e02a87ecb2",
+                "taps_pe.rastair_mbias.txt:md5,d424bb21910c7a076eeee0abf6e2a259",
+                "taps_se.rastair_mbias.txt:md5,63f016218f9c85a24526a9e68c97c5b7",
+                "taps_pe.rastair_mbias_processed.csv:md5,f693c185316abb22a235c87537577e4e",
+                "taps_se.rastair_mbias_processed.csv:md5,e46ba9ffc77f03688559a3007e005d91",
+                "taps_pe.rastair_methylkit.txt.gz:md5,ff9cfa7761bd233aafcd8165f9298941",
+                "taps_se.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445"
+            ]
+        ],
+        "timestamp": "2026-11-21T11:52:47.42547",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
         }
     },
     "Params: bwameth with run_targeted_sequencing and collecthsmetrics": {
