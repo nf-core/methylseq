@@ -33,7 +33,7 @@ workflow TARGETED_SEQUENCING {
      * Intersect bedGraph files with target regions (CpG-aware boundary handling)
      * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs.
      * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp to cover the CpG before
-     * intersection, so that CpGs straddling a target boundary are not lost. For a rastair 2 CpG BED,
+     * intersection, so that CpGs straddling a target boundary are not lost. For a rastair CpG BED,
      * minus-strand rows (the G) extend to the left.
      */
     ch_bedgraphs_target = ch_bedgraph
