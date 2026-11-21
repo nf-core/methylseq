@@ -45,7 +45,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | -------------------------------------------- | ------------------------ | ----------------------- | -------------------------- | --------------------------------------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth                | bwa index                  | bwa-mem3 index --meth                               |
 | Merge re-sequenced FastQ files               | cat                      | cat                     | cat                        | cat                                                 |
-| Raw data QC                                  | FastQC                   | FastQC                  | FastQC                     | FastQC                                              |
+| Raw data QC                                  | FastQC (in Trim Galore)  | FastQC (in Trim Galore) | FastQC (in Trim Galore)    | FastQC (in Trim Galore)                             |
 | Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               | Trim Galore!                                        |
 | Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    | bwa-mem3 (`--meth=taps` or `--meth`)                |
 | Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      | Picard MarkDuplicates, or fgumi with `--with_umi`   |

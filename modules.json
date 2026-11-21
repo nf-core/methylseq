@@ -62,12 +62,12 @@
                     },
                     "bwamem3/index": {
                         "branch": "master",
-                        "git_sha": "2d590fdee3e25a93d4757ca14159a42e1406970b",
+                        "git_sha": "eaaf8f5b5ba8109409de9d5a8240f58a6002bd41",
                         "installed_by": ["fasta_index_methylseq"]
                     },
                     "bwamem3/mem": {
                         "branch": "master",
-                        "git_sha": "2d590fdee3e25a93d4757ca14159a42e1406970b",
+                        "git_sha": "eaaf8f5b5ba8109409de9d5a8240f58a6002bd41",
                         "installed_by": ["fastq_align_dedup_bwamem3"]
                     },
                     "bwameth/align": {
@@ -132,7 +132,7 @@
                     },
                     "multiqc": {
                         "branch": "master",
-                        "git_sha": "008f9d3e61209bf995edac3ba531f54e269e1215",
+                        "git_sha": "868791e991feaaeff234b79f7910b6b442627529",
                         "installed_by": ["modules"]
                     },
                     "parabricks/fq2bam": {

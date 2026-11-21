@@ -29,10 +29,8 @@
             },
             "genome": {
                 "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^[a-zA-Z0-9._-]+$",
-                "errorMessage": "Invalid reference genome name"
+                "deprecated": true,
+                "errorMessage": "The samplesheet 'genome' column is not used: leave it empty and set the reference with --genome, --fasta or an index option such as --bismark_index"
             }
         },
         "required": ["sample", "fastq_1"]
