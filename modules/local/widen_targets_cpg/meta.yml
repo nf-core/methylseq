@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "widen_targets_cpg"
+description: Widen each target region by 1 bp at an edge that cuts a reference CpG, and report targets the FASTA can't place
+keywords:
+  - targeted sequencing
+  - methylation
+  - bed
+  - cpg
+tools:
+  - "bedtools":
+      description: "bedtools getfasta reads the two reference bases across each target edge"
+      homepage: "https://bedtools.readthedocs.io/"
+      licence: ["MIT"]
+      identifier: biotools:bedtools
+input:
+  - targets:
+      type: file
+      description: Target regions BED file (plain or gzipped); track, browser and # lines are ignored
+      pattern: "*.{bed,bed.gz}"
+      ontologies: []
+  - - meta:
+        type: map
+        description: Groovy Map containing reference information. e.g. `[ id:'genome' ]`
+    - fasta:
+        type: file
+        description: Uncompressed reference FASTA
+        pattern: "*.{fa,fasta,fna}"
+        ontologies: []
+  - - meta2:
+        type: map
+        description: Groovy Map containing reference information. e.g. `[ id:'genome' ]`
+    - fai:
+        type: file
+        description: FASTA index of the reference
+        pattern: "*.fai"
+        ontologies: []
+output:
+  targets:
+    - widened_targets.bed:
+        type: file
+        description: Usable targets as contig, start, end, in input order, each edge widened by 1 bp where it cuts a CpG
+        pattern: "widened_targets.bed"
+        ontologies: []
+  issues:
+    - target_issues.txt:
+        type: file
+        description: One line per skipped or clipped target (reason, contig, start, end); empty when every target fits
+        pattern: "target_issues.txt"
+        ontologies: []
+  versions:
+    - versions.yml:
+        type: file
+        description: File containing software versions
+        pattern: "versions.yml"
+        ontologies: []
+authors:
+  - "@FelixKrueger"
+maintainers:
+  - "@FelixKrueger"

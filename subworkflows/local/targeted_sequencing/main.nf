@@ -1,13 +1,14 @@
 /*
  * targeted_sequencing subworkflow
  *
- * Filters bedGraph and coverage files with the target_regions BED file so they contain positions only listed in the BED.
+ * Filters bedGraph and coverage files to the target_regions BED file, keeping both strands of a CpG cut by a target edge.
  * If specified, it also generates some performance metrics with Picard CollectHsMetrics, such as Fold-80 Base Penalty,
  * HS Library Size, Percent Duplicates, and Percent Off Bait. This is relevant for methylome experiments with targeted seq.
  */
 
+include { WIDEN_TARGETS_CPG                            } from '../../../modules/local/widen_targets_cpg/main'
 include { FILTER_BEDGRAPH_TARGETS                      } from '../../../modules/local/filter_bedgraph_targets/main'
-include { BEDTOOLS_INTERSECT as BEDTOOLS_INTERSECT_COV } from '../../../modules/nf-core/bedtools/intersect/main'
+include { FILTER_COV_TARGETS                           } from '../../../modules/local/filter_cov_targets/main'
 include { PICARD_CREATESEQUENCEDICTIONARY              } from '../../../modules/nf-core/picard/createsequencedictionary/main'
 include { PICARD_BEDTOINTERVALLIST                     } from '../../../modules/nf-core/picard/bedtointervallist/main'
 include { PICARD_COLLECTHSMETRICS                      } from '../../../modules/nf-core/picard/collecthsmetrics/main'
@@ -23,39 +24,47 @@ workflow TARGETED_SEQUENCING {
     ch_bai // channel: [ val(meta), [ bai ] ] ## BAI from alignment
     ch_gzi // channel: [ val(meta), [ gzi ] ] ## GZI from fasta
     collecthsmetrics // boolean: whether to run Picard CollectHsMetrics
+    taps // boolean: TAPS run (ch_bedgraph holds rastair CpG calls)
 
     main:
 
     ch_versions = Channel.empty()
     ch_picard_metrics = Channel.empty()
 
-    /*
-     * Intersect bedGraph files with target regions (CpG-aware boundary handling)
-     * Ensure ch_bedgraph contains the bedGraph file(s) in an array and split into individual bedGraphs.
-     * The FILTER_BEDGRAPH_TARGETS process extends single-C intervals by 1 bp to cover the CpG before
-     * intersection, so that CpGs straddling a target boundary are not lost. For a rastair CpG BED,
-     * minus-strand rows (the G) extend to the left.
-     */
+    // rastair calls carry their strand, so TAPS runs filter against the targets as given
+    ch_filter_targets = ch_target_regions
+    if (!taps) {
+        WIDEN_TARGETS_CPG(
+            ch_target_regions,
+            ch_fasta.ifEmpty { error("The targeted analysis needs the FASTA to widen the targets at cut CpGs") },
+            ch_fasta_index.ifEmpty { error("The targeted analysis needs the FASTA index to widen the targets at cut CpGs") },
+        )
+        ch_filter_targets = WIDEN_TARGETS_CPG.out.targets
+        ch_versions = ch_versions.mix(WIDEN_TARGETS_CPG.out.versions)
+
+        WIDEN_TARGETS_CPG.out.issues
+            .filter { issues -> issues.size() > 0 }
+            .subscribe { issues ->
+                def lines = issues.readLines()
+                def contigs = lines.collect { line -> line.split('\t', -1)[1] }.unique()
+                log.warn(
+                    "--target_regions_file: ${lines.size()} target(s) skipped or clipped to fit the FASTA, on contig(s) ${contigs.take(10).join(', ')}${contigs.size() > 10 ? ', ...' : ''}. First ${Math.min(5, lines.size())}:\n" + lines.take(5).join('\n')
+                )
+            }
+    }
+
+    // Split bwameth's list of bedGraphs into one task per file
     ch_bedgraphs_target = ch_bedgraph
         .map { meta, bedgraphs -> tuple(meta, bedgraphs instanceof List ? bedgraphs : [bedgraphs]) }
         .flatMap { meta, bedgraphs -> bedgraphs.collect { bedgraph -> [meta, bedgraph] } }
-        .combine(ch_target_regions)
+        .combine(ch_filter_targets)
 
     FILTER_BEDGRAPH_TARGETS(ch_bedgraphs_target)
     ch_versions = ch_versions.mix(FILTER_BEDGRAPH_TARGETS.out.versions)
 
-    /*
-     * Intersect Bismark coverage files with target regions
-     * The .cov.gz files are filtered the same way as bedGraph files so that
-     * downstream tools (methylKit, bsseq, DSS) receive only on-target CpGs.
-     */
-    ch_coverage_target = ch_coverage.combine(ch_target_regions)
-
-    BEDTOOLS_INTERSECT_COV(
-        ch_coverage_target,
-        [[:], []],
-    )
-    ch_versions = ch_versions.mix(BEDTOOLS_INTERSECT_COV.out.versions)
+    // Bismark coverage files, for methylKit, bsseq and DSS
+    FILTER_COV_TARGETS(ch_coverage.combine(ch_filter_targets))
+    ch_versions = ch_versions.mix(FILTER_COV_TARGETS.out.versions)
 
     /*
      * Run Picard CollectHSMetrics
@@ -118,7 +127,7 @@ workflow TARGETED_SEQUENCING {
 
     emit:
     bedgraph_filtered = FILTER_BEDGRAPH_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.{bedGraph,bed}") ]
-    coverage_filtered = BEDTOOLS_INTERSECT_COV.out.intersect // channel: [ val(meta), path("*.cov") ]
+    coverage_filtered = FILTER_COV_TARGETS.out.intersect // channel: [ val(meta), path("*.targeted.cov") ]
     picard_metrics    = ch_picard_metrics // channel: [ val(meta), path("*_metrics") ]
     versions          = ch_versions // channel: path("*.version.txt")
 }
