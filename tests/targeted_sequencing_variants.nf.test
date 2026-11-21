@@ -154,6 +154,8 @@ nextflow_pipeline {
                     { assert records.size() > 0 },
                     // every on-target row of the full calls is kept, both strands, and nothing else
                     { assert records == expected },
+                    // the targets cut two covered CpGs: keep the C at 2499 (its G opens 2500-3000) and the G at 5418 (its C closes 5000-5418)
+                    { assert records.collect { line -> line.split('\t') }.findAll { fields -> fields[0] == 'bacteriophage_lambda_CpG' && ((fields[1] == '2499' && fields[5] == '+') || (fields[1] == '5418' && fields[5] == '-')) }.size() == 2 },
                     { assert file("$outputDir/enrichment_metrics").listFiles().any { metrics -> metrics.name.startsWith('taps_pe') } },
                     { assert snapshot(
                         removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
