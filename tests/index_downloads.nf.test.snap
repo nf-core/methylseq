@@ -51,7 +51,7 @@
         "content": [
             {
                 "BWAMEM3_MEM": {
-                    "bwamem3": "0.17.0",
+                    "bwamem3": "0.18.0",
                     "samtools": 1.25
                 },
                 "GUNZIP": {
