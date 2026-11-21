@@ -9,9 +9,10 @@
  *
  * This process extends each entry by 1 bp to represent the full CpG dinucleotide,
  * intersects with the target BED, then restores the original single-base coordinates.
- * Entries extend to the right, except minus-strand rows of a rastair 2 CpG BED
- * (the G of each CpG), which extend to the left. A rastair 2 BED is written as
- * *.targeted.bed with its # header; bedGraphs as *.targeted.bedGraph.
+ * Entries extend to the right, except minus-strand rows of a rastair CpG BED
+ * (the G of each CpG), which extend to the left. A rastair CpG BED (rastair 0.8
+ * *.rastair_call.txt or rastair 2 *.bed.gz) is written as *.targeted.bed with its
+ * # header; bedGraphs as *.targeted.bedGraph.
  */
 process FILTER_BEDGRAPH_TARGETS {
     tag "${meta.id}"
@@ -34,12 +35,12 @@ process FILTER_BEDGRAPH_TARGETS {
 
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def suffix = bedgraph.name.endsWith('.bed.gz') ? 'bed' : 'bedGraph'
+    def suffix = bedgraph.name =~ /\.(bed\.gz|rastair_call\.txt)$/ ? 'bed' : 'bedGraph'
     """
-    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) or rastair 2 CpG BED (gzipped)
-    # and extend each single-base entry by 1 bp so it covers the full CpG dinucleotide. rastair 2 writes the
-    # G of each CpG as its own minus-strand row (column 6), which extends to the left.
-    # Drop track lines and keep # header lines: rastair 2 names its columns in a # header
+    # Read the bedGraph (gzipped from Bismark, plain text from MethylDackel) or rastair CpG BED (plain text
+    # from rastair 0.8, gzipped from rastair 2) and extend each single-base entry by 1 bp so it covers the full
+    # CpG dinucleotide. rastair writes the G of each CpG as its own minus-strand row (column 6), which extends
+    # to the left. Drop track lines and keep # header lines: rastair names its columns in a # header
     case "${bedgraph}" in
         *.gz) zcat ${bedgraph} ;;
         *) cat ${bedgraph} ;;
