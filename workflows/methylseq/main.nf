@@ -347,7 +347,7 @@ workflow METHYLSEQ {
     //
     if (params.run_targeted_sequencing) {
         TARGETED_SEQUENCING(
-            ch_bedgraph,
+            isTaps() ? ch_rastair2_bed : ch_bedgraph,
             ch_coverage,
             channel.fromPath(params.target_regions_file, checkIfExists: true),
             ch_fasta,

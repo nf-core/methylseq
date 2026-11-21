@@ -236,7 +236,7 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets.
+This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair 2 CpG BED instead, so it needs `--taps_caller rastair2`.
 
 ## Samplesheet input
 
