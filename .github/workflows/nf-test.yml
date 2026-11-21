@@ -77,6 +77,7 @@ jobs:
       - runner=4cpu-linux-x64
       - image=ubuntu22-full-x64
       - volume=80gb
+      - family=m8i.* # TEMPORARY (#667 disk measurement): no local NVMe, so everything uses the root volume
     env:
       NXF_VER: ${{ matrix.NXF_VER }}
       NXF_ANSI_LOG: false
@@ -105,6 +106,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      # TEMPORARY (#667 disk measurement): sample the root volume's used bytes every 5 s.
+      - name: Start disk-usage sampler
+        run: |
+          df -B1 --output=used / | tail -1 > "$RUNNER_TEMP/disk-start.txt"
+          nohup sh -c 'while true; do df -B1 --output=used / | tail -1 >> "$0"; sleep 5; done' "$RUNNER_TEMP/disk-samples.txt" > /dev/null 2>&1 &
+
       - name: Run nf-test
         id: run_nf_test
         uses: ./.github/actions/nf-test
@@ -118,6 +125,19 @@ jobs:
           total_shards: ${{ needs.get-shards.outputs.total_shards }}
           filters: ${{ matrix.filters }}
           tags: "cpu"
+
+      # TEMPORARY (#667 disk measurement)
+      - name: Report disk usage
+        if: ${{ always() }}
+        run: |
+          start=$(cat "$RUNNER_TEMP/disk-start.txt")
+          peak=$(sort -n "$RUNNER_TEMP/disk-samples.txt" | tail -1)
+          now=$(df -B1 --output=used / | tail -1)
+          awk -v s="$start" -v p="$peak" -v n="$now" -v job="${{ matrix.profile }} | ${{ matrix.shard }} | ${{ matrix.NXF_VER }}" \
+            'BEGIN { g = 1073741824; printf "DISK %s | start %.1f GiB | peak %.1f GiB | peak added %.1f GiB | end %.1f GiB\n", job, s/g, p/g, (p-s)/g, n/g }' \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          df -h / /var/lib/docker /tmp || true
+          docker system df || true
 
       - name: Report test status
         if: ${{ always() }}
