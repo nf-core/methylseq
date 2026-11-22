@@ -249,10 +249,10 @@ By default, UMIs that differ by one base are treated as the same molecule (`--um
 
 The other aligners take a longer route, which extracts the UMIs before trimming:
 
-| Aligner                    | Steps                                                                                                              | UMI matching                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| `bwameth`, `bwamem`        | `fgumi extract`, trimming, alignment, then `fgumi zipper`, `sort` and `dedup`                                      | As for bwa-mem3                                              |
-| `bismark`, `bismark_hisat` | `fgumi extract`, which also puts the UMI in the read name, then `deduplicate_bismark --barcode --umi_mismatches 1` | One mismatch (UMI-tools directional rule); reads are removed |
+| Aligner                    | Steps                                                                                                              | UMI matching                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `bwameth`, `bwamem`        | `fgumi extract`, trimming, alignment, then `fgumi zipper`, `sort` and `dedup`                                      | As for bwa-mem3                                                                     |
+| `bismark`, `bismark_hisat` | `fgumi extract`, which also puts the UMI in the read name, then `deduplicate_bismark --barcode --umi_mismatches 1` | One mismatch (UMI-tools directional rule), exact with `identity`; reads are removed |
 
 Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth sets on reads aligned to the wrong strand, the samtools stats in MultiQC are from before duplicate marking, and it is not supported with `-profile gpu`.
 
@@ -268,7 +268,7 @@ Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth
 > [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
 
-`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too, except with the Bismark aligners. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
+`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too, except with the Bismark aligners. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, no duplicates are marked; the UMIs are kept in the `RX` tag with bwa-mem3 and in the read names with the Bismark aligners, and dropped with bwa-meth and bwa-mem. The pipeline does not call consensus reads.
 
 ### Targeted sequencing (optional)
 

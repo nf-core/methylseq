@@ -282,7 +282,7 @@ def validateInputParameters() {
         )
     }
     if (params.with_umi && params.skip_deduplication) {
-        log.warn("--skip_deduplication with --with_umi: the UMIs are moved to the RX tag, but no duplicates are marked.")
+        log.warn("--skip_deduplication with --with_umi: no duplicates are marked. The UMIs are kept in the RX tag with bwamem3 and in the read names with the Bismark aligners, and dropped with bwameth and bwamem.")
     }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
@@ -296,7 +296,7 @@ def validateInputParameters() {
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
-        [params.with_umi && params.umi_dedup_strategy != 'adjacency' && params.aligner.startsWith('bismark'), '--umi_dedup_strategy only applies to fgumi dedup (bwameth, bwamem, bwamem3); Bismark needs identical UMIs'],
+        [params.with_umi && !(params.umi_dedup_strategy in ['adjacency', 'identity']) && params.aligner.startsWith('bismark'), "--umi_dedup_strategy ${params.umi_dedup_strategy} only applies to fgumi dedup (bwameth, bwamem, bwamem3); Bismark groups UMIs one mismatch apart unless it is identity"],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
