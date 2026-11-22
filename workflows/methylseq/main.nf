@@ -408,6 +408,7 @@ workflow METHYLSEQ {
             ch_bai,
             ch_gzi,
             params.collecthsmetrics,
+            isTaps(),
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }

@@ -1,0 +1,176 @@
+nextflow_process {
+
+    name "Test Process WIDEN_TARGETS_CPG"
+    script "../main.nf"
+    process "WIDEN_TARGETS_CPG"
+
+    tag "modules"
+    tag "modules_local"
+    tag "widen_targets_cpg"
+
+    // c1 has CpGs at 0, 4, 8 (soft-masked) and 14; c2 one at 4
+    def writeReference = { String dir ->
+        new File(dir).mkdirs()
+        new File("${dir}/genome.fa").text = ">c1\nCGAACGTTcgAAAACG\n>c2\nAAAACGAAAA\n"
+        new File("${dir}/genome.fa.fai").text = "c1\t16\t4\t16\t17\nc2\t10\t25\t10\t11\n"
+        return dir
+    }
+
+    // Gzipped when `gzip` is true, or by default when the name ends in .gz
+    def writeTargets = { String path, String text, Boolean gzip = null ->
+        new File(path).parentFile.mkdirs()
+        if (gzip == null ? path.endsWith('.gz') : gzip) {
+            new java.util.zip.GZIPOutputStream(new FileOutputStream(path)).withWriter { writer -> writer << text }
+        } else {
+            new File(path).text = text
+        }
+        return path
+    }
+
+    // Whether the task's stderr (.command.err in the test's work directory) has a line containing `text`
+    def taskLogContains = { String dir, String text ->
+        def found = false
+        new File(dir).eachFileRecurse { log_file ->
+            if (log_file.name == '.command.err' && log_file.text.contains(text)) {
+                found = true
+            }
+        }
+        return found
+    }
+
+    // Whether the test's work directory holds a symlink called `name` (one the task made, not a staged input)
+    def taskHasLink = { String dir, String name ->
+        def found = false
+        new File(dir).eachFileRecurse { work_file ->
+            if (work_file.name == name && java.nio.file.Files.isSymbolicLink(work_file.toPath())) {
+                found = true
+            }
+        }
+        return found
+    }
+
+    test("widens cut CpGs, skips and clips targets the FASTA can't place") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/targets.bed.gz", "track name=x\r\n#comment\r\nchrom\tstart\tend\r\nc1\t0\t3\r\nc1\t5\t9\r\nc1\t9\t16\r\n\r\nc1\t14\t20\r\nc2\t5\t5\r\nc2\t12\t14\r\nc3\t0\t5\r\nc2\t1.5\t4\r\nc2\t5\t9\textra\tcols\r\n")}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${outputDir}/ref/genome.fa.fai', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                // contig start, an uncut end, both ends cut (one soft-masked), the contig end, a clipped end, extra columns
+                { assert path(process.out.targets[0]).readLines() == ['c1\t0\t3', 'c1\t4\t10', 'c1\t8\t16', 'c1\t14\t16', 'c2\t4\t9'] },
+                { assert path(process.out.issues[0]).readLines() == [
+                    'skipped: coordinates are not integers\tchrom\tstart\tend',
+                    'clipped: end is past the contig end (16)\tc1\t14\t20',
+                    'skipped: start is not before end\tc2\t5\t5',
+                    'skipped: start is past the contig end (10)\tc2\t12\t14',
+                    'skipped: contig not in the FASTA\tc3\t0\t5',
+                    'skipped: coordinates are not integers\tc2\t1.5\t4'
+                ] }
+            )
+        }
+    }
+
+    test("leaves a targets file named like a work file unchanged and links an index under another name") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/windows.bed", "c1\t5\t9\nc2\t5\t9\n")}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${writeTargets("${outputDir}/ref_other/genome.fai", "c1\t16\t4\t16\t17\nc2\t10\t25\t10\t11\n")}', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.targets[0]).readLines() == ['c1\t4\t10', 'c2\t4\t9'] },
+                { assert new File("${outputDir}/input/windows.bed").text == "c1\t5\t9\nc2\t5\t9\n" },
+                { assert taskHasLink(workDir.toString(), 'genome.fa.fai') }
+            )
+        }
+    }
+
+    test("reads a gzipped targets file without a .gz suffix") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/targets_gzipped.bed", "c1\t5\t9\n", true)}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${outputDir}/ref/genome.fa.fai', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert path(process.out.targets[0]).readLines() == ['c1\t4\t10'] }
+            )
+        }
+    }
+
+    test("fails when no target fits the FASTA") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/targets.bed", "c9\t0\t5\n")}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${outputDir}/ref/genome.fa.fai', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert taskLogContains(workDir.toString(), 'fits the FASTA') }
+            )
+        }
+    }
+
+    test("fails on an empty targets file") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/targets.bed", "")}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${outputDir}/ref/genome.fa.fai', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert taskLogContains(workDir.toString(), 'has no target lines') }
+            )
+        }
+    }
+
+    test("fails on a targets file with no target lines") {
+        when {
+            process {
+                """
+                input[0] = file('${writeTargets("${outputDir}/input/targets.bed", "#only a header\ntrack name=x\n")}', checkIfExists: true)
+                input[1] = [ [ id:'genome' ], file('${writeReference("${outputDir}/ref")}/genome.fa', checkIfExists: true) ]
+                input[2] = [ [ id:'genome' ], file('${outputDir}/ref/genome.fa.fai', checkIfExists: true) ]
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert taskLogContains(workDir.toString(), 'has no target lines') }
+            )
+        }
+    }
+}

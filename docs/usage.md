@@ -263,7 +263,7 @@ Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth
 > For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
 
 > [!NOTE]
-> With an inline UMI on read 1 of paired-end data, read 2 runs into that UMI when the insert is shorter than the read. Trim Galore removes the adapter but leaves the UMI bases at the end of read 2, because a read structure only describes the start of each read. These bases can then be aligned or soft-clipped, and on short inserts they can cause false methylation calls.
+> With an inline UMI in paired-end data, the other read runs into that UMI when the insert is shorter than the read: read 2 into a read 1 UMI, and read 1 into a read 2 UMI. Trim Galore removes the adapter but leaves the UMI bases at the 3' end, because a read structure only describes the start of each read. These bases can then be aligned or soft-clipped, and on short inserts they can cause false methylation calls. To remove them, set `--three_prime_clip_r2` (for a read 1 UMI) or `--three_prime_clip_r1` (for a read 2 UMI) to the UMI length. Trim Galore applies these after adapter trimming, so they also shorten reads from longer inserts by that many bases.
 
 > [!NOTE]
 > `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
@@ -284,7 +284,9 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair CpG calls instead, from either `--taps_caller`.
+This filters methylation bedGraphs and Bismark coverage files to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair CpG calls instead, from either `--taps_caller`.
+
+For bisulfite data, a target on a contig that the FASTA lacks is skipped and a target that runs past its contig end is clipped, with a warning; the run stops if no target fits. Picard and riker use the targets as given.
 
 ## Samplesheet input
 
