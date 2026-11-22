@@ -573,7 +573,7 @@
                     "default": "adjacency",
                     "enum": ["identity", "edit", "adjacency", "paired"],
                     "description": "UMI grouping strategy for `fgumi dedup`.",
-                    "help_text": "`adjacency` (default) and `edit` tolerate one mismatch between UMIs, `identity` needs an exact match, and `paired` is for duplex UMIs (one on each end). Not used by the Bismark aligners, which always need an exact match.",
+                    "help_text": "`adjacency` (default) and `edit` tolerate one mismatch between UMIs, `identity` needs an exact match, and `paired` is for duplex UMIs (one on each end). Not used by the Bismark aligners, which group UMIs one mismatch apart (`deduplicate_bismark --umi_mismatches 1`).",
                     "fa_icon": "fas fa-object-group"
                 }
             },

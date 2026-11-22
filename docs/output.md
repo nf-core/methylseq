@@ -263,7 +263,7 @@ This step removes alignments with identical mapping position to avoid technical 
 
 **With `--with_umi` (bwa-meth, bwa-mem and bwa-mem3): `results/<aligner>/deduplicated/`**
 
-`fgumi dedup` replaces Picard MarkDuplicates. Bismark runs `deduplicate_bismark --barcode` and writes the same files as without UMIs.
+`fgumi dedup` replaces Picard MarkDuplicates. Bismark runs `deduplicate_bismark --barcode --umi_mismatches 1` and writes the same files as without UMIs.
 
 - `sample.markdup.sorted.bam`
   - Sorted BAM file with duplicated reads marked. Each read has its UMI in the `RX` tag and its molecule ID in the `MI` tag.
