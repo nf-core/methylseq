@@ -11,6 +11,7 @@
 - [Workflow: Bismark](#workflow-bismark)
 - [Workflow: BWA-Meth](#workflow-bwa-meth)
 - [Workflow: BWA-MEM + TAPS](#workflow-bwa-mem-taps-tet-assisted-pyridine-borane-sequencing)
+- [UMIs (optional)](#umis-optional)
 - [Targeted sequencing (optional)](#targeted-sequencing-optional)
 - [Samplesheet input](#samplesheet-input)
 - [Running the pipeline](#running-the-pipeline)
@@ -221,6 +222,44 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
+
+### UMIs (optional)
+
+`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It is only supported with `--aligner bwamem3`, for TAPS (`--taps`) and for bisulfite or EM-seq data.
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --genome GRCh38 \
+  --aligner bwamem3 \
+  --with_umi \
+  --umi_read_structure "8M+T 8M+T"
+```
+
+After trimming, [`fgumi runall`](https://github.com/fulcrumgenomics/fgumi) takes the UMIs out of the reads, aligns with bwa-mem3 and sorts the alignments, in one step. `fgumi dedup` then replaces Picard MarkDuplicates. The aligner and its mode are the same as without `--with_umi`, and the alignments also carry the UMI in the `RX` tag and the molecule ID in the `MI` tag. Duplicates are flagged and not removed, as with Picard. Read pairs without a usable UMI are the exception (see the note below). `--save_align_intermeds` has no effect on this route, which writes no BAM before the final one.
+
+UMI-tools, which other nf-core pipelines use, calls duplicates just as well on this kind of data. fgumi is used here because it flags duplicates and keeps every other read, as Picard does on the non-UMI route, where `umi_tools dedup` removes duplicates and unmapped reads. It also extracts, aligns and sorts in one multi-threaded step, and it can call methylation-aware consensus reads, which a later release could add.
+
+The pipeline can find the UMIs in two places:
+
+- **Inline in the reads.** Give one [read structure](https://github.com/fulcrumgenomics/fgbio/wiki/Read-Structures) per FASTQ file with `--umi_read_structure`. `8M+T +T` is an 8 bp UMI at the start of read 1, and `8M+T 8M+T` is one on each read. `S` skips bases, so `5M2S+T 5M2S+T` is a 5 bp UMI and a 2 bp spacer on each read (Twist UMI adapters). Single-end samples use the first read structure only, and paired-end samples need two. Every sample needs a UMI (`M`) in at least one of its read structures.
+- **In the read names.** Without `--umi_read_structure`, the UMI is the last colon-separated field of the read name, as BCL Convert writes it (`...:ACGTACGT` or `...:ACGTACGT+TGCATGCA`). The pipeline checks the first read of each sample and stops if its name has no UMI.
+
+By default, UMIs that differ by one base are treated as the same molecule (`--umi_dedup_strategy adjacency`). Use `identity` for exact matches, or `paired` for duplex UMIs.
+
+> [!WARNING]
+> Inline UMIs are extracted after trimming, so 5' clipping would remove them. The pipeline stops if `--umi_read_structure` is combined with `--clip_r1`, `--clip_r2` or a library preset that clips the 5' end (`--em_seq`, `--zymo`, `--accel`, `--pbat`, `--single_cell`). Use `--skip_trimming_presets`, set any 3' clipping yourself, and skip the 5' bases in the read structure, for example `8M10S+T 8M10S+T`. UMIs in the read names are not affected.
+
+> [!NOTE]
+> For bisulfite and EM-seq libraries, the UMIs must be made with methylated cytosines. Otherwise conversion changes the UMI bases, and copies of one molecule can get different UMIs. TAPS leaves synthetic UMIs unchanged.
+
+> [!NOTE]
+> With an inline UMI in paired-end data, the other read runs into that UMI when the insert is shorter than the read: read 2 into a read 1 UMI, and read 1 into a read 2 UMI. Trim Galore removes the adapter but leaves the UMI bases at the 3' end, because a read structure only describes the start of each read. These bases can then be aligned or soft-clipped, and on short inserts they can cause false methylation calls. To remove them, set `--three_prime_clip_r2` (for a read 1 UMI) or `--three_prime_clip_r1` (for a read 2 UMI) to the UMI length. Trim Galore applies these after adapter trimming, so they also shorten reads from longer inserts by that many bases.
+
+> [!NOTE]
+> `fgumi dedup` can't place a read pair whose UMI is missing or has an `N` in it, and removes it from the BAM. All other reads are kept. The number removed is in the `filtered_missing_umi` and `filtered_ns_in_umi` columns of the fgumi metrics file.
+
+`--rrbs` normally skips deduplication, because reads that start at the same restriction site are not all duplicates. With `--with_umi`, duplicates are marked for RRBS libraries too. For paired-end RRBS, Trim Galore clips 2 bp from the 5' end of read 2, so an inline UMI can only be on read 1. With `--skip_deduplication`, the UMIs are still moved to the `RX` tag, but no duplicates are marked. The pipeline does not call consensus reads.
 
 ### Targeted sequencing (optional)
 

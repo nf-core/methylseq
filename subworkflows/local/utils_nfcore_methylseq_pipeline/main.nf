@@ -265,6 +265,22 @@ def validateInputParameters() {
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
+    // UMIs are handled by fgumi runall, which drives bwa-mem3 itself
+    if (params.with_umi && params.aligner != 'bwamem3') {
+        error("--with_umi is only supported with --aligner bwamem3 (got --aligner ${params.aligner}).")
+    }
+    // The UMIs are extracted after trimming: fgumi runall aligns straight after extraction
+    def five_prime_clip = !params.skip_trimming && (params.clip_r1 > 0 || params.clip_r2 > 0 ||
+        (!params.skip_trimming_presets && (params.pbat || params.single_cell || params.accel || params.zymo || params.em_seq)))
+    if (params.with_umi && params.umi_read_structure && five_prime_clip) {
+        error(
+            "--with_umi takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
+            "Use --skip_trimming_presets without --clip_r1/--clip_r2, and skip the clipped bases in --umi_read_structure instead, e.g. '8M10S+T 8M10S+T'."
+        )
+    }
+    if (params.with_umi && params.skip_deduplication) {
+        log.warn("--skip_deduplication with --with_umi: the UMIs are moved to the RX tag, but no duplicates are marked.")
+    }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
     }
@@ -276,6 +292,7 @@ def validateInputParameters() {
         [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
@@ -310,6 +327,42 @@ def validateInputParameters() {
 //
 // TAPS data: --taps, or --aligner bwamem (TAPS only). --taps_caller picks the methylation caller.
 //
+//
+// Fail before alignment when a sample can't give fgumi its UMIs
+//
+def checkUmiInput(meta, reads) {
+    def fastqs = reads instanceof List ? reads : [reads]
+    if (params.umi_read_structure) {
+        def structures = params.umi_read_structure.tokenize(' ')
+        if (structures.size() != 2 && structures.size() != fastqs.size()) {
+            error("--umi_read_structure '${params.umi_read_structure}' has ${structures.size()} read structure(s), but sample ${meta.id} has ${fastqs.size()} FASTQ file(s): give one per FASTQ file, e.g. '8M+T 8M+T' (single-end samples use the first of two).")
+        }
+        def used = structures.take(fastqs.size())
+        // Without an M segment the sample gets no UMI, and fgumi dedup then drops every read
+        if (!used.any { structure -> structure.contains('M') }) {
+            error("--umi_read_structure '${params.umi_read_structure}' gives sample ${meta.id} no UMI: its ${fastqs.size() == 1 ? 'single-end reads use' : 'reads use'} '${used.join(' ')}', which has no M segment.")
+        }
+        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads, before the UMIs are extracted
+        if (params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
+            error("--rrbs trims 2 bp from the 5' end of read 2 for paired-end samples such as ${meta.id}, which would remove the start of an inline read 2 UMI ('${used[1]}'). Use a UMI on read 1 only, UMIs in the read names, or --skip_trimming.")
+        }
+        return
+    }
+    // fgumi leaves reads without a UMI untagged, and fgumi dedup then drops them: check the first read name
+    def header = ''
+    fastqs[0].withInputStream { stream ->
+        header = new java.util.zip.GZIPInputStream(stream).withReader { reader -> reader.readLine() } ?: ''
+    }
+    def fields = header.tokenize(' \t')[0].tokenize(':')
+    if (fields.size() < 8 || !(fields[-1] ==~ /(?i)[ACGTNR+-]+/)) {
+        error(
+            "--with_umi without --umi_read_structure reads the UMI from the last colon-separated field of the read name, " +
+            "but the first read of sample ${meta.id} has none ('${header}'). " +
+            "Set --umi_read_structure for inline UMIs, or drop --with_umi."
+        )
+    }
+}
+
 def isTaps() {
     return params.taps || params.aligner == 'bwamem'
 }
@@ -401,7 +454,7 @@ def genomeExistsError() {
 //
 def toolCitationText() {
     // FIXME Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "Tool (Foo et al. 2023)" : "",
-    def citation_text = ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].join(' ').trim()
+    def citation_text = ["Tools used in the workflow included:", "FastQC (Andrews 2010),", "Trim Galore! (Krueger)", "Bismark (Krueger 2011)", "bwa-meth (Pedersen 2014)", "Picard (Broad Institute 2019)", params.with_umi ? "fgumi (Fulcrum Genomics)," : "", "Qualimap (Okonechnikov 2015)", "Preseq (Daley 2013)", "MultiQC (Ewels et al. 2016)", "."].findAll { citation -> citation }.join(' ').trim()
 }
 
 def toolBibliographyText() {
@@ -413,9 +466,10 @@ def toolBibliographyText() {
         "Felix Krueger, Simon R. Andrews, Bismark: a flexible aligner and methylation caller for Bisulfite-Seq applications, Bioinformatics, Volume 27, Issue 11, 1 June 2011, Pages 1571–1572, doi: /10.1093/bioinformatics/btr167",
         "Pedersen, Brent S. and Eyring, Kenneth and De, Subhajyoti and Yang, Ivana V. and Schwartz, David A. Fast and accurate alignment of long bisulfite-seq reads, arXiv:1401.1129, doi: 10.48550/arXiv.1401.1129",
         "Picard Tools, Broad Institute. <http://broadinstitute.github.io/picard/>",
+        params.with_umi ? "fgumi, Fulcrum Genomics. <https://github.com/fulcrumgenomics/fgumi>" : "",
         "Konstantin Okonechnikov, Ana Conesa, Fernando García-Alcalde, Qualimap 2: advanced multi-sample quality control for high-throughput sequencing data, Bioinformatics, Volume 32, Issue 2, 15 January 2016, Pages 292–294, doi: 10.1093/bioinformatics/btv566",
         "Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: 10.1038/nmeth.2375</li>",
-    ].join('</li> <li>').trim()
+    ].findAll { reference -> reference }.join('</li> <li>').trim()
 
     return reference_text
 }

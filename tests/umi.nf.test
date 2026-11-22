@@ -1,0 +1,192 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - UMI variants"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // The test reads have no UMIs: the first 8 bases of each read stand in for them, which exercises every UMI step
+    def testScenarios = [
+        [
+            name: "bwamem3_with_umi",
+            description: "Params: bwamem3 with_umi",
+            params: [
+                aligner: "bwamem3",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T"
+            ]
+        ],
+        [
+            name: "bwamem3_with_umi_skip_deduplication",
+            description: "Params: bwamem3 with_umi skip_deduplication",
+            params: [
+                aligner: "bwamem3",
+                with_umi: true,
+                umi_read_structure: "8M+T 8M+T",
+                skip_deduplication: true
+            ]
+        ],
+        [
+            // With UMIs, --rrbs does not skip deduplication. Read 2 has no UMI: Trim Galore --rrbs clips its 5' end
+            name: "bwamem3_with_umi_rrbs",
+            description: "Params: bwamem3 with_umi rrbs",
+            params: [
+                aligner: "bwamem3",
+                with_umi: true,
+                umi_read_structure: "8M+T +T",
+                rrbs: true
+            ]
+        ]
+    ]
+
+    // Common assertion function (without workflow access)
+    def getStandardAssertionData = { outputDir ->
+        def stable_name = getAllFilesFromDir(outputDir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+        def stable_path = getAllFilesFromDir(outputDir, ignoreFile: 'tests/.nftignore')
+        def bam_files = getAllFilesFromDir(outputDir, include: ['**/*.bam'])
+
+        return [
+            removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+            stable_name,
+            stable_path,
+            bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+        ]
+    }
+
+    // Generate tests for each scenario
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    outdir = "${outputDir}"
+                    // Apply scenario-specific parameters
+                    scenario.params.each { key, value ->
+                        if (key == 'input') {
+                            // Handle special case for input files
+                            input = "${baseDir}/${value}"
+                        } else {
+                            delegate."$key" = value
+                        }
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert snapshot(
+                        *getStandardAssertionData(params.outdir)
+                    ).match() }
+                )
+            }
+        }
+    }
+
+    test("Params: bismark with_umi - not supported") {
+        when {
+            params {
+                aligner  = "bismark"
+                with_umi = true
+                outdir   = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('--with_umi is only supported with --aligner bwamem3') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | read names without UMIs") {
+        when {
+            params {
+                aligner  = "bwamem3"
+                with_umi = true
+                outdir   = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains('reads the UMI from the last colon-separated field of the read name') } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | one read structure for paired-end reads") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T"
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("has 1 read structure(s)") } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | read structure without a UMI") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "+T 8M+T"
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("which has no M segment") } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | rrbs with a read 2 UMI - not supported") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T 8M+T"
+                rrbs               = true
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("would remove the start of an inline read 2 UMI") } }
+            )
+        }
+    }
+
+    test("Params: bwamem3 with_umi | inline UMIs with em_seq - not supported") {
+        when {
+            params {
+                aligner            = "bwamem3"
+                with_umi           = true
+                umi_read_structure = "8M+T 8M+T"
+                em_seq             = true
+                outdir             = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert workflow.stdout.any { line -> line.contains("--with_umi takes inline UMIs from the reads after trimming") } }
+            )
+        }
+    }
+
+}

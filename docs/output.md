@@ -261,6 +261,19 @@ This step removes alignments with identical mapping position to avoid technical 
 - `picard_metrics/sample.markdup.sorted.metrics.txt`
   - Log file giving summary statistics about deduplication.
 
+**With `--with_umi` (bwa-mem3 only): `results/bwamem3/deduplicated/`**
+
+`fgumi dedup` replaces Picard MarkDuplicates.
+
+- `sample.markdup.sorted.bam`
+  - Sorted BAM file with duplicated reads marked. Each read has its UMI in the `RX` tag and its molecule ID in the `MI` tag.
+- `sample.markdup.sorted.bam.bai`
+  - Index for the markdup BAM file.
+- `fgumi_metrics/sample.umi_dedup.metrics.txt`
+  - Duplicate counts and rates. The `filtered_missing_umi` and `filtered_ns_in_umi` columns count the read pairs removed because their UMI was missing or had an `N` in it.
+- `fgumi_metrics/sample.umi_dedup.family_size_histogram.txt`
+  - Number of UMI families of each size.
+
 ### Methylation Extraction
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
