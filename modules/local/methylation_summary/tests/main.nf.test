@@ -94,6 +94,37 @@ nextflow_process {
         }
     }
 
+    test("labelled panel - hidden General Statistics columns") {
+        when {
+            params {
+                module_args = '-n methyldackel -l Promoters-v2 -H'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'md' ],
+                    file('${writeBedGraph("${outputDir}/input/md_CpG.bedGraph", [['chr1', 20, 6, 4]])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            def stats_file = files['md.methyldackel_promoters_v2_generalstats_mqc.tsv']
+            def header = new File(stats_file.toString()).readLines().findAll { line -> line.startsWith('#') }
+            assertAll(
+                { assert process.success },
+                { assert files.keySet() == ['md.methyldackel_promoters_v2_beta_hist_mqc.tsv', 'md.methyldackel_promoters_v2_contigs_mqc.tsv', 'md.methyldackel_promoters_v2_generalstats_mqc.tsv'] as Set },
+                { assert mqcRow(stats_file).keySet() == ['Sample', 'methyldackel_promoters_v2_cpg_meth', 'methyldackel_promoters_v2_cpg_sites', 'methyldackel_promoters_v2_cpg_depth'] as Set },
+                { assert header.count { line -> line.contains('hidden: true') } == 3 },
+                { assert header.contains('#         title: "CpG meth (Promoters-v2)"') },
+                { assert new File(files['md.methyldackel_promoters_v2_contigs_mqc.tsv'].toString()).text.contains('# section_name: "MethylDackel (Promoters-v2) CpG methylation per contig"') },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
     test("stub") {
         options "-stub"
         when {

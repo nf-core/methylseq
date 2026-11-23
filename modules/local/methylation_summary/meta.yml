@@ -27,7 +27,9 @@ input:
 # `ext.args` is passed to the script as options: `-n <name>` sets the tool name used in the MultiQC IDs and
 # column names (methyldackel or bismark), `-d <n>` the minimum informative reads per CpG for the methylation
 # distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
-# genome-wide figures. The pipeline sets `-n` from `--aligner` and `-c` from `--control_contigs`.
+# genome-wide figures. For several summaries per sample (for example one per target panel), `-l <label>` adds the
+# label to the file names, MultiQC IDs, column names and titles, and `-H` hides the General Statistics columns by
+# default. The pipeline sets `-n` from `--aligner` and `-c` from `--control_contigs`.
 output:
   mqc:
     - - meta:

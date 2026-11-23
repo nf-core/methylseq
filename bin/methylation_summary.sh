@@ -2,7 +2,7 @@
 #
 # Summarise per-CpG methylation calls as MultiQC custom content.
 #
-# Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-d min_depth] [-c control_contigs] [--] <sample> <file>...
+# Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>...
 #
 #   -f  input format (default rastair2):
 #         rastair2  one rastair version 2 CpG BED (`rastair call --bed`); columns found by name in the
@@ -11,10 +11,14 @@
 #                   unmethylated), plain or gzipped. A file named *_CHG.* or *_CHH.* holds that context;
 #                   any other holds CpGs.
 #   -n  tool name for the MultiQC IDs and column names: rastair2 (default), methyldackel or bismark
+#   -l  label for one of several summaries per sample (e.g. a target panel): added to the file names, MultiQC
+#       IDs and column names (lower case, with . and - as _) and to the section and column titles
+#   -H  hide the General Statistics columns by default (they can still be shown in the report)
 #   -d  minimum informative reads for a CpG to count in the methylation distribution (default 5)
 #   -c  comma-separated spike-in or control contigs (e.g. lambda,pUC19) to leave out of the genome-wide figures
 #
 # Writes, for one sample:
+# (with -l, <name> below is <name>_<label>)
 #   <sample>.<name>_generalstats_mqc.tsv  CpG methylation, CpGs covered and mean depth over the genome, plus
 #                                         CHG and CHH methylation if given (General Statistics)
 #   <sample>.<name>_beta_hist_mqc.tsv     distribution of per-CpG methylation for CpGs with >= min_depth reads
@@ -33,19 +37,23 @@ set -euo pipefail
 export LC_ALL=C
 
 usage() {
-    echo "Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-d min_depth] [-c control_contigs] [--] <sample> <file>..." >&2
+    echo "Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>..." >&2
     exit 2
 }
 
 format=rastair2
 name=rastair2
+panel=""
+export hidden=""
 min_depth=5
 # Passed through the environment: awk -v would interpret backslash escapes in the names
 export control_contigs=""
-while getopts "f:n:d:c:" opt; do
+while getopts "f:n:l:Hd:c:" opt; do
     case "$opt" in
         f) format=$OPTARG ;;
         n) name=$OPTARG ;;
+        l) panel=$OPTARG ;;
+        H) hidden=1 ;;
         d) min_depth=$OPTARG ;;
         c) control_contigs=$OPTARG ;;
         *) usage ;;
@@ -56,12 +64,20 @@ shift $((OPTIND - 1))
 [[ $format == rastair2 || $format == bedgraph ]] || { echo "methylation_summary.sh: -f must be rastair2 or bedgraph, got '$format'" >&2; exit 2; }
 [[ $format == bedgraph || $# -eq 2 ]] || { echo "methylation_summary.sh: -f rastair2 takes one BED" >&2; exit 2; }
 [[ $name =~ ^[a-z0-9_]+$ ]] || { echo "methylation_summary.sh: -n must be lower-case letters, digits and underscores, got '$name'" >&2; exit 2; }
+[[ -z $panel || $panel =~ ^[A-Za-z0-9._-]+$ ]] || { echo "methylation_summary.sh: -l must be letters, digits, '.', '_' and '-', got '$panel'" >&2; exit 2; }
 [[ $min_depth =~ ^[0-9]+$ ]] || { echo "methylation_summary.sh: -d must be a whole number, got '$min_depth'" >&2; exit 2; }
 case "$name" in
     methyldackel) label=MethylDackel ;;
     bismark) label=Bismark ;;
     *) label=$name ;;
 esac
+export title_suffix="" desc_label=$label
+if [ -n "$panel" ]; then
+    desc_label="$label, $panel"
+    name="${name}_$(printf '%s' "$panel" | tr 'A-Z.-' 'a-z__')"
+    label="$label ($panel)"
+    title_suffix=" ($panel)"
+fi
 export sample=$1 name label
 shift
 
@@ -127,6 +143,7 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
     }
     BEGIN {
         sample = ENVIRON["sample"]; name = ENVIRON["name"]; label = ENVIRON["label"]
+        title_suffix = ENVIRON["title_suffix"]; hidden = ENVIRON["hidden"]; desc_label = ENVIRON["desc_label"]
         n_controls = split(ENVIRON["control_contigs"], control_list, ",")
         for (i = 1; i <= n_controls; i++) if (control_list[i] != "") control[control_list[i]] = 1
         roman_value["I"] = 1; roman_value["V"] = 5; roman_value["X"] = 10; roman_value[""] = 0
@@ -222,27 +239,30 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         print "# plot_type: \"generalstats\"" > gs
         print "# headers:" > gs
         print "#     " name "_cpg_meth:" > gs
-        print "#         title: \"CpG meth\"" > gs
+        print "#         title: \"CpG meth" title_suffix "\"" > gs
         print "#         namespace: \"" label "\"" > gs
-        print "#         description: \"CpG methylation pooled over reads, " ref "CpGs on the genome, without organelles and spike-ins (" label ")\"" > gs
+        print "#         description: \"CpG methylation pooled over reads, " ref "CpGs on the genome, without organelles and spike-ins (" desc_label ")\"" > gs
         print "#         suffix: \"%\"" > gs
         print "#         min: 0" > gs
         print "#         max: 100" > gs
         print "#         scale: \"RdYlBu-rev\"" > gs
         print "#         format: \"{:,.1f}\"" > gs
+        if (hidden) print "#         hidden: true" > gs
         print "#     " name "_cpg_sites:" > gs
-        print "#         title: \"CpGs\"" > gs
+        print "#         title: \"CpGs" title_suffix "\"" > gs
         print "#         namespace: \"" label "\"" > gs
         print "#         description: \"" (ref ? "Reference CpG positions (per strand)" : "CpG positions") " with at least one informative read\"" > gs
         print "#         scale: \"Greens\"" > gs
         print "#         format: \"{:,.0f}\"" > gs
+        if (hidden) print "#         hidden: true" > gs
         print "#     " name "_cpg_depth:" > gs
-        print "#         title: \"CpG depth\"" > gs
+        print "#         title: \"CpG depth" title_suffix "\"" > gs
         print "#         namespace: \"" label "\"" > gs
         print "#         description: \"Mean informative reads per covered CpG position\"" > gs
         print "#         suffix: \"X\"" > gs
         print "#         scale: \"Blues\"" > gs
         print "#         format: \"{:,.1f}\"" > gs
+        if (hidden) print "#         hidden: true" > gs
         header = "Sample\t" name "_cpg_meth\t" name "_cpg_sites\t" name "_cpg_depth"
         line = sprintf("%s\t%.2f\t%d\t%.2f", sample, (depth_sum ? 100 * mod_sum / depth_sum : 0), sites, (sites ? depth_sum / sites : 0))
         split("CHG CHH", contexts, " ")
@@ -250,14 +270,15 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
             ctx = contexts[x]
             if (!other_depth[ctx]) continue
             print "#     " name "_" tolower(ctx) "_meth:" > gs
-            print "#         title: \"" ctx " meth\"" > gs
+            print "#         title: \"" ctx " meth" title_suffix "\"" > gs
             print "#         namespace: \"" label "\"" > gs
-            print "#         description: \"" ctx " methylation pooled over reads on the genome, without organelles and spike-ins (" label ")\"" > gs
+            print "#         description: \"" ctx " methylation pooled over reads on the genome, without organelles and spike-ins (" desc_label ")\"" > gs
             print "#         suffix: \"%\"" > gs
             print "#         min: 0" > gs
             print "#         max: 100" > gs
             print "#         scale: \"RdYlBu-rev\"" > gs
             print "#         format: \"{:,.1f}\"" > gs
+            if (hidden) print "#         hidden: true" > gs
             header = header "\t" name "_" tolower(ctx) "_meth"
             line = line sprintf("\t%.2f", 100 * other_mod[ctx] / other_depth[ctx])
         }
