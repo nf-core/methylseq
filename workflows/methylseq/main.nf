@@ -33,6 +33,8 @@ include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targete
 include { FASTQ_ALIGN_DEDUP_UMI_BWAMEM3 } from '../../subworkflows/local/fastq_align_dedup_umi_bwamem3'
 include { FASTQ_EXTRACT_UMI_FGUMI       } from '../../subworkflows/local/fastq_extract_umi_fgumi'
 include { BAM_DEDUP_UMI_FGUMI           } from '../../subworkflows/local/bam_dedup_umi_fgumi'
+include { BWAMETH_ALIGN                 } from '../../modules/nf-core/bwameth/align/main'
+include { BWA_MEM                       } from '../../modules/nf-core/bwa/mem/main'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
 
@@ -186,16 +188,27 @@ workflow METHYLSEQ {
                 bwameth_index: [meta_bwameth, bwameth_index]
             }
 
-        FASTQ_ALIGN_DEDUP_BWAMETH(
-            ch_bwameth_inputs.reads,
-            ch_bwameth_inputs.fasta_fai,
-            ch_bwameth_inputs.bwameth_index,
-            params.skip_deduplication || params.rrbs || umi_dedup_fgumi,
-            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
-        )
-        ch_bam = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
+        // fgumi zipper takes the unsorted alignments, in input read order
+        if (umi_dedup_fgumi) {
+            BWAMETH_ALIGN(
+                ch_bwameth_inputs.reads,
+                ch_bwameth_inputs.fasta_fai.map { meta, fasta, _fai -> [meta, fasta] },
+                ch_bwameth_inputs.bwameth_index,
+            )
+            ch_bam = BWAMETH_ALIGN.out.bam
+        }
+        else {
+            FASTQ_ALIGN_DEDUP_BWAMETH(
+                ch_bwameth_inputs.reads,
+                ch_bwameth_inputs.fasta_fai,
+                ch_bwameth_inputs.bwameth_index,
+                params.skip_deduplication || params.rrbs,
+                workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
+            )
+            ch_bam = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
+            ch_bai = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
+            ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
+        }
     }
     else if (params.aligner == 'bwamem') {
 
@@ -209,20 +222,31 @@ workflow METHYLSEQ {
                 bwamem_index: [meta_bwamem, bwamem_index]
             }
 
-        FASTQ_ALIGN_DEDUP_BWAMEM(
-            ch_bwamem_inputs.reads,
-            ch_bwamem_inputs.fasta_fai,
-            ch_bwamem_inputs.bwamem_index,
-            params.skip_deduplication || params.rrbs || umi_dedup_fgumi,
-            workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
-            'bam',
-            [[:], []],
-            [[:], [], []],
-        )
+        if (umi_dedup_fgumi) {
+            BWA_MEM(
+                ch_bwamem_inputs.reads,
+                ch_bwamem_inputs.bwamem_index,
+                ch_bwamem_inputs.fasta_fai.map { meta, fasta, _fai -> [meta, fasta] },
+                false,
+            )
+            ch_bam = BWA_MEM.out.bam
+        }
+        else {
+            FASTQ_ALIGN_DEDUP_BWAMEM(
+                ch_bwamem_inputs.reads,
+                ch_bwamem_inputs.fasta_fai,
+                ch_bwamem_inputs.bwamem_index,
+                params.skip_deduplication || params.rrbs,
+                workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1,
+                'bam',
+                [[:], []],
+                [[:], [], []],
+            )
 
-        ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.index
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
+            ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
+            ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM.out.index
+            ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
+        }
     }
     else if (params.aligner == 'bwamem3') {
 
@@ -276,6 +300,8 @@ workflow METHYLSEQ {
         )
         ch_bam = BAM_DEDUP_UMI_FGUMI.out.bam
         ch_bai = BAM_DEDUP_UMI_FGUMI.out.index
+        // samtools stats from the deduplicated BAM, as with Picard MarkDuplicates
+        ch_aligner_mqc = BAM_DEDUP_UMI_FGUMI.out.multiqc
     }
 
     //

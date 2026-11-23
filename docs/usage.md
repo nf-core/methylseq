@@ -254,7 +254,7 @@ The other aligners take a longer route, which extracts the UMIs before trimming:
 | `bwameth`, `bwamem`        | `fgumi extract`, trimming, alignment, then `fgumi zipper`, `sort` and `dedup`                                      | As for bwa-mem3                                                                     |
 | `bismark`, `bismark_hisat` | `fgumi extract`, which also puts the UMI in the read name, then `deduplicate_bismark --barcode --umi_mismatches 1` | One mismatch (UMI-tools directional rule), exact with `identity`; reads are removed |
 
-Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth sets on reads aligned to the wrong strand, the samtools stats in MultiQC are from before duplicate marking, and it is not supported with `-profile gpu`.
+Known limits of this route: `fgumi zipper` resets the QC-fail flag that bwa-meth sets on reads aligned to the wrong strand, and it is not supported with `-profile gpu`.
 
 > [!WARNING]
 > With `--aligner bwamem3`, inline UMIs are extracted after trimming, so 5' clipping would remove them. The pipeline stops if `--umi_read_structure` is combined with `--clip_r1`, `--clip_r2` or a library preset that clips the 5' end (`--em_seq`, `--zymo`, `--accel`, `--pbat`, `--single_cell`). Use `--skip_trimming_presets`, set any 3' clipping yourself, and skip the 5' bases in the read structure, for example `8M10S+T 8M10S+T`. UMIs in the read names are not affected.
