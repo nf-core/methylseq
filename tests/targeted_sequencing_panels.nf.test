@@ -1,0 +1,81 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Targeted Sequencing with several panels"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Two overlapping panels: both hold chr:5000-5418
+    def panels = ['genome_target_panel_a', 'genome_target_panel_b']
+    def samples = ['SRR389222_sub1', 'SRR389222_sub2', 'SRR389222_sub3', 'Ecoli_10K_methylated']
+
+    def records = { file -> file.readLines().findAll { line -> !line.startsWith('#') && !line.startsWith('track') } }
+    def overlapStarts = { file -> records(file).collect { line -> line.split('\t') }.findAll { fields -> fields[0] == 'chr' && (fields[1] as long) >= 4999 && (fields[1] as long) < 5419 }.collect { fields -> fields[1] } }
+
+    def scenarios = [
+        [
+            aligner: "bismark",
+            // <bedGraph or cov name without .gz>.<panel>.targeted.<ext>
+            filtered: { outdir, sample, panel -> [
+                "${outdir}/bismark/methylation_calls/bedGraph/${sample}${sample.startsWith('Ecoli') ? '_1_val_1' : '_trimmed'}_bismark_bt2${sample.startsWith('Ecoli') ? '_pe' : ''}.deduplicated.bedGraph.${panel}.targeted.bedGraph",
+                "${outdir}/bismark/methylation_calls/methylation_coverage/${sample}${sample.startsWith('Ecoli') ? '_1_val_1' : '_trimmed'}_bismark_bt2${sample.startsWith('Ecoli') ? '_pe' : ''}.deduplicated.bismark.cov.${panel}.targeted.cov"
+            ] },
+            unlabelled: ['bismark/methylation_calls/bedGraph/*.bedGraph.targeted.bedGraph', 'bismark/methylation_calls/methylation_coverage/*.cov.targeted.cov'],
+            // a sample with calls in the shared region, and one with calls in panel b only
+            overlap_sample: 'SRR389222_sub1',
+            panel_b_sample: 'SRR389222_sub1'
+        ],
+        [
+            aligner: "bwameth",
+            filtered: { outdir, sample, panel -> [
+                "${outdir}/methyldackel/${sample}.markdup.sorted_CpG.${panel}.targeted.bedGraph"
+            ] },
+            unlabelled: ['methyldackel/*_CpG.targeted.bedGraph'],
+            // MethylDackel makes no CpG calls in the shared region on this test data
+            overlap_sample: null,
+            panel_b_sample: 'Ecoli_10K_methylated'
+        ]
+    ]
+
+    scenarios.each { scenario ->
+        test("Params: ${scenario.aligner} | run_targeted_sequencing with two panels | collecthsmetrics | run_riker") {
+            when {
+                params {
+                    outdir                  = "${outputDir}"
+                    aligner                 = scenario.aligner
+                    target_regions_file     = panels.collect { panel -> "${projectDir}/assets/${panel}.bed" }.join(',')
+                    run_targeted_sequencing = true
+                    collecthsmetrics        = true
+                    run_riker               = true
+                }
+            }
+
+            then {
+                def mqc = new groovy.json.JsonSlurper().parse(new File("${outputDir}/multiqc/${scenario.aligner}/multiqc_data/multiqc_data.json"))
+                def report = path("${outputDir}/multiqc/${scenario.aligner}/multiqc_report.html").text
+                assertAll(
+                    { assert workflow.success },
+                    // every sample gets one filtered file per panel and one HsMetrics file per panel
+                    { assert samples.every { sample -> panels.every { panel -> scenario.filtered.call(outputDir, sample, panel).every { name -> path(name).exists() } } } },
+                    { assert samples.every { sample -> panels.every { panel -> path("${outputDir}/enrichment_metrics/${sample}.${panel}.CollectHsMetrics.coverage_metrics").exists() } } },
+                    // with several panels no file goes without a panel name
+                    { assert scenario.unlabelled.every { pattern -> getAllFilesFromDir(outputDir, include: [pattern]).isEmpty() } },
+                    { assert getAllFilesFromDir(outputDir, include: ['enrichment_metrics/*.CollectHsMetrics.coverage_metrics']).size() == samples.size() * panels.size() },
+                    // the overlap is reported in both panels, unchanged
+                    { assert samples.every { sample -> overlapStarts(path(scenario.filtered.call(outputDir, sample, panels[0])[0])) == overlapStarts(path(scenario.filtered.call(outputDir, sample, panels[1])[0])) } },
+                    { assert !scenario.overlap_sample || overlapStarts(path(scenario.filtered.call(outputDir, scenario.overlap_sample, panels[0])[0])).size() > 0 },
+                    { assert records(path(scenario.filtered.call(outputDir, scenario.panel_b_sample, panels[1])[0])).size() > 0 },
+                    // one MultiQC HsMetrics section per panel, each with every sample
+                    { assert panels.every { panel -> report.contains("HsMetrics: ${panel}") } },
+                    { assert panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == samples as Set } },
+                    // riker hybcap runs once per sample, over the union of the panels
+                    { assert getAllFilesFromDir(outputDir, include: ['riker/*hybcap*']).size() == samples.size() },
+                    // the panels' General Statistics columns start hidden
+                    { assert panels.every { panel -> report.findAll(/<th id="header_hsmetrics_${panel}_hsmetrics-[^"]*" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                    { assert snapshot(
+                        removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                    ).match() }
+                )
+            }
+        }
+    }
+}

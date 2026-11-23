@@ -9,13 +9,13 @@ process WIDEN_TARGETS_CPG {
         : 'biocontainers/bedtools:2.31.1--hf5e1c6e_0'}"
 
     input:
-    path targets, stageAs: 'targets/*'
-    tuple val(meta), path(fasta)
-    tuple val(meta2), path(fai)
+    tuple val(meta), path(targets, stageAs: 'targets/*')
+    tuple val(meta2), path(fasta)
+    tuple val(meta3), path(fai)
 
     output:
-    path "widened_targets.bed", emit: targets
-    path "target_issues.txt", emit: issues
+    tuple val(meta), path("widened_targets.bed"), emit: targets
+    tuple val(meta), path("target_issues.txt"), emit: issues
     path "versions.yml", emit: versions
 
     when:

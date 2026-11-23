@@ -74,6 +74,17 @@ nextflow_pipeline {
             message: "--target_regions_file must be specified"
         ],
         [
+            // Two BEDs with the same file name would write the same panel files
+            description: "Params: bismark | run_targeted_sequencing with two BEDs of the same name",
+            params: [ aligner: "bismark", run_targeted_sequencing: true, target_regions_file: "panel_one/targets.bed,panel_two/targets.bed.gz" ],
+            message: "--target_regions_file: each BED needs its own file name, which (without .bed or .bed.gz) labels its results. Used more than once: targets."
+        ],
+        [
+            description: "Params: bismark | run_targeted_sequencing with a dot in a panel name",
+            params: [ aligner: "bismark", run_targeted_sequencing: true, target_regions_file: "panels/promoters.v2.bed,panels/enhancers.bed" ],
+            message: "may only hold letters, digits, '_' and '-'. Rename: panels/promoters.v2.bed."
+        ],
+        [
             description: "Params: bwamem3 | bwamem3_index .tgz - not supported",
             params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tgz" ],
             message: "is an archive format the pipeline can't unpack"

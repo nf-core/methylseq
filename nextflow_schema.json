@@ -555,12 +555,9 @@
             "properties": {
                 "target_regions_file": {
                     "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+|\\.bed(\\.gz)?$",
-                    "description": "A BED file containing the target regions",
-                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. For TAPS data it filters the rastair CpG calls, from either `--taps_caller`.",
+                    "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
+                    "description": "A BED file containing the target regions, or a comma-separated list of BED files (one per panel)",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. For TAPS data it filters the rastair CpG calls, from either `--taps_caller`. Give several BED files separated by commas (no spaces) to analyse each panel separately: each file name without `.bed` or `.bed.gz` names its panel, so the names must differ and may only hold letters, digits, `_` and `-`.",
                     "fa_icon": "fas fa-file"
                 },
                 "collecthsmetrics": {
@@ -660,7 +657,7 @@
                 "run_riker": {
                     "type": "boolean",
                     "description": "Run riker multi for alignment, insert size, coverage and GC bias metrics",
-                    "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets.",
+                    "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets (the union of the BED files when there are several).",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_targeted_sequencing": {
