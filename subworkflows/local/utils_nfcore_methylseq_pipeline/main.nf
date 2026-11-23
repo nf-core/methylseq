@@ -322,6 +322,11 @@ def validateInputParameters() {
         if (unsafe) {
             error("--target_regions_file: with several BEDs, each file name without .bed or .bed.gz may only hold letters, digits, '_' and '-'. Rename: ${unsafe.collect { panel -> panel.bed }.join(', ')}.")
         }
+        // The per-panel methylation summary IDs are lower case, with '-' as '_'
+        def summary_clashes = panels.groupBy { panel -> panel.name.toLowerCase().replace('-', '_') }.findAll { _id, group -> group.size() > 1 }
+        if ((params.run_methylation_summary || params.control_contigs) && summary_clashes) {
+            error("--target_regions_file: with --run_methylation_summary or --control_contigs, panel names must still differ when lower-cased and with '-' read as '_'. Rename one of: ${summary_clashes.values().collect { group -> group.collect { panel -> panel.name }.join(' and ') }.join('; ')}.")
+        }
     }
     if (params.run_methurator && isTaps()) {
         error("--run_methurator is not supported with TAPS data or Illumina 5-Base data (--taps, --illumina_5base or --aligner bwamem): methurator relies on MethylDackel.")

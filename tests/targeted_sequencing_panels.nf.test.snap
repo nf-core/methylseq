@@ -1,77 +1,69 @@
 {
-    "Params: bismark | run_targeted_sequencing with two panels | collecthsmetrics | run_riker": {
+    "Params: bwamem3 | taps | taps_caller rastair2 | run_targeted_sequencing with one BED | run_methylation_summary": {
         "content": [
             {
-                "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                "BCFTOOLS_STATS": {
+                    "bcftools": 1.25
+                },
+                "BWAMEM3_INDEX": {
                     "bwamem3": "0.18.0"
                 },
-                "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
-                },
-                "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "3.4.0"
-                },
-                "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
-                },
-                "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
-                },
-                "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
-                    "bedtools": "2.31.1"
-                },
-                "FILTER_COV_TARGETS": {
                     "bedtools": "2.31.1"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "MERGE_TARGETS": {
-                    "bedtools": "2.31.1"
+                "METHYLATION_SUMMARY_TARGETS": {
+                    "gawk": "5.3.1"
                 },
                 "MULTIQC": {
                     "multiqc": 1.35
                 },
-                "PICARD_BEDTOINTERVALLIST": {
-                    "picard": "3.4.0"
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
                 },
-                "PICARD_COLLECTHSMETRICS": {
-                    "picard": "3.4.0"
+                "RASTAIR2_CALL": {
+                    "rastair": "2.2.0",
+                    "tabix": 1.24
                 },
-                "PICARD_CREATESEQUENCEDICTIONARY": {
-                    "picard": "3.4.0"
+                "RASTAIR2_MBIAS": {
+                    "rastair": "2.2.0"
                 },
-                "RIKER_MULTI": {
-                    "riker": "0.5.0"
+                "RASTAIR2_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
                 },
                 "SAMTOOLS_INDEX": {
                     "samtools": 1.25
                 },
-                "SAMTOOLS_SORT": {
+                "SAMTOOLS_STATS": {
                     "samtools": 1.25
                 },
                 "TRIMGALORE": {
                     "trimgalore": "2.6.0"
-                },
-                "WIDEN_TARGETS_CPG": {
-                    "bedtools": "2.31.1"
                 },
                 "Workflow": {
                     "nf-core/methylseq": "v4.3.0dev"
                 }
             }
         ],
-        "timestamp": "2026-11-23T10:28:39.355871",
+        "timestamp": "2026-11-23T11:23:40.445793",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
         }
     },
-    "Params: bwameth | run_targeted_sequencing with two panels | collecthsmetrics | run_riker": {
+    "Params: bwameth | run_targeted_sequencing with two panels | collecthsmetrics | run_riker | run_methylation_summary": {
         "content": [
             {
                 "BWAMETH_ALIGN": {
@@ -89,6 +81,12 @@
                 },
                 "MERGE_TARGETS": {
                     "bedtools": "2.31.1"
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "METHYLATION_SUMMARY_TARGETS": {
+                    "gawk": "5.3.1"
                 },
                 "METHYLDACKEL_EXTRACT": {
                     "methyldackel": "0.6.1"
@@ -140,7 +138,85 @@
                 }
             }
         ],
-        "timestamp": "2026-11-23T10:35:37.970128",
+        "timestamp": "2026-11-23T11:22:19.848466",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "Params: bismark | run_targeted_sequencing with two panels | collecthsmetrics | run_riker | run_methylation_summary": {
+        "content": [
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "3.4.0",
+                    "bwamem3": "0.18.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.4.0"
+                },
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "FILTER_COV_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "MERGE_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "METHYLATION_SUMMARY_TARGETS": {
+                    "gawk": "5.3.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_CREATESEQUENCEDICTIONARY": {
+                    "picard": "3.4.0"
+                },
+                "RIKER_MULTI": {
+                    "riker": "0.5.0"
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-11-23T11:17:39.885135",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"

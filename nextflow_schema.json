@@ -646,7 +646,7 @@
                 "run_methylation_summary": {
                     "type": "boolean",
                     "description": "Add a per-sample methylation summary of the MethylDackel, Bismark or rastair 0.8 calls to the MultiQC report",
-                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`), or the rastair 0.8 calls (`--taps_caller rastair`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary.",
+                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`), or the rastair 0.8 calls (`--taps_caller rastair`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary. With `--run_targeted_sequencing`, each target panel also gets a summary of its filtered calls.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_qualimap": {

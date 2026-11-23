@@ -32,6 +32,7 @@ include { checkUmiInput                 } from '../../subworkflows/local/utils_n
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { METHYLATION_SUMMARY           } from '../../modules/local/methylation_summary/main'
+include { METHYLATION_SUMMARY as METHYLATION_SUMMARY_TARGETS } from '../../modules/local/methylation_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
 include { MERGE_TARGETS                 } from '../../modules/local/merge_targets/main'
@@ -419,6 +420,21 @@ workflow METHYLSEQ {
             isTaps(),
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
+
+        // One methylation summary per panel, from its filtered calls; rastair 0.8 calls have none
+        if ((params.run_methylation_summary || params.control_contigs) && !(isTaps() && params.taps_caller == 'rastair') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+            METHYLATION_SUMMARY_TARGETS(
+                params.aligner =~ /bismark/
+                    ? TARGETED_SEQUENCING.out.coverage_filtered
+                    // MethylDackel writes one bedGraph per context: summarise them together
+                    : TARGETED_SEQUENCING.out.bedgraph_filtered.groupTuple()
+            )
+            ch_methylation_summary_mqc = ch_methylation_summary_mqc.mix(
+                METHYLATION_SUMMARY_TARGETS.out.mqc
+                    .map { _meta, files -> files }
+                    .flatten()
+            )
+        }
     }
 
     //

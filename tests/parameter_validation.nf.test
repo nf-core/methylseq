@@ -85,6 +85,11 @@ nextflow_pipeline {
             message: "may only hold letters, digits, '_' and '-'. Rename: panels/promoters.v2.bed."
         ],
         [
+            description: "Params: bismark | run_targeted_sequencing | run_methylation_summary with panel names that differ only in case",
+            params: [ aligner: "bismark", run_targeted_sequencing: true, run_methylation_summary: true, target_regions_file: "panels/Promoters.bed,panels/promoters.bed" ],
+            message: "panel names must still differ when lower-cased and with '-' read as '_'. Rename one of: Promoters and promoters."
+        ],
+        [
             description: "Params: bwamem3 | bwamem3_index .tgz - not supported",
             params: [ aligner: "bwamem3", bwamem3_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tgz" ],
             message: "is an archive format the pipeline can't unpack"
