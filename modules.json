@@ -53,7 +53,7 @@
                     "bwa/mem": {
                         "branch": "master",
                         "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
-                        "installed_by": ["fastq_align_bwa"]
+                        "installed_by": ["fastq_align_bwa", "modules"]
                     },
                     "bwamem3/index": {
                         "branch": "master",
@@ -68,7 +68,7 @@
                     "bwameth/align": {
                         "branch": "master",
                         "git_sha": "acdb643bad6e7377d5d3b983577d71f51d336d0d",
-                        "installed_by": ["fastq_align_dedup_bwameth"]
+                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
@@ -90,12 +90,27 @@
                         "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
                         "installed_by": ["modules"]
                     },
+                    "fgumi/extract": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/fastq": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
                     "fgumi/runall": {
                         "branch": "master",
                         "git_sha": "7952a1fb5413f72d63d5d59e2a89141496bb96e0",
                         "installed_by": ["modules"]
                     },
                     "fgumi/sort": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/zipper": {
                         "branch": "master",
                         "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
                         "installed_by": ["modules"]

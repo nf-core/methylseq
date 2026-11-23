@@ -265,21 +265,24 @@ def validateInputParameters() {
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
         error("--methyl_kit can't be combined with --run_targeted_sequencing for --aligner ${params.aligner}: the targeted analysis reads MethylDackel bedGraphs, which --methyl_kit replaces.")
     }
-    // UMIs are handled by fgumi runall, which drives bwa-mem3 itself
-    if (params.with_umi && params.aligner != 'bwamem3') {
-        error("--with_umi is only supported with --aligner bwamem3 (got --aligner ${params.aligner}).")
+    // fgumi dedup needs the alignments zipped with the unmapped BAM, which the Parabricks steps don't take
+    if (params.with_umi && params.aligner in ['bwameth', 'bwamem'] && workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1) {
+        error("--with_umi is not supported with the gpu profile (Parabricks). Run on CPU, or drop --with_umi.")
     }
-    // The UMIs are extracted after trimming: fgumi runall aligns straight after extraction
+    if (params.with_umi && params.rrbs && params.aligner.startsWith('bismark')) {
+        log.warn("--rrbs skips deduplication for the Bismark aligners, so --with_umi only moves the UMIs into the read names.")
+    }
+    // bwa-mem3 extracts the UMIs after trimming: fgumi runall aligns straight after extraction
     def five_prime_clip = !params.skip_trimming && (params.clip_r1 > 0 || params.clip_r2 > 0 ||
         (!params.skip_trimming_presets && (params.pbat || params.single_cell || params.accel || params.zymo || params.em_seq)))
-    if (params.with_umi && params.umi_read_structure && five_prime_clip) {
+    if (params.with_umi && params.aligner == 'bwamem3' && params.umi_read_structure && five_prime_clip) {
         error(
-            "--with_umi takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
+            "--with_umi with --aligner bwamem3 takes inline UMIs from the reads after trimming, so 5' clipping (--clip_r1, --clip_r2 or a library preset) would remove them. " +
             "Use --skip_trimming_presets without --clip_r1/--clip_r2, and skip the clipped bases in --umi_read_structure instead, e.g. '8M10S+T 8M10S+T'."
         )
     }
     if (params.with_umi && params.skip_deduplication) {
-        log.warn("--skip_deduplication with --with_umi: the UMIs are moved to the RX tag, but no duplicates are marked.")
+        log.warn("--skip_deduplication with --with_umi: no duplicates are marked. The UMIs are kept in the RX tag with bwamem3 and in the read names with the Bismark aligners, and dropped with bwameth and bwamem.")
     }
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
@@ -293,6 +296,7 @@ def validateInputParameters() {
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
+        [params.with_umi && !(params.umi_dedup_strategy in ['adjacency', 'identity']) && params.aligner.startsWith('bismark'), "--umi_dedup_strategy ${params.umi_dedup_strategy} only applies to fgumi dedup (bwameth, bwamem, bwamem3); Bismark groups UMIs one mismatch apart unless it is identity"],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
@@ -342,8 +346,8 @@ def checkUmiInput(meta, reads) {
         if (!used.any { structure -> structure.contains('M') }) {
             error("--umi_read_structure '${params.umi_read_structure}' gives sample ${meta.id} no UMI: its ${fastqs.size() == 1 ? 'single-end reads use' : 'reads use'} '${used.join(' ')}', which has no M segment.")
         }
-        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads, before the UMIs are extracted
-        if (params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
+        // Trim Galore --rrbs clips 2 bp from the 5' end of read 2 of paired-end reads; only bwa-mem3 extracts the UMIs after trimming
+        if (params.aligner == 'bwamem3' && params.rrbs && !params.skip_trimming && fastqs.size() == 2 && used[1].contains('M')) {
             error("--rrbs trims 2 bp from the 5' end of read 2 for paired-end samples such as ${meta.id}, which would remove the start of an inline read 2 UMI ('${used[1]}'). Use a UMI on read 1 only, UMIs in the read names, or --skip_trimming.")
         }
         return
