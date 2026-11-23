@@ -10,44 +10,39 @@
                         "git_sha": "b489eb2587cb508cc9eef65c53f04f7419b5f6d9",
                         "installed_by": ["bam_taps_conversion"]
                     },
-                    "bedtools/intersect": {
-                        "branch": "master",
-                        "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["modules"]
-                    },
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/deduplicate": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/genomepreparation": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fasta_index_bismark_bwameth", "fasta_index_methylseq"]
                     },
                     "bismark/methylationextractor": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "c4ee44040e61703314059bcbe330e7bda2a48365",
+                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bwa/index": {
@@ -88,6 +83,21 @@
                     "fastqc": {
                         "branch": "master",
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/dedup": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/runall": {
+                        "branch": "master",
+                        "git_sha": "7952a1fb5413f72d63d5d59e2a89141496bb96e0",
+                        "installed_by": ["modules"]
+                    },
+                    "fgumi/sort": {
+                        "branch": "master",
+                        "git_sha": "afdd1fb41a3f90edf93b841b60da300905eaa6fd",
                         "installed_by": ["modules"]
                     },
                     "gunzip": {
@@ -208,6 +218,11 @@
                     "riker/multi": {
                         "branch": "master",
                         "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/dict": {
+                        "branch": "master",
+                        "git_sha": "80eb474060aa4aa6d7b4b00e0dc785174f156a28",
                         "installed_by": ["modules"]
                     },
                     "samtools/faidx": {

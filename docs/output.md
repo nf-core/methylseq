@@ -261,6 +261,19 @@ This step removes alignments with identical mapping position to avoid technical 
 - `picard_metrics/sample.markdup.sorted.metrics.txt`
   - Log file giving summary statistics about deduplication.
 
+**With `--with_umi` (bwa-mem3 only): `results/bwamem3/deduplicated/`**
+
+`fgumi dedup` replaces Picard MarkDuplicates.
+
+- `sample.markdup.sorted.bam`
+  - Sorted BAM file with duplicated reads marked. Each read has its UMI in the `RX` tag and its molecule ID in the `MI` tag.
+- `sample.markdup.sorted.bam.bai`
+  - Index for the markdup BAM file.
+- `fgumi_metrics/sample.umi_dedup.metrics.txt`
+  - Duplicate counts and rates. The `filtered_missing_umi` and `filtered_ns_in_umi` columns count the read pairs removed because their UMI was missing or had an `N` in it.
+- `fgumi_metrics/sample.umi_dedup.family_size_histogram.txt`
+  - Number of UMI families of each size.
+
 ### Methylation Extraction
 
 The methylation extractor step takes a BAM file with aligned reads and generates files containing cytosine methylation calls. It produces a few different output formats, described below.
@@ -334,13 +347,21 @@ If `--run_targeted_sequencing` is set to `true`, the pipeline performs additiona
 
 #### Filtered Methylation Calls
 
-BedGraph files are filtered using the BED file passed to `--target_regions_file`.
+BedGraph files, and for Bismark the coverage files, are filtered using the BED file passed to `--target_regions_file`. For TAPS data the rastair CpG calls are filtered instead (`*.rastair_call.txt` from `--taps_caller rastair`, the CpG BED from `--taps_caller rastair2`). A CpG that a target edge cuts is kept on both strands; calls in other contexts are kept only inside a target.
 
 **Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
 **bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**
+**TAPS output directory: `results/rastair/call/` (`--taps_caller rastair`) or `results/rastair2/call/` (`--taps_caller rastair2`)**
 
 - `*.targeted.bedGraph`
-  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the positions in the target regions BED file.
+  - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format, limited to the target regions and the CpGs their edges cut.
+- `*.targeted.bed` (TAPS)
+  - The rastair CpG calls, with their columns and `#` header, limited to the target regions.
+
+**Bismark coverage output directory: `results/bismark/methylation_calls/methylation_coverage/` (or `results/bismark_hisat/...`)**
+
+- `*.targeted.cov`
+  - The Bismark coverage file, limited to the target regions and the CpGs their edges cut.
 
 #### Hybrid-selection (HS) Metrics
 

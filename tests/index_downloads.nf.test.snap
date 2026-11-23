@@ -3,20 +3,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.3.0",
+                    "bismark": "3.4.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -41,7 +41,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-20T13:45:52.860274757",
+        "timestamp": "2026-11-22T15:00:43.68926257",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -102,20 +102,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.3.0",
+                    "bismark": "3.4.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -140,7 +140,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-20T13:50:25.383628817",
+        "timestamp": "2026-11-22T15:03:45.026154111",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -150,20 +150,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.3.0",
+                    "bismark": "3.4.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -191,7 +191,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-20T13:47:06.235253238",
+        "timestamp": "2026-11-22T15:01:16.023536706",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -255,20 +255,20 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.3.0",
+                    "bismark": "3.4.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.3.0"
+                    "bismark": "3.4.0"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -299,7 +299,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-20T13:47:57.57581675",
+        "timestamp": "2026-11-22T15:02:00.05448017",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

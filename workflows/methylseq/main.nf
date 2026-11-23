@@ -25,10 +25,12 @@ include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { FASTQ_ALIGN_DEDUP_UMI_BWAMEM3 } from '../../subworkflows/local/fastq_align_dedup_umi_bwamem3'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
 
@@ -89,6 +91,13 @@ workflow METHYLSEQ {
         ch_samplesheet.multiple
     )
     ch_fastq = CAT_FASTQ.out.reads.mix(ch_samplesheet.single)
+
+    if (params.with_umi) {
+        ch_fastq = ch_fastq.map { meta, reads ->
+            checkUmiInput(meta, reads)
+            [meta, reads]
+        }
+    }
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
@@ -212,15 +221,30 @@ workflow METHYLSEQ {
                 bwamem3_index: [meta_bwamem3, bwamem3_index]
             }
 
-        FASTQ_ALIGN_DEDUP_BWAMEM3(
-            ch_bwamem3_inputs.reads,
-            ch_bwamem3_inputs.fasta_fai,
-            ch_bwamem3_inputs.bwamem3_index,
-            params.skip_deduplication || params.rrbs,
-        )
-        ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
-        ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index
-        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM3.out.multiqc
+        if (params.with_umi) {
+            // fgumi runall extracts the UMIs and aligns in one step; fgumi dedup replaces Picard MarkDuplicates.
+            // --rrbs does not skip it: with UMIs, reads sharing a restriction site are no longer all duplicates
+            FASTQ_ALIGN_DEDUP_UMI_BWAMEM3(
+                ch_bwamem3_inputs.reads,
+                ch_bwamem3_inputs.fasta_fai,
+                ch_bwamem3_inputs.bwamem3_index,
+                params.skip_deduplication,
+            )
+            ch_bam = FASTQ_ALIGN_DEDUP_UMI_BWAMEM3.out.bam
+            ch_bai = FASTQ_ALIGN_DEDUP_UMI_BWAMEM3.out.index
+            ch_aligner_mqc = FASTQ_ALIGN_DEDUP_UMI_BWAMEM3.out.multiqc
+        }
+        else {
+            FASTQ_ALIGN_DEDUP_BWAMEM3(
+                ch_bwamem3_inputs.reads,
+                ch_bwamem3_inputs.fasta_fai,
+                ch_bwamem3_inputs.bwamem3_index,
+                params.skip_deduplication || params.rrbs,
+            )
+            ch_bam = FASTQ_ALIGN_DEDUP_BWAMEM3.out.bam
+            ch_bai = FASTQ_ALIGN_DEDUP_BWAMEM3.out.index
+            ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM3.out.multiqc
+        }
     }
     else {
         error("ERROR: Invalid aligner '${params.aligner}'. Valid options are: 'bismark', 'bismark_hisat', 'bwameth', 'bwamem' or 'bwamem3'.")
@@ -347,7 +371,7 @@ workflow METHYLSEQ {
     //
     if (params.run_targeted_sequencing) {
         TARGETED_SEQUENCING(
-            ch_bedgraph,
+            isTaps() ? ch_rastair2_bed.mix(ch_rastair_call) : ch_bedgraph,
             ch_coverage,
             channel.fromPath(params.target_regions_file, checkIfExists: true),
             ch_fasta,
@@ -356,6 +380,7 @@ workflow METHYLSEQ {
             ch_bai,
             ch_gzi,
             params.collecthsmetrics,
+            isTaps(),
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
     }

@@ -48,7 +48,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | Raw data QC                                  | FastQC (in Trim Galore)  | FastQC (in Trim Galore) | FastQC (in Trim Galore)    | FastQC (in Trim Galore)                             |
 | Adapter sequence trimming                    | Trim Galore!             | Trim Galore!            | Trim Galore!               | Trim Galore!                                        |
 | Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth                | bwa mem                    | bwa-mem3 (`--meth=taps` or `--meth`)                |
-| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      | Picard MarkDuplicates                               |
+| Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates   | Picard MarkDuplicates      | Picard MarkDuplicates, or fgumi with `--with_umi`   |
 | Extract methylation calls                    | Bismark                  | MethylDackel            | TAPS subworkflow (rastair) | rastair or rastair version 2 (TAPS); MethylDackel   |
 | Sample report                                | Bismark                  | -                       | -                          | -                                                   |
 | Summary Report                               | Bismark                  | -                       | -                          | -                                                   |
