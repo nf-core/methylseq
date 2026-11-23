@@ -1,0 +1,117 @@
+nextflow_process {
+
+    name "Test Process METHYLATION_SUMMARY"
+    script "../main.nf"
+    process "METHYLATION_SUMMARY"
+    config "./nextflow.config"
+
+    tag "modules"
+    tag "modules_local"
+    tag "methylation_summary"
+
+    // Writes a MethylDackel-style bedGraph (gzipped if the name ends in .gz): `contigs` lists [ contig, positions, mod, unmod ]
+    def writeBedGraph = { String path, List contigs ->
+        new File(path).parentFile.mkdirs()
+        def stream = path.endsWith('.gz') ? new java.util.zip.GZIPOutputStream(new FileOutputStream(path)) : new FileOutputStream(path)
+        stream.withWriter { writer ->
+            if (!path.endsWith('.gz')) {
+                writer << "track type=\"bedGraph\" description=\"sample CpG methylation levels\"\n"
+            }
+            contigs.each { contig, positions, mod, unmod ->
+                (1..positions).each { i -> writer << "${contig}\t${i}\t${i + 1}\t${(100 * mod / (mod + unmod)) as int}\t${mod}\t${unmod}\n" }
+            }
+        }
+        return path
+    }
+
+    def mqcFiles = { out ->
+        def files = out.mqc[0][1]
+        (files instanceof List ? files : [ files ]).collectEntries { path -> [ (new File(path.toString()).name): path ] }
+    }
+
+    def mqcRow = { path ->
+        def lines = new File(path.toString()).readLines().findAll { line -> !line.startsWith('#') }
+        [lines[0].split('\t') as List, lines[1].split('\t') as List].transpose().collectEntries()
+    }
+
+    test("methyldackel - CpG, CHG and CHH with a control contig") {
+        when {
+            params {
+                module_args = '-n methyldackel -c J02459.1'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'md' ],
+                    [
+                        file('${writeBedGraph("${outputDir}/input/md_CpG.bedGraph", [['chr1', 20, 6, 4], ['chrM', 20, 0, 10], ['J02459.1', 20, 1, 9]])}', checkIfExists: true),
+                        file('${writeBedGraph("${outputDir}/input/md_CHG.bedGraph", [['chr1', 20, 1, 9], ['J02459.1', 20, 5, 5]])}', checkIfExists: true),
+                        file('${writeBedGraph("${outputDir}/input/md_CHH.bedGraph", [['chr1', 40, 0, 10], ['J02459.1', 20, 5, 5]])}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            def stats = mqcRow(files['md.methyldackel_generalstats_mqc.tsv'])
+            def contigs = mqcRow(files['md.methyldackel_contigs_mqc.tsv'])
+            assertAll(
+                { assert process.success },
+                // chr1 only: not the mitochondrion or the control
+                { assert stats == [Sample: 'md', methyldackel_cpg_meth: '60.00', methyldackel_cpg_sites: '20', methyldackel_cpg_depth: '10.00', methyldackel_chg_meth: '10.00', methyldackel_chh_meth: '0.00'] },
+                { assert contigs == [Sample: 'md', chr1: '60.00', chrM: '0.00', 'J02459.1': '10.00'] },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("bismark - gzipped coverage file") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'bm' ],
+                    file('${writeBedGraph("${outputDir}/input/bm.deduplicated.bismark.cov.gz", [['chr', 30, 3, 7]])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            def stats = mqcRow(files['bm.bismark_generalstats_mqc.tsv'])
+            assertAll(
+                { assert process.success },
+                // no chromosome-like names: every contig; CpG context only, so no CHG or CHH columns
+                { assert stats == [Sample: 'bm', bismark_cpg_meth: '30.00', bismark_cpg_sites: '30', bismark_cpg_depth: '10.00'] },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("stub") {
+        options "-stub"
+        when {
+            params {
+                module_args = '-n methyldackel'
+            }
+            process {
+                """
+                input[0] = channel.of([ [ id:'stub' ], file('${writeBedGraph("${outputDir}/input/stub_CpG.bedGraph", [['chr1', 1, 1, 1]])}', checkIfExists: true) ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.success },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+}

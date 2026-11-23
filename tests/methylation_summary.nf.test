@@ -1,0 +1,76 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - methylation summary"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // General Statistics columns from the summary, by sample
+    def summaryStats = { outputDir, aligner, tool ->
+        new groovy.json.JsonSlurper()
+            .parse(new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_data.json"))
+            .report_general_stats_data.custom_content
+            ?.collectEntries { sample, columns -> [ (sample): columns.findAll { column, value -> column.startsWith("${tool}_") } ] }
+            ?.findAll { sample, columns -> columns } ?: [:]
+    }
+
+    // CpG methylation per contig, by sample, from the MultiQC data table
+    def contigTable = { outputDir, aligner, tool ->
+        def table = new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_${tool}_contigs_table.txt").readLines()*.split('\t')
+        table.tail().collectEntries { row -> [ (row[0]): [table[0].tail(), row.tail()].transpose().collectEntries() ] }
+    }
+
+    test("Params: bwameth | run_methylation_summary | all_contexts") {
+        when {
+            params {
+                aligner                 = "bwameth"
+                run_methylation_summary = true
+                all_contexts            = true
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stats = summaryStats(params.outdir, 'bwameth', 'methyldackel')
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+            assertAll(
+                { assert workflow.success },
+                // MethylDackel finds no CpGs in the SRR389222 bedGraphs, so they get no rows
+                { assert stats.keySet() == ['Ecoli_10K_methylated'] as Set },
+                { assert stats.every { sample, columns -> columns.keySet() == ['methyldackel_cpg_meth', 'methyldackel_cpg_sites', 'methyldackel_cpg_depth', 'methyldackel_chg_meth', 'methyldackel_chh_meth'] as Set } },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stats,
+                    contigTable(params.outdir, 'bwameth', 'methyldackel')
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bismark | control_contigs") {
+        when {
+            params {
+                aligner         = "bismark"
+                // the test genome is a single contig, so naming it leaves nothing for the genome-wide figures
+                control_contigs = "chr"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def contigs = contigTable(params.outdir, 'bismark', 'bismark')
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+            assertAll(
+                { assert workflow.success },
+                // --control_contigs turns the summary on
+                { assert contigs.size() == 4 && contigs.every { sample, columns -> columns.keySet() == ['chr'] as Set } },
+                { assert summaryStats(params.outdir, 'bismark', 'bismark').isEmpty() },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    contigs
+                ).match() }
+            )
+        }
+    }
+}

@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "methylation_summary"
+description: Summarise MethylDackel bedGraphs or Bismark coverage files as MultiQC custom content (genome-wide CpG, CHG and CHH methylation, per-contig CpG methylation, CpG methylation distribution)
+keywords:
+  - bisulfite
+  - methylation
+  - multiqc
+  - methyldackel
+  - bismark
+tools:
+  - "gawk":
+      description: "GNU awk, used by bin/methylation_summary.sh"
+      homepage: "https://www.gnu.org/software/gawk/"
+      licence: ["GPL-3.0-or-later"]
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: Groovy Map containing sample information. e.g. `[ id:'sample1' ]`
+    - calls:
+        type: file
+        description: |
+          MethylDackel bedGraphs (`*_CpG.bedGraph`, and `*_CHG.bedGraph`/`*_CHH.bedGraph` with `--CHG --CHH`)
+          or a Bismark coverage file (`*.cov.gz`, CpG context only)
+        pattern: "*.{bedGraph,cov.gz}"
+        ontologies: []
+# `ext.args` is passed to the script as options: `-n <name>` sets the tool name used in the MultiQC IDs and
+# column names (methyldackel or bismark), `-d <n>` the minimum informative reads per CpG for the methylation
+# distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
+# genome-wide figures. The pipeline sets `-n` from `--aligner` and `-c` from `--control_contigs`.
+output:
+  mqc:
+    - - meta:
+          type: map
+          description: Groovy Map containing sample information. e.g. `[ id:'sample1' ]`
+      - "*_mqc.tsv":
+          type: file
+          description: MultiQC custom content files (General Statistics, methylation distribution, per-contig methylation)
+          pattern: "*_mqc.tsv"
+          ontologies: []
+  versions_gawk:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - gawk:
+          type: string
+          description: The name of the tool
+      - awk --version | sed '1!d; s/^GNU Awk //; s/,.*//':
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - gawk:
+          type: string
+          description: The name of the tool
+      - awk --version | sed '1!d; s/^GNU Awk //; s/,.*//':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@eduard-watchmaker"
+maintainers:
+  - "@eduard-watchmaker"
+containers:
+  docker:
+    linux/arm64:
+      name: community.wave.seqera.io/library/gawk_gzip:40b28e60a858212a
+      build_id: bd-40b28e60a858212a_1
+      scan_id: sc-8f0a74da6f447cac_1
+    linux/amd64:
+      name: community.wave.seqera.io/library/gawk_gzip:f7d38a45baa28337
+      build_id: bd-f7d38a45baa28337_1
+      scan_id: sc-97f37e87fee0e9f4_1
+  singularity:
+    linux/amd64:
+      name: oras://community.wave.seqera.io/library/gawk_gzip:687bc21a36ed739d
+      build_id: bd-687bc21a36ed739d_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/75/759bb68f05a46782e9715e821380f641adfb2ba92d41a0b7bfc98536086e101c/data
+    linux/arm64:
+      name: oras://community.wave.seqera.io/library/gawk_gzip:808b9a9bf21fd5d4
+      build_id: bd-808b9a9bf21fd5d4_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/c7/c7c36fde5846da905fa578250e3b3e0fdaf3e1525f302badf514dec03b125dc6/data
+  conda:
+    linux/amd64:
+      lock_file: modules/local/methylation_summary/.conda-lock/linux_amd64-bd-f7d38a45baa28337_1.txt
+    linux/arm64:
+      lock_file: modules/local/methylation_summary/.conda-lock/linux_arm64-bd-40b28e60a858212a_1.txt

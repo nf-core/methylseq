@@ -152,7 +152,7 @@ nextflow_pipeline {
             // RASTAIR2_SUMMARY task scripts, to check that --rastair2_control_contigs reaches the script
             def summary_scripts = []
             new File(workDir.toString()).eachFileRecurse { script ->
-                if (script.name == '.command.sh' && script.text.contains('rastair2_summary.sh')) {
+                if (script.name == '.command.sh' && script.text.contains('methylation_summary.sh')) {
                     summary_scripts << script.text
                 }
             }

@@ -8,7 +8,7 @@ keywords:
   - rastair
 tools:
   - "gawk":
-      description: "GNU awk, used by bin/rastair2_summary.sh"
+      description: "GNU awk, used by bin/methylation_summary.sh"
       homepage: "https://www.gnu.org/software/gawk/"
       licence: ["GPL-3.0-or-later"]
       identifier: ""
@@ -23,7 +23,7 @@ input:
         ontologies: []
 # `ext.args` is passed to the script as options: `-d <n>` sets the minimum informative reads per CpG for the
 # methylation distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
-# genome-wide figures. The pipeline sets `-c` from `--rastair2_control_contigs`.
+# genome-wide figures. The pipeline sets `-c` from `--control_contigs` or `--rastair2_control_contigs`.
 output:
   mqc:
     - - meta:
