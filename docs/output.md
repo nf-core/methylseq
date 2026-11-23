@@ -263,7 +263,9 @@ This step removes alignments with identical mapping position to avoid technical 
 
 **With `--with_umi` (bwa-meth, bwa-mem and bwa-mem3): `results/<aligner>/deduplicated/`**
 
-`fgumi dedup` replaces Picard MarkDuplicates. Bismark runs `deduplicate_bismark --barcode --umi_mismatches 1` and writes the same files as without UMIs.
+`fgumi dedup` replaces Picard MarkDuplicates. Bismark runs `deduplicate_bismark --barcode` with `--umi_mismatches 1` (`0` with `--umi_dedup_strategy identity`) and writes the same files as without UMIs.
+
+On the bwa-meth and bwa-mem route the aligner output stays in read order for `fgumi zipper`, so `alignments/` has no `sample.sorted.bam`, also with `--rrbs`. With `--save_align_intermeds` it holds the unsorted `sample.aligned.bam`. The samtools stats in `alignments/samtools_stats/` (`sample.flagstat`, `sample.stats`, `sample.idxstats`) are from the deduplicated BAM.
 
 - `sample.markdup.sorted.bam`
   - Sorted BAM file with duplicated reads marked. Each read has its UMI in the `RX` tag and its molecule ID in the `MI` tag.

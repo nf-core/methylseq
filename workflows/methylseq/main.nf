@@ -300,7 +300,7 @@ workflow METHYLSEQ {
         )
         ch_bam = BAM_DEDUP_UMI_FGUMI.out.bam
         ch_bai = BAM_DEDUP_UMI_FGUMI.out.index
-        // samtools stats from the deduplicated BAM, as with Picard MarkDuplicates
+        // samtools stats from the deduplicated BAM, as on the bwa-mem3 UMI route
         ch_aligner_mqc = BAM_DEDUP_UMI_FGUMI.out.multiqc
     }
 
