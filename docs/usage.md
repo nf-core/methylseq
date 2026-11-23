@@ -178,7 +178,7 @@ nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --align
 
 ##### bwa-mem3 index for human and other large genomes
 
-For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. bwa-mem3 estimates about 144 GiB of memory for a `--meth` hg38 build, so plan on a host with about 152 GiB (see the [bwa-mem3 docs](https://bwa-mem3.readthedocs.io/en/latest/user-guide/indexing.html#time-and-memory)). `--meth-only` doesn't lower this. The pipeline's `BWAMEM3_INDEX` step requests 560 MB per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry. It passes that request to bwa-mem3 as `--max-memory`, which is a check before the build starts, not a limit the build works within. If you cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits) below bwa-mem3's estimate, the step fails at once. On a smaller machine, build the index elsewhere with the command below and pass it with `--bwamem3_index`.
+For a human-sized genome, build the index once and pass it with `--bwamem3_index` on every run. iGenomes has no bwa-mem3 index, so `--genome` doesn't provide one. bwa-mem3 estimates about 144 GiB of memory for a `--meth` hg38 build (see the [bwa-mem3 docs](https://bwa-mem3.readthedocs.io/en/latest/user-guide/indexing.html#time-and-memory)). `--meth-only` doesn't lower this. The pipeline's `BWAMEM3_INDEX` step requests 560 MB per 10 MB of uncompressed FASTA, about 175 GB for hg38, and twice that on a retry. It passes that request to bwa-mem3 as `--max-memory`, which is a check against the estimate before the build starts, not a limit the build works within. So on a host with less than 175 GB you can cap the request with [`process.resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits), as long as the cap is at or above about 144 GiB. A cap below that makes the step fail at once. On a host smaller than that, build the index elsewhere with the command below and pass it with `--bwamem3_index`.
 
 To build the index outside the pipeline, with the same bwa-mem3 version as the pipeline:
 
@@ -192,7 +192,7 @@ This writes the seven files alignment reads next to the FASTA: `hg38.fa.{amb,ann
 - a directory that contains the index files.
 - a `.tar.gz` of that directory.
 
-For hg38, the files alignment reads come to about 23 GB, most of it `hg38.fa.meth.bwt.2bit.64` (about 21 GB). Alignment loads them into memory: on hg38, `BWAMEM3_MEM` peaked at 23 GB with the default `process_high` resources (72 GB, 12 CPUs), so it needs at least about 24 GB. Most of that is the index, but per-thread buffers grow with the number of reads in flight, so leave headroom for large samples.
+For hg38, the files alignment reads come to about 23 GB, most of it `hg38.fa.meth.bwt.2bit.64` (about 21 GB). Alignment loads them into memory: on hg38, `BWAMEM3_MEM` peaked at 23 GB with the default `process_high` resources (72 GB, 12 CPUs), so it needs at least about 24 GB. Most of that is the index. The read batch is fixed at `-K 150000000` bases, so the rest doesn't grow with the sample or the CPU count.
 
 Both modes, TAPS and bisulfite/EM-seq, use the same index, and the index must match the `--fasta` used for the rest of the run.
 
