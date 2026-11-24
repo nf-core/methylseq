@@ -97,6 +97,55 @@
             "nextflow": "26.10.5"
         }
     },
+    "rastair 0.8 - calls with a control contig": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "r08"
+                        },
+                        [
+                            "r08.rastair_beta_hist_mqc.tsv:md5,094aebb134906d78687992661dfda178",
+                            "r08.rastair_contigs_mqc.tsv:md5,21993de7c9e92bd935857e850bcd5ed7",
+                            "r08.rastair_generalstats_mqc.tsv:md5,408e56b19f9c81b949d6e1ebdfb3b71a"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "r08"
+                        },
+                        [
+                            "r08.rastair_beta_hist_mqc.tsv:md5,094aebb134906d78687992661dfda178",
+                            "r08.rastair_contigs_mqc.tsv:md5,21993de7c9e92bd935857e850bcd5ed7",
+                            "r08.rastair_generalstats_mqc.tsv:md5,408e56b19f9c81b949d6e1ebdfb3b71a"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-24T16:14:24.358458",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
     "stub": {
         "content": [
             {

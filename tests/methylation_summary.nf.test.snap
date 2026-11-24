@@ -208,6 +208,80 @@
             "nextflow": "26.10.5"
         }
     },
+    "Params: bwamem3 | taps | taps_caller rastair | control_contigs": {
+        "content": [
+            {
+                "BWAMEM3_INDEX": {
+                    "bwamem3": "0.18.0"
+                },
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "RASTAIR_CALL": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "0.8.2"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            {
+                "taps_pe": {
+                    "rastair_cpg_meth": 38.15,
+                    "rastair_cpg_sites": 1448,
+                    "rastair_cpg_depth": 9.94
+                }
+            },
+            {
+                "taps_pe": {
+                    "chr19": "38.15",
+                    "2kb_3_Unmodified": "0.37",
+                    "bacteriophage_lambda_CpG": "98.04"
+                }
+            }
+        ],
+        "timestamp": "2026-11-24T16:35:34.268425",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
     "Params: bismark | control_contigs": {
         "content": [
             {
