@@ -328,7 +328,7 @@ Each panel is named after its file, without `.bed` or `.bed.gz`. The names must 
 
 With several panels, the panel name goes before `.targeted` in each filtered file, for example `sample.promoters.targeted.bedGraph`, and Picard writes `sample.promoters.CollectHsMetrics.coverage_metrics`. The MultiQC report gets one HsMetrics section per panel. riker runs once per sample, so with `--run_riker` its hybrid capture metrics cover the union of the panels. A single BED file gives the same file names as before.
 
-With `--run_methylation_summary` or `--control_contigs`, each panel also gets its own [methylation summary](#methylation-summary-and-spike-in-controls-optional) in the MultiQC report, from that panel's filtered calls, next to the genome-wide one. This includes a single BED file. Its sections are titled after the tool and the panel, for example `MethylDackel (promoters)`. The panel columns in General Statistics start hidden; show them with "Configure columns". For TAPS data this needs `--taps_caller rastair2`. Panel names must still differ once lower-cased and with `-` read as `_`.
+With `--run_methylation_summary` or `--control_contigs`, each panel also gets its own [methylation summary](#methylation-summary-and-spike-in-controls-optional) in the MultiQC report, from that panel's filtered calls, next to the genome-wide one. This includes a single BED file. Its sections are titled after the tool and the panel, for example `MethylDackel (promoters)`. The panel columns in General Statistics start hidden; show them with "Configure columns". On the rastair route this needs `--taps_caller rastair2`. Panel names must still differ once lower-cased and with `-` read as `_`.
 
 ### Methylation summary and spike-in controls (optional)
 

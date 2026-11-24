@@ -557,7 +557,7 @@
                     "type": "string",
                     "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
                     "description": "A BED file containing the target regions, or a comma-separated list of BED files (one per panel)",
-                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. For TAPS data it filters the rastair CpG calls, from either `--taps_caller`. Give several BED files separated by commas (no spaces) to analyse each panel separately: each file name without `.bed` or `.bed.gz` names its panel, so the names must differ and may only hold letters, digits, `_` and `-`.",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) it filters the rastair CpG calls, from either `--taps_caller`. Give several BED files separated by commas (no spaces) to analyse each panel separately: each file name without `.bed` or `.bed.gz` names its panel, so the names must differ and may only hold letters, digits, `_` and `-`.",
                     "fa_icon": "fas fa-file"
                 },
                 "collecthsmetrics": {
