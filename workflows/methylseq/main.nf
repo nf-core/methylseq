@@ -421,8 +421,8 @@ workflow METHYLSEQ {
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
 
-        // One methylation summary per panel, from its filtered calls; rastair 0.8 calls have none
-        if ((params.run_methylation_summary || params.control_contigs) && !(isTaps() && params.taps_caller == 'rastair') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+        // One methylation summary per panel, from its filtered calls
+        if ((params.run_methylation_summary || params.control_contigs) && !(params.aligner =~ /bismark/ && params.nomeseq)) {
             METHYLATION_SUMMARY_TARGETS(
                 params.aligner =~ /bismark/
                     ? TARGETED_SEQUENCING.out.coverage_filtered
