@@ -620,6 +620,11 @@
                     "type": "boolean",
                     "description": "Skip MultiQC",
                     "fa_icon": "fas fa-fast-forward"
+                },
+                "skip_methylsieve": {
+                    "type": "boolean",
+                    "description": "Skip the methylsieve conversion and M-bias metrics on TAPS and 5-Base data",
+                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"

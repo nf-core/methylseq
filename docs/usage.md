@@ -53,6 +53,9 @@ flowchart TD
 
         D3 --> E3["MethylDackel extract/M-bias<br/>(Bisulfite data)"]
         D3 --> E4["Rastair TAPS conversion<br/>(TAPS data)"]
+
+        D1 --> E5["methylsieve metrics<br/>(TAPS data)"]
+        D3 --> E5
     end
 
     subgraph Stage3b[Targeted Sequencing - Optional]
@@ -93,7 +96,7 @@ flowchart TD
 
     %% Styling for TAPS workflows
     classDef tapsStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    class D3,E2,E4 tapsStyle
+    class D3,E2,E4,E5 tapsStyle
 ```
 
 ### Workflow: Bismark
@@ -223,6 +226,10 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
+
+#### methylsieve metrics
+
+On the rastair route, [methylsieve](https://github.com/fulcrumgenomics/methylsieve) also runs on each final BAM file and reports conversion per context and M-bias. It only writes metrics; the calls are unchanged. Contigs in `--rastair2_control_contigs` get their own row. Turn it off with `--skip_methylsieve`. See the [output docs](https://nf-co.re/methylseq/output#methylsieve).
 
 ### Illumina 5-Base and TAPS: rastair or Bismark
 

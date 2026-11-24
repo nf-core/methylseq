@@ -8,9 +8,11 @@ nextflow_pipeline {
     test("Params: PARABRICKS_FQ2BAM - bwamem | taps - GPU Profile") {
         when {
             params {
-                aligner = "bwamem"
-                taps    = true
-                outdir  = "$outputDir"
+                aligner          = "bwamem"
+                taps             = true
+                // also covers --skip_methylsieve
+                skip_methylsieve = true
+                outdir           = "$outputDir"
             }
         }
 

@@ -61,6 +61,10 @@
 
   > riker, Fulcrum Genomics. <https://github.com/fulcrumgenomics/riker>
 
+- [methylsieve](https://github.com/fulcrumgenomics/methylsieve)
+
+  > methylsieve, Fulcrum Genomics. <https://github.com/fulcrumgenomics/methylsieve>
+
 - [Preseq](https://doi.org/10.1038/nmeth.2375)
 
   > Daley, T., Smith, A. Predicting the molecular complexity of sequencing libraries. Nat Methods 10, 325–327 (2013). doi: [10.1038/nmeth.2375](https://doi.org/10.1038/nmeth.2375)
