@@ -1,0 +1,90 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf - Bismark 5-Base and TAPS mode (bwa-mem3)"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // TAPS reads stand in for 5-Base: both read methylated C as T, and Bismark's two modes give the same reads and calls
+    def testScenarios = [
+        [
+            description: "Params: bismark | illumina_5base",
+            // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's
+            params: [ illumina_5base: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz" ],
+            log_has: [ '--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3', '--trim_OT/--trim_OB only apply to rastair calls', "--bismark_index is not used by Bismark's 5-Base/TAPS mode" ],
+            log_lacks: [ '--taps_caller only applies' ],
+            flag_has: '--illumina_5base --bwamem3',
+            flag_lacks: '--taps',
+        ],
+        [
+            description: "Params: bismark | taps | taps_caller rastair2",
+            // rastair2 is not run: with --aligner bismark, Bismark makes the calls
+            params: [ taps: true, taps_caller: "rastair2" ],
+            log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls' ],
+            log_lacks: [],
+            flag_has: '--taps --bwamem3',
+            flag_lacks: '--illumina_5base',
+        ],
+    ]
+
+    testScenarios.each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    input           = "${projectDir}/tests/samplesheet_taps_pe.csv"
+                    fasta           = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                    fasta_index     = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                    aligner         = "bismark"
+                    cytosine_report = true
+                    outdir          = "$outputDir"
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                def align_scripts = []
+                new File(workDir.toString()).eachFileRecurse { script ->
+                    if (script.name == '.command.sh' && script.text.contains('bismark') && script.text.contains('--five_base_index')) {
+                        align_scripts << script.text
+                    }
+                }
+                def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+                def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet'], ignoreFile: 'tests/.nftignore')
+                def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+                def log_text    = file("${metaDir}/nextflow.log").text
+                // Bismark coverage columns: chr, start, end, percent, methylated, unmethylated
+                def methylation = getAllFilesFromDir(params.outdir, include: ['bismark/methylation_calls/methylation_coverage/*.cov.gz'])
+                    .collectMany { cov -> path(cov.toString()).linesGzip.collect { line -> line.split('\t') } }
+                    .groupBy { fields -> fields[0] }
+                    .collectEntries { contig, rows ->
+                        def methylated = rows.sum { fields -> fields[4] as double }
+                        [ (contig): methylated / (methylated + rows.sum { fields -> fields[5] as double }) ]
+                    }
+                def alignment_stats = path("$outputDir/multiqc/bismark/multiqc_data/multiqc_bismark_alignment.txt").readLines().collect { line -> line.split('\t') }
+                def summary_text    = path("$outputDir/bismark/summary/bismark_summary_report.txt").text
+                assertAll(
+                    { assert workflow.success },
+                    { assert !align_scripts.isEmpty() },
+                    { assert align_scripts.every { script -> script.contains(scenario.flag_has) && !script.contains(scenario.flag_lacks) } },
+                    // methylated C reads as T: the methylated lambda spike-in should be high and the unmodified one low
+                    { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
+                    { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                    { assert methylation['2kb_3_Unmodified'] < 0.1 },
+                    { assert alignment_stats.size() == 2 && alignment_stats[1][0].startsWith('taps_pe') },
+                    { def column = alignment_stats[0].toList().indexOf('percent_aligned'); assert column >= 0 && (alignment_stats[1][column] as double) > 0 },
+                    { assert summary_text.contains('taps_pe') },
+                    { assert scenario.log_has.every { message -> log_text.contains(message) } },
+                    { assert !scenario.log_lacks.any { message -> log_text.contains(message) } },
+                    { assert snapshot(
+                        removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                        stable_name,
+                        stable_path,
+                        bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                    ).match() }
+                )
+            }
+        }
+    }
+}

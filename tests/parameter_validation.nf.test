@@ -28,9 +28,35 @@ nextflow_pipeline {
             message: "--aligner bwamem3 only supports directional libraries: --non_directional not supported"
         ],
         [
-            description: "Params: bismark | taps - not supported",
-            params: [ aligner: "bismark", taps: true ],
-            message: "--taps is not supported with --aligner bismark"
+            description: "Params: bismark_hisat | taps - not supported",
+            params: [ aligner: "bismark_hisat", taps: true ],
+            message: "--taps is not supported with --aligner bismark_hisat"
+        ],
+        [
+            description: "Params: bismark_hisat | illumina_5base - not supported",
+            params: [ aligner: "bismark_hisat", illumina_5base: true ],
+            message: "--illumina_5base is not supported with --aligner bismark_hisat"
+        ],
+        [
+            description: "Params: illumina_5base | taps - not supported",
+            params: [ illumina_5base: true, taps: true ],
+            message: "--taps and --illumina_5base can't be combined"
+        ],
+        [
+            description: "Params: bismark | illumina_5base | non_directional - not supported",
+            params: [ aligner: "bismark", illumina_5base: true, non_directional: true ],
+            message: "--non_directional can't be combined with --illumina_5base --aligner bismark"
+        ],
+        [
+            description: "Params: bismark | taps | local_alignment - not supported",
+            params: [ aligner: "bismark", taps: true, local_alignment: true ],
+            message: "--local_alignment can't be combined with --taps --aligner bismark"
+        ],
+        [
+            // Bismark's 5-Base/TAPS mode writes no unmapped reads
+            description: "Params: bismark | illumina_5base | unmapped - not supported",
+            params: [ aligner: "bismark", illumina_5base: true, unmapped: true ],
+            message: "--unmapped can't be combined with --illumina_5base --aligner bismark"
         ],
         [
             description: "Params: bwameth | methyl_kit | run_targeted_sequencing - not supported",
@@ -82,6 +108,12 @@ nextflow_pipeline {
             description: "Params: genome | fasta set to null",
             params: [ genome: "GRCh38", fasta: null, fasta_index: null, validate_params: false ],
             message: "No reference FASTA"
+        ],
+        [
+            // Validation is off so the schema's fasta pattern and exists checks don't fire first
+            description: "Params: bismark | illumina_5base | fasta not named .fa - not supported",
+            params: [ aligner: "bismark", illumina_5base: true, fasta: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome.fna.gz", fasta_index: null, validate_params: false ],
+            message: "needs a FASTA named *.fa or *.fasta"
         ]
     ]
 
@@ -94,6 +126,7 @@ nextflow_pipeline {
                 collecthsmetrics         = true
                 bwamem3_index            = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz"
                 rastair2_control_contigs = "bacteriophage_lambda_CpG"
+                five_base_baseq          = 30
             }
         }
 
@@ -101,10 +134,11 @@ nextflow_pipeline {
             def log_text = file("${metaDir}/nextflow.log").text
             assertAll(
                 { assert workflow.success },
-                { assert log_text.contains('--trim_OT/--trim_OB only apply to TAPS data') },
+                { assert log_text.contains('--trim_OT/--trim_OB only apply to rastair calls') },
                 { assert log_text.contains('--collecthsmetrics only applies with --run_targeted_sequencing') },
                 { assert log_text.contains('--bwamem3_index only applies to --aligner bwamem3') },
                 { assert log_text.contains('--rastair2_control_contigs only applies with --taps_caller rastair2') },
+                { assert log_text.contains("--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark). It is ignored") },
                 { assert snapshot(
                     removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                 ).match() }
@@ -146,6 +180,28 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.failed },
                 { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("The samplesheet 'genome' column is not used") } }
+            )
+        }
+    }
+
+    test("Params: bismark | illumina_5base | single-end sample - not supported") {
+        when {
+            params {
+                outdir         = "${outputDir}"
+                input          = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta          = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index    = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner        = "bismark"
+                illumina_5base = true
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("sample taps_se is single-end: Bismark's 5-Base/TAPS mode") } },
+                // stops when the samplesheet is read, before any alignment
+                { assert workflow.trace.tasks().every { task -> !task.name.contains('BISMARK_ALIGN') } }
             )
         }
     }

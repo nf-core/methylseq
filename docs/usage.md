@@ -11,6 +11,7 @@
 - [Workflow: Bismark](#workflow-bismark)
 - [Workflow: BWA-Meth](#workflow-bwa-meth)
 - [Workflow: BWA-MEM + TAPS](#workflow-bwa-mem-taps-tet-assisted-pyridine-borane-sequencing)
+- [Illumina 5-Base and TAPS: rastair or Bismark](#illumina-5-base-and-taps-rastair-or-bismark)
 - [UMIs (optional)](#umis-optional)
 - [Targeted sequencing (optional)](#targeted-sequencing-optional)
 - [Samplesheet input](#samplesheet-input)
@@ -147,7 +148,7 @@ The pipeline supports **TAPS data analysis**, which uses a different approach to
 | **Aligner Compatibility** | Requires bisulfite-aware aligners | Compatible with standard aligners |
 
 > [!NOTE]
-> With `--taps`, the aligner defaults to `bwamem3`, which aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth` also work with `--taps`. The `bwamem3` default only applies when `--taps` is given on the command line or in `-params-file`: if you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too.
+> With `--taps`, the aligner defaults to `bwamem3`, which aligns in TAPS mode (`bwa-mem3 mem --meth=taps`). `--aligner bwamem` and `--aligner bwameth` also work with `--taps`. The `bwamem3` default only applies when `--taps` is given on the command line or in `-params-file`: if you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too, or the run uses Bismark's TAPS mode (see [Illumina 5-Base and TAPS](#illumina-5-base-and-taps-rastair-or-bismark)).
 
 #### Automatic Parameter Configuration
 
@@ -155,7 +156,7 @@ When `--taps` is specified, the pipeline automatically:
 
 - Uses bwa-mem3 to align, unless `--aligner` is set
 - Uses Rastair for methylation calling (TAPS conversion analysis; see `--taps_caller`)
-- Validates aligner compatibility (stops with an error for `--aligner bismark` or `bismark_hisat`)
+- Validates aligner compatibility (stops with an error for `--aligner bismark_hisat`; `--aligner bismark` runs Bismark's TAPS mode instead of rastair)
 - Configures appropriate deduplication (Picard MarkDuplicates for TAPS)
 
 > [!NOTE]
@@ -223,9 +224,44 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
 
+### Illumina 5-Base and TAPS: rastair or Bismark
+
+Illumina 5-Base and TAPS libraries both convert **methylated** cytosine to thymine, so the reads align to the unconverted genome and a read `T` at a genomic `C` is a methylated call. Both chemistries run on either route; the chemistry flag says what the data are, and `--aligner` picks the route:
+
+| Flags                                | Alignment                            | Methylation calls                                            | Default aligner for the flag   |
+| ------------------------------------ | ------------------------------------ | ------------------------------------------------------------ | ------------------------------ |
+| `--taps --aligner bwamem3`           | bwa-mem3 `--meth=taps`               | rastair 0.8, or rastair version 2 (`--taps_caller`)          | `--taps` → `bwamem3`           |
+| `--illumina_5base --aligner bwamem3` | bwa-mem3 `--meth=taps`, as `--taps`  | rastair 0.8, or rastair version 2 (`--taps_caller`)          |                                |
+| `--illumina_5base --aligner bismark` | `bismark --illumina_5base --bwamem3` | Bismark (extractor, bedGraph, coverage, `--cytosine_report`) | `--illumina_5base` → `bismark` |
+| `--taps --aligner bismark`           | `bismark --taps --bwamem3`           | Bismark                                                      |                                |
+
+`--taps` keeps the default it already had (bwa-mem3 and rastair), so existing TAPS runs don't change; `--illumina_5base` uses the pipeline's default aligner, Bismark.
+
+bwa-mem3 treats 5-Base and TAPS as the same chemistry, so `--illumina_5base --aligner bwamem3` gives the same results as `--taps --aligner bwamem3`, and Bismark's two modes give the same alignments. Like `--taps`, `--illumina_5base` also works with `--aligner bwamem` and `--aligner bwameth`. TAPS converts 5mC and 5hmC alike, so a TAPS call is their sum.
+
+Which route to choose:
+
+- **rastair** (the default TAPS caller) is the route most TAPS users know. rastair version 2 also calls SNVs and indels, so a genuine `C>T` variant isn't read as methylation; it is free for non-commercial use only (see [rastair version 2](#rastair-version-2---taps_caller-rastair2)).
+- **Bismark** gives Bismark's outputs and reports: alignment and deduplication reports, M-bias, bedGraph and coverage files, the cytosine report (`--cytosine_report`), bismark2report and bismark2summary, all in the same layout as a bisulfite Bismark run. It does not call variants.
+
+5-Base libraries are paired-end and directional, and Bismark's mode requires this: it rejects single-end samples (the run stops when the samplesheet is read), and `--non_directional`, `--pbat`, `--zymo`, `--single_cell`, `--rrbs`, `--combined_index`, `--slamseq`, `--nomeseq`, `--em_seq`, `--accel`, `--local_alignment`, `--relax_mismatches`, `--minins`, `--maxins`, `--known_splices`, `--run_methurator`, `--with_umi` and `--unmapped` (Bismark writes no unmapped reads in this mode yet). On the rastair route, 5-Base data are handled as TAPS data, single-end samples included (see the rastair 0.8 warning above).
+
+All four rows use the same bwa-mem3 `--meth` index: `--bwamem3_index`, or one the pipeline builds from `--fasta` (see [bwa-mem3 index for human and other large genomes](#bwa-mem3-index-for-human-and-other-large-genomes)); iGenomes has none, so `--genome` builds it. Build it from the same FASTA as `--fasta`: Bismark checks the contig names and lengths before it aligns. Bismark's mode needs no Bismark genome preparation, so `--bismark_index` is ignored, and the FASTA file name must end in `.fa` or `.fasta` (optionally gzipped); the run stops at launch otherwise. Without genome preparation, Bismark's FASTA format checks are skipped.
+
+```bash
+nextflow run nf-core/methylseq --input samplesheet.csv --fasta genome.fa --bwamem3_index bwamem3_index/ --illumina_5base --aligner bismark --outdir results -profile docker
+```
+
+The two routes filter differently:
+
+- Bismark keeps properly paired reads at any MAPQ, and makes no call from a read base below `--five_base_baseq` (Phred, 0 by default: off). Read ends are trimmed at extraction with `--ignore_r1`, `--ignore_r2` (2 by default), `--ignore_3prime_r1` and `--ignore_3prime_r2` (2 by default); check the M-bias report (`bismark/methylation_calls/mbias/`) and adjust them. `--trim_OT`/`--trim_OB` and `--taps_caller` don't apply.
+- rastair applies its own MAPQ and base-quality filters and estimates read-end trims from each sample's M-bias (see [TAPS read-end trimming](#taps-read-end-trimming-m-bias)).
+
+Bismark always aligns 5-Base data with bwa-mem3 here; its other 5-Base engines (minimap2, Bowtie 2, HISAT2) and its duplex, consensus, variant-deconvolution and read-name UMI options are not available in the pipeline. See the Bismark docs for [5-Base](https://felixkrueger.github.io/Bismark/rust/illumina-5-base/) and [TAPS](https://felixkrueger.github.io/Bismark/rust/taps/).
+
 ### UMIs (optional)
 
-`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It is only supported with `--aligner bwamem3`, for TAPS (`--taps`) and for bisulfite or EM-seq data.
+`--with_umi` uses unique molecular identifiers (UMIs) to mark duplicates. Reads that share a mapping position and strand are then duplicates only if their UMIs match too. It is only supported with `--aligner bwamem3`, for TAPS and 5-Base data (`--taps`, `--illumina_5base`) and for bisulfite or EM-seq data.
 
 ```bash
 nextflow run nf-core/methylseq \
@@ -275,7 +311,7 @@ nextflow run nf-core/methylseq \
   --collecthsmetrics
 ```
 
-This filters methylation bedGraphs and Bismark coverage files to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. For TAPS data it filters the rastair CpG calls instead, from either `--taps_caller`.
+This filters methylation bedGraphs and Bismark coverage files to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) it filters the rastair CpG calls instead, from either `--taps_caller`.
 
 For bisulfite data, a target on a contig that the FASTA lacks is skipped and a target that runs past its contig end is clipped, with a warning; the run stops if no target fits. Picard and riker use the targets as given.
 

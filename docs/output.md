@@ -130,7 +130,7 @@ Unless you give a pre-built index, the pipeline builds the reference files for y
 
 **Output directory: `results/<aligner>/reference_genome/`**
 
-- This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3. The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
+- This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3 (also under `results/bismark/reference_genome/` for Bismark's 5-Base/TAPS mode, which builds no `BismarkIndex/`). The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
 
 > **NB:** These files are only built when no pre-built index is given, and only saved with `--save_reference`.
 
@@ -183,6 +183,7 @@ Bismark and bwa-meth convert all Cytosines contained within the sequenced reads 
 
 **Bismark output directory: `results/bismark/alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
+_With `--illumina_5base` or `--taps` and `--aligner bismark`, Bismark aligns with bwa-mem3: the files are named `*_bismark_bwamem3_pe*`, the report names the bwa-mem3 version (and `Library chemistry: TAPS (mC->T)` for `--taps`), and no unmapped reads are written._
 
 - `sample.bam`
   - Aligned reads in BAM format.
@@ -347,7 +348,7 @@ If `--run_targeted_sequencing` is set to `true`, the pipeline performs additiona
 
 #### Filtered Methylation Calls
 
-BedGraph files, and for Bismark the coverage files, are filtered using the BED file passed to `--target_regions_file`. For TAPS data the rastair CpG calls are filtered instead (`*.rastair_call.txt` from `--taps_caller rastair`, the CpG BED from `--taps_caller rastair2`). A CpG that a target edge cuts is kept on both strands; calls in other contexts are kept only inside a target.
+BedGraph files, and for Bismark the coverage files, are filtered using the BED file passed to `--target_regions_file`. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) the rastair CpG calls are filtered instead (`*.rastair_call.txt` from `--taps_caller rastair`, the CpG BED from `--taps_caller rastair2`). A CpG that a target edge cuts is kept on both strands; calls in other contexts are kept only inside a target.
 
 **Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
 **bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**

@@ -197,12 +197,49 @@ def validateInputParameters() {
     if (!fasta) {
         error("No reference FASTA: give --fasta, or a --genome with one (a fasta set to null in a config or params file overrides --genome). Every aligner needs it, even with a pre-built index such as --bismark_index or --bwameth_index.")
     }
+    // Bismark finds the FASTA in its genome folder by these extensions only
+    def fasta_name = fasta.toString().tokenize('/').last()
+    if (bismarkBwamem3() && !(fasta_name.replaceFirst(/\.gz$/, '') ==~ /.+\.(fa|fasta)$/)) {
+        error("Bismark's 5-Base/TAPS mode (--aligner bismark) needs a FASTA named *.fa or *.fasta (optionally .gz): rename ${fasta_name}.")
+    }
 
     // --relax_mismatches sets an L,... --score_min, which Bowtie 2 --local rejects
     if (params.aligner == 'bismark' && params.local_alignment && params.relax_mismatches) {
         error("--relax_mismatches can't be combined with --local_alignment for --aligner bismark: Bowtie 2 --local needs a G,... --score_min. Drop --relax_mismatches (Bowtie 2's local default G,20,8 applies) or use --aligner bismark_hisat.")
     }
 
+    // TAPS and Illumina 5-Base read methylated C as T; with --aligner bismark, Bismark aligns with bwa-mem3 and calls
+    if (params.taps && params.illumina_5base) {
+        error("--taps and --illumina_5base can't be combined: pick the one that matches the library. Both run the same alignment.")
+    }
+    if (isMcToT() && params.aligner == 'bismark_hisat') {
+        error(
+            "${params.taps ? '--taps' : '--illumina_5base'} is not supported with --aligner bismark_hisat: Bismark's 5-Base/TAPS mode aligns with bwa-mem3. " +
+            "Use --aligner bismark for Bismark calls, or --aligner bwamem3 for rastair calls."
+        )
+    }
+    if (bismarkBwamem3()) {
+        def unsupported = [
+            'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'combined_index', 'slamseq', 'nomeseq', 'em_seq', 'accel',
+            'local_alignment', 'relax_mismatches', 'minins', 'maxins', 'known_splices', 'run_methurator', 'with_umi', 'unmapped',
+        ].findAll { option -> params[option] }.collect { option -> "--${option}" }
+        if (unsupported) {
+            error(
+                "${unsupported.join(', ')} can't be combined with ${params.taps ? '--taps' : '--illumina_5base'} --aligner bismark: Bismark's 5-Base/TAPS mode " +
+                "takes paired-end, directional libraries, aligns with bwa-mem3 and writes no unmapped reads. " +
+                "The rastair route (--aligner bwamem3) is the alternative where it supports the option."
+            )
+        }
+        if (params.taps) {
+            log.warn("--taps with --aligner bismark: Bismark aligns with bwa-mem3 and makes the calls; rastair is not run. Use --aligner bwamem3 for rastair calls (a config or profile that sets `taps = true` leaves the aligner at bismark).")
+        }
+        else {
+            log.info("--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3 and makes the calls. Use --aligner bwamem3 for rastair calls.")
+        }
+    }
+    else if (params.illumina_5base) {
+        log.info("--illumina_5base with --aligner ${params.aligner}: aligned and called as --taps would be (${params.aligner == 'bwamem3' ? 'bwa-mem3 --meth=taps' : params.aligner}, then --taps_caller ${params.taps_caller}).")
+    }
     // --combined_index (opt-in, nf-core/methylseq#615) launch-time sanity warnings.
     if (params.combined_index) {
         if (!params.aligner.startsWith('bismark')) {
@@ -218,7 +255,7 @@ def validateInputParameters() {
     // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
     // point users with large genomes at a pre-built --bwamem3_index.
     def bwamem3_index = params.containsKey('bwamem3_index') ? params.bwamem3_index : getGenomeAttribute('bwamem3')
-    if (params.aligner == 'bwamem3' && !bwamem3_index && fasta) {
+    if ((params.aligner == 'bwamem3' || bismarkBwamem3()) && !bwamem3_index && fasta) {
         def fasta_bytes = 0L
         try { fasta_bytes = file(fasta).size() } catch (Exception _e) { }
         // A gzipped FASTA is about a third of its uncompressed size, which is what the index build scales with
@@ -240,26 +277,16 @@ def validateInputParameters() {
         // bwa-mem3 `--meth` seeds read 1 as C->T and read 2 as G->A, so it only handles directional libraries
         if (params.aligner == 'bwamem3') {
             error(
-                "--aligner bwamem3 only supports directional libraries: ${non_directional_options.join(', ')} not supported. " +
-                "Use --aligner bismark for PBAT or non-directional libraries."
+                "--aligner bwamem3 only supports directional libraries: ${non_directional_options.join(', ')} not supported." +
+                (isMcToT() ? '' : " Use --aligner bismark for PBAT or non-directional libraries.")
             )
         }
         if (params.aligner == 'bwameth') {
-            log.warn("bwa-meth aligns directional libraries only: ${non_directional_options.join(', ')} only change trimming with --aligner bwameth. Use --aligner bismark for PBAT or non-directional libraries.")
+            log.warn("bwa-meth aligns directional libraries only: ${non_directional_options.join(', ')} only change trimming with --aligner bwameth.${isMcToT() ? '' : ' Use --aligner bismark for PBAT or non-directional libraries.'}")
         }
         if (isTaps() && params.taps_caller == 'rastair') {
             log.warn("rastair 0.8 (--taps_caller rastair) assumes directional libraries: ${non_directional_options.join(', ')} are ignored when calling. --taps_caller rastair2 guesses each read's orientation instead.")
         }
-    }
-    // TAPS calling needs a FASTA index and an aligner without bisulfite methylation extraction
-    // nextflow.config defaults --aligner to bwamem3 for --taps, but only sees --taps given on the command line or
-    // in -params-file: a config or profile that sets `taps = true` leaves the aligner at bismark.
-    if (params.taps && params.aligner.startsWith('bismark')) {
-        error(
-            "--taps is not supported with --aligner ${params.aligner}: use --aligner bwamem3 (recommended), bwameth or bwamem. " +
-            "If you set `taps = true` in a config file or profile, set `aligner = 'bwamem3'` there too: " +
-            "--taps only changes the default aligner when given on the command line or in -params-file."
-        )
     }
     // MethylDackel writes methylKit files instead of bedGraphs, which the targeted analysis reads
     if (params.methyl_kit && params.run_targeted_sequencing && params.aligner in ['bwameth', 'bwamem3'] && !isTaps()) {
@@ -285,28 +312,35 @@ def validateInputParameters() {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
     }
     if (params.run_methurator && isTaps()) {
-        error("--run_methurator is not supported with TAPS data (--taps or --aligner bwamem): methurator relies on MethylDackel.")
+        error("--run_methurator is not supported with TAPS data or Illumina 5-Base data (--taps, --illumina_5base or --aligner bwamem): methurator relies on MethylDackel.")
     }
     // Options that only apply to some steps: say so instead of ignoring them
     def ignored_options = [
-        [!isTaps() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to TAPS data (--taps or --aligner bwamem); they are ignored'],
-        [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
-        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on TAPS data; it is ignored'],
+        [!isTaps() && !bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); they are ignored'],
+        [bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls; with --aligner bismark trim read ends with --ignore_r1, --ignore_r2, --ignore_3prime_r1 or --ignore_3prime_r2. They are ignored'],
+        [bismarkBwamem3() && params.taps_caller != 'rastair', "--taps_caller only applies to rastair calls (--aligner bwamem3, bwameth or bwamem); with --aligner bismark, Bismark makes the calls. It is ignored"],
+        [bismarkBwamem3() && params.accept_rastair2_license, '--accept_rastair2_license only applies with --taps_caller rastair2 on the rastair route; it is ignored'],
+        [params.five_base_baseq && !bismarkBwamem3(), "--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark)${isTaps() ? '; rastair applies its own base-quality filter' : ''}. It is ignored"],
+        [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
+        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
         [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
         [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
         [userParam('bismark_index') && !params.aligner.startsWith('bismark'), "--bismark_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bismark_index') && bismarkBwamem3(), "--bismark_index is not used by Bismark's 5-Base/TAPS mode, which aligns with bwa-mem3 against the FASTA (--bwamem3_index); it is ignored"],
         [userParam('bwameth_index') && params.aligner != 'bwameth', "--bwameth_index only applies to --aligner bwameth; it is ignored for --aligner ${params.aligner}"],
         [userParam('bwamem_index') && params.aligner != 'bwamem', "--bwamem_index only applies to --aligner bwamem${params.aligner == 'bwamem3' ? ' (use --bwamem3_index for bwa-mem3)' : ''}; it is ignored"],
-        [userParam('bwamem3_index') && params.aligner != 'bwamem3', "--bwamem3_index only applies to --aligner bwamem3; it is ignored for --aligner ${params.aligner}"],
+        [userParam('bwamem3_index') && params.aligner != 'bwamem3' && !bismarkBwamem3(), "--bwamem3_index only applies to --aligner bwamem3 and to Bismark's 5-Base/TAPS mode; it is ignored for --aligner ${params.aligner}"],
     ]
     ignored_options.findAll { entry -> entry[0] }.each { entry -> log.warn("${entry[1]}.") }
     // rastair 2 and newer is distributed under a non-commercial license: require an explicit opt-in.
     if (params.taps_caller == 'rastair2') {
         if (!isTaps()) {
-            log.warn("--taps_caller rastair2 only applies to TAPS data (--taps or --aligner bwamem); it is ignored.")
+            if (!bismarkBwamem3()) {
+                log.warn("--taps_caller rastair2 only applies to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); it is ignored.")
+            }
         }
         else if (!params.accept_rastair2_license) {
             error(
@@ -324,9 +358,6 @@ def validateInputParameters() {
     }
 }
 
-//
-// TAPS data: --taps, or --aligner bwamem (TAPS only). --taps_caller picks the methylation caller.
-//
 //
 // Fail before alignment when a sample can't give fgumi its UMIs
 //
@@ -363,8 +394,28 @@ def checkUmiInput(meta, reads) {
     }
 }
 
+//
+// TAPS or Illumina 5-Base data: methylated C reads as T.
+// Keep in sync with conf/modules/bwamem3_mem.config and conf/subworkflows/fastq_align_dedup_umi_bwamem3.config
+//
+def isMcToT() {
+    return params.taps || params.illumina_5base
+}
+
+//
+// Bismark's 5-Base/TAPS mode: Bismark aligns with bwa-mem3 and calls.
+// Keep in sync with conf/modules/bismark_align.config
+//
+def bismarkBwamem3() {
+    return params.aligner == 'bismark' && isMcToT()
+}
+
+//
+// The rastair route for TAPS and 5-Base data.
+// Keep in sync with conf/modules/bedtools_intersect.config
+//
 def isTaps() {
-    return params.taps || params.aligner == 'bwamem'
+    return (isMcToT() || params.aligner == 'bwamem') && !params.aligner.startsWith('bismark')
 }
 
 //
@@ -384,6 +435,10 @@ def validateInputSamplesheet(input) {
     def endedness_ok = metas.collect { meta -> meta.single_end }.unique().size == 1
     if (!endedness_ok) {
         error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+    }
+
+    if (bismarkBwamem3() && metas[0].single_end) {
+        error("Please check input samplesheet -> sample ${metas[0].id} is single-end: Bismark's 5-Base/TAPS mode (${params.taps ? '--taps' : '--illumina_5base'} --aligner bismark) needs paired-end reads.")
     }
 
     // Trim Galore's --fastqc_raw stages each input as <sample>[_1|_2]_raw.fastq.gz and refuses to overwrite it
