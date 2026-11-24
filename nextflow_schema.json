@@ -129,7 +129,7 @@
                     "type": "string",
                     "format": "path",
                     "description": "Path to a bwa-mem3 methylation index (built with `bwa-mem3 index --meth`): a directory, a .tar.gz, or an index prefix.",
-                    "help_text": "Only used with `--aligner bwamem3`; the same index serves TAPS and bisulfite data. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta` (use `--save_reference` to keep it). For human and other large genomes, build it once beforehand (`bwa-mem3 index --meth --meth-only genome.fa`) and pass it here: the pipeline's index step requests 560 MB of memory per 10 MB of FASTA, about 175 GB for hg38 (see the usage docs).",
+                    "help_text": "Used with `--aligner bwamem3`, and by Bismark's 5-Base/TAPS mode (`--illumina_5base` or `--taps` with `--aligner bismark`); the same index serves TAPS, 5-Base and bisulfite data. Either a directory (or `.tar.gz`) holding one index, or the index prefix, e.g. `s3://bucket/genomes/hg38.fa` for `hg38.fa.{amb,ann,pac}` and `hg38.fa.meth.{amb,ann,bwt.2bit.64,pac}` (useful when several genomes share a folder). If not given, the pipeline builds it from `--fasta` (use `--save_reference` to keep it). For human and other large genomes, build it once beforehand (`bwa-mem3 index --meth --meth-only genome.fa`) and pass it here: the pipeline's index step requests 560 MB of memory per 10 MB of FASTA, about 175 GB for hg38 (see the usage docs).",
                     "fa_icon": "far fa-dot-circle"
                 },
                 "igenomes_ignore": {
@@ -157,10 +157,10 @@
                 "aligner": {
                     "type": "string",
                     "default": "bismark",
-                    "description": "Alignment tool to use. Defaults to `bwamem3` when `--taps` is given on the command line or in `-params-file`.",
+                    "description": "Alignment tool to use. Defaults to `bwamem3` when `--taps` is given on the command line or in `-params-file`; `--illumina_5base` keeps `bismark`.",
                     "fa_icon": "fas fa-dot-circle",
                     "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem", "bwamem3"],
-                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\n`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment. With `--taps` it runs in TAPS mode (`mem --meth=taps`) and rastair calls methylation (see `--taps_caller`); without `--taps` it aligns bisulfite/EM-seq reads (`mem --meth`) and MethylDackel extracts methylation."
+                    "help_text": "The nf-core/methylseq package is actually two pipelines in one. The default workflow uses [Bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) with [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) as alignment tool: unless specified otherwise, nf-core/methylseq will run this pipeline.\n\nSince bismark v0.21.0 it is also possible to use [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as alignment tool. To run this workflow, invoke the pipeline with the command line flag `--aligner bismark_hisat`. HISAT2 also supports splice-aware alignment if analysis of RNA is desired (e.g. [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments), a file containing a list of known splicesites can be provided with `--known_splices`.\n\nThe second workflow uses [BWA-Meth](https://github.com/brentp/bwa-meth) and [MethylDackel](https://github.com/dpryan79/methyldackel) instead of Bismark. To run this workflow, run the pipeline with the command line flag `--aligner bwameth`.\n\n`--aligner bwamem3` aligns with [bwa-mem3](https://github.com/fg-labs/bwa-mem3), which accounts for base conversions during alignment. With `--taps` or `--illumina_5base` it runs in TAPS mode (`mem --meth=taps`, the same chemistry as 5-Base) and rastair calls methylation (see `--taps_caller`); without them it aligns bisulfite/EM-seq reads (`mem --meth`) and MethylDackel extracts methylation.\n\nWith `--taps` or `--illumina_5base`, `--aligner bismark` runs Bismark's 5-Base/TAPS mode instead: Bismark aligns with bwa-mem3 and makes the calls (see the usage docs)."
                 },
                 "use_mem2": {
                     "type": "boolean",
@@ -182,7 +182,13 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-outdent",
                     "description": "Preset for working with TET-assisted pyridine borane sequencing (TAPS) libraries.",
-                    "help_text": "Specify this parameter when working with TAPS libraries. The aligner then defaults to `bwamem3`; `--aligner bwameth` and `--aligner bwamem` also work.\n\nThis is also set if you set the aligner to `bwamem`. With `--aligner bwamem3` it selects TAPS mode (`bwa-mem3 mem --meth=taps`); without it, bwa-mem3 aligns bisulfite/EM-seq data."
+                    "help_text": "Specify this parameter when working with TAPS libraries. The aligner then defaults to `bwamem3`; `--aligner bwameth` and `--aligner bwamem` also work.\n\nThis is also set if you set the aligner to `bwamem`. With `--aligner bwamem3` it selects TAPS mode (`bwa-mem3 mem --meth=taps`); without it, bwa-mem3 aligns bisulfite/EM-seq data.\n\nWith `--aligner bismark`, Bismark aligns with bwa-mem3 (`bismark --taps --bwamem3`) and makes the calls instead of rastair. A config or profile that sets `taps = true` leaves the aligner at `bismark`."
+                },
+                "illumina_5base": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-outdent",
+                    "description": "Preset for Illumina 5-Base libraries (methylated C reads as T).",
+                    "help_text": "Specify this parameter when working with Illumina 5-Base libraries, which are paired-end and directional. The aligner picks the route: with `--aligner bwamem3` the data are aligned and called exactly as with `--taps` (bwa-mem3 `--meth=taps`, then rastair, see `--taps_caller`), and `--aligner bwamem` and `bwameth` work as they do with `--taps`; with `--aligner bismark` (the default), Bismark aligns with bwa-mem3 (`bismark --illumina_5base --bwamem3`) and makes the calls. `--aligner bwamem3` and `--aligner bismark` both use the bwa-mem3 index (`--bwamem3_index`). See the usage docs."
                 },
                 "pbat": {
                     "type": "boolean",
@@ -392,6 +398,15 @@
                     "fa_icon": "fas fa-dna",
                     "description": "Merges methylation calls for every strand into a single, context dependent file.",
                     "help_text": "By default `bismark_methylation_extractor` will produce a strand-specific output named as OT, OB, CTOT or CTOB. This flag will merge all strands into a single, context dependent file."
+                },
+                "five_base_baseq": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 93,
+                    "fa_icon": "fas fa-filter",
+                    "description": "Minimum base quality (Phred) for a methylation call in Bismark's 5-Base/TAPS mode; 0 is off.",
+                    "help_text": "Passed to Bismark as `--five_base_baseq` with `--illumina_5base` or `--taps` and `--aligner bismark`: calls from read bases below this quality are not made (the BAM sequence is unchanged). rastair applies its own base-quality filter on the rastair route."
                 }
             }
         },

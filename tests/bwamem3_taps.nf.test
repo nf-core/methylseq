@@ -53,6 +53,51 @@ nextflow_pipeline {
         }
     }
 
+    // --illumina_5base on the rastair route runs exactly what --taps runs
+    test("Params: bwamem3 | illumina_5base") {
+        when {
+            params {
+                input          = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta          = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index    = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner        = "bwamem3"
+                illumina_5base = true
+                outdir         = "$outputDir"
+            }
+        }
+
+        then {
+            def mem_scripts = []
+            new File(workDir.toString()).eachFileRecurse { script ->
+                if (script.name == '.command.sh' && script.text.contains('bwa-mem3') && script.text.contains(' mem ')) {
+                    mem_scripts << script.text
+                }
+            }
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            def methylation = path("$outputDir/rastair/methylkit/taps_pe.rastair_methylkit.txt.gz").linesGzip.drop(1).collect { line ->
+                def fields = line.split('\t')
+                [ fields[1], (fields[4] as double) * (fields[5] as double) / 100, fields[4] as double ]
+            }.groupBy { row -> row[0] }.collectEntries { contig, rows ->
+                [ (contig): rows.sum { row -> row[1] } / rows.sum { row -> row[2] } ]
+            }
+            assertAll(
+                { assert workflow.success },
+                { assert mem_scripts.size() >= 2 && mem_scripts.every { script -> script.contains('--meth=taps') } },
+                { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },
+                { assert methylation['2kb_3_Unmodified'] < 0.1 },
+                // expected to equal the Params: bwamem3 | taps snapshot entry
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+
     test("Params: bwamem3 | taps | trim_OT, trim_OB") {
         when {
             params {

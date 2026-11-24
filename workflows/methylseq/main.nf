@@ -25,6 +25,7 @@ include { softwareVersionsToYAML        } from '../../subworkflows/nf-core/utils
 include { methodsDescriptionText        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { bismarkBwamem3                } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
@@ -137,19 +138,22 @@ workflow METHYLSEQ {
         //
         // Run Bismark alignment + downstream processing
         //
+        // Bismark's 5-Base/TAPS mode takes the bwa-mem3 index (in the bwamem slot) and no Bismark index
         ch_bismark_inputs = ch_reads
             .combine(ch_fasta)
-            .combine(ch_bismark_index)
-            .multiMap { meta, reads, meta_fasta, fasta, meta_bismark, bismark_index ->
+            .combine(bismarkBwamem3() ? ch_bwamem_index : ch_bismark_index)
+            .multiMap { meta, reads, meta_fasta, fasta, meta_index, index ->
                 reads: [meta, reads]
                 fasta_fai: [meta_fasta, fasta, []]
-                bismark_index: [meta_bismark, bismark_index]
+                bismark_index: bismarkBwamem3() ? [[:], []] : [meta_index, index]
+                bwamem3_index: bismarkBwamem3() ? [meta_index, index] : [[:], []]
             }
 
         FASTQ_ALIGN_DEDUP_BISMARK(
             ch_bismark_inputs.reads,
             ch_bismark_inputs.fasta_fai,
             ch_bismark_inputs.bismark_index,
+            ch_bismark_inputs.bwamem3_index,
             params.skip_deduplication || params.rrbs,
             params.cytosine_report || params.nomeseq,
         )

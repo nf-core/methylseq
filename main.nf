@@ -21,6 +21,7 @@ include { PIPELINE_INITIALISATION   } from './subworkflows/local/utils_nfcore_me
 include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { bwamem3IndexChannel       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { bismarkBwamem3            } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { METHYLSEQ                 } from './workflows/methylseq/'
 
 /*
@@ -60,8 +61,10 @@ workflow NFCORE_METHYLSEQ {
     ch_or_val_fasta_index   = params.fasta_index   ? channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bismark_index = params.bismark_index ? channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bwameth_index = params.bwameth_index ? channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
-    // bwa-mem3 reuses the bwamem index slot: FASTA_INDEX_METHYLSEQ builds or untars a `bwa-mem3 index --meth` index for it
-    ch_or_val_bwamem_index  = params.aligner == 'bwamem3'
+    // bwa-mem3 reuses the bwamem index slot: FASTA_INDEX_METHYLSEQ builds or untars a `bwa-mem3 index --meth` index for it.
+    // Bismark's 5-Base/TAPS mode aligns with bwa-mem3 too, so it gets the same index and no Bismark genome preparation.
+    def index_aligner       = bismarkBwamem3() ? 'bwamem3' : params.aligner
+    ch_or_val_bwamem_index  = index_aligner == 'bwamem3'
         ? bwamem3IndexChannel(params.bwamem3_index)
         : (params.bwamem_index ? channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : [])
 
@@ -74,7 +77,7 @@ workflow NFCORE_METHYLSEQ {
         ch_or_val_bismark_index,
         ch_or_val_bwameth_index,
         ch_or_val_bwamem_index,
-        params.aligner,
+        index_aligner,
         // Picard, riker and the targeted analysis need the FASTA index
         params.collecthsmetrics || params.run_riker || params.run_targeted_sequencing,
         params.run_methurator,

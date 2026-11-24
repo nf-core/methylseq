@@ -12,12 +12,12 @@
                     },
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
+                        "git_sha": "eb13ab24cadb67837f81816c71f5365f46e87592",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/coverage2cytosine": {
                         "branch": "master",
-                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
+                        "git_sha": "eb13ab24cadb67837f81816c71f5365f46e87592",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/deduplicate": {
@@ -37,12 +37,12 @@
                     },
                     "bismark/report": {
                         "branch": "master",
-                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
+                        "git_sha": "eb13ab24cadb67837f81816c71f5365f46e87592",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/summary": {
                         "branch": "master",
-                        "git_sha": "46842d1ee933d20b78619d513aef7713ed121d72",
+                        "git_sha": "eb13ab24cadb67837f81816c71f5365f46e87592",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bwa/index": {
@@ -317,7 +317,7 @@
                     },
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
-                        "git_sha": "ce6f52deb738506cf6d1cac648cb12fa9cc723ff",
+                        "git_sha": "eb13ab24cadb67837f81816c71f5365f46e87592",
                         "installed_by": ["subworkflows"]
                     },
                     "fastq_align_dedup_bwamem": {
