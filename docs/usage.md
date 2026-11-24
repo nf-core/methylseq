@@ -332,7 +332,7 @@ nextflow run nf-core/methylseq \
 
 This adds a per-sample methylation summary to the MultiQC report. It has CpG methylation, CpGs covered and mean CpG depth in General Statistics, a CpG methylation distribution and a table of CpG methylation per contig. With MethylDackel and `--all_contexts`, it also has CHG and CHH methylation. The genome-wide figures leave out organelles, decoys and the control contigs. The per-contig table shows the controls on their own: for an unmethylated control, its CpG methylation is the non-conversion rate. To get the summary without control contigs, use `--run_methylation_summary`.
 
-The summary reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`) or the Bismark coverage files (`--aligner bismark` or `bismark_hisat`). It is not available with `--methyl_kit` or `--nomeseq`. TAPS data with `--taps_caller rastair2` always gets this summary, and `--control_contigs` applies to it too.
+The summary reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`) or the Bismark coverage files (`--aligner bismark` or `bismark_hisat`). It is not available with `--methyl_kit` or `--nomeseq`. Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary, and `--control_contigs` applies to it too.
 
 ## Samplesheet input
 

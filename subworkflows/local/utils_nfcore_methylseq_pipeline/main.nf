@@ -324,7 +324,7 @@ def validateInputParameters() {
         [params.five_base_baseq && !bismarkBwamem3(), "--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark)${isTaps() ? '; rastair applies its own base-quality filter' : ''}. It is ignored"],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
         [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
-        [methylation_summary && isTaps() && params.taps_caller != 'rastair2', '--run_methylation_summary and --control_contigs do not apply to TAPS data with --taps_caller rastair; they are ignored'],
+        [methylation_summary && isTaps() && params.taps_caller != 'rastair2', '--run_methylation_summary and --control_contigs do not apply to rastair 0.8 calls (--taps_caller rastair); they are ignored'],
         [methylation_summary && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary and --control_contigs are ignored'],
         [methylation_summary && !isTaps() && !params.aligner.startsWith('bismark') && params.methyl_kit, 'MethylDackel writes methylKit files instead of bedGraphs with --methyl_kit, so --run_methylation_summary and --control_contigs are ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
