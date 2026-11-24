@@ -2,15 +2,17 @@
 #
 # Summarise per-CpG methylation calls as MultiQC custom content.
 #
-# Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>...
+# Usage: methylation_summary.sh [-f rastair2|rastair|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>...
 #
 #   -f  input format (default rastair2):
 #         rastair2  one rastair version 2 CpG BED (`rastair call --bed`); columns found by name in the
 #                   header (unmod, mod, cpg), and only reference CpGs (cpg == REF) counted
+#         rastair   one rastair 0.8 call file (`*.rastair_call.txt`): the same columns without cpg, as it
+#                   only reports reference CpGs
 #         bedgraph  MethylDackel bedGraphs or Bismark coverage files (chrom, start, end, %, methylated,
 #                   unmethylated), plain or gzipped. A file named *_CHG.* or *_CHH.* holds that context;
 #                   any other holds CpGs.
-#   -n  tool name for the MultiQC IDs and column names: rastair2 (default), methyldackel or bismark
+#   -n  tool name for the MultiQC IDs and column names: rastair2 (default), rastair, methyldackel or bismark
 #   -l  label for one of several summaries per sample (e.g. a target panel): added to the file names, MultiQC
 #       IDs and column names (lower case, with . and - as _) and to the section and column titles
 #   -H  hide the General Statistics columns by default (they can still be shown in the report)
@@ -37,7 +39,7 @@ set -euo pipefail
 export LC_ALL=C
 
 usage() {
-    echo "Usage: methylation_summary.sh [-f rastair2|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>..." >&2
+    echo "Usage: methylation_summary.sh [-f rastair2|rastair|bedgraph] [-n name] [-l label] [-H] [-d min_depth] [-c control_contigs] [--] <sample> <file>..." >&2
     exit 2
 }
 
@@ -61,8 +63,8 @@ while getopts "f:n:l:Hd:c:" opt; do
 done
 shift $((OPTIND - 1))
 [ $# -ge 2 ] || usage
-[[ $format == rastair2 || $format == bedgraph ]] || { echo "methylation_summary.sh: -f must be rastair2 or bedgraph, got '$format'" >&2; exit 2; }
-[[ $format == bedgraph || $# -eq 2 ]] || { echo "methylation_summary.sh: -f rastair2 takes one BED" >&2; exit 2; }
+[[ $format == rastair2 || $format == rastair || $format == bedgraph ]] || { echo "methylation_summary.sh: -f must be rastair2, rastair or bedgraph, got '$format'" >&2; exit 2; }
+[[ $format == bedgraph || $# -eq 2 ]] || { echo "methylation_summary.sh: -f $format takes one file" >&2; exit 2; }
 [[ $name =~ ^[a-z0-9_]+$ ]] || { echo "methylation_summary.sh: -n must be lower-case letters, digits and underscores, got '$name'" >&2; exit 2; }
 [[ -z $panel || $panel =~ ^[A-Za-z0-9._-]+$ ]] || { echo "methylation_summary.sh: -l must be letters, digits, '.', '_' and '-', got '$panel'" >&2; exit 2; }
 [[ $min_depth =~ ^[0-9]+$ ]] || { echo "methylation_summary.sh: -d must be a whole number, got '$min_depth'" >&2; exit 2; }
@@ -151,12 +153,12 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         max_logged = 20
         for (i = 0; i < 10; i++) hist[i] = 0
         if (format == "bedgraph") { c_mod = 5; c_unmod = 6; source = "input"; ref = "" }
-        else { source = "BED"; ref = "reference " }
+        else { source = (format == "rastair" ? "calls" : "BED"); ref = "reference " }
     }
     format == "bedgraph" && /^#context\t/ { context = $2; next }
     format == "bedgraph" && /^track / { next }
     /^#/ {
-        if (!rows && !c_cpg) {
+        if (!rows && !c_unmod) {
             sub(/^#/, "")
             for (i = 1; i <= NF; i++) col[$i] = i
             c_unmod = col["unmod"]; c_mod = col["mod"]; c_cpg = col["cpg"]
@@ -170,6 +172,13 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
             failed = 1; exit 1
         }
         if ($c_cpg != "REF") next
+    }
+    format == "rastair" {
+        rows++
+        if (!(c_unmod && c_mod)) {
+            print "methylation_summary.sh: no unmod and mod columns in the header of " sample > "/dev/stderr"
+            failed = 1; exit 1
+        }
     }
     # CHG and CHH: only pooled per contig, for the genome-wide General Statistics columns
     format == "bedgraph" && context != "CpG" {

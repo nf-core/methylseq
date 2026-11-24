@@ -337,9 +337,10 @@ workflow METHYLSEQ {
     // MODULE: Per-sample CpG (and CHG/CHH) methylation summary for MultiQC, with spike-in and control contigs
     // skipped by default. to use run with `--run_methylation_summary` or `--control_contigs`.
     // Bismark --CX (--nomeseq) coverage files mix the cytosine contexts, so they are not summarised.
+    // rastair version 2 calls get RASTAIR2_SUMMARY instead.
     //
-    if ((params.run_methylation_summary || params.control_contigs) && !isTaps() && !(params.aligner =~ /bismark/ && params.nomeseq)) {
-        METHYLATION_SUMMARY(params.aligner =~ /bismark/ ? ch_coverage : ch_bedgraph)
+    if ((params.run_methylation_summary || params.control_contigs) && !(isTaps() && params.taps_caller == 'rastair2') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+        METHYLATION_SUMMARY(isTaps() ? ch_rastair_call : params.aligner =~ /bismark/ ? ch_coverage : ch_bedgraph)
         ch_methylation_summary_mqc = METHYLATION_SUMMARY.out.mqc
             .map { _meta, files -> files }
             .flatten()

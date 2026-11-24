@@ -73,4 +73,39 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("Params: bwamem3 | taps | taps_caller rastair | control_contigs") {
+        when {
+            params {
+                input           = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta           = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index     = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner         = "bwamem3"
+                taps            = true
+                taps_caller     = "rastair"
+                // methylated lambda and an unmodified 2 kb fragment are spiked into the TAPS test data
+                control_contigs = "bacteriophage_lambda_CpG,2kb_3_Unmodified"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def stats = summaryStats(params.outdir, 'bwamem3', 'rastair')
+            def contigs = contigTable(params.outdir, 'bwamem3', 'rastair')
+            assertAll(
+                { assert workflow.success },
+                // rastair 0.8 makes no calls for the single-end sample
+                { assert stats.keySet() == ['taps_pe'] as Set },
+                { assert stats.taps_pe.keySet() == ['rastair_cpg_meth', 'rastair_cpg_sites', 'rastair_cpg_depth'] as Set },
+                { assert contigs.keySet() == ['taps_pe'] as Set },
+                { assert contigs.taps_pe.keySet() == ['chr19', '2kb_3_Unmodified', 'bacteriophage_lambda_CpG'] as Set },
+                { assert (contigs.taps_pe.bacteriophage_lambda_CpG as double) > 90 && (contigs.taps_pe['2kb_3_Unmodified'] as double) < 5 },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stats,
+                    contigs
+                ).match() }
+            )
+        }
+    }
 }

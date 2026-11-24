@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
 name: "methylation_summary"
-description: Summarise MethylDackel bedGraphs or Bismark coverage files as MultiQC custom content (genome-wide CpG, CHG and CHH methylation, per-contig CpG methylation, CpG methylation distribution)
+description: Summarise MethylDackel bedGraphs, Bismark coverage files or rastair 0.8 calls as MultiQC custom content (genome-wide CpG, CHG and CHH methylation, per-contig CpG methylation, CpG methylation distribution)
 keywords:
   - bisulfite
   - methylation
@@ -21,11 +21,12 @@ input:
         type: file
         description: |
           MethylDackel bedGraphs (`*_CpG.bedGraph`, and `*_CHG.bedGraph`/`*_CHH.bedGraph` with `--CHG --CHH`)
-          or a Bismark coverage file (`*.cov.gz`, CpG context only)
-        pattern: "*.{bedGraph,cov.gz}"
+          or a Bismark coverage file (`*.cov.gz`, CpG context only), or with `-f rastair` in `ext.args`
+          a rastair 0.8 call file (`*.rastair_call.txt`)
+        pattern: "*.{bedGraph,cov.gz,rastair_call.txt}"
         ontologies: []
 # `ext.args` is passed to the script as options: `-n <name>` sets the tool name used in the MultiQC IDs and
-# column names (methyldackel or bismark), `-d <n>` the minimum informative reads per CpG for the methylation
+# column names (methyldackel, bismark or rastair), `-d <n>` the minimum informative reads per CpG for the methylation
 # distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
 # genome-wide figures. For several summaries per sample (for example one per target panel), `-l <label>` adds the
 # label to the file names, MultiQC IDs, column names and titles, and `-H` hides the General Statistics columns by

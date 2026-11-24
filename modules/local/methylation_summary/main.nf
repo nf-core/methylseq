@@ -1,5 +1,5 @@
 /*
- * Summarise MethylDackel bedGraphs or Bismark coverage files as MultiQC custom content:
+ * Summarise MethylDackel bedGraphs, Bismark coverage files or rastair 0.8 calls as MultiQC custom content:
  * General Statistics columns, a per-CpG methylation distribution and spike-in/control methylation.
  */
 process METHYLATION_SUMMARY {

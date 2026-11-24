@@ -135,7 +135,7 @@
                 "control_contigs": {
                     "type": "string",
                     "description": "Comma-separated spike-in or control contigs (for example lambda or pUC19) to report on their own in the MultiQC methylation summary.",
-                    "help_text": "List the spike-ins and controls that are in the reference FASTA (for example `--control_contigs J02459.1,pUC19`). They are left out of the genome-wide methylation figures, and the per-contig table shows their CpG methylation: for an unmethylated control such as lambda in a bisulfite or EM-seq library, this is the non-conversion rate. With `--aligner bismark`, `bismark_hisat`, `bwameth` or `bwamem3` on bisulfite or EM-seq data, this also turns on `--run_methylation_summary`. With `--taps_caller rastair2` it replaces `--rastair2_control_contigs`. A listed contig that is not in the data is reported in the task log.",
+                    "help_text": "List the spike-ins and controls that are in the reference FASTA (for example `--control_contigs J02459.1,pUC19`). They are left out of the genome-wide methylation figures, and the per-contig table shows their CpG methylation: for an unmethylated control such as lambda in a bisulfite or EM-seq library, this is the non-conversion rate. With `--aligner bismark`, `bismark_hisat`, `bwameth` or `bwamem3` on bisulfite or EM-seq data, or with `--taps_caller rastair`, this also turns on `--run_methylation_summary`. With `--taps_caller rastair2` it replaces `--rastair2_control_contigs`. A listed contig that is not in the data is reported in the task log.",
                     "pattern": "^[A-Za-z0-9._:|+@~-]+(,[A-Za-z0-9._:|+@~-]+)*$",
                     "fa_icon": "fas fa-vial"
                 },
@@ -648,8 +648,8 @@
                 },
                 "run_methylation_summary": {
                     "type": "boolean",
-                    "description": "Add a per-sample methylation summary of the MethylDackel or Bismark calls to the MultiQC report",
-                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary.",
+                    "description": "Add a per-sample methylation summary of the MethylDackel, Bismark or rastair 0.8 calls to the MultiQC report",
+                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`), or the rastair 0.8 calls (`--taps_caller rastair`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_qualimap": {
