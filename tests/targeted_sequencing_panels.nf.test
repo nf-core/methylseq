@@ -1,0 +1,213 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - Targeted Sequencing with several panels"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // Two overlapping panels: both hold chr:5000-5418
+    def panels = ['genome_target_panel_a', 'genome_target_panel_b']
+    def samples = ['SRR389222_sub1', 'SRR389222_sub2', 'SRR389222_sub3', 'Ecoli_10K_methylated']
+
+    def records = { file -> file.readLines().findAll { line -> !line.startsWith('#') && !line.startsWith('track') } }
+    def overlapStarts = { file -> records(file).collect { line -> line.split('\t') }.findAll { fields -> fields[0] == 'chr' && (fields[1] as long) >= 4999 && (fields[1] as long) < 5419 }.collect { fields -> fields[1] } }
+
+    def scenarios = [
+        [
+            aligner: "bismark",
+            // <bedGraph or cov name without .gz>.<panel>.targeted.<ext>
+            filtered: { outdir, sample, panel -> [
+                "${outdir}/bismark/methylation_calls/bedGraph/${sample}${sample.startsWith('Ecoli') ? '_1_val_1' : '_trimmed'}_bismark_bt2${sample.startsWith('Ecoli') ? '_pe' : ''}.deduplicated.bedGraph.${panel}.targeted.bedGraph",
+                "${outdir}/bismark/methylation_calls/methylation_coverage/${sample}${sample.startsWith('Ecoli') ? '_1_val_1' : '_trimmed'}_bismark_bt2${sample.startsWith('Ecoli') ? '_pe' : ''}.deduplicated.bismark.cov.${panel}.targeted.cov"
+            ] },
+            unlabelled: ['bismark/methylation_calls/bedGraph/*.bedGraph.targeted.bedGraph', 'bismark/methylation_calls/methylation_coverage/*.cov.targeted.cov'],
+            // a sample with calls in the shared region, and one with calls in panel b only
+            overlap_sample: 'SRR389222_sub1',
+            panel_b_sample: 'SRR389222_sub1',
+            summary: [tool: 'bismark', label: 'Bismark', panels: panels, section: 'CpG methylation distribution', contexts: []]
+        ],
+        [
+            aligner: "bwameth",
+            filtered: { outdir, sample, panel -> [
+                "${outdir}/methyldackel/${sample}.markdup.sorted_CpG.${panel}.targeted.bedGraph"
+            ] },
+            unlabelled: ['methyldackel/*_CpG.targeted.bedGraph'],
+            // MethylDackel makes no CpG calls in the shared region on this test data
+            overlap_sample: null,
+            panel_b_sample: 'Ecoli_10K_methylated',
+            // and none at all in panel a, which then gets no summary. Too few CpGs have 5 reads for a distribution
+            summary: [tool: 'methyldackel', label: 'MethylDackel', panels: [panels[1]], section: 'CpG methylation per contig', contexts: ['chg', 'chh']]
+        ]
+    ]
+
+    scenarios.each { scenario ->
+        test("Params: ${scenario.aligner} | run_targeted_sequencing with two panels | collecthsmetrics | run_riker | run_methylation_summary") {
+            when {
+                params {
+                    outdir                  = "${outputDir}"
+                    aligner                 = scenario.aligner
+                    target_regions_file     = panels.collect { panel -> "${projectDir}/assets/${panel}.bed" }.join(',')
+                    run_targeted_sequencing = true
+                    collecthsmetrics        = true
+                    run_riker               = true
+                    run_methylation_summary = true
+                    all_contexts            = scenario.summary.contexts as boolean
+                }
+            }
+
+            then {
+                def mqc = new groovy.json.JsonSlurper().parse(new File("${outputDir}/multiqc/${scenario.aligner}/multiqc_data/multiqc_data.json"))
+                def report = path("${outputDir}/multiqc/${scenario.aligner}/multiqc_report.html").text
+                assertAll(
+                    { assert workflow.success },
+                    // every sample gets one filtered file per panel and one HsMetrics file per panel
+                    { assert samples.every { sample -> panels.every { panel -> scenario.filtered.call(outputDir, sample, panel).every { name -> path(name).exists() } } } },
+                    { assert samples.every { sample -> panels.every { panel -> path("${outputDir}/enrichment_metrics/${sample}.${panel}.CollectHsMetrics.coverage_metrics").exists() } } },
+                    // with several panels no file goes without a panel name
+                    { assert scenario.unlabelled.every { pattern -> getAllFilesFromDir(outputDir, include: [pattern]).isEmpty() } },
+                    { assert getAllFilesFromDir(outputDir, include: ['enrichment_metrics/*.CollectHsMetrics.coverage_metrics']).size() == samples.size() * panels.size() },
+                    // the overlap is reported in both panels, unchanged
+                    { assert samples.every { sample -> overlapStarts(path(scenario.filtered.call(outputDir, sample, panels[0])[0])) == overlapStarts(path(scenario.filtered.call(outputDir, sample, panels[1])[0])) } },
+                    { assert !scenario.overlap_sample || overlapStarts(path(scenario.filtered.call(outputDir, scenario.overlap_sample, panels[0])[0])).size() > 0 },
+                    { assert records(path(scenario.filtered.call(outputDir, scenario.panel_b_sample, panels[1])[0])).size() > 0 },
+                    // one MultiQC HsMetrics section per panel, each with every sample
+                    { assert panels.every { panel -> report.contains("HsMetrics: ${panel}") } },
+                    { assert panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == samples as Set } },
+                    // riker hybcap runs once per sample, over the union of the panels
+                    { assert getAllFilesFromDir(outputDir, include: ['riker/*hybcap*']).size() == samples.size() },
+                    // the panels' General Statistics columns start hidden
+                    { assert panels.every { panel -> report.findAll(/<th id="header_hsmetrics_${panel}_hsmetrics-[^"]*" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                    // one methylation summary per panel next to the genome-wide one; only the panel columns start hidden
+                    { assert scenario.summary.panels.every { panel -> report.contains("${scenario.summary.label} (${panel}) ${scenario.summary.section}") } },
+                    { assert scenario.summary.panels.every { panel -> report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_${panel}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                    // with --all_contexts, each panel's CHG and CHH bedGraphs are read as such
+                { assert scenario.summary.panels.every { panel -> scenario.summary.contexts.every { context -> report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_${panel}_${context}_meth" class="[^"]*"/) } } },
+                { assert report.contains("${scenario.summary.label} ${scenario.summary.section}") },
+                    { assert report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> !header.contains('column-hidden') } } },
+                    { assert snapshot(
+                        removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                    ).match() }
+                )
+            }
+        }
+    }
+
+    // A single BED keeps its file names and also gets an on-target summary when the summary is on
+    test("Params: bwamem3 | taps | taps_caller rastair2 | run_targeted_sequencing with one BED | run_methylation_summary") {
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                target_regions_file     = "${projectDir}/assets/genome_taps_target_regions.bed"
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair2"
+                accept_rastair2_license = true
+                run_targeted_sequencing = true
+                run_methylation_summary = true
+                outdir                  = "${outputDir}"
+            }
+        }
+
+        then {
+            def report = path("${outputDir}/multiqc/bwamem3/multiqc_report.html").text
+            assertAll(
+                { assert workflow.success },
+                { assert path("${outputDir}/rastair2/call/taps_pe.targeted.bed").exists() },
+                { assert report.contains("rastair2 (genome_taps_target_regions) CpG methylation distribution") },
+                { assert report.contains("rastair2 CpG methylation distribution") },
+                { assert report.findAll(/<th id="header_[^"]*-rastair2_genome_taps_target_regions_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } },
+                { assert snapshot(
+                    removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                ).match() }
+            )
+        }
+    }
+
+    // rastair 0.8: calls filtered and summarised per panel like the others
+    test("Params: bwamem3 | taps | taps_caller rastair | run_targeted_sequencing with two panels | collecthsmetrics | run_methylation_summary") {
+        def taps_panels = ['genome_taps_target_panel_a', 'genome_taps_target_panel_b']
+        def taps_samples = ['taps_pe', 'taps_se']
+
+        when {
+            params {
+                input                   = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index             = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                target_regions_file     = taps_panels.collect { panel -> "${projectDir}/assets/${panel}.bed" }.join(',')
+                aligner                 = "bwamem3"
+                taps                    = true
+                taps_caller             = "rastair"
+                run_targeted_sequencing = true
+                collecthsmetrics        = true
+                run_methylation_summary = true
+                outdir                  = "${outputDir}"
+            }
+        }
+
+        then {
+            def report = path("${outputDir}/multiqc/bwamem3/multiqc_report.html").text
+            def mqc = new groovy.json.JsonSlurper().parse(new File("${outputDir}/multiqc/bwamem3/multiqc_data/multiqc_data.json"))
+            def filtered = { sample, panel -> path("${outputDir}/rastair/call/${sample}.${panel}.targeted.bed") }
+            // a row is on target if its CpG overlaps a target: the C (+) and the G (-) of each CpG are separate rows
+            def onTarget = { panel, fields ->
+                def cpg_start = (fields[1] as long) - (fields[5] == '-' ? 1 : 0)
+                path("${projectDir}/assets/${panel}.bed").readLines().collect { line -> line.split('\t') }.any { target ->
+                    target[0] == fields[0] && cpg_start + 2 > (target[1] as long) && cpg_start < (target[2] as long)
+                }
+            }
+            // split with -1 to keep an empty beta_est
+            def expected = { sample, panel -> path("${outputDir}/rastair/call/${sample}.rastair_call.txt").readLines().findAll { line -> !line.startsWith('#') && onTarget(panel, line.split('\t', -1)) } }
+            def overlap = { lines -> lines.findAll { line -> line.startsWith('bacteriophage_lambda_CpG\t') && (line.split('\t')[1] as long) >= 4999 && (line.split('\t')[1] as long) < 5419 } }
+            assertAll(
+                { assert workflow.success },
+                // each panel keeps exactly the on-target rows of the full calls, under the same # header
+                { assert taps_samples.every { sample -> taps_panels.every { panel -> filtered(sample, panel).readLines()[0].startsWith('#') } } },
+                { assert taps_samples.every { sample -> taps_panels.every { panel -> records(filtered(sample, panel)) == expected(sample, panel) } } },
+                { assert taps_panels.every { panel -> records(filtered('taps_pe', panel)).size() > 0 } },
+                { assert taps_samples.every { sample -> !path("${outputDir}/rastair/call/${sample}.targeted.bed").exists() } },
+                // the overlap is reported in both panels
+                { assert overlap(records(filtered('taps_pe', taps_panels[0]))).size() > 0 },
+                { assert taps_samples.every { sample -> overlap(records(filtered(sample, taps_panels[0]))) == overlap(records(filtered(sample, taps_panels[1]))) } },
+                { assert taps_samples.every { sample -> taps_panels.every { panel -> path("${outputDir}/enrichment_metrics/${sample}.${panel}.CollectHsMetrics.coverage_metrics").exists() } } },
+                { assert taps_panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == taps_samples as Set } },
+                // a methylation summary per panel next to the genome-wide one
+                { assert taps_panels.every { panel -> ['CpG methylation per contig', 'CpG methylation distribution'].every { section -> report.contains("rastair (${panel}) ${section}") } } },
+                { assert taps_panels.every { panel -> report.findAll(/<th id="header_[^"]*-rastair_${panel}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                { assert report.contains("rastair CpG methylation distribution") },
+                { assert report.findAll(/<th id="header_[^"]*-rastair_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> !header.contains('column-hidden') } } },
+                { assert snapshot(
+                    removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                ).match() }
+            )
+        }
+    }
+
+    // --skip_trimming leaves no module_order in the MultiQC configs, so the panel sections are added on their own
+    test("Params: bismark | skip_trimming | run_targeted_sequencing with two panels | collecthsmetrics") {
+        when {
+            params {
+                outdir                  = "${outputDir}"
+                aligner                 = "bismark"
+                skip_trimming           = true
+                target_regions_file     = panels.collect { panel -> "${projectDir}/assets/${panel}.bed" }.join(',')
+                run_targeted_sequencing = true
+                collecthsmetrics        = true
+            }
+        }
+
+        then {
+            def mqc = new groovy.json.JsonSlurper().parse(new File("${outputDir}/multiqc/bismark/multiqc_data/multiqc_data.json"))
+            def report = path("${outputDir}/multiqc/bismark/multiqc_report.html").text
+            assertAll(
+                { assert workflow.success },
+                { assert panels.every { panel -> report.contains("HsMetrics: ${panel}") } },
+                { assert panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == samples as Set } },
+                { assert panels.every { panel -> report.findAll(/<th id="header_hsmetrics_${panel}_hsmetrics-[^"]*" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                { assert snapshot(
+                    removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                ).match() }
+            )
+        }
+    }
+}
