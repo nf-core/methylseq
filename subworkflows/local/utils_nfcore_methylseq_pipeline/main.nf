@@ -315,6 +315,7 @@ def validateInputParameters() {
         error("--run_methurator is not supported with TAPS data or Illumina 5-Base data (--taps, --illumina_5base or --aligner bwamem): methurator relies on MethylDackel.")
     }
     // Options that only apply to some steps: say so instead of ignoring them
+    def methylation_summary = params.run_methylation_summary || params.control_contigs
     def ignored_options = [
         [!isTaps() && !bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); they are ignored'],
         [bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls; with --aligner bismark trim read ends with --ignore_r1, --ignore_r2, --ignore_3prime_r1 or --ignore_3prime_r2. They are ignored'],
@@ -322,7 +323,8 @@ def validateInputParameters() {
         [bismarkBwamem3() && params.accept_rastair2_license, '--accept_rastair2_license only applies with --taps_caller rastair2 on the rastair route; it is ignored'],
         [params.five_base_baseq && !bismarkBwamem3(), "--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark)${isTaps() ? '; rastair applies its own base-quality filter' : ''}. It is ignored"],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
-        [params.rastair2_control_contigs && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_control_contigs only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
+        [methylation_summary && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary and --control_contigs are ignored'],
+        [methylation_summary && !isTaps() && !params.aligner.startsWith('bismark') && params.methyl_kit, 'MethylDackel writes methylKit files instead of bedGraphs with --methyl_kit, so --run_methylation_summary and --control_contigs are ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
@@ -356,6 +358,18 @@ def validateInputParameters() {
             )
         }
     }
+}
+
+//
+// Stop on --control_contigs names that the FASTA index doesn't list: a typo would otherwise drop the control silently
+//
+def checkControlContigs(fai) {
+    def contigs = fai.readLines().collect { line -> line.tokenize('\t')[0] } as Set
+    def missing = params.control_contigs.tokenize(',').findAll { contig -> !(contig in contigs) }
+    if (missing) {
+        error("--control_contigs: ${missing.join(', ')} not in the reference FASTA (${fai.name} lists ${contigs.size()} contigs). Use the FASTA header names, up to the first space, and add the controls to the FASTA the indexes are built from.")
+    }
+    return true
 }
 
 //

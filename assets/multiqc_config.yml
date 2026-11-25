@@ -24,3 +24,9 @@ custom_content:
   order:
     - rastair2_contigs
     - rastair2_beta_hist
+    - rastair_contigs
+    - rastair_beta_hist
+    - methyldackel_contigs
+    - methyldackel_beta_hist
+    - bismark_contigs
+    - bismark_beta_hist

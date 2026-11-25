@@ -14,6 +14,7 @@
 - [Illumina 5-Base and TAPS: rastair or Bismark](#illumina-5-base-and-taps-rastair-or-bismark)
 - [UMIs (optional)](#umis-optional)
 - [Targeted sequencing (optional)](#targeted-sequencing-optional)
+- [Methylation summary and spike-in controls (optional)](#methylation-summary-and-spike-in-controls-optional)
 - [Samplesheet input](#samplesheet-input)
 - [Running the pipeline](#running-the-pipeline)
 - [Updating the pipeline](#updating-the-pipeline)
@@ -215,7 +216,7 @@ Methylation calls near read ends can be biased (end repair, adapter ligation), s
 - rastair 0.8 (`--taps_caller rastair`): `rastair mbias` over all reads, then `rastair/mbiasparser` picks the trims.
 - rastair version 2 (`--taps_caller rastair2`): `rastair2 mbias` on the reads in `--rastair2_mbias_region`. Its report loads every read in range, so by default it uses the first 10 Mb of the longest contig. A fully methylated spike-in, such as lambda, gives the clearest signal: for example `--rastair2_mbias_region J02459.1`. Use a spike-in for shallow libraries: with too few reads in the region, the estimate is no trimming. If you list regions on several contigs, the trims from the longest contig are used, so give a spike-in on its own to use it. For example, a human TAPS library of 250,000 read pairs had about 3,000 CpG observations in the default region and got no trims (lambda methylation 0.96), while lambda as the region gave the same trims as rastair 0.8 (lambda 0.98).
 
-The MultiQC report's genome-wide rastair version 2 figures (CpG methylation, CpGs covered and depth) leave out spike-ins by using contigs with chromosome-like names. If your reference has no chromosome-like names (for example a scaffold-level assembly), list the spike-ins and controls with `--rastair2_control_contigs` (for example `--rastair2_control_contigs J02459.1,pUC19`) so they are left out too.
+The MultiQC report's genome-wide rastair version 2 figures (CpG methylation, CpGs covered and depth) leave out spike-ins by using contigs with chromosome-like names. If your reference has no chromosome-like names (for example a scaffold-level assembly), list the spike-ins and controls with `--control_contigs` (for example `--control_contigs J02459.1,pUC19`) so they are left out too.
 
 When the trims can't be estimated, nothing is trimmed (`0,0,0,0`). Both M-bias tools need properly paired reads, so single-end samples are never trimmed by the estimate.
 
@@ -314,6 +315,26 @@ nextflow run nf-core/methylseq \
 This filters methylation bedGraphs and Bismark coverage files to the targets and, if `--collecthsmetrics` is set, runs Picard CollectHsMetrics on BAMs using the same targets. With `--run_riker`, [riker](https://github.com/fulcrumgenomics/riker) also collects hybrid capture metrics over the same targets. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) it filters the rastair CpG calls instead, from either `--taps_caller`.
 
 For bisulfite data, a target on a contig that the FASTA lacks is skipped and a target that runs past its contig end is clipped, with a warning; the run stops if no target fits. Picard and riker use the targets as given.
+
+### Methylation summary and spike-in controls (optional)
+
+Library kits often add spike-in controls, such as unmethylated lambda DNA or methylated pUC19, to measure conversion efficiency. Add their sequences to the reference FASTA and list them with `--control_contigs`, using the FASTA header names up to the first space:
+
+```bash
+nextflow run nf-core/methylseq \
+  --input samplesheet.csv \
+  --fasta genome_with_controls.fa \
+  --aligner bwameth \
+  --control_contigs J02459.1,pUC19 \
+  --outdir results \
+  -profile docker
+```
+
+This adds a per-sample methylation summary to the MultiQC report. It has CpG methylation, CpGs covered and mean CpG depth in General Statistics, a CpG methylation distribution and a table of CpG methylation per contig. With MethylDackel and `--all_contexts`, it also has CHG and CHH methylation. The genome-wide figures leave out organelles, decoys and the control contigs. The per-contig table shows the controls on their own: for an unmethylated control, its CpG methylation is the non-conversion rate. To get the summary without control contigs, use `--run_methylation_summary`.
+
+The controls must be in the FASTA that the aligner index was built from, so that reads from them align there. iGenomes references and other prebuilt indexes (`--bismark_index`, `--bwameth_index`, `--bwamem3_index`) don't have them: give `--fasta` with the controls added and let the pipeline build the index, or rebuild it yourself. When the pipeline uses a FASTA index (`--aligner bwameth`, `bwamem3` or `bwamem`, Bismark's 5-Base/TAPS mode, or with `--run_targeted_sequencing`, `--run_riker` or `--run_methurator`), a `--control_contigs` name that is not in it stops the run as soon as the index is read. Without one, as for `--aligner bismark` by default, the pipeline warns that it can't check the names.
+
+The summary reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`) or the Bismark coverage files (`--aligner bismark` or `bismark_hisat`). It is not available with `--methyl_kit` or `--nomeseq`. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`), it reads the rastair 0.8 calls with `--taps_caller rastair`. With `--taps_caller rastair2` the rastair calls always get this summary, and `--control_contigs` applies to it too.
 
 ## Samplesheet input
 

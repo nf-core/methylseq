@@ -1,0 +1,296 @@
+{
+    "methyldackel - CHH in the sample name, shallow control": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "plant_CHH"
+                        },
+                        [
+                            "plant_CHH.methyldackel_beta_hist_mqc.tsv:md5,66dbcbdfc4bf5e19980e8312a715993e",
+                            "plant_CHH.methyldackel_contigs_mqc.tsv:md5,ba0d90044e8d8a623bce94d17b37eee6",
+                            "plant_CHH.methyldackel_generalstats_mqc.tsv:md5,c2d8c63e1f3f19500904ac3b72533e1e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "plant_CHH"
+                        },
+                        [
+                            "plant_CHH.methyldackel_beta_hist_mqc.tsv:md5,66dbcbdfc4bf5e19980e8312a715993e",
+                            "plant_CHH.methyldackel_contigs_mqc.tsv:md5,ba0d90044e8d8a623bce94d17b37eee6",
+                            "plant_CHH.methyldackel_generalstats_mqc.tsv:md5,c2d8c63e1f3f19500904ac3b72533e1e"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T09:14:14.435696",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "bismark - gzipped coverage file": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "bm"
+                        },
+                        [
+                            "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
+                            "bm.bismark_contigs_mqc.tsv:md5,7d7a25648967baad7a0170c3f3774fc8",
+                            "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "bm"
+                        },
+                        [
+                            "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
+                            "bm.bismark_contigs_mqc.tsv:md5,7d7a25648967baad7a0170c3f3774fc8",
+                            "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T09:40:48.053674",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "labelled panel - hidden General Statistics columns": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "md"
+                        },
+                        [
+                            "md.methyldackel_promoters_v2_beta_hist_mqc.tsv:md5,0b5ebdef04b532f3bbe10190ff392b00",
+                            "md.methyldackel_promoters_v2_contigs_mqc.tsv:md5,e1d60146f81582d7daf3a4f923653e67",
+                            "md.methyldackel_promoters_v2_generalstats_mqc.tsv:md5,f462dc76c06fe9740a3d8e419d271287"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "md"
+                        },
+                        [
+                            "md.methyldackel_promoters_v2_beta_hist_mqc.tsv:md5,0b5ebdef04b532f3bbe10190ff392b00",
+                            "md.methyldackel_promoters_v2_contigs_mqc.tsv:md5,e1d60146f81582d7daf3a4f923653e67",
+                            "md.methyldackel_promoters_v2_generalstats_mqc.tsv:md5,f462dc76c06fe9740a3d8e419d271287"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T09:41:01.758521",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "rastair 0.8 - calls with a control contig": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "r08"
+                        },
+                        [
+                            "r08.rastair_beta_hist_mqc.tsv:md5,094aebb134906d78687992661dfda178",
+                            "r08.rastair_contigs_mqc.tsv:md5,2aac12ebf2fd8cf3565ddbc6a9c582db",
+                            "r08.rastair_generalstats_mqc.tsv:md5,408e56b19f9c81b949d6e1ebdfb3b71a"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "r08"
+                        },
+                        [
+                            "r08.rastair_beta_hist_mqc.tsv:md5,094aebb134906d78687992661dfda178",
+                            "r08.rastair_contigs_mqc.tsv:md5,2aac12ebf2fd8cf3565ddbc6a9c582db",
+                            "r08.rastair_generalstats_mqc.tsv:md5,408e56b19f9c81b949d6e1ebdfb3b71a"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T09:41:14.434023",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "stub": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "stub"
+                        },
+                        [
+                            "stub.methylation_beta_hist_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "stub.methylation_contigs_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "stub.methylation_generalstats_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "stub"
+                        },
+                        [
+                            "stub.methylation_beta_hist_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "stub.methylation_contigs_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e",
+                            "stub.methylation_generalstats_mqc.tsv:md5,d41d8cd98f00b204e9800998ecf8427e"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-23T09:41:04.136361",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "methyldackel - CpG, CHG and CHH with a control contig": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "md"
+                        },
+                        [
+                            "md.methyldackel_beta_hist_mqc.tsv:md5,bf5c3f669fec952c03b636f145166360",
+                            "md.methyldackel_contigs_mqc.tsv:md5,70bb781a3ee4744f5b568108a9b722dd",
+                            "md.methyldackel_generalstats_mqc.tsv:md5,09d6463cb95567bb6a0e4ecbc3ca8c37"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "md"
+                        },
+                        [
+                            "md.methyldackel_beta_hist_mqc.tsv:md5,bf5c3f669fec952c03b636f145166360",
+                            "md.methyldackel_contigs_mqc.tsv:md5,70bb781a3ee4744f5b568108a9b722dd",
+                            "md.methyldackel_generalstats_mqc.tsv:md5,09d6463cb95567bb6a0e4ecbc3ca8c37"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T09:40:24.441854",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    }
+}

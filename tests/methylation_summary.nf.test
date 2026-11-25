@@ -1,0 +1,130 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - methylation summary"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // General Statistics columns from the summary, by sample
+    def summaryStats = { outputDir, aligner, tool ->
+        new groovy.json.JsonSlurper()
+            .parse(new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_data.json"))
+            .report_general_stats_data.custom_content
+            ?.collectEntries { sample, columns -> [ (sample): columns.findAll { column, value -> column.startsWith("${tool}_") } ] }
+            ?.findAll { sample, columns -> columns } ?: [:]
+    }
+
+    // CpG methylation per contig, by sample, from the MultiQC data table
+    def contigTable = { outputDir, aligner, tool ->
+        def table = new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_${tool}_contigs_table.txt").readLines()*.split('\t')
+        table.tail().collectEntries { row -> [ (row[0]): [table[0].tail(), row.tail()].transpose().collectEntries() ] }
+    }
+
+    test("Params: bwameth | run_methylation_summary | all_contexts") {
+        when {
+            params {
+                aligner                 = "bwameth"
+                run_methylation_summary = true
+                all_contexts            = true
+                outdir                  = "$outputDir"
+            }
+        }
+
+        then {
+            def stats = summaryStats(params.outdir, 'bwameth', 'methyldackel')
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+            assertAll(
+                { assert workflow.success },
+                // MethylDackel finds no CpGs in the SRR389222 bedGraphs, so they get no rows
+                { assert stats.keySet() == ['Ecoli_10K_methylated'] as Set },
+                { assert stats.every { sample, columns -> columns.keySet() == ['methyldackel_cpg_meth', 'methyldackel_cpg_sites', 'methyldackel_cpg_depth', 'methyldackel_chg_meth', 'methyldackel_chh_meth'] as Set } },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stats,
+                    contigTable(params.outdir, 'bwameth', 'methyldackel')
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bismark | control_contigs") {
+        when {
+            params {
+                aligner         = "bismark"
+                // the test genome is a single contig, so naming it leaves nothing for the genome-wide figures
+                control_contigs = "chr"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def contigs = contigTable(params.outdir, 'bismark', 'bismark')
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**'])
+            assertAll(
+                { assert workflow.success },
+                // --control_contigs turns the summary on
+                { assert contigs.size() == 4 && contigs.every { sample, columns -> columns.keySet() == ['chr'] as Set } },
+                // Bismark builds no FASTA index here, so the names are not checked
+                { assert file("${metaDir}/nextflow.log").text.contains("--control_contigs can't be checked against the reference without a FASTA index") },
+                { assert summaryStats(params.outdir, 'bismark', 'bismark').isEmpty() },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    contigs
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwamem3 | taps | taps_caller rastair | control_contigs") {
+        when {
+            params {
+                input           = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta           = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index     = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner         = "bwamem3"
+                taps            = true
+                taps_caller     = "rastair"
+                // methylated lambda and an unmodified 2 kb fragment are spiked into the TAPS test data
+                control_contigs = "bacteriophage_lambda_CpG,2kb_3_Unmodified"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def stats = summaryStats(params.outdir, 'bwamem3', 'rastair')
+            def contigs = contigTable(params.outdir, 'bwamem3', 'rastair')
+            assertAll(
+                { assert workflow.success },
+                // rastair 0.8 makes no calls for the single-end sample
+                { assert stats.keySet() == ['taps_pe'] as Set },
+                { assert stats.taps_pe.keySet() == ['rastair_cpg_meth', 'rastair_cpg_sites', 'rastair_cpg_depth'] as Set },
+                { assert contigs.keySet() == ['taps_pe'] as Set },
+                { assert contigs.taps_pe.keySet() == ['chr19', '2kb_3_Unmodified', 'bacteriophage_lambda_CpG'] as Set },
+                { assert (contigs.taps_pe.bacteriophage_lambda_CpG as double) > 90 && (contigs.taps_pe['2kb_3_Unmodified'] as double) < 5 },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stats,
+                    contigs
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bwameth | control_contigs not in the reference - error") {
+        when {
+            params {
+                aligner         = "bwameth"
+                control_contigs = "chr,J02459.1"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert file("${metaDir}/nextflow.log").text.contains('--control_contigs: J02459.1 not in the reference FASTA') }
+            )
+        }
+    }
+}

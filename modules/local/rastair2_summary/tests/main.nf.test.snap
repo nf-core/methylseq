@@ -9,7 +9,7 @@
                         },
                         [
                             "human.rastair2_beta_hist_mqc.tsv:md5,ae4fe896ef609884d969baecc81a5684",
-                            "human.rastair2_contigs_mqc.tsv:md5,bd3e180b8b44d830939bc0b2d82eb470",
+                            "human.rastair2_contigs_mqc.tsv:md5,066a4ff41a068ee7cdae3930d19e45c5",
                             "human.rastair2_generalstats_mqc.tsv:md5,4db2e0335f44dbf99ae63bbb73c2700f"
                         ]
                     ]
@@ -28,7 +28,7 @@
                         },
                         [
                             "human.rastair2_beta_hist_mqc.tsv:md5,ae4fe896ef609884d969baecc81a5684",
-                            "human.rastair2_contigs_mqc.tsv:md5,bd3e180b8b44d830939bc0b2d82eb470",
+                            "human.rastair2_contigs_mqc.tsv:md5,066a4ff41a068ee7cdae3930d19e45c5",
                             "human.rastair2_generalstats_mqc.tsv:md5,4db2e0335f44dbf99ae63bbb73c2700f"
                         ]
                     ]
@@ -42,10 +42,10 @@
                 ]
             }
         ],
-        "timestamp": "2026-11-18T01:13:22.320625",
+        "timestamp": "2026-11-25T09:42:31.043984",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.10.5"
         }
     },
     "scaffold assembly - control contigs": {
@@ -58,7 +58,7 @@
                         },
                         [
                             "scaffolds.rastair2_beta_hist_mqc.tsv:md5,3b4671123f49d04edcb7777e1079bd94",
-                            "scaffolds.rastair2_contigs_mqc.tsv:md5,e18e151e1f6bd0bd3c2e27180722cee9",
+                            "scaffolds.rastair2_contigs_mqc.tsv:md5,91463541a0dc9464c5732d825f26115f",
                             "scaffolds.rastair2_generalstats_mqc.tsv:md5,3dc2b3ae5af873921c73247c35b89c61"
                         ]
                     ]
@@ -77,7 +77,7 @@
                         },
                         [
                             "scaffolds.rastair2_beta_hist_mqc.tsv:md5,3b4671123f49d04edcb7777e1079bd94",
-                            "scaffolds.rastair2_contigs_mqc.tsv:md5,e18e151e1f6bd0bd3c2e27180722cee9",
+                            "scaffolds.rastair2_contigs_mqc.tsv:md5,91463541a0dc9464c5732d825f26115f",
                             "scaffolds.rastair2_generalstats_mqc.tsv:md5,3dc2b3ae5af873921c73247c35b89c61"
                         ]
                     ]
@@ -91,10 +91,10 @@
                 ]
             }
         ],
-        "timestamp": "2026-11-18T01:13:28.352091",
+        "timestamp": "2026-11-25T09:42:43.322421",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
+            "nextflow": "26.10.5"
         }
     }
 }
