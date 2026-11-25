@@ -144,6 +144,43 @@ nextflow_workflow {
         }
     }
 
+    test("TAPS paired-end - bwa-mem3 index of the controls") {
+        when {
+            params {
+                aligner = "bismark"
+                taps    = true
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'taps_pe', single_end:false ],
+                    [
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R1.fastq.gz', checkIfExists: true),
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R2.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = channel.of([ [ id:'controls' ], file('https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa', checkIfExists: true) ])
+                input[2] = true
+                """
+            }
+        }
+
+        then {
+            def cx = workflow.out.cx_report[0][1]
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().any { task -> task.name.contains('BWAMEM3_INDEX') } },
+                { assert workflow.trace.tasks().every { task -> !task.name.contains('BISMARK_GENOMEPREPARATION') } },
+                // methylated C reads as T: the CpG-methylated lambda is high, the unmodified control low
+                { assert cxMethylation(cx, 'ctl_lambda', 'CG') > 80 },
+                { assert cxMethylation(cx, 'ctl_lambda', 'CHH') < 10 },
+                { assert cxMethylation(cx, 'ctl_2kb_unmod', 'CG') < 10 },
+                { assert new File(cx.toString()).name == 'taps_pe.controls.CX_report.txt.gz' }
+            )
+        }
+    }
+
     test("control record without a sequence - fails") {
         when {
             params {

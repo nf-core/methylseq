@@ -79,6 +79,10 @@ workflow FASTQ_CONTROLS_BISMARK {
 
 // The control names become MultiQC columns and are matched against the reference contigs
 def checkControlFasta(fasta) {
+    if (fasta.size() > 10_000_000) {
+        log.warn("--control_fasta ${fasta.name} is ${Math.round(fasta.size() / 1e6)} MB: it is meant for small spike-in sequences such as lambda and pUC19. Its names and sequences are not checked.")
+        return
+    }
     def ids = []
     def empty = []
     def bases = 0
@@ -114,8 +118,5 @@ def checkControlFasta(fasta) {
     def duplicated = ids.countBy { id -> id }.findAll { _id, count -> count > 1 }.keySet()
     if (duplicated) {
         error("--control_fasta names these sequences more than once: ${duplicated.join(', ')}")
-    }
-    if (fasta.size() > 10_000_000) {
-        log.warn("--control_fasta ${fasta.name} is ${Math.round(fasta.size() / 1e6)} MB: it is meant for small spike-in sequences such as lambda and pUC19.")
     }
 }

@@ -374,7 +374,7 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         print header > hf
         print line > hf
     }
-    # General Statistics: alignments with a unique best hit to the control FASTA, as % of the reads aligned to it
+    # General Statistics: of the first --control_reads reads, % with a unique alignment to the control FASTA
     function write_controls_stats(    cs) {
         cs = sample "." name "_controls_generalstats_mqc.tsv"
         print "# id: \"" name "_controls\"" > cs
@@ -383,7 +383,7 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         print "#     " name "_control_reads:" > cs
         print "#         title: \"% on controls" title_suffix "\"" > cs
         print "#         namespace: \"" label "\"" > cs
-        print "#         description: \"Reads (read pairs for paired-end data) aligned against the separate spike-in control FASTA that align uniquely to it, as % of those aligned against it (" desc_label ")\"" > cs
+        print "#         description: \"Of the first --control_reads reads (read pairs for paired-end data), % with a unique alignment to the separate spike-in control FASTA (" desc_label ")\"" > cs
         print "#         suffix: \"%\"" > cs
         print "#         min: 0" > cs
         print "#         max: 100" > cs

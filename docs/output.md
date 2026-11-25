@@ -346,7 +346,7 @@ The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and
 
 With `--run_methylation_summary` or `--control_contigs`, the MultiQC report gets the same summary for bisulfite and EM-seq data, from the MethylDackel bedGraphs or the Bismark coverage files, and for rastair 0.8 calls (`--taps_caller rastair`): CpG methylation, CpGs covered and mean CpG depth in the General Statistics table (plus CHG and CHH methylation with MethylDackel and `--all_contexts`), a per-CpG methylation distribution, and CpG methylation per contig. The genome-wide figures leave out the same contigs as for rastair version 2. Read the conversion efficiency of a spike-in control off the per-contig table: for an unmethylated control such as lambda, its CpG methylation is the non-conversion rate. The contigs used are listed in the `METHYLATION_SUMMARY` task log. These files are only in the MultiQC report, not in the results directory.
 
-With `--control_fasta`, the per-contig table also has CpG, CHG and CHH methylation for each control, and General Statistics the % of the reads aligned to the controls that align uniquely to them.
+With `--control_fasta`, the per-contig table also has CpG, CHG and CHH methylation for each control, and General Statistics the % of the first `--control_reads` reads (read pairs) with a unique alignment to the controls.
 
 <details markdown="1">
 <summary>Output files</summary>

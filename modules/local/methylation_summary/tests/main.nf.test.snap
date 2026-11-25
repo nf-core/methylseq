@@ -107,7 +107,7 @@
                         },
                         [
                             "pe.bismark_contigs_mqc.tsv:md5,c2860c79f6edd8e7be821684d2cf7b04",
-                            "pe.bismark_controls_generalstats_mqc.tsv:md5,27d03bbd85e29b8384272a7771903c95"
+                            "pe.bismark_controls_generalstats_mqc.tsv:md5,a15d373a07c1a103540ec72e8b0a43d4"
                         ]
                     ]
                 ],
@@ -125,7 +125,7 @@
                         },
                         [
                             "pe.bismark_contigs_mqc.tsv:md5,c2860c79f6edd8e7be821684d2cf7b04",
-                            "pe.bismark_controls_generalstats_mqc.tsv:md5,27d03bbd85e29b8384272a7771903c95"
+                            "pe.bismark_controls_generalstats_mqc.tsv:md5,a15d373a07c1a103540ec72e8b0a43d4"
                         ]
                     ]
                 ],
@@ -138,7 +138,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-11-25T18:18:22.512717",
+        "timestamp": "2026-11-25T20:10:39.981987",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -302,7 +302,7 @@
                         [
                             "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
                             "bm.bismark_contigs_mqc.tsv:md5,b2c7aef27cb4a35e9c6d94ca7d1b0eff",
-                            "bm.bismark_controls_generalstats_mqc.tsv:md5,2eb35fccce44bcb26bc4aed749ba15bc",
+                            "bm.bismark_controls_generalstats_mqc.tsv:md5,93cf1e89b281e34f1c7677c6175f44fe",
                             "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
                         ]
                     ]
@@ -322,7 +322,7 @@
                         [
                             "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
                             "bm.bismark_contigs_mqc.tsv:md5,b2c7aef27cb4a35e9c6d94ca7d1b0eff",
-                            "bm.bismark_controls_generalstats_mqc.tsv:md5,2eb35fccce44bcb26bc4aed749ba15bc",
+                            "bm.bismark_controls_generalstats_mqc.tsv:md5,93cf1e89b281e34f1c7677c6175f44fe",
                             "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
                         ]
                     ]
@@ -336,7 +336,7 @@
                 ]
             }
         ],
-        "timestamp": "2026-11-25T18:18:09.242161",
+        "timestamp": "2026-11-25T20:10:32.530478",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
