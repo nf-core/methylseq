@@ -332,24 +332,9 @@ workflow METHYLSEQ {
         // Its masked BAM is not used
         //
         if (params.run_methylsieve) {
-            // methylsieve stops on a control contig the BAM lacks, so pass only those in the reference
-            def control_contigs = params.rastair2_control_contigs ? params.rastair2_control_contigs.tokenize(',') : []
-            ch_methylsieve_controls = ch_fasta_index
-                .map { _meta, fai ->
-                    def contigs = fai.readLines().collect { line -> line.tokenize('\t')[0] }
-                    def missing = control_contigs - contigs
-                    if (missing) {
-                        log.warn("--rastair2_control_contigs not in the reference, so methylsieve reports no row for them: ${missing.join(', ')}")
-                    }
-                    [control_contigs.intersect(contigs)]
-                }
-                .first()
-
             SAMTOOLS_COLLATE(ch_bam, [[:], [], []])
             METHYLSIEVE(
-                SAMTOOLS_COLLATE.out.bam
-                    .combine(ch_methylsieve_controls)
-                    .map { meta, bam, controls -> [meta + [control_contigs: controls], bam] },
+                SAMTOOLS_COLLATE.out.bam,
                 ch_fasta.combine(ch_fasta_index).map { meta, fasta, _meta_fai, fai -> [meta, fasta, fai] }.first(),
             )
         }

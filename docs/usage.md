@@ -230,7 +230,7 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 
 #### methylsieve metrics (`--run_methylsieve`)
 
-With `--run_methylsieve`, [methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs on the same final BAM files as rastair and reports conversion per context and M-bias. It only writes metrics; the calls are unchanged. It leaves out duplicates but otherwise filters reads its own way, so its figures are close to the rastair calls but not identical. Contigs in `--rastair2_control_contigs` get their own row. See the [output docs](https://nf-co.re/methylseq/output#methylsieve).
+With `--run_methylsieve`, [methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs on the same final BAM files as rastair and reports conversion per context and M-bias. It only writes metrics; the calls are unchanged. It leaves out duplicates but otherwise filters reads its own way, so its figures are close to the rastair calls but not identical. Contigs in `--control_contigs` get their own row. See the [output docs](https://nf-co.re/methylseq/output#methylsieve).
 
 ### Illumina 5-Base and TAPS: rastair or Bismark
 

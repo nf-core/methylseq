@@ -5,7 +5,7 @@ nextflow_pipeline {
     config "./nextflow.config"
     tag "cpu"
 
-    test("Params: bwamem3 | taps | run_methylsieve | rastair2_control_contigs with one missing") {
+    test("Params: bwamem3 | taps | run_methylsieve | control_contigs") {
         when {
             params {
                 input                    = "${projectDir}/assets/samplesheet_taps.csv"
@@ -14,8 +14,7 @@ nextflow_pipeline {
                 aligner                  = "bwamem3"
                 taps                     = true
                 run_methylsieve          = true
-                // a contig missing from the reference is left out, not passed to methylsieve, which would stop
-                rastair2_control_contigs = "bacteriophage_lambda_CpG,2kb_3_Unmodified,not_in_reference"
+                control_contigs          = "bacteriophage_lambda_CpG,2kb_3_Unmodified"
                 outdir                   = "$outputDir"
             }
         }
@@ -39,7 +38,6 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert !file("${metaDir}/nextflow.log").text.contains('only applies') },
-                { assert file("${metaDir}/nextflow.log").text.contains('so methylsieve reports no row for them: not_in_reference') },
                 // both controls get their own row; methylsieve also covers the single-end sample, which rastair 0.8 can't call
                 { assert pe.keySet() == ['genome', 'bacteriophage_lambda_CpG', '2kb_3_Unmodified'] as Set },
                 { assert se.keySet() == pe.keySet() },

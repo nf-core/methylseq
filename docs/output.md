@@ -433,11 +433,11 @@ Some metrics need care on converted reads:
 **Output directory: `results/methylsieve`**
 
 - `*.summary.tsv`
-  - Conversion per context (CpA, CpC, CpG, CpT), one row for the genome and one per contig in `--rastair2_control_contigs` that is in the reference. The `r1_mask_5p`, `r2_mask_5p`, `se_mask_5p` and `se_mask_3p` columns give the learned mask lengths in read cycles. `CpG_meth_rate` is the CpG methylation level.
+  - Conversion per context (CpA, CpC, CpG, CpT), one row for the genome and one per contig in `--control_contigs`. The `r1_mask_5p`, `r2_mask_5p`, `se_mask_5p` and `se_mask_3p` columns give the learned mask lengths in read cycles. `CpG_meth_rate` is the CpG methylation level.
 - `*.mbias.tsv`, `*.mbias.pdf`
   - Methylation per read cycle (M-bias).
 - `*.conversion-matrix.tsv`, `*.conversion-matrix.pdf`
-  - Conversion per read pair for each control contig. Only with `--rastair2_control_contigs`.
+  - Conversion per read pair for each control contig. Only with `--control_contigs`.
 
 ## Preseq
 

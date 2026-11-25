@@ -1,5 +1,5 @@
 {
-    "Params: bwamem3 | taps | run_methylsieve | rastair2_control_contigs with one missing": {
+    "Params: bwamem3 | taps | run_methylsieve | control_contigs": {
         "content": [
             {
                 "BWAMEM3_INDEX": {
