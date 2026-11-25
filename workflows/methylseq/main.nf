@@ -29,8 +29,10 @@ include { validateInputSamplesheet      } from '../../subworkflows/local/utils_n
 include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { bismarkBwamem3                } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { checkControlContigs           } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
+include { METHYLATION_SUMMARY           } from '../../modules/local/methylation_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
 include { FASTQ_ALIGN_DEDUP_UMI_BWAMEM3 } from '../../subworkflows/local/fastq_align_dedup_umi_bwamem3'
@@ -70,12 +72,26 @@ workflow METHYLSEQ {
     ch_rastair2_vcf = channel.empty()
     ch_rastair2_bed = channel.empty()
     ch_rastair2_mqc = channel.empty()
+    ch_methylation_summary_mqc = channel.empty()
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()
     ch_riker = channel.empty()
     ch_preseq = channel.empty()
     ch_multiqc_files = channel.empty()
+
+    //
+    // Check the --control_contigs names against the FASTA index; routes without one only get a warning
+    //
+    if (params.control_contigs) {
+        ch_fasta_index
+            .map { _meta, fai -> checkControlContigs(fai) }
+            .ifEmpty {
+                log.warn("--control_contigs can't be checked against the reference without a FASTA index (--aligner ${params.aligner} builds none by default). A name that is not in the FASTA is only reported in the summary task log, and that control is missing from the report.")
+                false
+            }
+            .subscribe { _checked -> }
+    }
 
     //
     // Branch channels from input samplesheet channel
@@ -361,6 +377,19 @@ workflow METHYLSEQ {
     }
 
     //
+    // MODULE: Per-sample CpG (and CHG/CHH) methylation summary for MultiQC, with spike-in and control contigs
+    // skipped by default. to use run with `--run_methylation_summary` or `--control_contigs`.
+    // Bismark --CX (--nomeseq) coverage files mix the cytosine contexts, so they are not summarised.
+    // rastair version 2 calls get RASTAIR2_SUMMARY instead.
+    //
+    if ((params.run_methylation_summary || params.control_contigs) && !(isTaps() && params.taps_caller == 'rastair2') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+        METHYLATION_SUMMARY(isTaps() ? ch_rastair_call : params.aligner =~ /bismark/ ? ch_coverage : ch_bedgraph)
+        ch_methylation_summary_mqc = METHYLATION_SUMMARY.out.mqc
+            .map { _meta, files -> files }
+            .flatten()
+    }
+
+    //
     // MODULE: Qualimap BamQC
     // skipped by default. to use run with `--run_qualimap` param.
     //
@@ -511,6 +540,7 @@ workflow METHYLSEQ {
         }
         ch_multiqc_files = ch_multiqc_files.mix(ch_aligner_mqc.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_rastair2_mqc.collect().ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_methylation_summary_mqc.collect().ifEmpty([]))
         if (!params.skip_trimming) {
             ch_multiqc_files = ch_multiqc_files.mix(TRIMGALORE.out.json.collect { _meta, reports -> reports }.ifEmpty([]))
             if (!params.skip_fastqc) {

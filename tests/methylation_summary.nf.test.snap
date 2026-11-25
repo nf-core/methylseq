@@ -1,0 +1,520 @@
+{
+    "Params: bwameth | run_methylation_summary | all_contexts": {
+        "content": [
+            {
+                "BWAMETH_ALIGN": {
+                    "bwameth": "0.2.10",
+                    "samtools": 1.25
+                },
+                "BWAMETH_INDEX": {
+                    "bwameth": "0.2.10"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "METHYLDACKEL_EXTRACT": {
+                    "methyldackel": "0.6.1"
+                },
+                "METHYLDACKEL_MBIAS": {
+                    "methyldackel": "0.6.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX_ALIGNMENTS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX_DEDUPLICATED": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            [
+                "bwameth",
+                "bwameth/alignments",
+                "bwameth/alignments/samtools_stats",
+                "bwameth/alignments/samtools_stats/Ecoli_10K_methylated.flagstat",
+                "bwameth/alignments/samtools_stats/Ecoli_10K_methylated.stats",
+                "bwameth/alignments/samtools_stats/SRR389222_sub1.flagstat",
+                "bwameth/alignments/samtools_stats/SRR389222_sub1.stats",
+                "bwameth/alignments/samtools_stats/SRR389222_sub2.flagstat",
+                "bwameth/alignments/samtools_stats/SRR389222_sub2.stats",
+                "bwameth/alignments/samtools_stats/SRR389222_sub3.flagstat",
+                "bwameth/alignments/samtools_stats/SRR389222_sub3.stats",
+                "bwameth/deduplicated",
+                "bwameth/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam",
+                "bwameth/deduplicated/Ecoli_10K_methylated.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam",
+                "bwameth/deduplicated/SRR389222_sub1.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub2.markdup.sorted.bam",
+                "bwameth/deduplicated/SRR389222_sub2.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam",
+                "bwameth/deduplicated/SRR389222_sub3.markdup.sorted.bam.bai",
+                "bwameth/deduplicated/picard_metrics",
+                "bwameth/deduplicated/picard_metrics/Ecoli_10K_methylated.markdup.sorted.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub1.markdup.sorted.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub2.markdup.sorted.metrics.txt",
+                "bwameth/deduplicated/picard_metrics/SRR389222_sub3.markdup.sorted.metrics.txt",
+                "fastqc",
+                "fastqc/Ecoli_10K_methylated_1_raw_fastqc.html",
+                "fastqc/Ecoli_10K_methylated_2_raw_fastqc.html",
+                "fastqc/SRR389222_sub1_raw_fastqc.html",
+                "fastqc/SRR389222_sub2_raw_fastqc.html",
+                "fastqc/SRR389222_sub3_raw_fastqc.html",
+                "fastqc/zips",
+                "fastqc/zips/Ecoli_10K_methylated_1_raw_fastqc.zip",
+                "fastqc/zips/Ecoli_10K_methylated_2_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub1_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub2_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub3_raw_fastqc.zip",
+                "methyldackel",
+                "methyldackel/Ecoli_10K_methylated.markdup.sorted_CHG.bedGraph",
+                "methyldackel/Ecoli_10K_methylated.markdup.sorted_CHH.bedGraph",
+                "methyldackel/Ecoli_10K_methylated.markdup.sorted_CpG.bedGraph",
+                "methyldackel/SRR389222_sub1.markdup.sorted_CHG.bedGraph",
+                "methyldackel/SRR389222_sub1.markdup.sorted_CHH.bedGraph",
+                "methyldackel/SRR389222_sub1.markdup.sorted_CpG.bedGraph",
+                "methyldackel/SRR389222_sub2.markdup.sorted_CHG.bedGraph",
+                "methyldackel/SRR389222_sub2.markdup.sorted_CHH.bedGraph",
+                "methyldackel/SRR389222_sub2.markdup.sorted_CpG.bedGraph",
+                "methyldackel/SRR389222_sub3.markdup.sorted_CHG.bedGraph",
+                "methyldackel/SRR389222_sub3.markdup.sorted_CHH.bedGraph",
+                "methyldackel/SRR389222_sub3.markdup.sorted_CpG.bedGraph",
+                "methyldackel/mbias",
+                "methyldackel/mbias/Ecoli_10K_methylated.mbias.txt",
+                "methyldackel/mbias/SRR389222_sub1.mbias.txt",
+                "methyldackel/mbias/SRR389222_sub2.mbias.txt",
+                "methyldackel/mbias/SRR389222_sub3.mbias.txt",
+                "multiqc",
+                "multiqc/bwameth",
+                "multiqc/bwameth/multiqc_data",
+                "multiqc/bwameth/multiqc_data/fastqc_raw-status-check-heatmap.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_adapter_content_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_overrepresented_sequences_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_per_base_n_content_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_per_base_sequence_quality_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_sequence_counts_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_sequence_duplication_levels_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_raw_top_overrepresented_sequences_table.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_sequence_length_distribution_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed-status-check-heatmap.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_adapter_content_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_overrepresented_sequences_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_per_base_n_content_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_per_base_sequence_quality_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_per_sequence_quality_scores_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_sequence_counts_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_sequence_duplication_levels_plot.txt",
+                "multiqc/bwameth/multiqc_data/fastqc_trimmed_top_overrepresented_sequences_table.txt",
+                "multiqc/bwameth/multiqc_data/llms-full.txt",
+                "multiqc/bwameth/multiqc_data/multiqc.log",
+                "multiqc/bwameth/multiqc_data/multiqc.parquet",
+                "multiqc/bwameth/multiqc_data/multiqc_citations.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_data.json",
+                "multiqc/bwameth/multiqc_data/multiqc_fastqc_fastqc_raw.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_methyldackel_contigs_table.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_picard_dups.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_samtools_flagstat.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_samtools_stats.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_sources.txt",
+                "multiqc/bwameth/multiqc_data/multiqc_trim_galore.txt",
+                "multiqc/bwameth/multiqc_data/picard_MarkIlluminaAdapters_histogram.txt",
+                "multiqc/bwameth/multiqc_data/picard_MeanQualityByCycle_histogram.txt",
+                "multiqc/bwameth/multiqc_data/picard_MeanQualityByCycle_histogram_1.txt",
+                "multiqc/bwameth/multiqc_data/picard_QualityScoreDistribution_histogram.txt",
+                "multiqc/bwameth/multiqc_data/picard_deduplication.txt",
+                "multiqc/bwameth/multiqc_data/samtools-flagstat-pct-table.txt",
+                "multiqc/bwameth/multiqc_data/samtools-flagstat-table.txt",
+                "multiqc/bwameth/multiqc_data/samtools-stats-dp.txt",
+                "multiqc/bwameth/multiqc_data/samtools_alignment_plot.txt",
+                "multiqc/bwameth/multiqc_data/samtools_insert_size.txt",
+                "multiqc/bwameth/multiqc_data/trim_galore_adapter_length_plot.txt",
+                "multiqc/bwameth/multiqc_data/trim_galore_filtered_reads_plot.txt",
+                "multiqc/bwameth/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_topic_versions.yml",
+                "trimgalore",
+                "trimgalore/fastqc",
+                "trimgalore/fastqc/Ecoli_10K_methylated_1_val_1_fastqc.html",
+                "trimgalore/fastqc/Ecoli_10K_methylated_2_val_2_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub1_trimmed_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub2_trimmed_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub3_trimmed_fastqc.html",
+                "trimgalore/fastqc/zips",
+                "trimgalore/fastqc/zips/Ecoli_10K_methylated_1_val_1_fastqc.zip",
+                "trimgalore/fastqc/zips/Ecoli_10K_methylated_2_val_2_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub1_trimmed_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub2_trimmed_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub3_trimmed_fastqc.zip",
+                "trimgalore/logs",
+                "trimgalore/logs/Ecoli_10K_methylated_1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/Ecoli_10K_methylated_1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/Ecoli_10K_methylated_2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/Ecoli_10K_methylated_2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
+            ],
+            {
+                "Ecoli_10K_methylated": {
+                    "methyldackel_cpg_meth": 72.3,
+                    "methyldackel_cpg_sites": 243,
+                    "methyldackel_cpg_depth": 1.14,
+                    "methyldackel_chg_meth": 49.32,
+                    "methyldackel_chh_meth": 57.05
+                }
+            },
+            {
+                "Ecoli_10K_methylated": {
+                    "chr": "72.3"
+                }
+            }
+        ],
+        "timestamp": "2026-11-23T09:57:47.102179",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "Params: bwamem3 | taps | taps_caller rastair | control_contigs": {
+        "content": [
+            {
+                "BWAMEM3_INDEX": {
+                    "bwamem3": "0.18.0"
+                },
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "RASTAIR_CALL": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "0.8.2"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            {
+                "taps_pe": {
+                    "rastair_cpg_meth": 38.15,
+                    "rastair_cpg_sites": 1448,
+                    "rastair_cpg_depth": 9.94
+                }
+            },
+            {
+                "taps_pe": {
+                    "chr19": "38.15",
+                    "2kb_3_Unmodified": "0.37",
+                    "bacteriophage_lambda_CpG": "98.04"
+                }
+            }
+        ],
+        "timestamp": "2026-11-24T16:35:34.268425",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
+    "Params: bismark | control_contigs": {
+        "content": [
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "3.4.0",
+                    "bwamem3": "0.18.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.4.0"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            },
+            [
+                "bismark",
+                "bismark/alignments",
+                "bismark/alignments/logs",
+                "bismark/alignments/logs/Ecoli_10K_methylated_1_val_1_bismark_bt2_PE_report.txt",
+                "bismark/alignments/logs/SRR389222_sub1_trimmed_bismark_bt2_SE_report.txt",
+                "bismark/alignments/logs/SRR389222_sub2_trimmed_bismark_bt2_SE_report.txt",
+                "bismark/alignments/logs/SRR389222_sub3_trimmed_bismark_bt2_SE_report.txt",
+                "bismark/deduplicated",
+                "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam",
+                "bismark/deduplicated/Ecoli_10K_methylated.deduplicated.sorted.bam.bai",
+                "bismark/deduplicated/SRR389222_sub1.deduplicated.sorted.bam",
+                "bismark/deduplicated/SRR389222_sub1.deduplicated.sorted.bam.bai",
+                "bismark/deduplicated/SRR389222_sub2.deduplicated.sorted.bam",
+                "bismark/deduplicated/SRR389222_sub2.deduplicated.sorted.bam.bai",
+                "bismark/deduplicated/SRR389222_sub3.deduplicated.sorted.bam",
+                "bismark/deduplicated/SRR389222_sub3.deduplicated.sorted.bam.bai",
+                "bismark/deduplicated/logs",
+                "bismark/deduplicated/logs/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplication_report.txt",
+                "bismark/deduplicated/logs/SRR389222_sub1_trimmed_bismark_bt2.deduplication_report.txt",
+                "bismark/deduplicated/logs/SRR389222_sub2_trimmed_bismark_bt2.deduplication_report.txt",
+                "bismark/deduplicated/logs/SRR389222_sub3_trimmed_bismark_bt2.deduplication_report.txt",
+                "bismark/methylation_calls",
+                "bismark/methylation_calls/bedGraph",
+                "bismark/methylation_calls/bedGraph/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz",
+                "bismark/methylation_calls/bedGraph/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bedGraph.gz",
+                "bismark/methylation_calls/bedGraph/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bedGraph.gz",
+                "bismark/methylation_calls/bedGraph/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bedGraph.gz",
+                "bismark/methylation_calls/mbias",
+                "bismark/methylation_calls/mbias/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.M-bias.txt",
+                "bismark/methylation_calls/mbias/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.M-bias.txt",
+                "bismark/methylation_calls/mbias/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.M-bias.txt",
+                "bismark/methylation_calls/mbias/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.M-bias.txt",
+                "bismark/methylation_calls/methylation_calls",
+                "bismark/methylation_calls/methylation_calls/CHG_OB_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OT_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OB_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OT_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CHH_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OB_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OB_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OB_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OB_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OT_Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OT_SRR389222_sub1_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OT_SRR389222_sub2_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_calls/CpG_OT_SRR389222_sub3_trimmed_bismark_bt2.deduplicated.txt.gz",
+                "bismark/methylation_calls/methylation_coverage",
+                "bismark/methylation_calls/methylation_coverage/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+                "bismark/methylation_calls/methylation_coverage/SRR389222_sub1_trimmed_bismark_bt2.deduplicated.bismark.cov.gz",
+                "bismark/methylation_calls/methylation_coverage/SRR389222_sub2_trimmed_bismark_bt2.deduplicated.bismark.cov.gz",
+                "bismark/methylation_calls/methylation_coverage/SRR389222_sub3_trimmed_bismark_bt2.deduplicated.bismark.cov.gz",
+                "bismark/methylation_calls/splitting_report",
+                "bismark/methylation_calls/splitting_report/Ecoli_10K_methylated_1_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt",
+                "bismark/methylation_calls/splitting_report/SRR389222_sub1_trimmed_bismark_bt2.deduplicated_splitting_report.txt",
+                "bismark/methylation_calls/splitting_report/SRR389222_sub2_trimmed_bismark_bt2.deduplicated_splitting_report.txt",
+                "bismark/methylation_calls/splitting_report/SRR389222_sub3_trimmed_bismark_bt2.deduplicated_splitting_report.txt",
+                "bismark/reports",
+                "bismark/reports/Ecoli_10K_methylated_1_val_1_bismark_bt2_PE_report.html",
+                "bismark/reports/SRR389222_sub1_trimmed_bismark_bt2_SE_report.html",
+                "bismark/reports/SRR389222_sub2_trimmed_bismark_bt2_SE_report.html",
+                "bismark/reports/SRR389222_sub3_trimmed_bismark_bt2_SE_report.html",
+                "bismark/summary",
+                "bismark/summary/bismark_summary_report.html",
+                "bismark/summary/bismark_summary_report.txt",
+                "fastqc",
+                "fastqc/Ecoli_10K_methylated_1_raw_fastqc.html",
+                "fastqc/Ecoli_10K_methylated_2_raw_fastqc.html",
+                "fastqc/SRR389222_sub1_raw_fastqc.html",
+                "fastqc/SRR389222_sub2_raw_fastqc.html",
+                "fastqc/SRR389222_sub3_raw_fastqc.html",
+                "fastqc/zips",
+                "fastqc/zips/Ecoli_10K_methylated_1_raw_fastqc.zip",
+                "fastqc/zips/Ecoli_10K_methylated_2_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub1_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub2_raw_fastqc.zip",
+                "fastqc/zips/SRR389222_sub3_raw_fastqc.zip",
+                "multiqc",
+                "multiqc/bismark",
+                "multiqc/bismark/multiqc_data",
+                "multiqc/bismark/multiqc_data/bismark-methylation-dp.txt",
+                "multiqc/bismark/multiqc_data/bismark_alignment.txt",
+                "multiqc/bismark/multiqc_data/bismark_deduplication.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CHG_R1.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CHG_R2.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CHH_R1.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CHH_R2.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CpG_R1.txt",
+                "multiqc/bismark/multiqc_data/bismark_mbias_CpG_R2.txt",
+                "multiqc/bismark/multiqc_data/bismark_strand_alignment.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw-status-check-heatmap.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_adapter_content_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_overrepresented_sequences_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_per_base_n_content_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_per_base_sequence_quality_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_per_sequence_quality_scores_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_sequence_counts_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_sequence_duplication_levels_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_raw_top_overrepresented_sequences_table.txt",
+                "multiqc/bismark/multiqc_data/fastqc_sequence_length_distribution_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed-status-check-heatmap.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_adapter_content_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_overrepresented_sequences_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_per_base_n_content_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_per_base_sequence_quality_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Counts.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_per_sequence_gc_content_plot_Percentages.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_per_sequence_quality_scores_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_sequence_counts_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_sequence_duplication_levels_plot.txt",
+                "multiqc/bismark/multiqc_data/fastqc_trimmed_top_overrepresented_sequences_table.txt",
+                "multiqc/bismark/multiqc_data/llms-full.txt",
+                "multiqc/bismark/multiqc_data/multiqc.log",
+                "multiqc/bismark/multiqc_data/multiqc.parquet",
+                "multiqc/bismark/multiqc_data/multiqc_bismark_alignment.txt",
+                "multiqc/bismark/multiqc_data/multiqc_bismark_contigs_table.txt",
+                "multiqc/bismark/multiqc_data/multiqc_bismark_dedup.txt",
+                "multiqc/bismark/multiqc_data/multiqc_bismark_methextract.txt",
+                "multiqc/bismark/multiqc_data/multiqc_citations.txt",
+                "multiqc/bismark/multiqc_data/multiqc_data.json",
+                "multiqc/bismark/multiqc_data/multiqc_fastqc_fastqc_raw.txt",
+                "multiqc/bismark/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt",
+                "multiqc/bismark/multiqc_data/multiqc_general_stats.txt",
+                "multiqc/bismark/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/bismark/multiqc_data/multiqc_sources.txt",
+                "multiqc/bismark/multiqc_data/multiqc_trim_galore.txt",
+                "multiqc/bismark/multiqc_data/trim_galore_adapter_length_plot.txt",
+                "multiqc/bismark/multiqc_data/trim_galore_filtered_reads_plot.txt",
+                "multiqc/bismark/multiqc_report.html",
+                "pipeline_info",
+                "pipeline_info/nf_core_methylseq_software_mqc_versions.yml",
+                "pipeline_info/nf_core_methylseq_topic_versions.yml",
+                "trimgalore",
+                "trimgalore/fastqc",
+                "trimgalore/fastqc/Ecoli_10K_methylated_1_val_1_fastqc.html",
+                "trimgalore/fastqc/Ecoli_10K_methylated_2_val_2_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub1_trimmed_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub2_trimmed_fastqc.html",
+                "trimgalore/fastqc/SRR389222_sub3_trimmed_fastqc.html",
+                "trimgalore/fastqc/zips",
+                "trimgalore/fastqc/zips/Ecoli_10K_methylated_1_val_1_fastqc.zip",
+                "trimgalore/fastqc/zips/Ecoli_10K_methylated_2_val_2_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub1_trimmed_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub2_trimmed_fastqc.zip",
+                "trimgalore/fastqc/zips/SRR389222_sub3_trimmed_fastqc.zip",
+                "trimgalore/logs",
+                "trimgalore/logs/Ecoli_10K_methylated_1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/Ecoli_10K_methylated_1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/Ecoli_10K_methylated_2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/Ecoli_10K_methylated_2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub1.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub1.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub2.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub2.fastq.gz_trimming_report.txt",
+                "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.json",
+                "trimgalore/logs/SRR389222_sub3.fastq.gz_trimming_report.txt"
+            ],
+            {
+                "Ecoli_10K_methylated": {
+                    "chr": "57.5"
+                },
+                "SRR389222_sub1": {
+                    "chr": "5.33"
+                },
+                "SRR389222_sub2": {
+                    "chr": "8.17"
+                },
+                "SRR389222_sub3": {
+                    "chr": "4.64"
+                }
+            }
+        ],
+        "timestamp": "2026-11-23T09:58:46.275563",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    }
+}
