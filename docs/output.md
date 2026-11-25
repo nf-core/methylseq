@@ -424,12 +424,12 @@ Some metrics need care on converted reads:
 
 ## methylsieve
 
-[methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs next to rastair on TAPS and 5-Base data, on the same final BAM files, unless `--skip_methylsieve` is set. It learns which read ends are biased (M-bias) and reports conversion without them and without duplicates. Its masked BAM files are not kept. The metrics are not in the MultiQC report: MultiQC has no methylsieve module yet.
+[methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs with `--run_methylsieve` on TAPS and 5-Base data, on the same final BAM files as rastair. It learns which read ends are biased (M-bias) and reports conversion without them. It leaves out duplicates, but its other read filters differ from rastair's. Its masked BAM files are not kept. The metrics are not in the MultiQC report: MultiQC has no methylsieve module yet.
 
 **Output directory: `results/methylsieve`**
 
 - `*.summary.tsv`
-  - Conversion per context (CpA, CpC, CpG, CpT), one row for the genome and one per contig in `--rastair2_control_contigs`. The `r1_mask_5p`, `r2_mask_5p`, `se_mask_5p` and `se_mask_3p` columns give the learned mask lengths in read cycles. `CpG_meth_rate` is the CpG methylation level.
+  - Conversion per context (CpA, CpC, CpG, CpT), one row for the genome and one per contig in `--rastair2_control_contigs` that is in the reference. The `r1_mask_5p`, `r2_mask_5p`, `se_mask_5p` and `se_mask_3p` columns give the learned mask lengths in read cycles. `CpG_meth_rate` is the CpG methylation level.
 - `*.mbias.tsv`, `*.mbias.pdf`
   - Methylation per read cycle (M-bias).
 - `*.conversion-matrix.tsv`, `*.conversion-matrix.pdf`

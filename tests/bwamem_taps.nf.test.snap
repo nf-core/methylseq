@@ -12,9 +12,6 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "METHYLSIEVE": {
-                    "methylsieve": "0.3.0"
-                },
                 "MULTIQC": {
                     "multiqc": 1.35
                 },
@@ -29,9 +26,6 @@
                 },
                 "RASTAIR_METHYLKIT": {
                     "rastair": "0.8.2"
-                },
-                "SAMTOOLS_COLLATE": {
-                    "samtools": 1.25
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -91,19 +85,6 @@
                 "fastqc/zips/SRR389222_sub1_raw_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_raw_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_raw_fastqc.zip",
-                "methylsieve",
-                "methylsieve/Ecoli_10K_methylated.mbias.pdf",
-                "methylsieve/Ecoli_10K_methylated.mbias.tsv",
-                "methylsieve/Ecoli_10K_methylated.summary.tsv",
-                "methylsieve/SRR389222_sub1.mbias.pdf",
-                "methylsieve/SRR389222_sub1.mbias.tsv",
-                "methylsieve/SRR389222_sub1.summary.tsv",
-                "methylsieve/SRR389222_sub2.mbias.pdf",
-                "methylsieve/SRR389222_sub2.mbias.tsv",
-                "methylsieve/SRR389222_sub2.summary.tsv",
-                "methylsieve/SRR389222_sub3.mbias.pdf",
-                "methylsieve/SRR389222_sub3.mbias.tsv",
-                "methylsieve/SRR389222_sub3.summary.tsv",
                 "multiqc",
                 "multiqc/bwamem",
                 "multiqc/bwamem/multiqc_data",
@@ -216,14 +197,6 @@
                 "SRR389222_sub3.flagstat:md5,c6e3f93f66e47ff2138f640eaebd1c3b",
                 "SRR389222_sub3.idxstats:md5,59fa8ca802e25072377a7527a6801f9b",
                 "SRR389222_sub3.stats:md5,cd89c2e299fbb90071a07c47cbfc4c95",
-                "Ecoli_10K_methylated.mbias.tsv:md5,c6ed9295e2151941f40f458bce0019ef",
-                "Ecoli_10K_methylated.summary.tsv:md5,2d096cc4855068c0e5886373f7825570",
-                "SRR389222_sub1.mbias.tsv:md5,530ba0c9dca6c60b14c1e16f16384d98",
-                "SRR389222_sub1.summary.tsv:md5,3164df3203153c0683a5e63eb1c22e75",
-                "SRR389222_sub2.mbias.tsv:md5,3f9647a16942e13605605c8588cb82b0",
-                "SRR389222_sub2.summary.tsv:md5,1f51469e1b6610811fd3b487b6527579",
-                "SRR389222_sub3.mbias.tsv:md5,a50d6ea0eb7458cb6e4e50602a780a9c",
-                "SRR389222_sub3.summary.tsv:md5,b1f8be79773d6ef5d9043532d084b28a",
                 "fastqc_raw-status-check-heatmap.txt:md5,7340fbcecfed61b06a4ae962e318bd67",
                 "fastqc_raw_adapter_content_plot.txt:md5,7e35abcb7ca40e2de4bd62de35a53fb2",
                 "fastqc_raw_overrepresented_sequences_plot.txt:md5,aa8696a3edf6ce6ff1ba550d5e0738e3",
@@ -280,10 +253,10 @@
                 "SRR389222_sub3.rastair_methylkit.txt.gz:md5,90fdfdb464f2a375c96bf64ea2d30445"
             ]
         ],
-        "timestamp": "2026-11-24T16:57:01.292685",
+        "timestamp": "2026-11-20T00:56:31.857436378",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bwamem | taps": {
@@ -298,9 +271,6 @@
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
-                },
-                "METHYLSIEVE": {
-                    "methylsieve": "0.3.0"
                 },
                 "MULTIQC": {
                     "multiqc": 1.35
@@ -322,9 +292,6 @@
                 },
                 "RASTAIR_METHYLKIT": {
                     "rastair": "0.8.2"
-                },
-                "SAMTOOLS_COLLATE": {
-                    "samtools": 1.25
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -390,19 +357,6 @@
                 "fastqc/zips/SRR389222_sub1_raw_fastqc.zip",
                 "fastqc/zips/SRR389222_sub2_raw_fastqc.zip",
                 "fastqc/zips/SRR389222_sub3_raw_fastqc.zip",
-                "methylsieve",
-                "methylsieve/Ecoli_10K_methylated.mbias.pdf",
-                "methylsieve/Ecoli_10K_methylated.mbias.tsv",
-                "methylsieve/Ecoli_10K_methylated.summary.tsv",
-                "methylsieve/SRR389222_sub1.mbias.pdf",
-                "methylsieve/SRR389222_sub1.mbias.tsv",
-                "methylsieve/SRR389222_sub1.summary.tsv",
-                "methylsieve/SRR389222_sub2.mbias.pdf",
-                "methylsieve/SRR389222_sub2.mbias.tsv",
-                "methylsieve/SRR389222_sub2.summary.tsv",
-                "methylsieve/SRR389222_sub3.mbias.pdf",
-                "methylsieve/SRR389222_sub3.mbias.tsv",
-                "methylsieve/SRR389222_sub3.summary.tsv",
                 "multiqc",
                 "multiqc/bwamem",
                 "multiqc/bwamem/multiqc_data",
@@ -521,14 +475,6 @@
                 "SRR389222_sub3.flagstat:md5,c6e3f93f66e47ff2138f640eaebd1c3b",
                 "SRR389222_sub3.idxstats:md5,59fa8ca802e25072377a7527a6801f9b",
                 "SRR389222_sub3.stats:md5,cd89c2e299fbb90071a07c47cbfc4c95",
-                "Ecoli_10K_methylated.mbias.tsv:md5,c6ed9295e2151941f40f458bce0019ef",
-                "Ecoli_10K_methylated.summary.tsv:md5,2d096cc4855068c0e5886373f7825570",
-                "SRR389222_sub1.mbias.tsv:md5,1ad4574e537c4f0297f3823931621d08",
-                "SRR389222_sub1.summary.tsv:md5,3e36ac8986343b2a82a4e8e0da61a26b",
-                "SRR389222_sub2.mbias.tsv:md5,3cf4a1172489cdd6340fd9496224d7bf",
-                "SRR389222_sub2.summary.tsv:md5,3b56cb2a1ad0da2bd8d7aeb76fa46c88",
-                "SRR389222_sub3.mbias.tsv:md5,f13a2aae1778f6e111879b829ce5f1e3",
-                "SRR389222_sub3.summary.tsv:md5,86b4e2c757d0e969c37d3ad0a465bd69",
                 "fastqc_raw-status-check-heatmap.txt:md5,7340fbcecfed61b06a4ae962e318bd67",
                 "fastqc_raw_adapter_content_plot.txt:md5,7e35abcb7ca40e2de4bd62de35a53fb2",
                 "fastqc_raw_overrepresented_sequences_plot.txt:md5,aa8696a3edf6ce6ff1ba550d5e0738e3",
@@ -609,10 +555,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-24T16:55:16.185397",
+        "timestamp": "2026-11-20T00:55:53.9574752",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "26.04.3"
         }
     }
 }

@@ -12,9 +12,6 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "METHYLSIEVE": {
-                    "methylsieve": "0.3.0"
-                },
                 "MULTIQC": {
                     "multiqc": 1.35
                 },
@@ -32,9 +29,6 @@
                 },
                 "RASTAIR_METHYLKIT": {
                     "rastair": "0.8.2"
-                },
-                "SAMTOOLS_COLLATE": {
-                    "samtools": 1.25
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -81,13 +75,6 @@
                 "fastqc/zips/taps_pe_1_raw_fastqc.zip",
                 "fastqc/zips/taps_pe_2_raw_fastqc.zip",
                 "fastqc/zips/taps_se_raw_fastqc.zip",
-                "methylsieve",
-                "methylsieve/taps_pe.mbias.pdf",
-                "methylsieve/taps_pe.mbias.tsv",
-                "methylsieve/taps_pe.summary.tsv",
-                "methylsieve/taps_se.mbias.pdf",
-                "methylsieve/taps_se.mbias.tsv",
-                "methylsieve/taps_se.summary.tsv",
                 "multiqc",
                 "multiqc/bwamem3",
                 "multiqc/bwamem3/multiqc_data",
@@ -185,10 +172,6 @@
                 "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
                 "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
                 "taps_se.stats:md5,94c005937e69c43fa5a42eeddc85aa22",
-                "taps_pe.mbias.tsv:md5,3ed7d7c2ef81561accef559ae5f5dfd7",
-                "taps_pe.summary.tsv:md5,3e8a839f2a49362c53f8d70a10951e91",
-                "taps_se.mbias.tsv:md5,8be6898a73137cbc75bd360361419c0b",
-                "taps_se.summary.tsv:md5,1c31ec2298dee17109072b7c543d9c6d",
                 "fastqc_raw-status-check-heatmap.txt:md5,300a5f292ab28d70249d3a90ca6ce450",
                 "fastqc_raw_adapter_content_plot.txt:md5,4b7db26edf0703e0848809d3a982eba6",
                 "fastqc_raw_overrepresented_sequences_plot.txt:md5,d525bf778c98c4c8d546e08103831ee7",
@@ -253,10 +236,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-24T16:41:23.212887",
+        "timestamp": "2026-11-20T00:49:34.861252914",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "26.04.3"
         }
     },
     "Params: bwamem3 | taps | taps_caller rastair2 | trim_OT, trim_OB": {
@@ -285,9 +268,6 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "METHYLSIEVE": {
-                    "methylsieve": "0.3.0"
-                },
                 "MULTIQC": {
                     "multiqc": 1.35
                 },
@@ -305,9 +285,6 @@
                 },
                 "RASTAIR_METHYLKIT": {
                     "rastair": "0.8.2"
-                },
-                "SAMTOOLS_COLLATE": {
-                    "samtools": 1.25
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -354,13 +331,6 @@
                 "fastqc/zips/taps_pe_1_raw_fastqc.zip",
                 "fastqc/zips/taps_pe_2_raw_fastqc.zip",
                 "fastqc/zips/taps_se_raw_fastqc.zip",
-                "methylsieve",
-                "methylsieve/taps_pe.mbias.pdf",
-                "methylsieve/taps_pe.mbias.tsv",
-                "methylsieve/taps_pe.summary.tsv",
-                "methylsieve/taps_se.mbias.pdf",
-                "methylsieve/taps_se.mbias.tsv",
-                "methylsieve/taps_se.summary.tsv",
                 "multiqc",
                 "multiqc/bwamem3",
                 "multiqc/bwamem3/multiqc_data",
@@ -458,10 +428,6 @@
                 "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
                 "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
                 "taps_se.stats:md5,94c005937e69c43fa5a42eeddc85aa22",
-                "taps_pe.mbias.tsv:md5,3ed7d7c2ef81561accef559ae5f5dfd7",
-                "taps_pe.summary.tsv:md5,d188afa8ed2d69b55e00f5117827609c",
-                "taps_se.mbias.tsv:md5,8be6898a73137cbc75bd360361419c0b",
-                "taps_se.summary.tsv:md5,4dd533199864f1f88f28df692047190f",
                 "fastqc_raw-status-check-heatmap.txt:md5,300a5f292ab28d70249d3a90ca6ce450",
                 "fastqc_raw_adapter_content_plot.txt:md5,4b7db26edf0703e0848809d3a982eba6",
                 "fastqc_raw_overrepresented_sequences_plot.txt:md5,d525bf778c98c4c8d546e08103831ee7",
@@ -526,10 +492,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-24T16:44:23.057723",
+        "timestamp": "2026-11-23T17:09:57.019766022",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "25.10.4"
         }
     },
     "Params: bwamem3 | taps | taps_caller rastair2": {
@@ -548,9 +514,6 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
-                "METHYLSIEVE": {
-                    "methylsieve": "0.3.0"
-                },
                 "MULTIQC": {
                     "multiqc": 1.35
                 },
@@ -566,9 +529,6 @@
                 },
                 "RASTAIR2_SUMMARY": {
                     "gawk": "5.3.1"
-                },
-                "SAMTOOLS_COLLATE": {
-                    "samtools": 1.25
                 },
                 "SAMTOOLS_FLAGSTAT": {
                     "samtools": 1.25
@@ -615,17 +575,6 @@
                 "fastqc/zips/taps_pe_1_raw_fastqc.zip",
                 "fastqc/zips/taps_pe_2_raw_fastqc.zip",
                 "fastqc/zips/taps_se_raw_fastqc.zip",
-                "methylsieve",
-                "methylsieve/taps_pe.conversion-matrix.pdf",
-                "methylsieve/taps_pe.conversion-matrix.tsv",
-                "methylsieve/taps_pe.mbias.pdf",
-                "methylsieve/taps_pe.mbias.tsv",
-                "methylsieve/taps_pe.summary.tsv",
-                "methylsieve/taps_se.conversion-matrix.pdf",
-                "methylsieve/taps_se.conversion-matrix.tsv",
-                "methylsieve/taps_se.mbias.pdf",
-                "methylsieve/taps_se.mbias.tsv",
-                "methylsieve/taps_se.summary.tsv",
                 "multiqc",
                 "multiqc/bwamem3",
                 "multiqc/bwamem3/multiqc_data",
@@ -735,12 +684,6 @@
                 "taps_se.flagstat:md5,3224dc14d5a1c0868dcccdfebc4c41ab",
                 "taps_se.idxstats:md5,32d1a6e2511cb7bfcad6f1759588e4c7",
                 "taps_se.stats:md5,94c005937e69c43fa5a42eeddc85aa22",
-                "taps_pe.conversion-matrix.tsv:md5,f16d21a4caebfbac35b5331c552d6397",
-                "taps_pe.mbias.tsv:md5,bd55ee1168d6f9ab3eda247b58f77b2d",
-                "taps_pe.summary.tsv:md5,32e6bd8bc87630a5e355272f2e815ab6",
-                "taps_se.conversion-matrix.tsv:md5,a50de7508fdb7ef0308eb248970e3e09",
-                "taps_se.mbias.tsv:md5,30b79063d9303049a8b524ad22c7e768",
-                "taps_se.summary.tsv:md5,d1d7cf4b12840e081a0d71a104b7009d",
                 "bcftools-stats-subtypes.txt:md5,29578ebf9f5d30a4649d223775fb798a",
                 "bcftools_stats_indel-lengths.txt:md5,520280af2576dcfa9afe6a2f27385021",
                 "bcftools_stats_variant_depths.txt:md5,1fa7e471d1eddf8bf92fb5efce56699a",
@@ -836,10 +779,10 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-24T16:48:11.919226",
+        "timestamp": "2026-11-20T00:52:53.167531735",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "26.04.3"
         }
     }
 }

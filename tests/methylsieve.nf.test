@@ -1,0 +1,56 @@
+nextflow_pipeline {
+
+    name "Test Workflow main.nf - methylsieve"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    test("Params: bwamem3 | taps | run_methylsieve | rastair2_control_contigs with one missing") {
+        when {
+            params {
+                input                    = "${projectDir}/assets/samplesheet_taps.csv"
+                fasta                    = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                fasta_index              = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                aligner                  = "bwamem3"
+                taps                     = true
+                run_methylsieve          = true
+                // a contig missing from the reference is left out, not passed to methylsieve, which would stop
+                rastair2_control_contigs = "bacteriophage_lambda_CpG,2kb_3_Unmodified,not_in_reference"
+                outdir                   = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            // the M-bias PDF embeds its creation date
+            def stable_path = getAllFilesFromDir(params.outdir, ignore: ['**/multiqc.parquet', 'rastair/mbiasparser/*.pdf'], ignoreFile: 'tests/.nftignore')
+            def bam_files   = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
+            // CpG methylation per summary scope (the genome, then each control contig)
+            def methylation = { sample ->
+                def lines = path("$outputDir/methylsieve/${sample}.summary.tsv").readLines()
+                def header = lines[0].split('\t') as List
+                lines.drop(1).collectEntries { line ->
+                    def fields = line.split('\t', -1)
+                    [ (fields[header.indexOf('scope')]): fields[header.indexOf('CpG_meth_rate')] as double ]
+                }
+            }
+            def pe = methylation('taps_pe')
+            def se = methylation('taps_se')
+            assertAll(
+                { assert workflow.success },
+                { assert !file("${metaDir}/nextflow.log").text.contains('only applies') },
+                { assert file("${metaDir}/nextflow.log").text.contains('so methylsieve reports no row for them: not_in_reference') },
+                // both controls get their own row; methylsieve also covers the single-end sample, which rastair 0.8 can't call
+                { assert pe.keySet() == ['genome', 'bacteriophage_lambda_CpG', '2kb_3_Unmodified'] as Set },
+                { assert se.keySet() == pe.keySet() },
+                { assert [pe, se].every { scopes -> scopes['bacteriophage_lambda_CpG'] > 0.8 && scopes['2kb_3_Unmodified'] < 0.1 } },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    stable_path,
+                    bam_files.collect { file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
+                ).match() }
+            )
+        }
+    }
+}

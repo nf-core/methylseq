@@ -39,6 +39,8 @@ nextflow_pipeline {
             assertAll(
                 { assert workflow.success },
                 { assert file("${metaDir}/nextflow.log").text.contains('get no methylation calls: taps_se') },
+                // methylsieve is opt-in
+                { assert !path("$outputDir/methylsieve").exists() },
                 // TAPS reads methylated C as T: the methylated lambda spike-in should be high and the unmodified one low
                 { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                 { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },

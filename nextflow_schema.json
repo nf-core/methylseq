@@ -491,7 +491,7 @@
                 "rastair2_control_contigs": {
                     "type": "string",
                     "description": "Comma-separated spike-in or control contigs to leave out of the rastair version 2 genome-wide methylation figures.",
-                    "help_text": "The genome-wide figures of the rastair version 2 MultiQC summary (CpG methylation, CpGs covered and depth in General Statistics, and the methylation distribution) use contigs with chromosome-like names (`chr1`, `2L`, `chrIV`, ...), or every contig if the reference has none, and leave out organelles, decoys and EBV. List spike-ins and controls here (for example `J02459.1,pUC19`) to leave them out too; this matters most for references without chromosome-like names, where they would otherwise be included. A listed contig that is not in the reference is reported in the task log. The per-contig table still shows them.",
+                    "help_text": "The genome-wide figures of the rastair version 2 MultiQC summary (CpG methylation, CpGs covered and depth in General Statistics, and the methylation distribution) use contigs with chromosome-like names (`chr1`, `2L`, `chrIV`, ...), or every contig if the reference has none, and leave out organelles, decoys and EBV. List spike-ins and controls here (for example `J02459.1,pUC19`) to leave them out too; this matters most for references without chromosome-like names, where they would otherwise be included. A listed contig that is not in the reference is reported in the task log. The per-contig table still shows them. With `--run_methylsieve`, for either `--taps_caller`, each listed contig also gets its own row in the methylsieve summary; a contig missing from the reference is left out with a warning.",
                     "pattern": "^[A-Za-z0-9._:|+@~-]+(,[A-Za-z0-9._:|+@~-]+)*$",
                     "fa_icon": "fas fa-vial"
                 }
@@ -620,11 +620,6 @@
                     "type": "boolean",
                     "description": "Skip MultiQC",
                     "fa_icon": "fas fa-fast-forward"
-                },
-                "skip_methylsieve": {
-                    "type": "boolean",
-                    "description": "Skip the methylsieve conversion and M-bias metrics on TAPS and 5-Base data",
-                    "fa_icon": "fas fa-fast-forward"
                 }
             },
             "fa_icon": "fas fa-fast-forward"
@@ -653,6 +648,12 @@
                     "type": "boolean",
                     "description": "Run riker multi for alignment, insert size, coverage and GC bias metrics",
                     "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets.",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_methylsieve": {
+                    "type": "boolean",
+                    "description": "Run methylsieve next to rastair for conversion and M-bias metrics on TAPS and 5-Base data",
+                    "help_text": "Runs `methylsieve` on each final BAM file that rastair calls (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`). It only writes metrics; the calls are unchanged. Contigs in `--rastair2_control_contigs` get their own row.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_targeted_sequencing": {
