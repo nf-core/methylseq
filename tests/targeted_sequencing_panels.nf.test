@@ -168,12 +168,9 @@ nextflow_pipeline {
                 { assert taps_samples.every { sample -> overlap(records(filtered(sample, taps_panels[0]))) == overlap(records(filtered(sample, taps_panels[1]))) } },
                 { assert taps_samples.every { sample -> taps_panels.every { panel -> path("${outputDir}/enrichment_metrics/${sample}.${panel}.CollectHsMetrics.coverage_metrics").exists() } } },
                 { assert taps_panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == taps_samples as Set } },
-                // a methylation summary per panel next to the genome-wide one. Panel a is all lambda, which is not
-                // chromosome-like, so it only gets the per-contig table; panel b also covers chr19
-                { assert report.contains("rastair (${taps_panels[0]}) CpG methylation per contig") },
-                { assert !report.contains("rastair (${taps_panels[0]}) CpG methylation distribution") },
-                { assert ['CpG methylation per contig', 'CpG methylation distribution'].every { section -> report.contains("rastair (${taps_panels[1]}) ${section}") } },
-                { assert report.findAll(/<th id="header_[^"]*-rastair_${taps_panels[1]}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } },
+                // a methylation summary per panel next to the genome-wide one
+                { assert taps_panels.every { panel -> ['CpG methylation per contig', 'CpG methylation distribution'].every { section -> report.contains("rastair (${panel}) ${section}") } } },
+                { assert taps_panels.every { panel -> report.findAll(/<th id="header_[^"]*-rastair_${panel}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
                 { assert report.contains("rastair CpG methylation distribution") },
                 { assert report.findAll(/<th id="header_[^"]*-rastair_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> !header.contains('column-hidden') } } },
                 { assert snapshot(

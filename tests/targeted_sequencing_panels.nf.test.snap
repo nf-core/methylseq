@@ -63,6 +63,81 @@
             "nextflow": "26.10.5"
         }
     },
+    "Params: bwamem3 | taps | taps_caller rastair | run_targeted_sequencing with two panels | collecthsmetrics | run_methylation_summary": {
+        "content": [
+            {
+                "BWAMEM3_INDEX": {
+                    "bwamem3": "0.18.0"
+                },
+                "BWAMEM3_MEM": {
+                    "bwamem3": "0.18.0",
+                    "samtools": 1.25
+                },
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
+                "METHYLATION_SUMMARY_TARGETS": {
+                    "gawk": "5.3.1"
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_CREATESEQUENCEDICTIONARY": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_MARKDUPLICATES": {
+                    "picard": "3.5.0"
+                },
+                "RASTAIR_CALL": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIAS": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_MBIASPARSER": {
+                    "rastair": "0.8.2"
+                },
+                "RASTAIR_METHYLKIT": {
+                    "rastair": "0.8.2"
+                },
+                "SAMTOOLS_FLAGSTAT": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_IDXSTATS": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_STATS": {
+                    "samtools": 1.25
+                },
+                "TRIMGALORE": {
+                    "trimgalore": "2.6.0"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-11-24T16:49:57.952131",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
     "Params: bwameth | run_targeted_sequencing with two panels | collecthsmetrics | run_riker | run_methylation_summary": {
         "content": [
             {
