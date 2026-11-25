@@ -63,6 +63,72 @@
             "nextflow": "26.10.5"
         }
     },
+    "Params: bismark | skip_trimming | run_targeted_sequencing with two panels | collecthsmetrics": {
+        "content": [
+            {
+                "BISMARK_ALIGN": {
+                    "bismark": "3.4.0",
+                    "bwamem3": "0.18.0"
+                },
+                "BISMARK_DEDUPLICATE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_GENOMEPREPARATION_BOWTIE": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_METHYLATIONEXTRACTOR": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_REPORT": {
+                    "bismark": "3.4.0"
+                },
+                "BISMARK_SUMMARY": {
+                    "bismark": "3.4.0"
+                },
+                "FASTQC": {
+                    "fastqc": "0.12.1"
+                },
+                "FILTER_BEDGRAPH_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "FILTER_COV_TARGETS": {
+                    "bedtools": "2.31.1"
+                },
+                "GUNZIP": {
+                    "gunzip": 1.13
+                },
+                "MULTIQC": {
+                    "multiqc": 1.35
+                },
+                "PICARD_BEDTOINTERVALLIST": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_COLLECTHSMETRICS": {
+                    "picard": "3.4.0"
+                },
+                "PICARD_CREATESEQUENCEDICTIONARY": {
+                    "picard": "3.4.0"
+                },
+                "SAMTOOLS_INDEX": {
+                    "samtools": 1.25
+                },
+                "SAMTOOLS_SORT": {
+                    "samtools": 1.25
+                },
+                "WIDEN_TARGETS_CPG": {
+                    "bedtools": "2.31.1"
+                },
+                "Workflow": {
+                    "nf-core/methylseq": "v4.3.0dev"
+                }
+            }
+        ],
+        "timestamp": "2026-11-25T09:43:40.431088",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.10.5"
+        }
+    },
     "Params: bwamem3 | taps | taps_caller rastair | run_targeted_sequencing with two panels | collecthsmetrics | run_methylation_summary": {
         "content": [
             {
