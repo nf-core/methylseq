@@ -179,4 +179,32 @@ nextflow_pipeline {
             )
         }
     }
+
+    // --skip_trimming leaves no module_order in the MultiQC configs, so the panel sections are added on their own
+    test("Params: bismark | skip_trimming | run_targeted_sequencing with two panels | collecthsmetrics") {
+        when {
+            params {
+                outdir                  = "${outputDir}"
+                aligner                 = "bismark"
+                skip_trimming           = true
+                target_regions_file     = panels.collect { panel -> "${projectDir}/assets/${panel}.bed" }.join(',')
+                run_targeted_sequencing = true
+                collecthsmetrics        = true
+            }
+        }
+
+        then {
+            def mqc = new groovy.json.JsonSlurper().parse(new File("${outputDir}/multiqc/bismark/multiqc_data/multiqc_data.json"))
+            def report = path("${outputDir}/multiqc/bismark/multiqc_report.html").text
+            assertAll(
+                { assert workflow.success },
+                { assert panels.every { panel -> report.contains("HsMetrics: ${panel}") } },
+                { assert panels.every { panel -> mqc.report_saved_raw_data["multiqc_picard_HsMetrics_picard_hsmetrics_${panel}".toString()]?.keySet() == samples as Set } },
+                { assert panels.every { panel -> report.findAll(/<th id="header_hsmetrics_${panel}_hsmetrics-[^"]*" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
+                { assert snapshot(
+                    removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")
+                ).match() }
+            )
+        }
+    }
 }

@@ -426,8 +426,8 @@ workflow METHYLSEQ {
             METHYLATION_SUMMARY_TARGETS(
                 params.aligner =~ /bismark/
                     ? TARGETED_SEQUENCING.out.coverage_filtered
-                    // MethylDackel writes one bedGraph per context: summarise them together
-                    : TARGETED_SEQUENCING.out.bedgraph_filtered.groupTuple()
+                    // One bedGraph per MethylDackel context; a known size lets each sample go once its own are filtered
+                    : TARGETED_SEQUENCING.out.bedgraph_filtered.groupTuple(size: !isTaps() && params.all_contexts ? 3 : 1, remainder: true)
             )
             ch_methylation_summary_mqc = ch_methylation_summary_mqc.mix(
                 METHYLATION_SUMMARY_TARGETS.out.mqc

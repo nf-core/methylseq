@@ -448,10 +448,8 @@ def targetPanels() {
 }
 
 //
-// MultiQC config with one Picard HsMetrics section per target panel. Picard names each sample after its BAM, so the
-// panels would overwrite each other in a single section. A later module_order replaces an earlier one, so this extends
-// the last one the other configs set. The panels' General Statistics columns share titles (and one column ID), so they
-// start hidden.
+// One Picard HsMetrics section per panel (Picard names samples after the BAM), spliced into the last module_order set.
+// The panels' General Statistics columns share titles and a column ID, so they start hidden.
 //
 def targetPanelsMultiqcConfig(panel_names, multiqc_configs) {
     def yaml = new org.yaml.snakeyaml.Yaml()
