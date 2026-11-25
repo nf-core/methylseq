@@ -12,6 +12,9 @@
                 "GUNZIP": {
                     "gunzip": 1.13
                 },
+                "METHYLATION_SUMMARY": {
+                    "gawk": "5.3.1"
+                },
                 "METHYLSIEVE": {
                     "methylsieve": "0.3.0"
                 },
@@ -126,6 +129,8 @@
                 "multiqc/bwamem3/multiqc_data/multiqc_fastqc_fastqc_trimmed.txt",
                 "multiqc/bwamem3/multiqc_data/multiqc_general_stats.txt",
                 "multiqc/bwamem3/multiqc_data/multiqc_picard_dups.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_rastair_beta_hist_plot.txt",
+                "multiqc/bwamem3/multiqc_data/multiqc_rastair_contigs_table.txt",
                 "multiqc/bwamem3/multiqc_data/multiqc_samtools_flagstat.txt",
                 "multiqc/bwamem3/multiqc_data/multiqc_samtools_idxstats.txt",
                 "multiqc/bwamem3/multiqc_data/multiqc_samtools_stats.txt",
@@ -220,6 +225,8 @@
                 "fastqc_trimmed_top_overrepresented_sequences_table.txt:md5,75579fd8cfb73c85c5d9401afad7ddb0",
                 "multiqc_citations.txt:md5,fd79bdf13e751be45bc8956ca62f247b",
                 "multiqc_picard_dups.txt:md5,2c2b80facf6cdf4e47990d04c35499ee",
+                "multiqc_rastair_beta_hist_plot.txt:md5,db9e6cb62a12a16438e814cf762c3974",
+                "multiqc_rastair_contigs_table.txt:md5,351990c48ef85e1555bf4955e780aeea",
                 "multiqc_samtools_flagstat.txt:md5,2eee9bed255cb17850315201eb8d1870",
                 "multiqc_samtools_idxstats.txt:md5,1384ce93cd58ffb3f812c2808b0542d6",
                 "multiqc_samtools_stats.txt:md5,56b0bc845c7dd286abfb7414ddcf0d46",
@@ -259,7 +266,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-25T09:43:49.617352",
+        "timestamp": "2026-11-25T11:07:22.290069",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
