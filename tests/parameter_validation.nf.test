@@ -125,7 +125,6 @@ nextflow_pipeline {
                 trim_OT                  = "0,0,10,0"
                 collecthsmetrics         = true
                 bwamem3_index            = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bwamem3_Index.tar.gz"
-                rastair2_control_contigs = "bacteriophage_lambda_CpG"
                 five_base_baseq          = 30
             }
         }
@@ -137,7 +136,6 @@ nextflow_pipeline {
                 { assert log_text.contains('--trim_OT/--trim_OB only apply to rastair calls') },
                 { assert log_text.contains('--collecthsmetrics only applies with --run_targeted_sequencing') },
                 { assert log_text.contains('--bwamem3_index only applies to --aligner bwamem3') },
-                { assert log_text.contains('--rastair2_control_contigs only applies with --taps_caller rastair2') },
                 { assert log_text.contains("--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark). It is ignored") },
                 { assert snapshot(
                     removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),

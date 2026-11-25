@@ -340,7 +340,7 @@ Filename abbreviations stand for the following reference alignment strands:
 - `sample.bcftools_stats.txt`
   - `bcftools stats` of the rastair version 2 VCF (SNV and indel counts, transitions/transversions), shown in the MultiQC report.
 
-The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs (`chr1`, `2L`, `chrIV`, ...), or every contig for references without chromosome-like names, and leave out organelles, decoys, EBV and any `--control_contigs` (or `--rastair2_control_contigs`), so spike-in controls (shown in the per-contig table) do not skew them. The contigs used are listed in the `RASTAIR2_SUMMARY` task log; a sample with no covered CpGs on them gets no General Statistics row.
+The MultiQC report also gets rastair version 2 CpG methylation, CpGs covered and mean CpG depth in the General Statistics table, a per-CpG methylation distribution, and CpG methylation per contig. Genome-wide figures use chromosome-like contigs (`chr1`, `2L`, `chrIV`, ...), or every contig for references without chromosome-like names, and leave out organelles, decoys, EBV and any `--control_contigs`, so spike-in controls (shown in the per-contig table) do not skew them. The contigs used are listed in the `RASTAIR2_SUMMARY` task log; a sample with no covered CpGs on them gets no General Statistics row.
 
 #### Methylation summary (optional)
 
