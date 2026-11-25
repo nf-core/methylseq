@@ -548,12 +548,9 @@
             "properties": {
                 "target_regions_file": {
                     "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "mimetype": "text/plain",
-                    "pattern": "^\\S+|\\.bed(\\.gz)?$",
-                    "description": "A BED file containing the target regions",
-                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. For TAPS data it filters the rastair CpG calls, from either `--taps_caller`.",
+                    "pattern": "^[^,\\s]+(,[^,\\s]+)*$",
+                    "description": "A BED file containing the target regions, or a comma-separated list of BED files (one per panel)",
+                    "help_text": "This file will be used for filtering the bedGraph file with the methylation results. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) it filters the rastair CpG calls, from either `--taps_caller`. Give several BED files separated by commas (no spaces) to analyse each panel separately: each file name without `.bed` or `.bed.gz` names its panel, so the names must differ and may only hold letters, digits, `_` and `-`.",
                     "fa_icon": "fas fa-file"
                 },
                 "collecthsmetrics": {
@@ -642,7 +639,7 @@
                 "run_methylation_summary": {
                     "type": "boolean",
                     "description": "Add a per-sample methylation summary of the MethylDackel, Bismark or rastair 0.8 calls to the MultiQC report",
-                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`), or the rastair 0.8 calls (`--taps_caller rastair`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary.",
+                    "help_text": "Adds CpG methylation, CpGs covered and mean CpG depth to General Statistics (plus CHG and CHH methylation with `--all_contexts`), a CpG methylation distribution and CpG methylation per contig. Genome-wide figures leave out organelles, decoys and `--control_contigs`. Reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`, not with `--methyl_kit`) or the Bismark coverage files (not with `--nomeseq`), or the rastair 0.8 calls (`--taps_caller rastair`). Rastair calls with `--taps_caller rastair2` (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) always get this summary. With `--run_targeted_sequencing`, each target panel also gets a summary of its filtered calls.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_qualimap": {
@@ -653,7 +650,7 @@
                 "run_riker": {
                     "type": "boolean",
                     "description": "Run riker multi for alignment, insert size, coverage and GC bias metrics",
-                    "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets.",
+                    "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets (the union of the BED files when there are several).",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_targeted_sequencing": {
