@@ -29,6 +29,7 @@ include { bismarkBwamem3                } from '../../subworkflows/local/utils_n
 include { targetPanels                  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { targetPanelsMultiqcConfig     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { checkControlContigs           } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { METHYLATION_SUMMARY           } from '../../modules/local/methylation_summary/main'
@@ -85,6 +86,19 @@ workflow METHYLSEQ {
     ch_target_regions = channel.fromList(
         target_panels.collect { panel -> [[panel: panel.name, multi_panel: target_panels.size() > 1], file(panel.bed, checkIfExists: true)] }
     )
+
+    //
+    // Check the --control_contigs names against the FASTA index; routes without one only get a warning
+    //
+    if (params.control_contigs) {
+        ch_fasta_index
+            .map { _meta, fai -> checkControlContigs(fai) }
+            .ifEmpty {
+                log.warn("--control_contigs can't be checked against the reference without a FASTA index (--aligner ${params.aligner} builds none by default). A name that is not in the FASTA is only reported in the summary task log, and that control is missing from the report.")
+                false
+            }
+            .subscribe { _checked -> }
+    }
 
     //
     // Branch channels from input samplesheet channel

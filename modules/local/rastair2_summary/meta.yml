@@ -23,7 +23,7 @@ input:
         ontologies: []
 # `ext.args` is passed to the script as options: `-d <n>` sets the minimum informative reads per CpG for the
 # methylation distribution (default 5), and `-c <contig,...>` names spike-in or control contigs to leave out of the
-# genome-wide figures. The pipeline sets `-c` from `--control_contigs` or `--rastair2_control_contigs`.
+# genome-wide figures. The pipeline sets `-c` from `--control_contigs`.
 output:
   mqc:
     - - meta:

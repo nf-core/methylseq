@@ -23,7 +23,7 @@ nextflow_pipeline {
             // a sample with calls in the shared region, and one with calls in panel b only
             overlap_sample: 'SRR389222_sub1',
             panel_b_sample: 'SRR389222_sub1',
-            summary: [tool: 'bismark', label: 'Bismark', panels: panels, section: 'CpG methylation distribution']
+            summary: [tool: 'bismark', label: 'Bismark', panels: panels, section: 'CpG methylation distribution', contexts: []]
         ],
         [
             aligner: "bwameth",
@@ -35,7 +35,7 @@ nextflow_pipeline {
             overlap_sample: null,
             panel_b_sample: 'Ecoli_10K_methylated',
             // and none at all in panel a, which then gets no summary. Too few CpGs have 5 reads for a distribution
-            summary: [tool: 'methyldackel', label: 'MethylDackel', panels: [panels[1]], section: 'CpG methylation per contig']
+            summary: [tool: 'methyldackel', label: 'MethylDackel', panels: [panels[1]], section: 'CpG methylation per contig', contexts: ['chg', 'chh']]
         ]
     ]
 
@@ -50,6 +50,7 @@ nextflow_pipeline {
                     collecthsmetrics        = true
                     run_riker               = true
                     run_methylation_summary = true
+                    all_contexts            = scenario.summary.contexts as boolean
                 }
             }
 
@@ -78,7 +79,9 @@ nextflow_pipeline {
                     // one methylation summary per panel next to the genome-wide one; only the panel columns start hidden
                     { assert scenario.summary.panels.every { panel -> report.contains("${scenario.summary.label} (${panel}) ${scenario.summary.section}") } },
                     { assert scenario.summary.panels.every { panel -> report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_${panel}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> header.contains('column-hidden') } } } },
-                    { assert report.contains("${scenario.summary.label} ${scenario.summary.section}") },
+                    // with --all_contexts, each panel's CHG and CHH bedGraphs are read as such
+                { assert scenario.summary.panels.every { panel -> scenario.summary.contexts.every { context -> report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_${panel}_${context}_meth" class="[^"]*"/) } } },
+                { assert report.contains("${scenario.summary.label} ${scenario.summary.section}") },
                     { assert report.findAll(/<th id="header_[^"]*-${scenario.summary.tool}_cpg_meth" class="[^"]*"/).with { headers -> headers && headers.every { header -> !header.contains('column-hidden') } } },
                     { assert snapshot(
                         removeNextflowVersion("${outputDir}/pipeline_info/nf_core_methylseq_software_mqc_versions.yml")

@@ -64,6 +64,8 @@ nextflow_pipeline {
                 { assert workflow.success },
                 // --control_contigs turns the summary on
                 { assert contigs.size() == 4 && contigs.every { sample, columns -> columns.keySet() == ['chr'] as Set } },
+                // Bismark builds no FASTA index here, so the names are not checked
+                { assert file("${metaDir}/nextflow.log").text.contains("--control_contigs can't be checked against the reference without a FASTA index") },
                 { assert summaryStats(params.outdir, 'bismark', 'bismark').isEmpty() },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
@@ -105,6 +107,23 @@ nextflow_pipeline {
                     stats,
                     contigs
                 ).match() }
+            )
+        }
+    }
+
+    test("Params: bwameth | control_contigs not in the reference - error") {
+        when {
+            params {
+                aligner         = "bwameth"
+                control_contigs = "chr,J02459.1"
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert file("${metaDir}/nextflow.log").text.contains('--control_contigs: J02459.1 not in the reference FASTA') }
             )
         }
     }

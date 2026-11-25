@@ -10,7 +10,8 @@
 #         rastair   one rastair 0.8 call file (`*.rastair_call.txt`): the same columns without cpg, as it
 #                   only reports reference CpGs
 #         bedgraph  MethylDackel bedGraphs or Bismark coverage files (chrom, start, end, %, methylated,
-#                   unmethylated), plain or gzipped. A file named *_CHG.* or *_CHH.* holds that context;
+#                   unmethylated), plain or gzipped. A file named *_CHG.bedGraph or *_CHH.bedGraph (.gz, or
+#                   .targeted.bedGraph, .<label>.targeted.bedGraph) holds that context;
 #                   any other holds CpGs.
 #   -n  tool name for the MultiQC IDs and column names: rastair2 (default), rastair, methyldackel or bismark
 #   -l  label for one of several summaries per sample (e.g. a target panel): added to the file names, MultiQC
@@ -33,6 +34,7 @@
 # not skew them. The contigs used are logged to stderr; if none of them has covered CpGs, the
 # genome-wide files are not written. The per-contig table lists every contig with at least 10 covered
 # CpGs (the 50 with the most, if there are more), except unplaced, alternate, decoy, HLA and EBV sequences.
+# The -c contigs are always listed, first in line for the 50, if they have any covered CpG.
 
 set -euo pipefail
 # Locale-independent number formatting (some awks write 60,37 under a comma-decimal LC_NUMERIC)
@@ -87,8 +89,9 @@ shift
 for file in "$@"; do
     if [ "$format" = bedgraph ]; then
         case "$file" in
-            *_CHG.*) printf '#context\tCHG\n' ;;
-            *_CHH.*) printf '#context\tCHH\n' ;;
+            # Also the targeted analysis' <bedGraph>[.<panel>].targeted.bedGraph
+            *_CHG.bedGraph | *_CHG.bedGraph.gz | *_CHG.targeted.bedGraph | *_CHG."$panel".targeted.bedGraph) printf '#context\tCHG\n' ;;
+            *_CHH.bedGraph | *_CHH.bedGraph.gz | *_CHH.targeted.bedGraph | *_CHH."$panel".targeted.bedGraph) printf '#context\tCHH\n' ;;
             *) printf '#context\tCpG\n' ;;
         esac
     fi
@@ -139,8 +142,9 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         if (is_organelle(c)) return "3" c
         return "4" c
     }
-    # Order for the top contigs: most covered CpGs first, then by name so that ties are deterministic
+    # Order for the top contigs: controls, then most covered CpGs, then by name so that ties are deterministic
     function before(a, b) {
+        if ((a in control) != (b in control)) return (a in control)
         return contig_sites[a] > contig_sites[b] || (contig_sites[a] == contig_sites[b] && a < b)
     }
     BEGIN {
@@ -319,7 +323,7 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
     function write_contig_table(    n_contigs, c, i, j, k, header, line, cf) {
         n_contigs = 0
         for (c in contig_depth) {
-            if (is_minor(c) || contig_sites[c] < 10) continue
+            if (!(c in control) && (is_minor(c) || contig_sites[c] < 10)) continue
             if (n_contigs == max_contigs && !before(c, keep[n_contigs])) continue
             if (n_contigs < max_contigs) n_contigs++
             for (j = n_contigs - 1; j >= 1 && before(c, keep[j]); j--) keep[j + 1] = keep[j]
@@ -341,7 +345,7 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
             cf = sample "." name "_contigs_mqc.tsv"
             print "# id: \"" name "_contigs\"" > cf
             print "# section_name: \"" label " CpG methylation per contig\"" > cf
-            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls. Contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out; at most " max_contigs " contigs (those with the most covered CpG positions) are shown.\"" > cf
+            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls, which are always shown. Other contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out; at most " max_contigs " contigs (the controls, then those with the most covered CpG positions) are shown.\"" > cf
             print "# plot_type: \"table\"" > cf
             print "# pconfig:" > cf
             print "#     id: \"" name "_contigs_table\"" > cf
