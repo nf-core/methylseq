@@ -14,7 +14,8 @@ nextflow_pipeline {
                 aligner                  = "bwamem3"
                 taps                     = true
                 run_methylsieve          = true
-                control_contigs          = "bacteriophage_lambda_CpG,2kb_3_Unmodified"
+                // a repeated contig gets one row
+                control_contigs          = "bacteriophage_lambda_CpG,2kb_3_Unmodified,bacteriophage_lambda_CpG"
                 outdir                   = "$outputDir"
             }
         }
@@ -41,6 +42,7 @@ nextflow_pipeline {
                 // both controls get their own row; methylsieve also covers the single-end sample, which rastair 0.8 can't call
                 { assert pe.keySet() == ['genome', 'bacteriophage_lambda_CpG', '2kb_3_Unmodified'] as Set },
                 { assert se.keySet() == pe.keySet() },
+                { assert ['taps_pe', 'taps_se'].every { sample -> path("$outputDir/methylsieve/${sample}.summary.tsv").readLines().size() == 4 } },
                 { assert [pe, se].every { scopes -> scopes['bacteriophage_lambda_CpG'] > 0.8 && scopes['2kb_3_Unmodified'] < 0.1 } },
                 { assert snapshot(
                     removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
