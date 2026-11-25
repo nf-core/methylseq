@@ -316,6 +316,20 @@ This filters methylation bedGraphs and Bismark coverage files to the targets and
 
 For bisulfite data, a target on a contig that the FASTA lacks is skipped and a target that runs past its contig end is clipped, with a warning; the run stops if no target fits. Picard and riker use the targets as given.
 
+#### Several target panels
+
+`--target_regions_file` also takes a comma-separated list of BED files, with no spaces. Each file is a panel, analysed on its own:
+
+```bash
+--target_regions_file promoters.bed,enhancers.bed,imprinted.bed
+```
+
+Each panel is named after its file, without `.bed` or `.bed.gz`. The names must differ, so `a/targets.bed,b/targets.bed` stops at launch. With several files the names may only hold letters, digits, `_` and `-`, because they go into file names and the MultiQC report. Panels can overlap: a CpG in two panels is reported in both.
+
+With several panels, the panel name goes before `.targeted` in each filtered file, for example `sample.promoters.targeted.bedGraph`, and Picard writes `sample.promoters.CollectHsMetrics.coverage_metrics`. The MultiQC report gets one HsMetrics section per panel. riker runs once per sample, so with `--run_riker` its hybrid capture metrics cover the union of the panels. A single BED file gives the same file names as before.
+
+With `--run_methylation_summary` or `--control_contigs`, each panel also gets its own [methylation summary](#methylation-summary-and-spike-in-controls-optional) in the MultiQC report, from that panel's filtered calls, next to the genome-wide one. This includes a single BED file. Its sections are titled after the tool and the panel, for example `MethylDackel (promoters)`. The panel columns in General Statistics start hidden; show them with "Configure columns". Panel names must still differ once lower-cased and with `-` read as `_`.
+
 ### Methylation summary and spike-in controls (optional)
 
 Library kits often add spike-in controls, such as unmethylated lambda DNA or methylated pUC19, to measure conversion efficiency. Add their sequences to the reference FASTA and list them with `--control_contigs`, using the FASTA header names up to the first space:
