@@ -26,13 +26,17 @@ include { methodsDescriptionText        } from '../../subworkflows/local/utils_n
 include { validateInputSamplesheet      } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { isTaps                        } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { bismarkBwamem3                } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { targetPanels                  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { targetPanelsMultiqcConfig     } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { checkUmiInput                 } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { checkControlContigs           } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { BAM_TAPS_CONVERSION           } from '../../subworkflows/nf-core/bam_taps_conversion'
 include { RASTAIR2_SUMMARY              } from '../../modules/local/rastair2_summary/main'
 include { METHYLATION_SUMMARY           } from '../../modules/local/methylation_summary/main'
+include { METHYLATION_SUMMARY as METHYLATION_SUMMARY_TARGETS } from '../../modules/local/methylation_summary/main'
 include { BAM_METHYLDACKEL              } from '../../subworkflows/nf-core/bam_methyldackel/main'
 include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targeted_sequencing'
+include { MERGE_TARGETS                 } from '../../modules/local/merge_targets/main'
 include { FASTQ_ALIGN_DEDUP_UMI_BWAMEM3 } from '../../subworkflows/local/fastq_align_dedup_umi_bwamem3'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
@@ -81,6 +85,11 @@ workflow METHYLSEQ {
     ch_riker = channel.empty()
     ch_preseq = channel.empty()
     ch_multiqc_files = channel.empty()
+    // One [ meta, bed ] per --target_regions_file BED; the panel goes into file names only when there are several
+    def target_panels = params.run_targeted_sequencing ? targetPanels() : []
+    ch_target_regions = channel.fromList(
+        target_panels.collect { panel -> [[panel: panel.name, multi_panel: target_panels.size() > 1], file(panel.bed, checkIfExists: true)] }
+    )
 
     //
     // Check the --control_contigs names against the FASTA index; routes without one only get a warning
@@ -410,10 +419,19 @@ workflow METHYLSEQ {
     // skipped by default. to use run with `--run_riker` param.
     //
     if (params.run_riker) {
-        // Targets double as baits, as for Picard CollectHsMetrics
-        def riker_targets = params.run_targeted_sequencing ? file(params.target_regions_file, checkIfExists: true) : []
+        // Targets double as baits, as for Picard CollectHsMetrics. riker runs once per BAM, so several panels go in as their union.
+        ch_riker_input = ch_bam.join(ch_bai).map { meta, bam, bai -> [meta, bam, bai, []] }
+        if (params.run_targeted_sequencing) {
+            ch_riker_targets = ch_target_regions.map { _meta, bed -> bed }.first()
+            if (target_panels.size() > 1) {
+                MERGE_TARGETS(ch_target_regions.map { _meta, bed -> bed }.collect())
+                ch_riker_targets = MERGE_TARGETS.out.targets
+                ch_versions = ch_versions.mix(MERGE_TARGETS.out.versions)
+            }
+            ch_riker_input = ch_bam.join(ch_bai).combine(ch_riker_targets)
+        }
         RIKER_MULTI(
-            ch_bam.join(ch_bai).map { meta, bam, bai -> [meta, bam, bai, [], [], [], [], riker_targets, riker_targets, [], [], []] },
+            ch_riker_input.map { meta, bam, bai, targets -> [meta, bam, bai, [], [], [], [], targets, targets, [], [], []] },
             ch_fasta.combine(ch_fasta_index).map { meta, fasta, _meta_fai, fai -> [meta, fasta, fai] }.first(),
         )
         ch_riker = RIKER_MULTI.out.alignment_metrics.mix(
@@ -438,7 +456,7 @@ workflow METHYLSEQ {
         TARGETED_SEQUENCING(
             isTaps() ? ch_rastair2_bed.mix(ch_rastair_call) : ch_bedgraph,
             ch_coverage,
-            channel.fromPath(params.target_regions_file, checkIfExists: true),
+            ch_target_regions,
             ch_fasta,
             ch_fasta_index,
             ch_bam,
@@ -448,6 +466,21 @@ workflow METHYLSEQ {
             isTaps(),
         )
         ch_versions = ch_versions.mix(TARGETED_SEQUENCING.out.versions)
+
+        // One methylation summary per panel, from its filtered calls
+        if ((params.run_methylation_summary || params.control_contigs) && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+            METHYLATION_SUMMARY_TARGETS(
+                params.aligner =~ /bismark/
+                    ? TARGETED_SEQUENCING.out.coverage_filtered
+                    // One bedGraph per MethylDackel context; a known size lets each sample go once its own are filtered
+                    : TARGETED_SEQUENCING.out.bedgraph_filtered.groupTuple(size: !isTaps() && params.all_contexts ? 3 : 1, remainder: true)
+            )
+            ch_methylation_summary_mqc = ch_methylation_summary_mqc.mix(
+                METHYLATION_SUMMARY_TARGETS.out.mqc
+                    .map { _meta, files -> files }
+                    .flatten()
+            )
+        }
     }
 
     //
@@ -562,14 +595,21 @@ workflow METHYLSEQ {
             (!params.skip_trimming && !params.skip_fastqc ? [file("${projectDir}/assets/multiqc_config_trimgalore_fastqc.yml", checkIfExists: true)] : []) +
             (params.multiqc_config ? [file(params.multiqc_config, checkIfExists: true)] : [])
 
+        ch_multiqc_configs = channel.value(multiqc_configs)
+        if (params.run_targeted_sequencing && params.collecthsmetrics && target_panels.size() > 1) {
+            ch_multiqc_configs = channel.value(targetPanelsMultiqcConfig(target_panels.collect { panel -> panel.name }, multiqc_configs))
+                .collectFile(name: 'multiqc_config_target_panels.yml')
+                .map { panels_config -> multiqc_configs + [panels_config] }
+        }
+
         // New nf-core MULTIQC (v4.0.2 template): single meta-based tuple input,
         // config passed as a list, logo/replace/sample resolved as values.
         MULTIQC(
-            ch_multiqc_files.flatten().collect().map { files ->
+            ch_multiqc_files.flatten().collect().map { files -> [files] }.combine(ch_multiqc_configs.map { configs -> [configs] }).map { files, configs ->
                 [
                     [id: 'multiqc'],
                     files,
-                    multiqc_configs,
+                    configs,
                     params.multiqc_logo ? file(params.multiqc_logo, checkIfExists: true) : [],
                     [],
                     [],

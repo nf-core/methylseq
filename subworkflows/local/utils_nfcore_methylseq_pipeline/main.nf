@@ -311,6 +311,23 @@ def validateInputParameters() {
     if (params.run_targeted_sequencing && !params.target_regions_file) {
         error("--target_regions_file must be specified when using --run_targeted_sequencing.")
     }
+    if (params.run_targeted_sequencing && params.target_regions_file) {
+        def panels = targetPanels()
+        def repeated = panels.countBy { panel -> panel.name }.findAll { _name, count -> count > 1 }.keySet()
+        if (repeated) {
+            error("--target_regions_file: each BED needs its own file name, which (without .bed or .bed.gz) labels its results. Used more than once: ${repeated.join(', ')}.")
+        }
+        // The panel name ends up in file names, MultiQC anchors and MultiQC path filters, where a dot would make one panel's filter match another's files
+        def unsafe = panels.size() > 1 ? panels.findAll { panel -> !(panel.name ==~ /[A-Za-z0-9_-]+/) } : []
+        if (unsafe) {
+            error("--target_regions_file: with several BEDs, each file name without .bed or .bed.gz may only hold letters, digits, '_' and '-'. Rename: ${unsafe.collect { panel -> panel.bed }.join(', ')}.")
+        }
+        // The per-panel methylation summary IDs are lower case, with '-' as '_'
+        def summary_clashes = panels.groupBy { panel -> panel.name.toLowerCase().replace('-', '_') }.findAll { _id, group -> group.size() > 1 }
+        if ((params.run_methylation_summary || params.control_contigs) && summary_clashes) {
+            error("--target_regions_file: with --run_methylation_summary or --control_contigs, panel names must still differ when lower-cased and with '-' read as '_'. Rename one of: ${summary_clashes.values().collect { group -> group.collect { panel -> panel.name }.join(' and ') }.join('; ')}.")
+        }
+    }
     if (params.run_methurator && isTaps()) {
         error("--run_methurator is not supported with TAPS data or Illumina 5-Base data (--taps, --illumina_5base or --aligner bwamem): methurator relies on MethylDackel.")
     }
@@ -441,6 +458,46 @@ def isTaps() {
 def schemaDefault(name) {
     def schema = new groovy.json.JsonSlurper().parse(file("${projectDir}/nextflow_schema.json"))
     return schema['$defs'].values().findResult { group -> group['properties']?.get(name)?.get('default') }
+}
+
+//
+// One panel per --target_regions_file BED (a comma-separated list), named after the file without .bed or .bed.gz
+//
+def targetPanels() {
+    return params.target_regions_file.toString().tokenize(',').collect { bed -> bed.trim() }.findAll { bed -> bed }.collect { bed ->
+        [name: bed.tokenize('/').last().replaceFirst(/\.bed(\.gz)?$/, ''), bed: bed]
+    }
+}
+
+//
+// One Picard HsMetrics section per panel (Picard names samples after the BAM), spliced into the last module_order set.
+// The panels' General Statistics columns share titles and a column ID, so they start hidden.
+//
+def targetPanelsMultiqcConfig(panel_names, multiqc_configs) {
+    def yaml = new org.yaml.snakeyaml.Yaml()
+    def orders = multiqc_configs.collect { config -> yaml.load(config.text) }.findAll { config -> config instanceof Map && config.module_order }.collect { config -> config.module_order }
+    def module_order = orders ? orders.last() : []
+    def hsmetrics = 'CollectHsMetrics.coverage_metrics'
+    def panel_entries = panel_names.collect { name ->
+        [picard: [
+            name: "HsMetrics: ${name}".toString(),
+            anchor: "picard_hsmetrics_${name}".toString(),
+            info: "Picard CollectHsMetrics on the targets in ${name}.".toString(),
+            path_filters: ["*.${name}.${hsmetrics}".toString()],
+        ]]
+    }
+    def is_picard = { entry -> entry == 'picard' || (entry instanceof Map && entry.containsKey('picard')) }
+    def other_picard = { entry ->
+        def config = entry instanceof Map ? new LinkedHashMap(entry.picard ?: [:]) : [:]
+        config.path_filters_exclude = (config.path_filters_exclude ?: []) + ["*.${hsmetrics}".toString()]
+        [picard: config]
+    }
+    def position = module_order.findIndexOf(is_picard)
+    def new_order = position < 0
+        ? module_order + [other_picard.call('picard')] + panel_entries
+        : module_order.take(position) + [other_picard.call(module_order[position])] + panel_entries + module_order.drop(position + 1).findAll { entry -> !is_picard.call(entry) }
+    def hidden_columns = panel_names.collectEntries { name -> ["HsMetrics: ${name}: HsMetrics".toString(), false] }
+    return groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([module_order: new_order, table_columns_visible: hidden_columns]))
 }
 
 //

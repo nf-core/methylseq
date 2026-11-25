@@ -361,13 +361,15 @@ With `--control_fasta`, the per-contig table also has CpG, CHG and CHH methylati
 
 </details>
 
+With `--run_targeted_sequencing`, each target panel gets the same summary of its filtered calls, in sections titled after the tool and the panel, for example `MethylDackel (promoters)`. Their General Statistics columns start hidden.
+
 ### Targeted Sequencing
 
 If `--run_targeted_sequencing` is set to `true`, the pipeline performs additional analysis for targeted sequencing experiments.
 
 #### Filtered Methylation Calls
 
-BedGraph files, and for Bismark the coverage files, are filtered using the BED file passed to `--target_regions_file`. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) the rastair CpG calls are filtered instead (`*.rastair_call.txt` from `--taps_caller rastair`, the CpG BED from `--taps_caller rastair2`). A CpG that a target edge cuts is kept on both strands; calls in other contexts are kept only inside a target.
+BedGraph files, and for Bismark the coverage files, are filtered using the BED file passed to `--target_regions_file`, or each of them when it lists several. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`) the rastair CpG calls are filtered instead (`*.rastair_call.txt` from `--taps_caller rastair`, the CpG BED from `--taps_caller rastair2`). A CpG that a target edge cuts is kept on both strands; calls in other contexts are kept only inside a target.
 
 **Bismark output directory: `results/bismark/methylation_calls/bedGraph/` (or `results/bismark_hisat/...`)**
 **bwa-meth and bwa-mem3 (bisulfite) output directory: `results/methyldackel/`**
@@ -383,6 +385,8 @@ BedGraph files, and for Bismark the coverage files, are filtered using the BED f
 - `*.targeted.cov`
   - The Bismark coverage file, limited to the target regions and the CpGs their edges cut.
 
+With several BED files, each file above is written once per panel, with the panel name before `.targeted`, for example `*.promoters.targeted.bedGraph`.
+
 #### Hybrid-selection (HS) Metrics
 
 [Picard CollectHsMetrics](https://gatk.broadinstitute.org/hc/en-us/articles/360036856051-CollectHsMetrics-Picard) provides useful metrics to understand how well a targeted enrichment protocol performed, such as the library size or the fold-80 penalty. [Here](https://broadinstitute.github.io/picard/picard-metric-definitions.html#HsMetrics) you can find a detailed list with all of them.
@@ -390,7 +394,7 @@ BedGraph files, and for Bismark the coverage files, are filtered using the BED f
 **Output directory: `results/enrichment_metrics`**
 
 - `*.CollectHsMetrics.coverage_metrics`
-  - Text-based statistics showed also in the MultiQC report.
+  - Text-based statistics showed also in the MultiQC report. With several BED files there is one file per panel, `<sample>.<panel>.CollectHsMetrics.coverage_metrics`, and one MultiQC section per panel, titled `HsMetrics: <panel>`.
 
 ### Bismark Reports
 

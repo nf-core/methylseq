@@ -10,7 +10,8 @@
 #         rastair   one rastair 0.8 call file (`*.rastair_call.txt`): the same columns without cpg, as it
 #                   only reports reference CpGs
 #         bedgraph  MethylDackel bedGraphs or Bismark coverage files (chrom, start, end, %, methylated,
-#                   unmethylated), plain or gzipped. A file named *_CHG.bedGraph or *_CHH.bedGraph (.gz) holds that context;
+#                   unmethylated), plain or gzipped. A file named *_CHG.bedGraph or *_CHH.bedGraph (.gz, or
+#                   .targeted.bedGraph, .<label>.targeted.bedGraph) holds that context;
 #                   any other holds CpGs. Two kinds of file from a separate spike-in control alignment can be
 #                   added: Bismark CX reports named *.controls.CX_report.txt[.gz], whose contigs are all
 #                   controls, and Bismark alignment reports named controls.*_report.txt.
@@ -102,8 +103,9 @@ for file in "$@"; do
             *)
                 printf '\n#format\tcov\t%s\n' "$file"
                 case "$file" in
-                    *_CHG.bedGraph | *_CHG.bedGraph.gz) printf '#context\tCHG\n' ;;
-                    *_CHH.bedGraph | *_CHH.bedGraph.gz) printf '#context\tCHH\n' ;;
+                    # Also the targeted analysis' <bedGraph>[.<panel>].targeted.bedGraph
+                    *_CHG.bedGraph | *_CHG.bedGraph.gz | *_CHG.targeted.bedGraph | *_CHG."$panel".targeted.bedGraph) printf '#context\tCHG\n' ;;
+                    *_CHH.bedGraph | *_CHH.bedGraph.gz | *_CHH.targeted.bedGraph | *_CHH."$panel".targeted.bedGraph) printf '#context\tCHH\n' ;;
                     *) printf '#context\tCpG\n' ;;
                 esac ;;
         esac
