@@ -1,0 +1,248 @@
+nextflow_pipeline {
+    name "Test Workflow main.nf - spike-in controls from --control_fasta"
+    script "../main.nf"
+    config "./nextflow.config"
+    tag "cpu"
+
+    // controls_test.fa (test-datasets): ctl_lambda is the lambda genome, ctl_2kb_unmod the TAPS reference's unmodified 2 kb control
+
+    // Per-contig table of the methylation summary, by sample
+    def contigTable = { outputDir, aligner ->
+        def table = new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_bismark_contigs_table.txt").readLines()*.split('\t', -1)
+        table.tail().collectEntries { row -> [ (row[0]): [table[0].tail(), row.tail()].transpose().collectEntries() ] }
+    }
+
+    // General Statistics columns of the methylation summary, by sample
+    def summaryStats = { outputDir, aligner ->
+        def table = new File("${outputDir}/multiqc/${aligner}/multiqc_data/multiqc_general_stats.txt").readLines()*.split('\t', -1)
+        def columns = table[0].toList()
+        table.tail().collectEntries { row ->
+            [ (row[0]): columns.withIndex().findAll { name, i -> name.startsWith('custom_content_bismark-') && row[i] }.collectEntries { name, i -> [ (name - 'custom_content_bismark-'): row[i] as double ] } ]
+        }.findAll { _sample, values -> values }
+    }
+
+    // Methylation (%) pooled over the rows of one contig and context of a CX report, or of every contig of coverage files
+    def pooled = { rows, int methylated_column ->
+        def methylated = rows.sum { fields -> fields[methylated_column] as double } ?: 0
+        def total = methylated + (rows.sum { fields -> fields[methylated_column + 1] as double } ?: 0)
+        total ? 100 * methylated / total : null
+    }
+
+    // Empty cells as a marker: nf-test would snapshot an empty string as the path of the current directory
+    def snapshotTable = { table -> table.collectEntries { sample, columns -> [ (sample): columns.collectEntries { name, value -> [ (name): value == '' ? 'empty' : value ] } ] } }
+
+    // % of the reads aligned against the controls that align uniquely to them, from a published Bismark report
+    def controlReads = { report_file ->
+        def text = path(report_file.toString()).text
+        def analysed = (text =~ /(?:Sequences|Sequence pairs) analysed in total:\t(\d+)/)[0][1] as double
+        def unique = (text =~ /(?:Number of alignments with a unique best hit from the different alignments|Number of paired-end alignments with a unique best hit):\t(\d+)/)[0][1] as double
+        100 * unique / analysed
+    }
+
+    // md5 as in nf-test snapshots: of the uncompressed content for gzipped files
+    def contentMd5 = { file_path ->
+        def digest = java.security.MessageDigest.getInstance('MD5')
+        def stream = file_path.toString().endsWith('.gz') ? new java.util.zip.GZIPInputStream(new FileInputStream(file_path.toString())) : new FileInputStream(file_path.toString())
+        stream.withStream { input ->
+            byte[] buffer = new byte[65536]
+            int n
+            while ((n = input.read(buffer)) > 0) {
+                digest.update(buffer, 0, n)
+            }
+        }
+        digest.digest().encodeHex().toString()
+    }
+
+    // .command.sh of each Bismark alignment, control or main
+    def alignScripts = { workDir ->
+        def scripts = []
+        new File(workDir.toString()).eachFileRecurse { script ->
+            if (script.name == '.command.sh' && script.text.contains('bismark \\') && script.text.contains('--genome')) {
+                scripts << script.text
+            }
+        }
+        scripts
+    }
+
+    test("Params: bismark | control_fasta | control_reads 1000 | save_reference") {
+        when {
+            params {
+                aligner        = "bismark"
+                control_fasta  = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
+                control_reads  = 1000
+                save_reference = true
+                outdir         = "$outputDir"
+            }
+        }
+
+        then {
+            def contigs = contigTable(params.outdir, 'bismark')
+            def stats = summaryStats(params.outdir, 'bismark')
+            def reports = getAllFilesFromDir(params.outdir, include: ['controls/alignments/*_report.txt'])
+            def cx_reports = getAllFilesFromDir(params.outdir, include: ['controls/methylation_calls/*.CX_report.txt.gz'])
+                .collectEntries { cx -> [ (new File(cx.toString()).name - '.controls.CX_report.txt.gz'): path(cx.toString()).linesGzip.collect { line -> line.split('\t') } ] }
+            def coverage = getAllFilesFromDir(params.outdir, include: ['bismark/methylation_calls/methylation_coverage/*.cov.gz'])
+                .collectEntries { cov -> [ (new File(cov.toString()).name): path(cov.toString()).linesGzip.collect { line -> line.split('\t') } ] }
+            def sampleCoverage = { sample -> coverage.find { name, _rows -> name.startsWith("${sample}_") }?.value }
+            def scripts = alignScripts(workDir)
+            def control_scripts = scripts.findAll { script -> script.contains('--prefix controls') }
+            def main_scripts = scripts - control_scripts
+            // ignoreFile is not applied together with include, so filter the folder afterwards
+            def main_outputs = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+                .findAll { output -> output.toString().startsWith("${params.outdir}/bismark/") && !output.toString().contains('/reference_genome/') }
+                .collect { output -> "${new File(output.toString()).name}:md5,${contentMd5(output)}" }
+            def default_outputs = new groovy.json.JsonSlurper().parse(new File("${projectDir}/tests/default.nf.test.snap"))['-profile test'].content[2]
+            def stable_name = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'multiqc/*/multiqc_plots', 'multiqc/*/multiqc_plots/**', '**/multiqc.parquet'])
+            assertAll(
+                { assert workflow.success },
+                // --control_reads: the first 1000 reads or read pairs of each sample
+                { assert reports.size() == 4 && reports.every { report -> path(report.toString()).text =~ /(Sequences|Sequence pairs) analysed in total:\t1000\n/ } },
+                { assert control_scripts.size() == 4 && control_scripts.every { script -> script.contains('--upto 1000') && script.contains('--bowtie2') } },
+                { assert main_scripts.size() == 4 && main_scripts.every { script -> !script.contains('--upto') && !script.contains('--prefix') } },
+                // every sample has the two controls, with CHG and CHH; no read matches ctl_2kb_unmod
+                { assert contigs.keySet() == ['Ecoli_10K_methylated', 'SRR389222_sub1', 'SRR389222_sub2', 'SRR389222_sub3'] as Set },
+                { assert contigs.every { _sample, columns -> columns.keySet().containsAll(['ctl_lambda', 'ctl_lambda CHG', 'ctl_lambda CHH', 'ctl_2kb_unmod']) } },
+                { assert contigs.every { _sample, columns -> columns.findAll { name, _value -> name.startsWith('ctl_2kb_unmod') }.every { _name, value -> value == '' } } },
+                // the summary's control figures are the published CX reports' figures
+                { assert cx_reports.keySet() == contigs.keySet() },
+                { assert contigs.every { sample, columns ->
+                    [['', 'CG'], [' CHG', 'CHG'], [' CHH', 'CHH']].every { suffix, context ->
+                        Math.abs((columns["ctl_lambda${suffix}"] as double) - pooled(cx_reports[sample].findAll { fields -> fields[0] == 'ctl_lambda' && fields[5] == context }, 3)) < 0.006
+                    }
+                } },
+                // the genome-wide figures come from the main coverage files only
+                { assert stats.keySet() == contigs.keySet() },
+                { assert stats.every { sample, values -> Math.abs(values['bismark_cpg_meth'] - pooled(sampleCoverage(sample), 4)) < 0.006 && values['bismark_cpg_sites'] == sampleCoverage(sample).size() } },
+                // % on controls is the published alignment report's figure
+                { assert stats.every { sample, values ->
+                    def report = reports.find { report -> new File(report.toString()).name.startsWith("controls.${sample}_") }
+                    report && Math.abs(values['bismark_control_reads'] - controlReads(report)) < 0.006
+                } },
+                // the main Bismark outputs are those of the default test, which has no --control_fasta
+                { assert main_outputs.size() > 10 },
+                { assert (main_outputs - default_outputs) == [] },
+                // controls stay out of the aligner's folder, the saved index and the Bismark MultiQC sections
+                { assert getAllFilesFromDir("${params.outdir}/bismark", include: ['**/*controls*']).isEmpty() },
+                { assert new File("${params.outdir}/bismark/reference_genome/BismarkIndex/genome.fa").exists() },
+                { assert getAllFilesFromDir("${params.outdir}/bismark/reference_genome", include: ['**/controls_test*']).isEmpty() },
+                { assert !path("$outputDir/multiqc/bismark/multiqc_data/multiqc_bismark_alignment.txt").text.contains('controls') },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
+                    stable_name,
+                    snapshotTable(contigs),
+                    stats
+                ).match() }
+            )
+        }
+    }
+
+    test("Params: bismark_hisat | non_directional | control_fasta") {
+        when {
+            params {
+                aligner         = "bismark_hisat"
+                non_directional = true
+                control_fasta   = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
+                control_reads   = 1000
+                outdir          = "$outputDir"
+            }
+        }
+
+        then {
+            def control_scripts = alignScripts(workDir).findAll { script -> script.contains('--prefix controls') }
+            def contigs = contigTable(params.outdir, 'bismark_hisat')
+            assertAll(
+                { assert workflow.success },
+                // controls align end-to-end with Bowtie 2, with the library's options
+                { assert control_scripts.size() == 4 },
+                { assert control_scripts.every { script -> script.contains('--bowtie2') && script.contains('--non_directional') && !script.contains('--hisat2') } },
+                { assert contigs.size() == 4 && contigs.every { _sample, columns -> columns['ctl_lambda'] } }
+            )
+        }
+    }
+
+    test("Params: bwameth | control_fasta - ignored") {
+        when {
+            params {
+                aligner       = "bwameth"
+                control_fasta = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
+                outdir        = "$outputDir"
+            }
+        }
+
+        then {
+            def log_text = file("${metaDir}/nextflow.log").text
+            assertAll(
+                { assert workflow.success },
+                { assert log_text.contains('--control_fasta currently only applies with --aligner bismark or bismark_hisat; it is ignored for --aligner bwameth') },
+                { assert workflow.trace.tasks().every { task -> !task.name.contains('FASTQ_CONTROLS_BISMARK') && !task.name.contains('METHYLATION_SUMMARY') } },
+                { assert !new File("${params.outdir}/controls").exists() }
+            )
+        }
+    }
+
+    [
+        [ description: "Params: bismark | nomeseq | control_fasta - ignored", params: [ nomeseq: true ], message: 'so --run_methylation_summary, --control_contigs and --control_fasta are ignored' ],
+        [ description: "Params: bismark | slamseq | control_fasta - ignored", params: [ slamseq: true ], message: '--control_fasta is not supported with --slamseq; it is ignored' ],
+    ].each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    aligner       = "bismark"
+                    control_fasta = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
+                    outdir        = "$outputDir"
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                assertAll(
+                    { assert workflow.success },
+                    { assert file("${metaDir}/nextflow.log").text.contains(scenario.message) },
+                    { assert workflow.trace.tasks().every { task -> !task.name.contains('FASTQ_CONTROLS_BISMARK') && !task.name.contains('METHYLATION_SUMMARY') } }
+                )
+            }
+        }
+    }
+
+    // TAPS reads stand in for 5-Base, as in bismark_bwamem3.nf.test: methylated C reads as T in both
+    [
+        [ description: "Params: bismark | taps | control_fasta", params: [ taps: true ] ],
+        [ description: "Params: bismark | illumina_5base | control_fasta", params: [ illumina_5base: true ] ],
+    ].each { scenario ->
+        test(scenario.description) {
+            when {
+                params {
+                    input         = "${projectDir}/tests/samplesheet_taps_pe.csv"
+                    fasta         = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
+                    fasta_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
+                    aligner       = "bismark"
+                    control_fasta = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
+                    outdir        = "$outputDir"
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+            }
+
+            then {
+                def contigs = contigTable(params.outdir, 'bismark')
+                def stats = summaryStats(params.outdir, 'bismark')
+                def reports = getAllFilesFromDir(params.outdir, include: ['controls/alignments/*_report.txt'])
+                def control_scripts = alignScripts(workDir).findAll { script -> script.contains('--prefix controls') }
+                assertAll(
+                    { assert workflow.success },
+                    { assert control_scripts.size() == 1 && control_scripts.every { script -> script.contains('--five_base_index') && script.contains('--upto 2000000') } },
+                    // methylated C reads as T: the CpG-methylated lambda is high, the unmodified control low
+                    { assert (contigs['taps_pe']['ctl_lambda'] as double) > 80 },
+                    { assert (contigs['taps_pe']['ctl_lambda CHH'] as double) < 10 },
+                    { assert (contigs['taps_pe']['ctl_2kb_unmod'] as double) < 10 },
+                    { assert (contigs['taps_pe']['ctl_2kb_unmod CHH'] as double) < 10 },
+                    { assert reports.size() == 1 && Math.abs(stats['taps_pe']['bismark_control_reads'] - controlReads(reports[0])) < 0.006 },
+                    { assert snapshot(snapshotTable(contigs)).match() }
+                )
+            }
+        }
+    }
+}

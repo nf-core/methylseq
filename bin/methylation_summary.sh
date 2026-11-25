@@ -12,7 +12,9 @@
 #         bedgraph  MethylDackel bedGraphs or Bismark coverage files (chrom, start, end, %, methylated,
 #                   unmethylated), plain or gzipped. A file named *_CHG.bedGraph or *_CHH.bedGraph (.gz, or
 #                   .targeted.bedGraph, .<label>.targeted.bedGraph) holds that context;
-#                   any other holds CpGs.
+#                   any other holds CpGs. Two kinds of file from a separate spike-in control alignment can be
+#                   added: Bismark CX reports named *.controls.CX_report.txt[.gz], whose contigs are all
+#                   controls, and Bismark alignment reports named controls.*_report.txt.
 #   -n  tool name for the MultiQC IDs and column names: rastair2 (default), rastair, methyldackel or bismark
 #   -l  label for one of several summaries per sample (e.g. a target panel): added to the file names, MultiQC
 #       IDs and column names (lower case, with . and - as _) and to the section and column titles
@@ -25,7 +27,9 @@
 #   <sample>.<name>_generalstats_mqc.tsv  CpG methylation, CpGs covered and mean depth over the genome, plus
 #                                         CHG and CHH methylation if given (General Statistics)
 #   <sample>.<name>_beta_hist_mqc.tsv     distribution of per-CpG methylation for CpGs with >= min_depth reads
-#   <sample>.<name>_contigs_mqc.tsv       CpG methylation per contig (chromosomes and any spike-ins or controls)
+#   <sample>.<name>_contigs_mqc.tsv       CpG methylation per contig (chromosomes and any spike-ins or controls),
+#                                         plus CHG and CHH methylation for controls that have them
+#   <sample>.<name>_controls_generalstats_mqc.tsv  reads on the controls, if given an alignment report
 #
 # Methylation is pooled over reads: sum(mod) / sum(mod + unmod). The genome-wide figures (General
 # Statistics and the distribution) use chromosome-like contigs (chr1, 2, chrX, 2L, chrIV,
@@ -85,14 +89,25 @@ fi
 export sample=$1 name label
 shift
 
-# The bedgraph format has no context column: mark where each file starts with a "#context" line
+# The bedgraph format has no context column: mark where each file starts, its kind and context.
+# The leading newline ends a last line that has none.
 for file in "$@"; do
     if [ "$format" = bedgraph ]; then
         case "$file" in
-            # Also the targeted analysis' <bedGraph>[.<panel>].targeted.bedGraph
-            *_CHG.bedGraph | *_CHG.bedGraph.gz | *_CHG.targeted.bedGraph | *_CHG."$panel".targeted.bedGraph) printf '#context\tCHG\n' ;;
-            *_CHH.bedGraph | *_CHH.bedGraph.gz | *_CHH.targeted.bedGraph | *_CHH."$panel".targeted.bedGraph) printf '#context\tCHH\n' ;;
-            *) printf '#context\tCpG\n' ;;
+            *.controls.CX_report.txt | *.controls.CX_report.txt.gz)
+                printf '\n#format\tcx\t%s\n' "$file" ;;
+            controls.*_report.txt | */controls.*_report.txt)
+                first=$(head -n 1 -- "$file")
+                [[ $first == "Bismark report for: "* ]] || { echo "methylation_summary.sh: $file is not a Bismark alignment report" >&2; exit 2; }
+                printf '\n#format\tbismark_report\t%s\n' "$file" ;;
+            *)
+                printf '\n#format\tcov\t%s\n' "$file"
+                case "$file" in
+                    # Also the targeted analysis' <bedGraph>[.<panel>].targeted.bedGraph
+                    *_CHG.bedGraph | *_CHG.bedGraph.gz | *_CHG.targeted.bedGraph | *_CHG."$panel".targeted.bedGraph) printf '#context\tCHG\n' ;;
+                    *_CHH.bedGraph | *_CHH.bedGraph.gz | *_CHH.targeted.bedGraph | *_CHH."$panel".targeted.bedGraph) printf '#context\tCHH\n' ;;
+                    *) printf '#context\tCpG\n' ;;
+                esac ;;
         esac
     fi
     gzip -cdf -- "$file"
@@ -147,6 +162,15 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         if ((a in control) != (b in control)) return (a in control)
         return contig_sites[a] > contig_sites[b] || (contig_sites[a] == contig_sites[b] && a < b)
     }
+    function add_cpg(c, mod, unmod,    depth, bin) {
+        depth = unmod + mod
+        sites++
+        contig_mod[c] += mod; contig_depth[c] += depth; contig_sites[c]++
+        if (depth >= min_depth) {
+            bin = int(10 * mod / depth); if (bin > 9) bin = 9
+            contig_hist[c, bin]++
+        }
+    }
     BEGIN {
         sample = ENVIRON["sample"]; name = ENVIRON["name"]; label = ENVIRON["label"]
         title_suffix = ENVIRON["title_suffix"]; hidden = ENVIRON["hidden"]; desc_label = ENVIRON["desc_label"]
@@ -159,8 +183,40 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         if (format == "bedgraph") { c_mod = 5; c_unmod = 6; source = "input"; ref = "" }
         else { source = (format == "rastair" ? "calls" : "BED"); ref = "reference " }
     }
+    !NF { next }
+    format == "bedgraph" && /^#format\t/ { fmt = $2; file = $3; fmt_seen[fmt] = 1; next }
     format == "bedgraph" && /^#context\t/ { context = $2; next }
     format == "bedgraph" && /^track / { next }
+    # Bismark alignment report of the control alignment: reads analysed and aligned uniquely
+    fmt == "bismark_report" {
+        if ($1 == "Sequence pairs analysed in total:" || $1 == "Sequences analysed in total:") analysed += $2
+        else if ($1 == "Number of paired-end alignments with a unique best hit:" || $1 == "Number of alignments with a unique best hit from the different alignments:") unique += $2
+        next
+    }
+    # Bismark CX report (chrom, position, strand, methylated, unmethylated, context, trinucleotide): all controls
+    fmt == "cx" {
+        if ($4 !~ /^[0-9]+$/ || $5 !~ /^[0-9]+$/) {
+            print "methylation_summary.sh: " file ": not a count in: " $0 > "/dev/stderr"
+            failed = 1; exit 1
+        }
+        ctx = ($6 == "CG") ? "CpG" : $6
+        if (ctx != "CpG" && ctx != "CHG" && ctx != "CHH") {
+            print "methylation_summary.sh: " file ": unknown context " $6 > "/dev/stderr"
+            failed = 1; exit 1
+        }
+        seen[$1] = 1; control[$1] = 1; control_input[$1] = 1; ctx_rows[ctx, $1] = 1
+        if ($4 + $5 == 0) next
+        if (ctx == "CpG") add_cpg($1, $4, $5)
+        else { ctx_mod[ctx, $1] += $4; ctx_depth[ctx, $1] += $4 + $5 }
+        next
+    }
+    format == "bedgraph" && !/^#/ {
+        if ($c_mod !~ /^[0-9]+$/ || $c_unmod !~ /^[0-9]+$/) {
+            print "methylation_summary.sh: " file ": not a count in: " $0 > "/dev/stderr"
+            failed = 1; exit 1
+        }
+        main_input[$1] = 1
+    }
     /^#/ {
         if (!rows && !c_unmod) {
             sub(/^#/, "")
@@ -186,26 +242,30 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
     }
     # CHG and CHH: only pooled per contig, for the genome-wide General Statistics columns
     format == "bedgraph" && context != "CpG" {
-        seen[$1] = 1
+        seen[$1] = 1; ctx_rows[context, $1] = 1
         ctx_mod[context, $1] += $c_mod; ctx_depth[context, $1] += $c_mod + $c_unmod
         next
     }
     {
         seen[$1] = 1
-        unmod = $c_unmod; mod = $c_mod; depth = unmod + mod
-        if (depth == 0) next
-        sites++
-        contig_mod[$1] += mod; contig_depth[$1] += depth; contig_sites[$1]++
-        if (depth >= min_depth) {
-            bin = int(10 * mod / depth); if (bin > 9) bin = 9
-            contig_hist[$1, bin]++
-        }
+        if ($c_unmod + $c_mod == 0) next
+        add_cpg($1, $c_mod, $c_unmod)
     }
     END {
         if (failed) exit 1
+        for (c in control_input) {
+            if (c in main_input) {
+                print "methylation_summary.sh: " sample ": control contig " c " also has calls from the main alignment; give the control a name that is not in the reference" > "/dev/stderr"
+                exit 1
+            }
+        }
+        if (analysed) write_controls_stats()
+        else if (fmt_seen["bismark_report"]) print "methylation_summary.sh: " sample ": the control alignment report counts no reads; no % on controls written" > "/dev/stderr"
         # No covered reference CpG: write nothing rather than a 0% methylation row in General Statistics
         if (sites == 0) {
-            print "methylation_summary.sh: no covered " ref "CpGs for " sample "; no MultiQC rows written" > "/dev/stderr"
+            print "methylation_summary.sh: no covered " ref "CpGs for " sample "; no methylation rows written" > "/dev/stderr"
+            # Controls from a control alignment are still listed, with empty cells
+            for (c in control_input) { write_contig_table(); break }
             exit 0
         }
         for (c in control) {
@@ -316,14 +376,35 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
         print header > hf
         print line > hf
     }
+    # General Statistics: of the first --control_reads reads, % with a unique alignment to the control FASTA
+    function write_controls_stats(    cs) {
+        cs = sample "." name "_controls_generalstats_mqc.tsv"
+        print "# id: \"" name "_controls\"" > cs
+        print "# plot_type: \"generalstats\"" > cs
+        print "# headers:" > cs
+        print "#     " name "_control_reads:" > cs
+        print "#         title: \"% on controls" title_suffix "\"" > cs
+        print "#         namespace: \"" label "\"" > cs
+        print "#         description: \"Of the first --control_reads reads (read pairs for paired-end data), % with a unique alignment to the separate spike-in control FASTA (" desc_label ")\"" > cs
+        print "#         suffix: \"%\"" > cs
+        print "#         min: 0" > cs
+        print "#         max: 100" > cs
+        print "#         scale: \"Purples\"" > cs
+        print "#         format: \"{:,.2f}\"" > cs
+        if (hidden) print "#         hidden: true" > cs
+        print "Sample\t" name "_control_reads" > cs
+        printf "%s\t%.2f\n", sample, 100 * unique / analysed > cs
+    }
     # Per-contig table; MultiQC rejects a table without columns, so skip it when no contig qualifies.
     # Columns in natural order (see sort_key). Draft assemblies can have thousands of contigs: keep the
     # max_contigs with the most covered CpGs, in a list sorted as by before(), so each contig costs at
     # most max_contigs comparisons.
-    function write_contig_table(    n_contigs, c, i, j, k, header, line, cf) {
+    # Controls are always listed: an empty cell for a control without covered positions, and CHG and CHH columns
+    # for a control with calls in those contexts.
+    function write_contig_table(    n_contigs, c, i, j, k, x, ctx, contexts, header, line, cf, has_ctx) {
         n_contigs = 0
-        for (c in contig_depth) {
-            if (!(c in control) && (is_minor(c) || contig_sites[c] < 10)) continue
+        for (c in seen) {
+            if (!(c in control) && (is_minor(c) || !(c in contig_depth) || contig_sites[c] < 10)) continue
             if (n_contigs == max_contigs && !before(c, keep[n_contigs])) continue
             if (n_contigs < max_contigs) n_contigs++
             for (j = n_contigs - 1; j >= 1 && before(c, keep[j]); j--) keep[j + 1] = keep[j]
@@ -336,16 +417,25 @@ done | awk -F '\t' -v min_depth="$min_depth" -v format="$format" '
             keep[j + 1] = c; key[j + 1] = k
         }
         header = "Sample"; line = sample
+        split("CHG CHH", contexts, " ")
         for (i = 1; i <= n_contigs; i++) {
             c = keep[i]
             header = header "\t" c
-            line = line "\t" sprintf("%.2f", 100 * contig_mod[c] / contig_depth[c])
+            line = line "\t" ((c in contig_depth) ? sprintf("%.2f", 100 * contig_mod[c] / contig_depth[c]) : "")
+            if (!(c in control)) continue
+            for (x = 1; x <= 2; x++) {
+                ctx = contexts[x]
+                if (!((ctx, c) in ctx_rows)) continue
+                has_ctx = 1
+                header = header "\t" c " " ctx
+                line = line "\t" (ctx_depth[ctx, c] ? sprintf("%.2f", 100 * ctx_mod[ctx, c] / ctx_depth[ctx, c]) : "")
+            }
         }
         if (n_contigs > 0) {
             cf = sample "." name "_contigs_mqc.tsv"
             print "# id: \"" name "_contigs\"" > cf
             print "# section_name: \"" label " CpG methylation per contig\"" > cf
-            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls, which are always shown. Other contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out; at most " max_contigs " contigs (the controls, then those with the most covered CpG positions) are shown.\"" > cf
+            print "# description: \"CpG methylation (%) pooled over reads for each contig, including any methylated or unmethylated spike-in controls, which are always shown. Other contigs with fewer than 10 covered CpG positions, and unplaced, alternate, decoy, HLA and EBV sequences, are left out; at most " max_contigs " contigs (the controls, then those with the most covered CpG positions) are shown." (has_ctx ? " For spike-in and control contigs, CHG and CHH methylation are shown too." : "") "\"" > cf
             print "# plot_type: \"table\"" > cf
             print "# pconfig:" > cf
             print "#     id: \"" name "_contigs_table\"" > cf

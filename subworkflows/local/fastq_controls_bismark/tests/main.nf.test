@@ -1,0 +1,275 @@
+nextflow_workflow {
+
+    name "Test Subworkflow FASTQ_CONTROLS_BISMARK"
+    script "../main.nf"
+    workflow "FASTQ_CONTROLS_BISMARK"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "subworkflows/fastq_controls_bismark"
+    tag "bismark"
+
+    // Writes a FASTA with the given [ name, sequence ] records
+    def writeFasta = { String path, List records ->
+        new File(path).parentFile.mkdirs()
+        new File(path).text = records.collect { name, sequence -> ">${name}\n${sequence}\n" }.join()
+        return path
+    }
+
+    // Writes the records of test-datasets' controls_test.fa named in `names`, gzipped if the path ends in .gz
+    def writeControls = { String path, List names ->
+        def keep = false
+        def text = new URL('https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa').text.readLines().findAll { line ->
+            if (line.startsWith('>')) {
+                keep = line.substring(1) in names
+            }
+            keep
+        }.join('\n') + '\n'
+        new File(path).parentFile.mkdirs()
+        def stream = path.endsWith('.gz') ? new java.util.zip.GZIPOutputStream(new FileOutputStream(path)) : new FileOutputStream(path)
+        stream.withWriter { writer -> writer << text }
+        return path
+    }
+
+    // Methylation (%) of one contig and context, pooled over the reads of a CX report
+    def cxMethylation = { cx_report, String contig, String context ->
+        def rows = path(cx_report.toString()).linesGzip.collect { line -> line.split('\t') }.findAll { fields -> fields[0] == contig && fields[5] == context }
+        def methylated = rows.sum { fields -> fields[3] as long } ?: 0
+        def total = methylated + (rows.sum { fields -> fields[4] as long } ?: 0)
+        total ? 100 * methylated / total : null
+    }
+
+    test("bisulfite single-end, gzipped FASTA - first 1000 reads, CX report agrees with the splitting report") {
+        when {
+            params {
+                aligner        = "bismark"
+                control_reads  = 1000
+                save_reference = true
+                outdir         = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'sub1', single_end:true ],
+                    file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeControls("${outputDir}/input/controls_test.fa.gz", ['ctl_lambda', 'ctl_2kb_unmod'])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            def report = path(workflow.out.align_report[0][1].toString()).text
+            def splitting = path(workflow.out.splitting_report[0][1].toString()).text
+            def cx = workflow.out.cx_report[0][1]
+            def splitPercent = { context -> (splitting =~ /C methylated in ${context} context:\t([0-9.]+)%/)[0][1] as double }
+            assertAll(
+                { assert workflow.success },
+                { assert report.contains('Sequences analysed in total:\t1000') },
+                { assert new File(cx.toString()).name == 'sub1.controls.CX_report.txt.gz' },
+                { assert new File(workflow.out.align_report[0][1].toString()).name.startsWith('controls.') },
+                // only ctl_lambda has reads, so the splitting report (one decimal) is lambda's
+                { assert Math.abs(cxMethylation(cx, 'ctl_lambda', 'CG') - splitPercent('CpG')) <= 0.05 + 1e-9 },
+                { assert Math.abs(cxMethylation(cx, 'ctl_lambda', 'CHG') - splitPercent('CHG')) <= 0.05 + 1e-9 },
+                { assert Math.abs(cxMethylation(cx, 'ctl_lambda', 'CHH') - splitPercent('CHH')) <= 0.05 + 1e-9 },
+                { assert cxMethylation(cx, 'ctl_2kb_unmod', 'CG') == null },
+                // the control index is not published, even with --save_reference
+                { assert !new File("${outputDir}/bismark/reference_genome").exists() }
+            )
+        }
+    }
+
+    test("no read matches the controls") {
+        when {
+            params {
+                aligner       = "bismark"
+                control_reads = 1000
+                outdir        = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'sub1', single_end:true ],
+                    file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true)
+                ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeControls("${outputDir}/input/unmod.fa", ['ctl_2kb_unmod'])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            def report = path(workflow.out.align_report[0][1].toString()).text
+            def cx_rows = path(workflow.out.cx_report[0][1].toString()).linesGzip.collect { line -> line.split('\t') }
+            assertAll(
+                { assert workflow.success },
+                { assert report.contains('Number of alignments with a unique best hit from the different alignments:\t0') },
+                { assert !cx_rows.isEmpty() },
+                { assert cx_rows.every { fields -> (fields[3] as long) + (fields[4] as long) == 0 } }
+            )
+        }
+    }
+
+    test("bisulfite paired-end - first 1000 read pairs") {
+        when {
+            params {
+                aligner       = "bismark"
+                control_reads = 1000
+                outdir        = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'ecoli', single_end:false ],
+                    [
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R1.fastq.gz', checkIfExists: true),
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/Ecoli_10K_methylated_R2.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = channel.of([ [ id:'controls' ], file('https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            def report = path(workflow.out.align_report[0][1].toString()).text
+            assertAll(
+                { assert workflow.success },
+                // --upto counts read pairs
+                { assert report.contains('Sequence pairs analysed in total:\t1000') },
+                { assert new File(workflow.out.cx_report[0][1].toString()).name == 'ecoli.controls.CX_report.txt.gz' }
+            )
+        }
+    }
+
+    test("TAPS paired-end - bwa-mem3 index of the controls") {
+        when {
+            params {
+                aligner = "bismark"
+                taps    = true
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([
+                    [ id:'taps_pe', single_end:false ],
+                    [
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R1.fastq.gz', checkIfExists: true),
+                        file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/taps/taps_mm10_chr19_R2.fastq.gz', checkIfExists: true)
+                    ]
+                ])
+                input[1] = channel.of([ [ id:'controls' ], file('https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa', checkIfExists: true) ])
+                input[2] = true
+                """
+            }
+        }
+
+        then {
+            def cx = workflow.out.cx_report[0][1]
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().any { task -> task.name.contains('BWAMEM3_INDEX') } },
+                { assert workflow.trace.tasks().every { task -> !task.name.contains('BISMARK_GENOMEPREPARATION') } },
+                // methylated C reads as T: the CpG-methylated lambda is high, the unmodified control low
+                { assert cxMethylation(cx, 'ctl_lambda', 'CG') > 80 },
+                { assert cxMethylation(cx, 'ctl_lambda', 'CHH') < 10 },
+                { assert cxMethylation(cx, 'ctl_2kb_unmod', 'CG') < 10 },
+                { assert new File(cx.toString()).name == 'taps_pe.controls.CX_report.txt.gz' }
+            )
+        }
+    }
+
+    test("control record without a sequence - fails") {
+        when {
+            params {
+                aligner = "bismark"
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([ [ id:'sub1', single_end:true ], file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true) ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeFasta("${outputDir}/input/norecord.fa", [['ctl_a', 'ACGT' * 50], ['ctl_b', '']])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains('--control_fasta: these records have no sequence: ctl_b') } }
+            )
+        }
+    }
+
+    test("duplicate control names - fails") {
+        when {
+            params {
+                aligner = "bismark"
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([ [ id:'sub1', single_end:true ], file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true) ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeFasta("${outputDir}/input/dup.fa", [['ctl', 'ACGT' * 50], ['ctl', 'TTGCA' * 40]])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains('--control_fasta names these sequences more than once: ctl') } }
+            )
+        }
+    }
+
+    test("control name with a comma - fails") {
+        when {
+            params {
+                aligner = "bismark"
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([ [ id:'sub1', single_end:true ], file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true) ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeFasta("${outputDir}/input/comma.fa", [['ctl,a', 'ACGT' * 50]])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains("sequence names may only hold letters, digits and ._:|+@~-, got: 'ctl,a'") } }
+            )
+        }
+    }
+
+    test("empty control FASTA - fails") {
+        when {
+            params {
+                aligner = "bismark"
+                outdir  = "$outputDir"
+            }
+            workflow {
+                """
+                input[0] = channel.of([ [ id:'sub1', single_end:true ], file('https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz', checkIfExists: true) ])
+                input[1] = channel.of([ [ id:'controls' ], file('${writeFasta("${outputDir}/input/empty.fa", [])}', checkIfExists: true) ])
+                input[2] = false
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains('--control_fasta empty.fa holds no sequences') } }
+            )
+        }
+    }
+}

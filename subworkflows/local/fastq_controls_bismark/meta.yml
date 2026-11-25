@@ -1,0 +1,48 @@
+name: "fastq_controls_bismark"
+description: Align the first reads of each sample to a separate spike-in control FASTA with Bismark and call methylation in every context
+keywords:
+  - bisulfite
+  - spike-in
+  - conversion efficiency
+  - bismark
+components:
+  - gunzip
+  - bismark/genomepreparation
+  - bwamem3/index
+  - bismark/align
+  - bismark/methylationextractor
+  - bismark/coverage2cytosine
+input:
+  - reads:
+      type: file
+      description: |
+        Channel with the trimmed reads, meta.controls set to true
+        Structure: [ val(meta), [ reads ] ]
+  - control_fasta:
+      type: file
+      description: |
+        Channel with one FASTA of control sequences, plain or gzipped
+        Structure: [ val(meta), path(fasta) ]
+  - bwamem3:
+      type: boolean
+      description: Bismark's 5-Base/TAPS mode, which aligns with bwa-mem3
+output:
+  - cx_report:
+      type: file
+      description: |
+        Bismark CX reports of the controls
+        Structure: [ val(meta), path(<id>.controls.CX_report.txt.gz) ]
+  - align_report:
+      type: file
+      description: |
+        Bismark alignment reports of the control alignment
+        Structure: [ val(meta), path(controls.*_report.txt) ]
+  - splitting_report:
+      type: file
+      description: |
+        Bismark methylation extractor splitting reports of the controls
+        Structure: [ val(meta), path(controls.*_splitting_report.txt) ]
+authors:
+  - "@FelixKrueger"
+maintainers:
+  - "@FelixKrueger"

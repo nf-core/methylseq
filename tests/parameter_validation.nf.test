@@ -130,6 +130,12 @@ nextflow_pipeline {
             description: "Params: bismark | illumina_5base | fasta not named .fa - not supported",
             params: [ aligner: "bismark", illumina_5base: true, fasta: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome.fna.gz", fasta_index: null, validate_params: false ],
             message: "needs a FASTA named *.fa or *.fasta"
+        ],
+        [
+            // Bismark only finds a FASTA named *.fa or *.fasta (optionally .gz) in a genome folder
+            description: "Params: bismark | control_fasta not named .fa - not supported",
+            params: [ aligner: "bismark", control_fasta: "https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz" ],
+            message: "does not match regular expression ^\\S+\\.fa(sta)?(\\.gz)?\$"
         ]
     ]
 

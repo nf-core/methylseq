@@ -40,6 +40,28 @@ nextflow_process {
         return path
     }
 
+    // Writes a Bismark CX report: `rows` lists [ contig, positions, context (CG, CHG or CHH), meth, unmeth ]
+    def writeCxReport = { String path, List rows ->
+        new File(path).parentFile.mkdirs()
+        def stream = path.endsWith('.gz') ? new java.util.zip.GZIPOutputStream(new FileOutputStream(path)) : new FileOutputStream(path)
+        def position = 0
+        stream.withWriter { writer ->
+            rows.each { contig, positions, context, meth, unmeth ->
+                (1..positions).each { i -> writer << "${contig}\t${++position}\t+\t${meth}\t${unmeth}\t${context}\t${context}A\n" }
+            }
+        }
+        return path
+    }
+
+    // Writes the counts of a Bismark alignment report, single-end or paired-end
+    def writeAlignReport = { String path, boolean paired, int analysed, int unique ->
+        new File(path).parentFile.mkdirs()
+        new File(path).text = paired
+            ? "Bismark report for: r_1.fq and r_2.fq (version: v3.4.0)\n\nSequence pairs analysed in total:\t${analysed}\nNumber of paired-end alignments with a unique best hit:\t${unique}\nMapping efficiency:\t1.0% \n"
+            : "Bismark report for: r.fq (version: v3.4.0)\n\nSequences analysed in total:\t${analysed}\nNumber of alignments with a unique best hit from the different alignments:\t${unique}\nMapping efficiency:\t1.0%\n"
+        return path
+    }
+
     def mqcFiles = { out ->
         def files = out.mqc[0][1]
         (files instanceof List ? files : [ files ]).collectEntries { path -> [ (new File(path.toString()).name): path ] }
@@ -47,7 +69,7 @@ nextflow_process {
 
     def mqcRow = { path ->
         def lines = new File(path.toString()).readLines().findAll { line -> !line.startsWith('#') }
-        [lines[0].split('\t') as List, lines[1].split('\t') as List].transpose().collectEntries()
+        [lines[0].split('\t', -1) as List, lines[1].split('\t', -1) as List].transpose().collectEntries()
     }
 
     test("methyldackel - CpG, CHG and CHH with a control contig") {
@@ -77,7 +99,8 @@ nextflow_process {
                 { assert process.success },
                 // chr1 only: not the mitochondrion or the control
                 { assert stats == [Sample: 'md', methyldackel_cpg_meth: '60.00', methyldackel_cpg_sites: '20', methyldackel_cpg_depth: '10.00', methyldackel_chg_meth: '10.00', methyldackel_chh_meth: '0.00'] },
-                { assert contigs == [Sample: 'md', chr1: '60.00', chrM: '0.00', 'J02459.1': '10.00'] },
+                // the control also gets its CHG and CHH methylation
+                { assert contigs == [Sample: 'md', chr1: '60.00', chrM: '0.00', 'J02459.1': '10.00', 'J02459.1 CHG': '50.00', 'J02459.1 CHH': '50.00'] },
                 { assert snapshot(process.out).match() }
             )
         }
@@ -195,6 +218,202 @@ nextflow_process {
                 { assert mqcRow(files['r08.rastair_generalstats_mqc.tsv']) == [Sample: 'r08', rastair_cpg_meth: '75.00', rastair_cpg_sites: '40', rastair_cpg_depth: '4.00'] },
                 { assert mqcRow(files['r08.rastair_contigs_mqc.tsv']) == [Sample: 'r08', chr1: '75.00', 'J02459.1': '0.00'] },
                 { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("bismark - control CX report and single-end alignment report") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'bm' ],
+                    [
+                        file('${writeBedGraph("${outputDir}/input/bm.deduplicated.bismark.cov.gz", [['chr1', 30, 3, 7]])}', checkIfExists: true),
+                        file('${writeCxReport("${outputDir}/input/bm.controls.CX_report.txt.gz", [['ctl', 20, 'CG', 1, 99], ['ctl', 5, 'CG', 0, 0], ['ctl', 20, 'CHG', 2, 98], ['ctl', 5, 'CHG', 0, 0], ['ctl', 20, 'CHH', 1, 199], ['ctl', 5, 'CHH', 0, 0]])}', checkIfExists: true),
+                        file('${writeAlignReport("${outputDir}/input/controls.bm_bismark_bt2_SE_report.txt", false, 200, 50)}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            assertAll(
+                { assert process.success },
+                // the control contig is left out of the genome-wide figures
+                { assert mqcRow(files['bm.bismark_generalstats_mqc.tsv']) == [Sample: 'bm', bismark_cpg_meth: '30.00', bismark_cpg_sites: '30', bismark_cpg_depth: '10.00'] },
+                { assert mqcRow(files['bm.bismark_contigs_mqc.tsv']) == [Sample: 'bm', chr1: '30.00', ctl: '1.00', 'ctl CHG': '2.00', 'ctl CHH': '0.50'] },
+                { assert new File(files['bm.bismark_contigs_mqc.tsv'].toString()).text.contains('CHG and CHH methylation are shown too') },
+                { assert mqcRow(files['bm.bismark_controls_generalstats_mqc.tsv']) == [Sample: 'bm', bismark_control_reads: '25.00'] },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("bismark - paired-end alignment report and controls without coverage") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'pe' ],
+                    [
+                        file('${writeCxReport("${outputDir}/input/pe.controls.CX_report.txt", [['ctl_a', 12, 'CG', 10, 90], ['ctl_b', 8, 'CG', 0, 0], ['ctl_b', 8, 'CHH', 0, 0]])}', checkIfExists: true),
+                        file('${writeAlignReport("${outputDir}/input/controls.pe_1_bismark_bt2_PE_report.txt", true, 1000, 37)}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            assertAll(
+                { assert process.success },
+                // no main coverage: no genome-wide figures, but the controls and the spike-in fraction are reported
+                { assert files.keySet() == ['pe.bismark_contigs_mqc.tsv', 'pe.bismark_controls_generalstats_mqc.tsv'] as Set },
+                { assert mqcRow(files['pe.bismark_contigs_mqc.tsv']) == [Sample: 'pe', ctl_a: '10.00', ctl_b: '', 'ctl_b CHH': ''] },
+                { assert mqcRow(files['pe.bismark_controls_generalstats_mqc.tsv']) == [Sample: 'pe', bismark_control_reads: '3.70'] },
+                { assert snapshot(process.out).match() }
+            )
+        }
+    }
+
+    test("controls are always listed") {
+        when {
+            params {
+                module_args = '-n bismark -c chrUn_ctl'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'many' ],
+                    [
+                        file('${writeBedGraph("${outputDir}/input/many.bismark.cov", (1..60).collect { i -> ["s${i}", 20, 1, 1] } + [['chrUn_ctl', 3, 0, 2]])}', checkIfExists: true),
+                        file('${writeCxReport("${outputDir}/input/many.controls.CX_report.txt", [['tiny', 5, 'CG', 1, 1]])}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            def contigs = mqcRow(mqcFiles(process.out)['many.bismark_contigs_mqc.tsv'])
+            assertAll(
+                { assert process.success },
+                // an unplaced-style name, fewer than 10 CpGs and a place outside the top 50 do not drop a control
+                { assert contigs['chrUn_ctl'] == '0.00' },
+                { assert contigs['tiny'] == '50.00' },
+                { assert contigs.size() == 51 }
+            )
+        }
+    }
+
+    test("a contig in both the main and the control input fails") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'clash' ],
+                    [
+                        file('${writeBedGraph("${outputDir}/input/clash.bismark.cov", [['chr1', 20, 1, 1]])}', checkIfExists: true),
+                        file('${writeCxReport("${outputDir}/input/clash.controls.CX_report.txt", [['chr1', 20, 'CG', 1, 1]])}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert file("${metaDir}/nextflow.log").text.contains('control contig chr1 also has calls from the main alignment') }
+            )
+        }
+    }
+
+    test("no read on the controls - 0% and empty control cells") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'none' ],
+                    [
+                        file('${writeCxReport("${outputDir}/input/none.controls.CX_report.txt.gz", [['ctl', 10, 'CG', 0, 0], ['ctl', 10, 'CHH', 0, 0]])}', checkIfExists: true),
+                        file('${writeAlignReport("${outputDir}/input/controls.none_bismark_bt2_SE_report.txt", false, 500, 0)}', checkIfExists: true)
+                    ]
+                ])
+                """
+            }
+        }
+
+        then {
+            def files = mqcFiles(process.out)
+            assertAll(
+                { assert process.success },
+                // no covered CpG anywhere: no genome-wide figures, but the controls are still listed
+                { assert files.keySet() == ['none.bismark_contigs_mqc.tsv', 'none.bismark_controls_generalstats_mqc.tsv'] as Set },
+                { assert mqcRow(files['none.bismark_contigs_mqc.tsv']) == [Sample: 'none', ctl: '', 'ctl CHH': ''] },
+                { assert mqcRow(files['none.bismark_controls_generalstats_mqc.tsv']) == [Sample: 'none', bismark_control_reads: '0.00'] }
+            )
+        }
+    }
+
+    test("a file named like an alignment report that is not one fails") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                def report = new File('${outputDir}/input/controls.bad_report.txt')
+                report.parentFile.mkdirs()
+                report.text = 'chr1\\t1\\t2\\t50\\t1\\t1\\n'
+                input[0] = channel.of([ [ id:'bad' ], file(report.toString(), checkIfExists: true) ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert file("${metaDir}/nextflow.log").text.contains('controls.bad_report.txt is not a Bismark alignment report') }
+            )
+        }
+    }
+
+    test("non-numeric counts fail") {
+        when {
+            params {
+                module_args = '-n bismark'
+            }
+            process {
+                """
+                input[0] = channel.of([
+                    [ id:'bad' ],
+                    file('${writeCxReport("${outputDir}/input/bad.cytosines.txt", [['chr1', 20, 'CG', 1, 1]])}', checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert process.failed },
+                { assert file("${metaDir}/nextflow.log").text.contains('calls/bad.cytosines.txt: not a count in: chr1') }
             )
         }
     }

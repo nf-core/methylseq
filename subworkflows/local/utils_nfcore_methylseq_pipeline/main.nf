@@ -334,13 +334,16 @@ def validateInputParameters() {
     // Options that only apply to some steps: say so instead of ignoring them
     def methylation_summary = params.run_methylation_summary || params.control_contigs
     def ignored_options = [
+        [params.control_fasta && !params.aligner.startsWith('bismark'), "--control_fasta currently only applies with --aligner bismark or bismark_hisat; it is ignored for --aligner ${params.aligner}"],
+        [params.control_fasta && params.aligner.startsWith('bismark') && params.slamseq, '--control_fasta is not supported with --slamseq; it is ignored'],
+        [params.control_reads != schemaDefault('control_reads') && !params.control_fasta, '--control_reads only applies with --control_fasta; it is ignored'],
         [!isTaps() && !bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); they are ignored'],
         [bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls; with --aligner bismark trim read ends with --ignore_r1, --ignore_r2, --ignore_3prime_r1 or --ignore_3prime_r2. They are ignored'],
         [bismarkBwamem3() && params.taps_caller != 'rastair', "--taps_caller only applies to rastair calls (--aligner bwamem3, bwameth or bwamem); with --aligner bismark, Bismark makes the calls. It is ignored"],
         [bismarkBwamem3() && params.accept_rastair2_license, '--accept_rastair2_license only applies with --taps_caller rastair2 on the rastair route; it is ignored'],
         [params.five_base_baseq && !bismarkBwamem3(), "--five_base_baseq only applies to Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark)${isTaps() ? '; rastair applies its own base-quality filter' : ''}. It is ignored"],
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
-        [methylation_summary && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary and --control_contigs are ignored'],
+        [(methylation_summary || params.control_fasta) && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary, --control_contigs and --control_fasta are ignored'],
         [methylation_summary && !isTaps() && !params.aligner.startsWith('bismark') && params.methyl_kit, 'MethylDackel writes methylKit files instead of bedGraphs with --methyl_kit, so --run_methylation_summary and --control_contigs are ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
@@ -447,6 +450,14 @@ def bismarkBwamem3() {
 //
 def isTaps() {
     return (isMcToT() || params.aligner == 'bwamem') && !params.aligner.startsWith('bismark')
+}
+
+//
+// A parameter's default in nextflow_schema.json
+//
+def schemaDefault(name) {
+    def schema = new groovy.json.JsonSlurper().parse(file("${projectDir}/nextflow_schema.json"))
+    return schema['$defs'].values().findResult { group -> group['properties']?.get(name)?.get('default') }
 }
 
 //
