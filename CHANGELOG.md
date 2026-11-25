@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
+- ✨ Add `--control_fasta` to align the first reads of each sample to spike-in controls that are not in the reference, and report their CpG, CHG and CHH methylation in the methylation summary, for `--aligner bismark` and `bismark_hisat` ([#394](https://github.com/nf-core/methylseq/issues/394))
 - ✨ Add `--run_methylation_summary` and `--control_contigs` (which replaces the unreleased `--rastair2_control_contigs`) for a per-sample methylation summary of the MethylDackel, Bismark or rastair calls in MultiQC, with spike-in controls reported on their own ([#601](https://github.com/nf-core/methylseq/issues/601), [#673](https://github.com/nf-core/methylseq/pull/673))
 - ✨ Add `--illumina_5base` for Illumina 5-Base libraries, and let `--aligner bismark` align and call 5-Base and TAPS data with bwa-mem3, so a config that sets `taps = true` without an aligner now runs Bismark's TAPS mode instead of stopping (see the [usage docs](https://nf-co.re/methylseq/usage#illumina-5-base-and-taps-rastair-or-bismark)) ([#619](https://github.com/nf-core/methylseq/issues/619), [#672](https://github.com/nf-core/methylseq/pull/672))
 - ✨ Add `--with_umi` to mark duplicates with UMIs for `--aligner bwamem3`, using [fgumi](https://github.com/fulcrumgenomics/fgumi) `runall` and `dedup` ([#651](https://github.com/nf-core/methylseq/pull/651))

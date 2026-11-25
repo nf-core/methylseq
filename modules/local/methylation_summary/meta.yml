@@ -22,8 +22,10 @@ input:
         description: |
           MethylDackel bedGraphs (`*_CpG.bedGraph`, and `*_CHG.bedGraph`/`*_CHH.bedGraph` with `--CHG --CHH`)
           or a Bismark coverage file (`*.cov.gz`, CpG context only), or with `-f rastair` in `ext.args`
-          a rastair 0.8 call file (`*.rastair_call.txt`)
-        pattern: "*.{bedGraph,cov.gz,rastair_call.txt}"
+          a rastair 0.8 call file (`*.rastair_call.txt`). Bismark coverage can come with the CX report
+          (`*.controls.CX_report.txt.gz`) and alignment report (`controls.*_report.txt`) of a separate
+          spike-in control alignment: every contig of the CX report is a control.
+        pattern: "*.{bedGraph,cov.gz,rastair_call.txt,CX_report.txt.gz,report.txt}"
         ontologies: []
 # `ext.args` is passed to the script as options: `-n <name>` sets the tool name used in the MultiQC IDs and
 # column names (methyldackel, bismark or rastair), `-d <n>` the minimum informative reads per CpG for the methylation

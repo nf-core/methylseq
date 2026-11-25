@@ -97,6 +97,53 @@
             "nextflow": "26.10.5"
         }
     },
+    "bismark - paired-end alignment report and controls without coverage": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "pe"
+                        },
+                        [
+                            "pe.bismark_contigs_mqc.tsv:md5,c2860c79f6edd8e7be821684d2cf7b04",
+                            "pe.bismark_controls_generalstats_mqc.tsv:md5,27d03bbd85e29b8384272a7771903c95"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "pe"
+                        },
+                        [
+                            "pe.bismark_contigs_mqc.tsv:md5,c2860c79f6edd8e7be821684d2cf7b04",
+                            "pe.bismark_controls_generalstats_mqc.tsv:md5,27d03bbd85e29b8384272a7771903c95"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T18:18:22.512717",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
     "labelled panel - hidden General Statistics columns": {
         "content": [
             {
@@ -244,6 +291,57 @@
             "nextflow": "26.10.5"
         }
     },
+    "bismark - control CX report and single-end alignment report": {
+        "content": [
+            {
+                "0": [
+                    [
+                        {
+                            "id": "bm"
+                        },
+                        [
+                            "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
+                            "bm.bismark_contigs_mqc.tsv:md5,b2c7aef27cb4a35e9c6d94ca7d1b0eff",
+                            "bm.bismark_controls_generalstats_mqc.tsv:md5,2eb35fccce44bcb26bc4aed749ba15bc",
+                            "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
+                        ]
+                    ]
+                ],
+                "1": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ],
+                "mqc": [
+                    [
+                        {
+                            "id": "bm"
+                        },
+                        [
+                            "bm.bismark_beta_hist_mqc.tsv:md5,a6c85d9cf0cccac63c9247a202e7d71e",
+                            "bm.bismark_contigs_mqc.tsv:md5,b2c7aef27cb4a35e9c6d94ca7d1b0eff",
+                            "bm.bismark_controls_generalstats_mqc.tsv:md5,2eb35fccce44bcb26bc4aed749ba15bc",
+                            "bm.bismark_generalstats_mqc.tsv:md5,987bc2e714017226e9be5a74d768b652"
+                        ]
+                    ]
+                ],
+                "versions_gawk": [
+                    [
+                        "METHYLATION_SUMMARY",
+                        "gawk",
+                        "5.3.1"
+                    ]
+                ]
+            }
+        ],
+        "timestamp": "2026-11-25T18:18:09.242161",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "25.10.4"
+        }
+    },
     "methyldackel - CpG, CHG and CHH with a control contig": {
         "content": [
             {
@@ -254,7 +352,7 @@
                         },
                         [
                             "md.methyldackel_beta_hist_mqc.tsv:md5,bf5c3f669fec952c03b636f145166360",
-                            "md.methyldackel_contigs_mqc.tsv:md5,70bb781a3ee4744f5b568108a9b722dd",
+                            "md.methyldackel_contigs_mqc.tsv:md5,c22381a12e9f4aca91b5bf6c6d015301",
                             "md.methyldackel_generalstats_mqc.tsv:md5,09d6463cb95567bb6a0e4ecbc3ca8c37"
                         ]
                     ]
@@ -273,7 +371,7 @@
                         },
                         [
                             "md.methyldackel_beta_hist_mqc.tsv:md5,bf5c3f669fec952c03b636f145166360",
-                            "md.methyldackel_contigs_mqc.tsv:md5,70bb781a3ee4744f5b568108a9b722dd",
+                            "md.methyldackel_contigs_mqc.tsv:md5,c22381a12e9f4aca91b5bf6c6d015301",
                             "md.methyldackel_generalstats_mqc.tsv:md5,09d6463cb95567bb6a0e4ecbc3ca8c37"
                         ]
                     ]
@@ -287,10 +385,10 @@
                 ]
             }
         ],
-        "timestamp": "2026-11-25T09:40:24.441854",
+        "timestamp": "2026-11-25T18:17:08.519886",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.10.5"
+            "nextflow": "25.10.4"
         }
     }
 }

@@ -139,6 +139,22 @@
                     "pattern": "^[A-Za-z0-9._:|+@~-]+(,[A-Za-z0-9._:|+@~-]+)*$",
                     "fa_icon": "fas fa-vial"
                 },
+                "control_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "pattern": "^\\S+\\.fa(sta)?(\\.gz)?$",
+                    "description": "FASTA of spike-in or control sequences (for example lambda and pUC19) that are not in the reference, to align and report on their own.",
+                    "help_text": "With `--aligner bismark` or `bismark_hisat`, including Bismark's 5-Base/TAPS mode, the first `--control_reads` reads of each sample are aligned with Bismark to these sequences, and the MultiQC methylation summary shows CpG, CHG and CHH methylation for each control and the % of reads on the controls. It works with any reference or pre-built index, as the controls are aligned on their own. The sequence names must differ from the reference contigs. Other aligners ignore it.",
+                    "fa_icon": "fas fa-vial"
+                },
+                "control_reads": {
+                    "type": "integer",
+                    "default": 2000000,
+                    "minimum": 0,
+                    "description": "Reads (read pairs for paired-end data) per sample to align to `--control_fasta`, from the start of the file; 0 aligns all of them.",
+                    "fa_icon": "fas fa-vial"
+                },
                 "igenomes_ignore": {
                     "type": "boolean",
                     "description": "Do not load the iGenomes reference config.",

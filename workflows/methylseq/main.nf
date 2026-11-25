@@ -36,6 +36,7 @@ include { TARGETED_SEQUENCING           } from '../../subworkflows/local/targete
 include { FASTQ_ALIGN_DEDUP_UMI_BWAMEM3 } from '../../subworkflows/local/fastq_align_dedup_umi_bwamem3'
 include { METHURATOR_GTESTIMATOR        } from '../../modules/nf-core/methurator/gtestimator/main'
 include { METHURATOR_PLOT               } from '../../modules/nf-core/methurator/plot/main'
+include { FASTQ_CONTROLS_BISMARK        } from '../../subworkflows/local/fastq_controls_bismark'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,6 +72,9 @@ workflow METHYLSEQ {
     ch_rastair2_bed = channel.empty()
     ch_rastair2_mqc = channel.empty()
     ch_methylation_summary_mqc = channel.empty()
+    ch_control_calls = channel.empty()
+    // --control_fasta: spike-in controls aligned on their own, on the Bismark routes only
+    def control_fasta = params.control_fasta && params.aligner =~ /bismark/ && !params.nomeseq && !params.slamseq
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()
@@ -178,6 +182,20 @@ workflow METHYLSEQ {
         ch_bedgraph = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_coverage = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_coverage
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
+
+        //
+        // SUBWORKFLOW: Align the first reads to the spike-in controls of --control_fasta, for the methylation summary
+        //
+        if (control_fasta) {
+            FASTQ_CONTROLS_BISMARK(
+                ch_reads,
+                channel.of([[id: 'controls'], file(params.control_fasta, checkIfExists: true)]),
+                bismarkBwamem3(),
+            )
+            ch_control_calls = FASTQ_CONTROLS_BISMARK.out.cx_report
+                .join(FASTQ_CONTROLS_BISMARK.out.align_report)
+                .map { meta, cx_report, align_report -> [meta.id, [cx_report, align_report]] }
+        }
     }
     else if (params.aligner == 'bwameth') {
 
@@ -349,12 +367,26 @@ workflow METHYLSEQ {
 
     //
     // MODULE: Per-sample CpG (and CHG/CHH) methylation summary for MultiQC, with spike-in and control contigs
-    // skipped by default. to use run with `--run_methylation_summary` or `--control_contigs`.
+    // skipped by default. to use run with `--run_methylation_summary`, `--control_contigs` or `--control_fasta`.
     // Bismark --CX (--nomeseq) coverage files mix the cytosine contexts, so they are not summarised.
     // rastair version 2 calls get RASTAIR2_SUMMARY instead.
     //
-    if ((params.run_methylation_summary || params.control_contigs) && !(isTaps() && params.taps_caller == 'rastair2') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
-        METHYLATION_SUMMARY(isTaps() ? ch_rastair_call : params.aligner =~ /bismark/ ? ch_coverage : ch_bedgraph)
+    if ((params.run_methylation_summary || params.control_contigs || control_fasta) && !(isTaps() && params.taps_caller == 'rastair2') && !(params.aligner =~ /bismark/ && params.nomeseq)) {
+        ch_summary_calls = isTaps() ? ch_rastair_call : params.aligner =~ /bismark/ ? ch_coverage : ch_bedgraph
+        if (control_fasta) {
+            // The control CX report and alignment report join the sample's coverage file
+            ch_summary_calls = ch_coverage
+                .map { meta, coverage -> [meta.id, meta, coverage] }
+                .join(ch_control_calls, remainder: true)
+                .filter { row -> row[1] != null }
+                .map { id, meta, coverage, control_files ->
+                    if (control_files == null) {
+                        log.warn("No spike-in control calls for sample ${id}: its methylation summary has no controls.")
+                    }
+                    [meta, [coverage] + (control_files ?: [])]
+                }
+        }
+        METHYLATION_SUMMARY(ch_summary_calls)
         ch_methylation_summary_mqc = METHYLATION_SUMMARY.out.mqc
             .map { _meta, files -> files }
             .flatten()
