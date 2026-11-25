@@ -199,6 +199,47 @@ nextflow_process {
         }
     }
 
+    test("methyldackel - targeted bedGraphs, single BED and labelled panel") {
+        when {
+            params {
+                module_args = '-n methyldackel -l panel_a -H'
+            }
+            process {
+                """
+                input[0] = channel.of(
+                    [
+                        [ id:'single' ],
+                        [
+                            file('${writeBedGraph("${outputDir}/input/single.markdup.sorted_CpG.targeted.bedGraph", [['chr1', 20, 6, 4]])}', checkIfExists: true),
+                            file('${writeBedGraph("${outputDir}/input/single.markdup.sorted_CHG.targeted.bedGraph", [['chr1', 20, 1, 9]])}', checkIfExists: true),
+                            file('${writeBedGraph("${outputDir}/input/single.markdup.sorted_CHH.targeted.bedGraph", [['chr1', 20, 0, 10]])}', checkIfExists: true)
+                        ]
+                    ],
+                    [
+                        [ id:'panel' ],
+                        [
+                            file('${writeBedGraph("${outputDir}/input/panel.markdup.sorted_CpG.panel_a.targeted.bedGraph", [['chr1', 20, 6, 4]])}', checkIfExists: true),
+                            file('${writeBedGraph("${outputDir}/input/panel.markdup.sorted_CHG.panel_a.targeted.bedGraph", [['chr1', 20, 1, 9]])}', checkIfExists: true),
+                            file('${writeBedGraph("${outputDir}/input/panel.markdup.sorted_CHH.panel_a.targeted.bedGraph", [['chr1', 20, 0, 10]])}', checkIfExists: true)
+                        ]
+                    ]
+                )
+                """
+            }
+        }
+
+        then {
+            def stats = process.out.mqc.collectEntries { meta, files ->
+                [ (meta.id): mqcRow(files.find { path -> path.toString().endsWith('generalstats_mqc.tsv') }) ]
+            }
+            assertAll(
+                { assert process.success },
+                // the targeted CHG and CHH files keep their context with or without the panel in the name
+                { assert ['single', 'panel'].every { sample -> stats[sample] == [Sample: sample, methyldackel_panel_a_cpg_meth: '60.00', methyldackel_panel_a_cpg_sites: '20', methyldackel_panel_a_cpg_depth: '10.00', methyldackel_panel_a_chg_meth: '10.00', methyldackel_panel_a_chh_meth: '0.00'] } }
+            )
+        }
+    }
+
     test("stub") {
         options "-stub"
         when {
