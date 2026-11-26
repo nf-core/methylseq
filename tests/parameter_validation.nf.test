@@ -136,6 +136,22 @@ nextflow_pipeline {
             description: "Params: bismark | control_fasta not named .fa - not supported",
             params: [ aligner: "bismark", control_fasta: "https://github.com/nf-core/test-datasets/raw/methylseq/testdata/SRR389222_sub1.fastq.gz" ],
             message: "does not match regular expression ^\\S+\\.fa(sta)?(\\.gz)?\$"
+        ],
+        [
+            description: "Params: bismark | slamseq - removed",
+            params: [ aligner: "bismark", slamseq: true ],
+            message: "--slamseq was removed in 5.0.0: Bismark 3.x has no SLAM-seq mode."
+        ],
+        [
+            description: "Params: bwameth | slamseq - removed",
+            params: [ aligner: "bwameth", slamseq: true ],
+            message: "--slamseq was removed in 5.0.0: Bismark 3.x has no SLAM-seq mode."
+        ],
+        [
+            // An unknown genome and no FASTA would each stop the run too: --slamseq is reported first
+            description: "Params: slamseq | unknown genome, no FASTA - removed is reported first",
+            params: [ slamseq: true, genome: "not_a_genome", fasta: null, fasta_index: null, validate_params: false ],
+            message: "--slamseq was removed in 5.0.0: Bismark 3.x has no SLAM-seq mode."
         ]
     ]
 
