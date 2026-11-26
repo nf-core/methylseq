@@ -54,6 +54,7 @@ Note: For faster CPU runs with BWA-Meth, enable the BWA-MEM2 algorithm using `--
 | Summary Report                               | Bismark                  | -                       | -                          | -                                                   |
 | Alignment QC                                 | Qualimap _(optional)_    | Qualimap _(optional)_   | Qualimap _(optional)_      | Qualimap _(optional)_                               |
 | Sequencing QC metrics                        | riker _(optional)_       | riker _(optional)_      | riker _(optional)_         | riker _(optional)_                                  |
+| Conversion and M-bias metrics _(optional)_   | -                        | methylsieve _(TAPS)_    | methylsieve                | methylsieve _(TAPS)_                                |
 | Sample complexity                            | Preseq _(optional)_      | Preseq _(optional)_     | Preseq _(optional)_        | Preseq _(optional)_                                 |
 | CpGs-level sequencing saturation             | methurator _(optional)_  | methurator _(optional)_ | -                          | methurator _(optional, bisulfite/EM-seq only)_      |
 | Project Report                               | MultiQC                  | MultiQC                 | MultiQC                    | MultiQC (with bcftools stats for rastair version 2) |

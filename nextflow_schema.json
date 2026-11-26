@@ -135,7 +135,7 @@
                 "control_contigs": {
                     "type": "string",
                     "description": "Comma-separated spike-in or control contigs (for example lambda or pUC19) to report on their own in the MultiQC methylation summary.",
-                    "help_text": "List the spike-ins and controls that are in the reference FASTA (for example `--control_contigs J02459.1,pUC19`). They are left out of the genome-wide methylation figures, and the per-contig table shows their CpG methylation: for an unmethylated control such as lambda in a bisulfite or EM-seq library, this is the non-conversion rate. With `--aligner bismark`, `bismark_hisat`, `bwameth` or `bwamem3` on bisulfite or EM-seq data, or with `--taps_caller rastair`, this also turns on `--run_methylation_summary`. The names must be in the FASTA the aligner index was built from: they are checked against the FASTA index when the pipeline uses one, and otherwise a missing name is only reported in the task log.",
+                    "help_text": "List the spike-ins and controls that are in the reference FASTA (for example `--control_contigs J02459.1,pUC19`). They are left out of the genome-wide methylation figures, and the per-contig table shows their CpG methylation: for an unmethylated control such as lambda in a bisulfite or EM-seq library, this is the non-conversion rate. With `--aligner bismark`, `bismark_hisat`, `bwameth` or `bwamem3` on bisulfite or EM-seq data, or with `--taps_caller rastair`, this also turns on `--run_methylation_summary`. With `--run_methylsieve`, each control also gets its own row in the methylsieve summary. The names must be in the FASTA the aligner index was built from: they are checked against the FASTA index when the pipeline uses one, and otherwise a missing name is only reported in the task log.",
                     "pattern": "^[A-Za-z0-9._:|+@~-]+(,[A-Za-z0-9._:|+@~-]+)*$",
                     "fa_icon": "fas fa-vial"
                 },
@@ -145,7 +145,7 @@
                     "exists": true,
                     "pattern": "^\\S+\\.fa(sta)?(\\.gz)?$",
                     "description": "FASTA of spike-in or control sequences (for example lambda and pUC19) that are not in the reference, to align and report on their own.",
-                    "help_text": "With `--aligner bismark` or `bismark_hisat`, including Bismark's 5-Base/TAPS mode, the first `--control_reads` reads of each sample are aligned with Bismark to these sequences, and the MultiQC methylation summary shows CpG, CHG and CHH methylation for each control and the % of reads on the controls. It works with any reference or pre-built index, as the controls are aligned on their own. The sequence names must differ from the reference contigs. Other aligners ignore it.",
+                    "help_text": "With `--aligner bismark` or `bismark_hisat`, the first `--control_reads` reads of each sample are aligned with Bismark to these sequences, and the MultiQC methylation summary shows CpG, CHG and CHH methylation for each control and the % of reads on the controls. It works with any reference or pre-built index, as the controls are aligned on their own. The sequence names must differ from the reference contigs. Other aligners and Bismark's 5-Base/TAPS mode ignore it; for 5-Base and TAPS data, put the controls in the reference and use `--control_contigs`.",
                     "fa_icon": "fas fa-vial"
                 },
                 "control_reads": {
@@ -667,6 +667,12 @@
                     "type": "boolean",
                     "description": "Run riker multi for alignment, insert size, coverage and GC bias metrics",
                     "help_text": "Runs `riker multi` once on each final BAM file with the alignment, basic, isize, wgs and gcbias collectors. With `--run_targeted_sequencing` it also runs the hybcap collector, with `--target_regions_file` as both baits and targets (the union of the BED files when there are several).",
+                    "fa_icon": "fas fa-fast-forward"
+                },
+                "run_methylsieve": {
+                    "type": "boolean",
+                    "description": "Run methylsieve next to rastair for conversion and M-bias metrics on TAPS and 5-Base data",
+                    "help_text": "Runs `methylsieve` on each final BAM file that rastair calls (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`). It only writes metrics; the calls are unchanged. Contigs in `--control_contigs` get their own row.",
                     "fa_icon": "fas fa-fast-forward"
                 },
                 "run_targeted_sequencing": {

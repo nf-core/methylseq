@@ -338,6 +338,7 @@ def validateInputParameters() {
     def methylation_summary = params.run_methylation_summary || params.control_contigs
     def ignored_options = [
         [params.control_fasta && !params.aligner.startsWith('bismark'), "--control_fasta currently only applies with --aligner bismark or bismark_hisat; it is ignored for --aligner ${params.aligner}"],
+        [params.control_fasta && bismarkBwamem3(), "--control_fasta is not supported in Bismark's 5-Base/TAPS mode (--illumina_5base or --taps with --aligner bismark): bwa-mem3 aligns genome reads to the separate controls, which inflates their methylation; it is ignored. Put the controls in the reference and use --control_contigs instead"],
         [params.control_reads != schemaDefault('control_reads') && !params.control_fasta, '--control_reads only applies with --control_fasta; it is ignored'],
         [!isTaps() && !bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); they are ignored'],
         [bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls; with --aligner bismark trim read ends with --ignore_r1, --ignore_r2, --ignore_3prime_r1 or --ignore_3prime_r2. They are ignored'],
@@ -347,6 +348,7 @@ def validateInputParameters() {
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
         [(methylation_summary || params.control_fasta) && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary, --control_contigs and --control_fasta are ignored'],
         [methylation_summary && !isTaps() && !params.aligner.startsWith('bismark') && params.methyl_kit, 'MethylDackel writes methylKit files instead of bedGraphs with --methyl_kit, so --run_methylation_summary and --control_contigs are ignored'],
+        [params.run_methylsieve && !isTaps(), '--run_methylsieve only applies on the rastair route (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],

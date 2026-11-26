@@ -99,6 +99,9 @@ nextflow_pipeline {
                 { assert reports.size() == 4 && reports.every { report -> path(report.toString()).text =~ /(Sequences|Sequence pairs) analysed in total:\t1000\n/ } },
                 { assert control_scripts.size() == 4 && control_scripts.every { script -> script.contains('--upto 1000') && script.contains('--bowtie2') } },
                 { assert main_scripts.size() == 4 && main_scripts.every { script -> !script.contains('--upto') && !script.contains('--prefix') } },
+                // one control pair for Ecoli warns; the SRR389222 samples have enough
+                { assert file("${metaDir}/nextflow.log").text.contains('--control_fasta: only 1 of the first 1000 read pairs of sample Ecoli_10K_methylated aligned uniquely to the controls, too few for reliable control figures. Raise --control_reads') },
+                { assert !(file("${metaDir}/nextflow.log").text =~ /of sample SRR389222_sub\d aligned uniquely to the controls/) },
                 // every sample has the two controls, with CHG and CHH; no read matches ctl_2kb_unmod
                 { assert contigs.keySet() == ['Ecoli_10K_methylated', 'SRR389222_sub1', 'SRR389222_sub2', 'SRR389222_sub3'] as Set },
                 { assert contigs.every { _sample, columns -> columns.keySet().containsAll(['ctl_lambda', 'ctl_lambda CHG', 'ctl_lambda CHH', 'ctl_2kb_unmod']) } },
@@ -200,46 +203,6 @@ nextflow_pipeline {
                     { assert workflow.success },
                     { assert file("${metaDir}/nextflow.log").text.contains(scenario.message) },
                     { assert workflow.trace.tasks().every { task -> !task.name.contains('FASTQ_CONTROLS_BISMARK') && !task.name.contains('METHYLATION_SUMMARY') } }
-                )
-            }
-        }
-    }
-
-    // TAPS reads stand in for 5-Base, as in bismark_bwamem3.nf.test: methylated C reads as T in both
-    [
-        [ description: "Params: bismark | taps | control_fasta", params: [ taps: true ] ],
-        [ description: "Params: bismark | illumina_5base | control_fasta", params: [ illumina_5base: true ] ],
-    ].each { scenario ->
-        test(scenario.description) {
-            when {
-                params {
-                    input         = "${projectDir}/tests/samplesheet_taps_pe.csv"
-                    fasta         = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.gz"
-                    fasta_index   = "https://github.com/nf-core/test-datasets/raw/methylseq/reference/genome_taps.fa.fai"
-                    aligner       = "bismark"
-                    control_fasta = "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa"
-                    outdir        = "$outputDir"
-                    scenario.params.each { key, value ->
-                        delegate."$key" = value
-                    }
-                }
-            }
-
-            then {
-                def contigs = contigTable(params.outdir, 'bismark')
-                def stats = summaryStats(params.outdir, 'bismark')
-                def reports = getAllFilesFromDir(params.outdir, include: ['controls/alignments/*_report.txt'])
-                def control_scripts = alignScripts(workDir).findAll { script -> script.contains('--prefix controls') }
-                assertAll(
-                    { assert workflow.success },
-                    { assert control_scripts.size() == 1 && control_scripts.every { script -> script.contains('--five_base_index') && script.contains('--upto 2000000') } },
-                    // methylated C reads as T: the CpG-methylated lambda is high, the unmodified control low
-                    { assert (contigs['taps_pe']['ctl_lambda'] as double) > 80 },
-                    { assert (contigs['taps_pe']['ctl_lambda CHH'] as double) < 10 },
-                    { assert (contigs['taps_pe']['ctl_2kb_unmod'] as double) < 10 },
-                    { assert (contigs['taps_pe']['ctl_2kb_unmod CHH'] as double) < 10 },
-                    { assert reports.size() == 1 && Math.abs(stats['taps_pe']['bismark_control_reads'] - controlReads(reports[0])) < 0.006 },
-                    { assert snapshot(snapshotTable(contigs)).match() }
                 )
             }
         }

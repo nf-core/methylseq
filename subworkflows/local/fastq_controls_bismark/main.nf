@@ -59,6 +59,12 @@ workflow FASTQ_CONTROLS_BISMARK {
         ch_inputs.bismark_index,
         ch_inputs.bwamem3_index,
     )
+    BISMARK_ALIGN.out.report.subscribe { meta, reports ->
+        def message = controlReadsWarning(meta.id, reports, params.control_reads)
+        if (message) {
+            log.warn(message)
+        }
+    }
 
     BISMARK_METHYLATIONEXTRACTOR(
         BISMARK_ALIGN.out.bam,
@@ -75,6 +81,56 @@ workflow FASTQ_CONTROLS_BISMARK {
     cx_report        = BISMARK_COVERAGE2CYTOSINE.out.report // channel: [ val(meta), path(<id>.controls.CX_report.txt.gz) ]
     align_report     = BISMARK_ALIGN.out.report // channel: [ val(meta), path(controls.*_report.txt) ]
     splitting_report = BISMARK_METHYLATIONEXTRACTOR.out.report // channel: [ val(meta), path(controls.*_splitting_report.txt) ]
+}
+
+// Warning for a sample whose control alignment has no or too few uniquely aligned reads, or null
+def controlReadsWarning(id, reports, control_reads) {
+    try {
+        def keys = [
+            'Sequences analysed in total:': 'analysed',
+            'Sequence pairs analysed in total:': 'analysed',
+            'Number of alignments with a unique best hit from the different alignments:': 'unique',
+            'Number of paired-end alignments with a unique best hit:': 'unique',
+        ]
+        def parsed = [reports].flatten().collect { report ->
+            def found = [:]
+            report.eachLine { line ->
+                def fields = line.split('\t', 2)
+                def key = keys[fields[0]]
+                if (key && fields.size() == 2 && fields[1].trim() ==~ /\d+/) {
+                    found[key] = (found[key] ?: 0L) + (fields[1].trim() as long)
+                    if (fields[0].startsWith('Sequence pairs')) {
+                        found.pairs = true
+                    }
+                }
+            }
+            found
+        }
+        if (!parsed || parsed.any { found -> !found.containsKey('analysed') || !found.containsKey('unique') }) {
+            return null
+        }
+        def analysed = parsed.sum { found -> found.analysed }
+        def unique = parsed.sum { found -> found.unique }
+        def unit = parsed.any { found -> found.pairs } ? 'read pairs' : 'reads'
+        if (analysed == 0 || unique >= 100) {
+            return null
+        }
+        def subsampled = control_reads > 0 && parsed.any { found -> found.analysed >= control_reads }
+        def first = subsampled ? 'the first ' : 'the '
+        def head = "--control_fasta: ${unique == 0 ? 'none' : "only ${unique}"} of ${first}${analysed} ${unit} of sample ${id} aligned uniquely to the controls"
+        if (unique == 0) {
+            return subsampled
+                ? "${head}. Either the library has none of these controls, or its FASTQ is not in sequencer order (e.g. regenerated from a sorted BAM, as some SRA runs are); --control_reads 0 aligns every read."
+                : "${head}; the library may have none of these controls."
+        }
+        return subsampled
+            ? "${head}, too few for reliable control figures. Raise --control_reads, or use --control_reads 0 if the FASTQ is not in sequencer order (e.g. regenerated from a sorted BAM)."
+            : "${head}, too few for reliable control figures."
+    }
+    catch (Exception e) {
+        log.debug("controlReadsWarning: ${e}")
+        return null
+    }
 }
 
 // The control names become MultiQC columns and are matched against the reference contigs

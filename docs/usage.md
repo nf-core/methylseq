@@ -54,6 +54,9 @@ flowchart TD
 
         D3 --> E3["MethylDackel extract/M-bias<br/>(Bisulfite data)"]
         D3 --> E4["Rastair TAPS conversion<br/>(TAPS data)"]
+
+        D1 --> E5["methylsieve metrics<br/>(TAPS data, optional)"]
+        D3 --> E5
     end
 
     subgraph Stage3b[Targeted Sequencing - Optional]
@@ -94,7 +97,7 @@ flowchart TD
 
     %% Styling for TAPS workflows
     classDef tapsStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    class D3,E2,E4 tapsStyle
+    class D3,E2,E4,E5 tapsStyle
 ```
 
 ### Workflow: Bismark
@@ -225,6 +228,10 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
 
+#### methylsieve metrics (`--run_methylsieve`)
+
+With `--run_methylsieve`, [methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs on the same final BAM files as rastair and reports conversion per context and M-bias. It only writes metrics; the calls are unchanged. It leaves out duplicates but otherwise filters reads its own way, so its figures are close to the rastair calls but not identical. Contigs in `--control_contigs` get their own row. See the [output docs](https://nf-co.re/methylseq/output#methylsieve).
+
 ### Illumina 5-Base and TAPS: rastair or Bismark
 
 Illumina 5-Base and TAPS libraries both convert **methylated** cytosine to thymine, so the reads align to the unconverted genome and a read `T` at a genomic `C` is a methylated call. Both chemistries run on either route; the chemistry flag says what the data are, and `--aligner` picks the route:
@@ -238,7 +245,7 @@ Illumina 5-Base and TAPS libraries both convert **methylated** cytosine to thymi
 
 `--taps` keeps the default it already had (bwa-mem3 and rastair), so existing TAPS runs don't change; `--illumina_5base` uses the pipeline's default aligner, Bismark.
 
-bwa-mem3 treats 5-Base and TAPS as the same chemistry, so `--illumina_5base --aligner bwamem3` gives the same results as `--taps --aligner bwamem3`, and Bismark's two modes give the same alignments. Like `--taps`, `--illumina_5base` also works with `--aligner bwamem` and `--aligner bwameth`. TAPS converts 5mC and 5hmC alike, so a TAPS call is their sum.
+bwa-mem3 treats 5-Base and TAPS as the same chemistry, so `--illumina_5base --aligner bwamem3` gives the same results as `--taps --aligner bwamem3` (with `--run_methylsieve`, only the `chemistry` column of the methylsieve summary differs), and Bismark's two modes give the same alignments. Like `--taps`, `--illumina_5base` also works with `--aligner bwamem` and `--aligner bwameth`. TAPS converts 5mC and 5hmC alike, so a TAPS call is their sum.
 
 Which route to choose:
 
@@ -350,9 +357,19 @@ The controls must be in the FASTA that the aligner index was built from, so that
 
 The summary reads the MethylDackel bedGraphs (`--aligner bwameth` or `bwamem3`) or the Bismark coverage files (`--aligner bismark` or `bismark_hisat`). It is not available with `--methyl_kit` or `--nomeseq`. On the rastair route (TAPS or 5-Base data with `--aligner bwamem3`, `bwameth` or `bwamem`), it reads the rastair 0.8 calls with `--taps_caller rastair`. With `--taps_caller rastair2` the rastair calls always get this summary, and `--control_contigs` applies to it too.
 
+How to read the figures depends on the chemistry and on the control's methylation state, not its name: "lambda" is unmethylated in NEB and bisulfite kits but CpG-methylated in Watchmaker's TAPS kit.
+
+| Chemistry                          | Control                          | Figure               | Typical value          |
+| ---------------------------------- | -------------------------------- | -------------------- | ---------------------- |
+| Bisulfite, EM-seq                  | Unmethylated (e.g. NEB lambda)   | CHH (and CHG, CpG) % | Non-conversion, < 1%   |
+| Bisulfite, EM-seq                  | CpG-methylated (e.g. pUC19)      | CpG %                | Protection, > 95%      |
+| Bisulfite, EM-seq                  | CpG-methylated (e.g. pUC19)      | CHH %                | Non-conversion, < 1%   |
+| TAPS, 5-Base (`--control_contigs`) | Unmodified (e.g. 2 kb control)   | CpG %                | False conversion, ≈ 0% |
+| TAPS, 5-Base (`--control_contigs`) | CpG-methylated (e.g. lambda_CpG) | CpG %                | Conversion, > 80–90%   |
+
 #### Controls in a separate FASTA
 
-With `--aligner bismark` or `bismark_hisat`, including Bismark's 5-Base/TAPS mode, the controls can stay out of the reference: give their sequences with `--control_fasta`. This works with any reference or pre-built index, such as iGenomes:
+With `--aligner bismark` or `bismark_hisat`, the controls can stay out of the reference: give their sequences with `--control_fasta`. This works with any reference or pre-built index, such as iGenomes:
 
 ```bash
 nextflow run nf-core/methylseq \
@@ -364,20 +381,9 @@ nextflow run nf-core/methylseq \
   -profile docker
 ```
 
-Bismark aligns the first `--control_reads` reads of each sample (read pairs for paired-end data; default 2,000,000) to the controls on their own, with the library's options and without deduplication. `--control_reads 0` aligns every read, which takes about as long as the main alignment. The per-contig table then has each control's CpG, CHG and CHH methylation, and General Statistics has the % of those reads that align uniquely to the controls. The control alignments and calls are in `controls/` (see the [output docs](output.md)). The FASTA must be named `*.fa` or `*.fasta` (optionally `.gz`), and its sequence names must differ from the reference contigs: the run stops if a control's name also has calls from the main alignment. Other aligners ignore `--control_fasta` for now, as does `--nomeseq`.
+Bismark aligns the first `--control_reads` reads of each sample (read pairs for paired-end data; default 2,000,000) to the controls on their own, with the library's options and without deduplication. `--control_reads 0` aligns every read, which takes about as long as the main alignment. The per-contig table then has each control's CpG, CHG and CHH methylation, and General Statistics has the % of those reads that align uniquely to the controls. The control alignments and calls are in `controls/` (see the [output docs](output.md)). The FASTA must be named `*.fa` or `*.fasta` (optionally `.gz`), and its sequence names must differ from the reference contigs: the run stops if a control's name also has calls from the main alignment. Other aligners ignore `--control_fasta` for now, as do `--nomeseq` and Bismark's 5-Base/TAPS mode (`--illumina_5base` or `--taps`), where bwa-mem3 aligns genome reads to the separate controls and inflates their methylation: for 5-Base and TAPS data, put the controls in the reference and use `--control_contigs`.
 
-How to read the figures depends on the chemistry and on the control's methylation state, not its name: "lambda" is unmethylated in NEB and bisulfite kits but CpG-methylated in Watchmaker's TAPS kit.
-
-| Chemistry         | Control                          | Figure               | Typical value          |
-| ----------------- | -------------------------------- | -------------------- | ---------------------- |
-| Bisulfite, EM-seq | Unmethylated (e.g. NEB lambda)   | CHH (and CHG, CpG) % | Non-conversion, < 1%   |
-| Bisulfite, EM-seq | CpG-methylated (e.g. pUC19)      | CpG %                | Protection, > 95%      |
-| Bisulfite, EM-seq | CpG-methylated (e.g. pUC19)      | CHH %                | Non-conversion, < 1%   |
-| TAPS, 5-Base      | Unmodified (e.g. 2 kb control)   | Every context        | False conversion, ≈ 0% |
-| TAPS, 5-Base      | CpG-methylated (e.g. lambda_CpG) | CpG %                | Conversion, > 80–90%   |
-| TAPS, 5-Base      | CpG-methylated (e.g. lambda_CpG) | CHH %                | Background, ≈ 0%       |
-
-Some reads from the sample's genome can align to the controls when these are aligned on their own. As most genomic CpGs are methylated, such reads raise a control's CpG methylation more than its CHH methylation. The first reads of a sample come from the first FASTQ file: if one sample merges several libraries, they all come from the first one. Without Fusion, cloud runs stage each sample's full FASTQ files for this step.
+Genome reads rarely align to the controls on their own. The first reads of a sample come from the first FASTQ file: if one sample merges several libraries, they all come from the first one. They must be in sequencer order: FASTQ regenerated from a sorted BAM, as some SRA runs are, can hold every control read at the end, so use `--control_reads 0` for it. The pipeline warns for a sample with fewer than 100 reads aligned uniquely to the controls. Without Fusion, cloud runs stage each sample's full FASTQ files for this step.
 
 ## Samplesheet input
 
