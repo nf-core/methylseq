@@ -103,7 +103,7 @@ By default, the nf-core/methylseq pipeline uses [Bismark](http://www.bioinformat
 
 Starting with Bismark `v0.21.0`, the pipeline also supports [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) as an alternative aligner. To activate this option, use the command-line flag `--aligner bismark_hisat`.
 
-> HISAT2 offers splice-aware alignment, making it suitable for RNA-based analyses (e.g., [SLAMseq](https://science.sciencemag.org/content/360/6390/800) experiments). For such cases, you can supply a file with known splice sites using the `--known_splices` parameter.
+> HISAT2 offers splice-aware alignment, making it suitable for RNA-based analyses. For such cases, you can supply a file with known splice sites using the `--known_splices` parameter.
 
 #### Combined-index alignment (`--combined_index`)
 
@@ -245,7 +245,7 @@ Which route to choose:
 - **rastair** (the default TAPS caller) is the route most TAPS users know. rastair version 2 also calls SNVs and indels, so a genuine `C>T` variant isn't read as methylation; it is free for non-commercial use only (see [rastair version 2](#rastair-version-2---taps_caller-rastair2)).
 - **Bismark** gives Bismark's outputs and reports: alignment and deduplication reports, M-bias, bedGraph and coverage files, the cytosine report (`--cytosine_report`), bismark2report and bismark2summary, all in the same layout as a bisulfite Bismark run. It does not call variants.
 
-5-Base libraries are paired-end and directional, and Bismark's mode requires this: it rejects single-end samples (the run stops when the samplesheet is read), and `--non_directional`, `--pbat`, `--zymo`, `--single_cell`, `--rrbs`, `--combined_index`, `--slamseq`, `--nomeseq`, `--em_seq`, `--accel`, `--local_alignment`, `--relax_mismatches`, `--minins`, `--maxins`, `--known_splices`, `--run_methurator`, `--with_umi` and `--unmapped` (Bismark writes no unmapped reads in this mode yet). On the rastair route, 5-Base data are handled as TAPS data, single-end samples included (see the rastair 0.8 warning above).
+5-Base libraries are paired-end and directional, and Bismark's mode requires this: it rejects single-end samples (the run stops when the samplesheet is read), and `--non_directional`, `--pbat`, `--zymo`, `--single_cell`, `--rrbs`, `--combined_index`, `--nomeseq`, `--em_seq`, `--accel`, `--local_alignment`, `--relax_mismatches`, `--minins`, `--maxins`, `--known_splices`, `--run_methurator`, `--with_umi` and `--unmapped` (Bismark writes no unmapped reads in this mode yet). On the rastair route, 5-Base data are handled as TAPS data, single-end samples included (see the rastair 0.8 warning above).
 
 All four rows use the same bwa-mem3 `--meth` index: `--bwamem3_index`, or one the pipeline builds from `--fasta` (see [bwa-mem3 index for human and other large genomes](#bwa-mem3-index-for-human-and-other-large-genomes)); iGenomes has none, so `--genome` builds it. Build it from the same FASTA as `--fasta`: Bismark checks the contig names and lengths before it aligns. Bismark's mode needs no Bismark genome preparation, so `--bismark_index` is ignored, and the FASTA file name must end in `.fa` or `.fasta` (optionally gzipped); the run stops at launch otherwise. Without genome preparation, Bismark's FASTA format checks are skipped.
 
@@ -364,7 +364,7 @@ nextflow run nf-core/methylseq \
   -profile docker
 ```
 
-Bismark aligns the first `--control_reads` reads of each sample (read pairs for paired-end data; default 2,000,000) to the controls on their own, with the library's options and without deduplication. `--control_reads 0` aligns every read, which takes about as long as the main alignment. The per-contig table then has each control's CpG, CHG and CHH methylation, and General Statistics has the % of those reads that align uniquely to the controls. The control alignments and calls are in `controls/` (see the [output docs](output.md)). The FASTA must be named `*.fa` or `*.fasta` (optionally `.gz`), and its sequence names must differ from the reference contigs: the run stops if a control's name also has calls from the main alignment. Other aligners ignore `--control_fasta` for now, as do `--nomeseq` and `--slamseq`.
+Bismark aligns the first `--control_reads` reads of each sample (read pairs for paired-end data; default 2,000,000) to the controls on their own, with the library's options and without deduplication. `--control_reads 0` aligns every read, which takes about as long as the main alignment. The per-contig table then has each control's CpG, CHG and CHH methylation, and General Statistics has the % of those reads that align uniquely to the controls. The control alignments and calls are in `controls/` (see the [output docs](output.md)). The FASTA must be named `*.fa` or `*.fasta` (optionally `.gz`), and its sequence names must differ from the reference contigs: the run stops if a control's name also has calls from the main alignment. Other aligners ignore `--control_fasta` for now, as does `--nomeseq`.
 
 How to read the figures depends on the chemistry and on the control's methylation state, not its name: "lambda" is unmethylated in NEB and bisulfite kits but CpG-methylated in Watchmaker's TAPS kit.
 

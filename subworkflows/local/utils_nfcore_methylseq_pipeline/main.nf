@@ -189,6 +189,9 @@ workflow PIPELINE_COMPLETION {
 // Check and validate pipeline parameters
 //
 def validateInputParameters() {
+    if (params.slamseq) {
+        error("--slamseq was removed in 5.0.0: Bismark 3.x has no SLAM-seq mode.")
+    }
     genomeExistsError()
 
     // `params` here lacks the --genome attributes main.nf sets later; resolve the FASTA as main.nf does,
@@ -220,7 +223,7 @@ def validateInputParameters() {
     }
     if (bismarkBwamem3()) {
         def unsupported = [
-            'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'combined_index', 'slamseq', 'nomeseq', 'em_seq', 'accel',
+            'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'combined_index', 'nomeseq', 'em_seq', 'accel',
             'local_alignment', 'relax_mismatches', 'minins', 'maxins', 'known_splices', 'run_methurator', 'with_umi', 'unmapped',
         ].findAll { option -> params[option] }.collect { option -> "--${option}" }
         if (unsupported) {
@@ -335,7 +338,6 @@ def validateInputParameters() {
     def methylation_summary = params.run_methylation_summary || params.control_contigs
     def ignored_options = [
         [params.control_fasta && !params.aligner.startsWith('bismark'), "--control_fasta currently only applies with --aligner bismark or bismark_hisat; it is ignored for --aligner ${params.aligner}"],
-        [params.control_fasta && params.aligner.startsWith('bismark') && params.slamseq, '--control_fasta is not supported with --slamseq; it is ignored'],
         [params.control_reads != schemaDefault('control_reads') && !params.control_fasta, '--control_reads only applies with --control_fasta; it is ignored'],
         [!isTaps() && !bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); they are ignored'],
         [bismarkBwamem3() && (params.trim_OT || params.trim_OB), '--trim_OT/--trim_OB only apply to rastair calls; with --aligner bismark trim read ends with --ignore_r1, --ignore_r2, --ignore_3prime_r1 or --ignore_3prime_r2. They are ignored'],
@@ -348,8 +350,6 @@ def validateInputParameters() {
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],
-        [params.slamseq && !params.aligner.startsWith('bismark'), '--slamseq only applies to the bismark aligners; it is ignored'],
-        [params.slamseq && params.aligner.startsWith('bismark') && params.containsKey('bismark_index') && params.bismark_index, '--slamseq only changes the index the pipeline builds, so it has no effect with --bismark_index'],
         [userParam('bismark_index') && !params.aligner.startsWith('bismark'), "--bismark_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}"],
         [userParam('bismark_index') && bismarkBwamem3(), "--bismark_index is not used by Bismark's 5-Base/TAPS mode, which aligns with bwa-mem3 against the FASTA (--bwamem3_index); it is ignored"],
         [userParam('bwameth_index') && params.aligner != 'bwameth', "--bwameth_index only applies to --aligner bwameth; it is ignored for --aligner ${params.aligner}"],

@@ -78,7 +78,7 @@ workflow METHYLSEQ {
     ch_methylation_summary_mqc = channel.empty()
     ch_control_calls = channel.empty()
     // --control_fasta: spike-in controls aligned on their own, on the Bismark routes only
-    def control_fasta = params.control_fasta && params.aligner =~ /bismark/ && !params.nomeseq && !params.slamseq
+    def control_fasta = params.control_fasta && params.aligner =~ /bismark/ && !params.nomeseq
     ch_methylkit = channel.empty()
     ch_mbias = channel.empty()
     ch_qualimap = channel.empty()

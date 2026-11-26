@@ -182,7 +182,6 @@ nextflow_pipeline {
 
     [
         [ description: "Params: bismark | nomeseq | control_fasta - ignored", params: [ nomeseq: true ], message: 'so --run_methylation_summary, --control_contigs and --control_fasta are ignored' ],
-        [ description: "Params: bismark | slamseq | control_fasta - ignored", params: [ slamseq: true ], message: '--control_fasta is not supported with --slamseq; it is ignored' ],
     ].each { scenario ->
         test(scenario.description) {
             when {
