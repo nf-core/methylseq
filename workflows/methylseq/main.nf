@@ -9,6 +9,8 @@ include { FASTQC                        } from '../../modules/nf-core/fastqc/mai
 include { TRIMGALORE                    } from '../../modules/nf-core/trimgalore/main'
 include { QUALIMAP_BAMQC                } from '../../modules/nf-core/qualimap/bamqc/main'
 include { RIKER_MULTI                   } from '../../modules/nf-core/riker/multi/main'
+include { SAMTOOLS_COLLATE              } from '../../modules/nf-core/samtools/collate/main'
+include { METHYLSIEVE                   } from '../../modules/nf-core/methylsieve/main'
 include { PRESEQ_LCEXTRAP               } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                       } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                     } from '../../modules/nf-core/cat/fastq/main'
@@ -350,6 +352,18 @@ workflow METHYLSEQ {
                 .mix(RASTAIR2_SUMMARY.out.mqc)
                 .map { _meta, files -> files }
                 .flatten()
+        }
+
+        //
+        // MODULE: methylsieve conversion and M-bias metrics on the BAM rastair reads, skipped by default (--run_methylsieve)
+        // Its masked BAM is not used
+        //
+        if (params.run_methylsieve) {
+            SAMTOOLS_COLLATE(ch_bam, [[:], [], []])
+            METHYLSIEVE(
+                SAMTOOLS_COLLATE.out.bam,
+                ch_fasta.combine(ch_fasta_index).map { meta, fasta, _meta_fai, fai -> [meta, fasta, fai] }.first(),
+            )
         }
     }
     else if (params.aligner in ['bwameth', 'bwamem3']) {

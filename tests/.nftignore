@@ -32,3 +32,4 @@ trimgalore/fastqc/*.html
 trimgalore/fastqc/zips/*.zip
 trimgalore/logs/*.{txt,json}
 */qualimap/bamqc/*/raw_data_qualimapReport/genome_fraction_coverage.txt
+methylsieve/*.pdf

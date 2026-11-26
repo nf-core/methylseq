@@ -22,6 +22,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Bismark Reports](#bismark-reports) - Single-sample and summary analysis reports
 - [Qualimap](#qualimap) - Tool for genome alignments QC [OPTIONAL]
 - [riker](#riker) - Alignment, insert size, coverage and GC bias metrics in one BAM pass [OPTIONAL]
+- [methylsieve](#methylsieve) - Conversion and M-bias metrics for TAPS and 5-Base data
 - [Preseq](#preseq) - Tool for estimating sample complexity [OPTIONAL]
 - [HS Metrics](#hs-metrics) - Assessing performance on target-capture sequencing experiments [OPTIONAL]
 - [Reference Genome Preparation](#reference-genome-preparation) - Preparing indices for alignment [OPTIONAL]
@@ -443,6 +444,19 @@ Some metrics need care on converted reads:
   - Hybrid capture metrics, as an alternative to Picard CollectHsMetrics. Only with `--run_targeted_sequencing`. The target regions are used as both baits and targets.
 - `*.pdf`
   - Plots of the metrics above.
+
+## methylsieve
+
+[methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs with `--run_methylsieve` on TAPS and 5-Base data, on the same final BAM files as rastair. It learns which read ends are biased (M-bias) and reports conversion without them. It leaves out duplicates, but its other read filters differ from rastair's. Its masked BAM files are not kept. The metrics are not in the MultiQC report: MultiQC has no methylsieve module yet.
+
+**Output directory: `results/methylsieve`**
+
+- `*.summary.tsv`
+  - Conversion per context (CpA, CpC, CpG, CpT), one row for the genome and one per contig in `--control_contigs`. The `r1_mask_5p`, `r2_mask_5p`, `se_mask_5p` and `se_mask_3p` columns give the learned mask lengths in read cycles. `CpG_meth_rate` is the CpG methylation level.
+- `*.mbias.tsv`, `*.mbias.pdf`
+  - Methylation per read cycle (M-bias).
+- `*.conversion-matrix.tsv`, `*.conversion-matrix.pdf`
+  - Conversion per read pair for each control contig. Only with `--control_contigs`.
 
 ## Preseq
 

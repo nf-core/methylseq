@@ -345,6 +345,7 @@ def validateInputParameters() {
         [params.rastair2_mbias_region && !(isTaps() && params.taps_caller == 'rastair2'), '--rastair2_mbias_region only applies with --taps_caller rastair2 on the rastair route (--aligner bwamem3, bwameth or bwamem); it is ignored'],
         [(methylation_summary || params.control_fasta) && params.aligner.startsWith('bismark') && params.nomeseq, 'Bismark coverage files mix the cytosine contexts with --nomeseq, so --run_methylation_summary, --control_contigs and --control_fasta are ignored'],
         [methylation_summary && !isTaps() && !params.aligner.startsWith('bismark') && params.methyl_kit, 'MethylDackel writes methylKit files instead of bedGraphs with --methyl_kit, so --run_methylation_summary and --control_contigs are ignored'],
+        [params.run_methylsieve && !isTaps(), '--run_methylsieve only applies on the rastair route (TAPS or 5-Base data with --aligner bwamem3, bwameth or bwamem, or --aligner bwamem); it is ignored'],
         [params.umi_read_structure && !params.with_umi, '--umi_read_structure only applies with --with_umi; it is ignored'],
         [params.collecthsmetrics && !params.run_targeted_sequencing, '--collecthsmetrics only applies with --run_targeted_sequencing; it is ignored'],
         [params.bamqc_regions_file && !params.run_qualimap, '--bamqc_regions_file only applies with --run_qualimap; it is ignored'],

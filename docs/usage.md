@@ -54,6 +54,9 @@ flowchart TD
 
         D3 --> E3["MethylDackel extract/M-bias<br/>(Bisulfite data)"]
         D3 --> E4["Rastair TAPS conversion<br/>(TAPS data)"]
+
+        D1 --> E5["methylsieve metrics<br/>(TAPS data, optional)"]
+        D3 --> E5
     end
 
     subgraph Stage3b[Targeted Sequencing - Optional]
@@ -94,7 +97,7 @@ flowchart TD
 
     %% Styling for TAPS workflows
     classDef tapsStyle fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    class D3,E2,E4 tapsStyle
+    class D3,E2,E4,E5 tapsStyle
 ```
 
 ### Workflow: Bismark
@@ -225,6 +228,10 @@ To set the trims yourself, pass `--trim_OT` and/or `--trim_OB` as `R1 start,R1 e
 > [!WARNING]
 > rastair 0.8 only calls properly paired reads, so single-end samples get no methylation calls with `--taps_caller rastair`, and the pipeline warns about each one once its alignment has finished. Use `--taps_caller rastair2` for single-end TAPS data.
 
+#### methylsieve metrics (`--run_methylsieve`)
+
+With `--run_methylsieve`, [methylsieve](https://github.com/fulcrumgenomics/methylsieve) runs on the same final BAM files as rastair and reports conversion per context and M-bias. It only writes metrics; the calls are unchanged. It leaves out duplicates but otherwise filters reads its own way, so its figures are close to the rastair calls but not identical. Contigs in `--control_contigs` get their own row. See the [output docs](https://nf-co.re/methylseq/output#methylsieve).
+
 ### Illumina 5-Base and TAPS: rastair or Bismark
 
 Illumina 5-Base and TAPS libraries both convert **methylated** cytosine to thymine, so the reads align to the unconverted genome and a read `T` at a genomic `C` is a methylated call. Both chemistries run on either route; the chemistry flag says what the data are, and `--aligner` picks the route:
@@ -238,7 +245,7 @@ Illumina 5-Base and TAPS libraries both convert **methylated** cytosine to thymi
 
 `--taps` keeps the default it already had (bwa-mem3 and rastair), so existing TAPS runs don't change; `--illumina_5base` uses the pipeline's default aligner, Bismark.
 
-bwa-mem3 treats 5-Base and TAPS as the same chemistry, so `--illumina_5base --aligner bwamem3` gives the same results as `--taps --aligner bwamem3`, and Bismark's two modes give the same alignments. Like `--taps`, `--illumina_5base` also works with `--aligner bwamem` and `--aligner bwameth`. TAPS converts 5mC and 5hmC alike, so a TAPS call is their sum.
+bwa-mem3 treats 5-Base and TAPS as the same chemistry, so `--illumina_5base --aligner bwamem3` gives the same results as `--taps --aligner bwamem3` (with `--run_methylsieve`, only the `chemistry` column of the methylsieve summary differs), and Bismark's two modes give the same alignments. Like `--taps`, `--illumina_5base` also works with `--aligner bwamem` and `--aligner bwameth`. TAPS converts 5mC and 5hmC alike, so a TAPS call is their sum.
 
 Which route to choose:
 

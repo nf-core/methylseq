@@ -18,9 +18,9 @@ nextflow_pipeline {
         ],
         [
             description: "Params: bismark | taps | taps_caller rastair2",
-            // rastair2 is not run: with --aligner bismark, Bismark makes the calls
-            params: [ taps: true, taps_caller: "rastair2" ],
-            log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls' ],
+            // rastair2 and methylsieve are not run: with --aligner bismark, Bismark makes the calls
+            params: [ taps: true, taps_caller: "rastair2", run_methylsieve: true ],
+            log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls', '--run_methylsieve only applies on the rastair route' ],
             log_lacks: [],
             flag_has: '--taps --bwamem3',
             flag_lacks: '--illumina_5base',
