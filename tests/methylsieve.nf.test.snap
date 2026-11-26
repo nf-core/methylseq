@@ -55,7 +55,7 @@
                     "trimgalore": "2.6.0"
                 },
                 "Workflow": {
-                    "nf-core/methylseq": "v4.3.0dev"
+                    "nf-core/methylseq": "v5.0.0dev"
                 }
             },
             [
