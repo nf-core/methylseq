@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Pipeline Updates
 
-- ⚠️ **Breaking:** `--slamseq` now stops the run at launch, as Bismark 3.x has no SLAM-seq mode ([#NNN](https://github.com/nf-core/methylseq/pull/NNN))
+- ⚠️ **Breaking:** `--slamseq` now stops the run at launch, as Bismark 3.x has no SLAM-seq mode ([#679](https://github.com/nf-core/methylseq/pull/679))
 - ✨ Add `--control_fasta` to align the first reads of each sample to spike-in controls that are not in the reference, and report their CpG, CHG and CHH methylation in the methylation summary, for `--aligner bismark` and `bismark_hisat` ([#394](https://github.com/nf-core/methylseq/issues/394))
 - ✨ Add `--run_methylation_summary` and `--control_contigs` (which replaces the unreleased `--rastair2_control_contigs`) for a per-sample methylation summary of the MethylDackel, Bismark or rastair calls in MultiQC, with spike-in controls reported on their own ([#601](https://github.com/nf-core/methylseq/issues/601), [#673](https://github.com/nf-core/methylseq/pull/673))
 - ✨ `--target_regions_file` takes a comma-separated list of BED files, and each panel gets its own filtered calls, Picard HsMetrics file, MultiQC section and (with `--run_methylation_summary` or `--control_contigs`) methylation summary, while riker uses their union ([#573](https://github.com/nf-core/methylseq/issues/573), [#675](https://github.com/nf-core/methylseq/pull/675))
