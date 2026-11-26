@@ -10,8 +10,8 @@ nextflow_pipeline {
         [
             description: "Params: bismark | illumina_5base",
             // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's
-            params: [ illumina_5base: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz" ],
-            log_has: [ '--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3', '--trim_OT/--trim_OB only apply to rastair calls', "--bismark_index is not used by Bismark's 5-Base/TAPS mode" ],
+            params: [ illumina_5base: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz", control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
+            log_has: [ '--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3', '--trim_OT/--trim_OB only apply to rastair calls', "--bismark_index is not used by Bismark's 5-Base/TAPS mode", "--control_fasta is not supported in Bismark's 5-Base/TAPS mode" ],
             log_lacks: [ '--taps_caller only applies' ],
             flag_has: '--illumina_5base --bwamem3',
             flag_lacks: '--taps',
@@ -19,8 +19,8 @@ nextflow_pipeline {
         [
             description: "Params: bismark | taps | taps_caller rastair2",
             // rastair2 is not run: with --aligner bismark, Bismark makes the calls
-            params: [ taps: true, taps_caller: "rastair2" ],
-            log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls' ],
+            params: [ taps: true, taps_caller: "rastair2", control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
+            log_has: [ '--taps with --aligner bismark: Bismark aligns with bwa-mem3', '--taps_caller only applies to rastair calls', "--control_fasta is not supported in Bismark's 5-Base/TAPS mode" ],
             log_lacks: [],
             flag_has: '--taps --bwamem3',
             flag_lacks: '--illumina_5base',
@@ -77,6 +77,8 @@ nextflow_pipeline {
                     { assert summary_text.contains('taps_pe') },
                     { assert scenario.log_has.every { message -> log_text.contains(message) } },
                     { assert !scenario.log_lacks.any { message -> log_text.contains(message) } },
+                    { assert workflow.trace.tasks().every { task -> !task.name.contains('FASTQ_CONTROLS_BISMARK') && !task.name.contains('METHYLATION_SUMMARY') } },
+                    { assert !new File("${params.outdir}/controls").exists() },
                     { assert snapshot(
                         removeNextflowVersion("$outputDir/pipeline_info/nf_core_methylseq_software_mqc_versions.yml"),
                         stable_name,
