@@ -105,6 +105,7 @@ nextflow_workflow {
             assertAll(
                 { assert workflow.success },
                 { assert report.contains('Number of alignments with a unique best hit from the different alignments:\t0') },
+                { assert file("${metaDir}/nextflow.log").text.contains('--control_fasta: none of the first 1000 reads of sample sub1 aligned uniquely to the controls. Either the library has none of these controls') },
                 { assert !cx_rows.isEmpty() },
                 { assert cx_rows.every { fields -> (fields[3] as long) + (fields[4] as long) == 0 } }
             )

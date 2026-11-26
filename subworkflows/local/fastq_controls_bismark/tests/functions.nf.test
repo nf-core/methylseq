@@ -1,0 +1,69 @@
+nextflow_function {
+
+    name "Test Function controlReadsWarning"
+    script "../main.nf"
+    function "controlReadsWarning"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "subworkflows/fastq_controls_bismark"
+    tag "bismark"
+
+    // Writes a Bismark alignment report with the analysed and unique counts (strings, so that bad values can be tested)
+    def writeReport = { String path, boolean paired, String analysed, String unique ->
+        new File(path).parentFile.mkdirs()
+        def lines = paired
+            ? ["Sequence pairs analysed in total:\t${analysed}", "Number of paired-end alignments with a unique best hit:\t${unique}"]
+            : ["Sequences analysed in total:\t${analysed}", "Number of alignments with a unique best hit from the different alignments:\t${unique}"]
+        new File(path).text = "Bismark report for: reads.fq.gz (version: v3.4.0)\n" + lines.join('\n') + '\n'
+        return path
+    }
+
+    [
+        [ name: "single-end, none of the first reads", reports: [[false, '1000', '0']], control_reads: 1000,
+          expected: "--control_fasta: none of the first 1000 reads of sample s aligned uniquely to the controls. Either the library has none of these controls, or its FASTQ is not in sequencer order (e.g. regenerated from a sorted BAM, as some SRA runs are); --control_reads 0 aligns every read." ],
+        [ name: "paired-end, few of the first pairs", reports: [[true, '2000000', '42']], control_reads: 2000000,
+          expected: "--control_fasta: only 42 of the first 2000000 read pairs of sample s aligned uniquely to the controls, too few for reliable control figures. Raise --control_reads, or use --control_reads 0 if the FASTQ is not in sequencer order (e.g. regenerated from a sorted BAM)." ],
+        [ name: "a FASTQ shorter than --control_reads: every read aligned", reports: [[true, '500', '7']], control_reads: 1000,
+          expected: "--control_fasta: only 7 of the 500 read pairs of sample s aligned uniquely to the controls, too few for reliable control figures." ],
+        [ name: "--control_reads 0, none", reports: [[false, '5000', '0']], control_reads: 0,
+          expected: "--control_fasta: none of the 5000 reads of sample s aligned uniquely to the controls; the library may have none of these controls." ],
+        [ name: "two reports are summed, neither capped by --control_reads", reports: [[false, '600', '40'], [false, '600', '30']], control_reads: 1000,
+          expected: "--control_fasta: only 70 of the 1200 reads of sample s aligned uniquely to the controls, too few for reliable control figures." ],
+        [ name: "100 unique reads: no warning", reports: [[false, '1000', '100']], control_reads: 1000, expected: null ],
+        [ name: "no reads analysed: no warning", reports: [[false, '0', '0']], control_reads: 1000, expected: null ],
+        [ name: "a non-numeric count: no warning", reports: [[false, '1000', 'n/a']], control_reads: 1000, expected: null ],
+    ].eachWithIndex { scenario, i ->
+        test(scenario.name) {
+            when {
+                function {
+                    """
+                    input[0] = 's'
+                    input[1] = [ ${scenario.reports.withIndex().collect { report, j -> "file('${writeReport("${outputDir}/r${i}_${j}.txt", *report)}')" }.join(', ')} ]
+                    input[2] = ${scenario.control_reads}
+                    """
+                }
+            }
+            then {
+                assert function.success
+                assert function.result == scenario.expected
+            }
+        }
+    }
+
+    test("a report without the counts: no warning") {
+        when {
+            function {
+                """
+                input[0] = 's'
+                input[1] = file('${new File("${outputDir}/empty.txt").with { report -> report.parentFile.mkdirs(); report.text = 'Bismark report for: reads.fq.gz\n'; report.path }}')
+                input[2] = 1000
+                """
+            }
+        }
+        then {
+            assert function.success
+            assert function.result == null
+        }
+    }
+}

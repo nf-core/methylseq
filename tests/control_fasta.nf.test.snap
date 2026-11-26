@@ -1,48 +1,4 @@
 {
-    "Params: bismark | illumina_5base | control_fasta": {
-        "content": [
-            {
-                "taps_pe": {
-                    "chr19": "38.25",
-                    "2kb_3_Unmodified": "0.34",
-                    "bacteriophage_lambda_CpG": "98.08",
-                    "ctl_2kb_unmod": "0.36",
-                    "ctl_2kb_unmod CHG": "0.25",
-                    "ctl_2kb_unmod CHH": "0.18",
-                    "ctl_lambda": "98.08",
-                    "ctl_lambda CHG": "0.58",
-                    "ctl_lambda CHH": "0.27"
-                }
-            }
-        ],
-        "timestamp": "2026-11-25T14:54:36.656203",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
-        }
-    },
-    "Params: bismark | taps | control_fasta": {
-        "content": [
-            {
-                "taps_pe": {
-                    "chr19": "38.25",
-                    "2kb_3_Unmodified": "0.34",
-                    "bacteriophage_lambda_CpG": "98.08",
-                    "ctl_2kb_unmod": "0.36",
-                    "ctl_2kb_unmod CHG": "0.25",
-                    "ctl_2kb_unmod CHH": "0.18",
-                    "ctl_lambda": "98.08",
-                    "ctl_lambda CHG": "0.58",
-                    "ctl_lambda CHH": "0.27"
-                }
-            }
-        ],
-        "timestamp": "2026-11-25T14:52:35.607833",
-        "meta": {
-            "nf-test": "0.9.5",
-            "nextflow": "25.10.4"
-        }
-    },
     "Params: bismark | control_fasta | control_reads 1000 | save_reference": {
         "content": [
             {
