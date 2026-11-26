@@ -1,0 +1,156 @@
+name: "methylsieve"
+description: Filter/tag unconverted reads, mask M-bias and collect conversion metrics in methylation sequencing with methylsieve; for maximum throughput it can also run inline in the alignment pipe (aligner | methylsieve | sort) rather than as a standalone step
+keywords:
+  - methylation
+  - bisulfite
+  - em-seq
+  - taps
+  - unconverted
+  - bam
+  - qc
+tools:
+  - "methylsieve":
+      description: "Fast, robust filtering of unconverted reads in methylation sequencing."
+      homepage: "https://github.com/fulcrumgenomics/methylsieve"
+      documentation: "https://github.com/fulcrumgenomics/methylsieve"
+      tool_dev_url: "https://github.com/fulcrumgenomics/methylsieve"
+      licence: ["MIT"]
+      identifier: ""
+input:
+  - - meta:
+        type: map
+        description: |
+          Groovy Map containing sample information
+          e.g. `[ id:'sample1' ]`
+    - bam:
+        type: file
+        description: |
+          Aligned SAM/BAM from a methylation aligner, in aligner (query-grouped) order.
+          Must NOT be coordinate-sorted.
+        pattern: "*.{bam,sam}"
+        ontologies:
+          - edam: "http://edamontology.org/format_2572" # BAM
+          - edam: "http://edamontology.org/format_2573" # SAM
+  - - meta2:
+        type: map
+        description: |
+          Groovy Map containing reference information
+          e.g. `[ id:'genome' ]`
+    - fasta:
+        type: file
+        description: Reference genome FASTA file
+        pattern: "*.{fa,fasta,fna}"
+        ontologies:
+          - edam: "http://edamontology.org/data_2044"
+          - edam: "http://edamontology.org/format_1929"
+    - fai:
+        type: file
+        description: Reference genome FASTA index (.fai)
+        pattern: "*.fai"
+        ontologies: []
+output:
+  bam:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "${prefix}.bam":
+          type: file
+          description: BAM with unconverted reads tagged (or filtered) and, with `--mbias-mask`, M-biased bases set to low quality
+          pattern: "*.bam"
+          ontologies:
+            - edam: "http://edamontology.org/format_2572" # BAM
+  summary:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "*.summary.tsv":
+          type: file
+          description: Conversion rates per context for the genome and each control contig, with the applied M-bias mask lengths (TSV)
+          pattern: "*.summary.tsv"
+          ontologies: []
+  mbias:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "*.mbias.tsv":
+          type: file
+          description: Methylation per read cycle (TSV)
+          pattern: "*.mbias.tsv"
+          ontologies: []
+  conversion_matrix:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "*.conversion-matrix.tsv":
+          type: file
+          description: Per-template conversion histograms for the genome (EM-seq and bisulfite) and each control contig (TSV). Not written when there is neither.
+          pattern: "*.conversion-matrix.tsv"
+          ontologies: []
+  pdf:
+    - - meta:
+          type: map
+          description: |
+            Groovy Map containing sample information
+            e.g. `[ id:'sample1' ]`
+      - "*.pdf":
+          type: file
+          description: M-bias and conversion matrix plots (PDF)
+          pattern: "*.pdf"
+          ontologies: []
+  versions_methylsieve:
+    - - "${task.process}":
+          type: string
+          description: The name of the process
+      - "methylsieve":
+          type: string
+          description: The name of the tool
+      - "methylsieve --version | sed 's/^methylsieve //'":
+          type: eval
+          description: The expression to obtain the version of the tool
+topics:
+  versions:
+    - - ${task.process}:
+          type: string
+          description: The name of the process
+      - methylsieve:
+          type: string
+          description: The name of the tool
+      - methylsieve --version | sed 's/^methylsieve //':
+          type: eval
+          description: The expression to obtain the version of the tool
+authors:
+  - "@nh13"
+maintainers:
+  - "@nh13"
+containers:
+  docker:
+    linux/amd64:
+      name: community.wave.seqera.io/library/methylsieve:0.3.0--fabcb86b0e4a4051
+      build_id: bd-fabcb86b0e4a4051_1
+      scan_id: sc-aa76f98979cac0f2_1
+    linux/arm64:
+      name: community.wave.seqera.io/library/methylsieve:0.3.0--9e44f0ea8bcee5fa
+      build_id: bd-9e44f0ea8bcee5fa_1
+      scan_id: sc-a66db71a0c8e6051_1
+  singularity:
+    linux/amd64:
+      name: oras://community.wave.seqera.io/library/methylsieve:0.3.0--77ff93bf15e117f2
+      build_id: bd-77ff93bf15e117f2_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/b6/b6ddf32365a6fe29b43b89e0ed11ca9dda2d3f73d9a72827c9910a24ef169b2f/data
+    linux/arm64:
+      name: oras://community.wave.seqera.io/library/methylsieve:0.3.0--d2c5bfb5dd18a452
+      build_id: bd-d2c5bfb5dd18a452_1
+      https: https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/c7/c7a4bfe5a655edb5e51b67d60901e450102a628af0fc77a4cd6a880c66a0e2fc/data
+  conda:
+    linux/amd64:
+      lock_file: modules/nf-core/methylsieve/.conda-lock/linux_amd64-bd-fabcb86b0e4a4051_1.txt
+    linux/arm64:
+      lock_file: modules/nf-core/methylsieve/.conda-lock/linux_arm64-bd-9e44f0ea8bcee5fa_1.txt

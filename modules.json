@@ -125,6 +125,11 @@
                         "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
                         "installed_by": ["bam_methyldackel", "fastq_align_dedup_bwameth"]
                     },
+                    "methylsieve": {
+                        "branch": "master",
+                        "git_sha": "f0bb572d85db802d437d70033721a95476260131",
+                        "installed_by": ["modules"]
+                    },
                     "multiqc": {
                         "branch": "master",
                         "git_sha": "868791e991feaaeff234b79f7910b6b442627529",
@@ -218,6 +223,11 @@
                     "riker/multi": {
                         "branch": "master",
                         "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "installed_by": ["modules"]
+                    },
+                    "samtools/collate": {
+                        "branch": "master",
+                        "git_sha": "f0bb572d85db802d437d70033721a95476260131",
                         "installed_by": ["modules"]
                     },
                     "samtools/dict": {
