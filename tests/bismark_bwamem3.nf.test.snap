@@ -3,23 +3,23 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                    "bismark": "3.5.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_COVERAGE2CYTOSINE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.18.0"
@@ -159,14 +159,14 @@
                 "taps_pe.cytosine_context_summary.txt:md5,cec1c590119fbb0bad099ac4e974c9a3",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.bedGraph.gz:md5,087aaf9536a1d9945f39829cf0a8d22f",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.M-bias.txt:md5,838b3367980e9c8a6f1fb4d5f5dd94f4",
-                "CHG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,4324477a0b922868c8fb3e5f1f5de43b",
-                "CHG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,6e8c207a0672b0e07c485b0d9d3458b7",
-                "CHH_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e27e8c8fe55551ad3096190d0724cf7b",
-                "CHH_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,24f56a997314018accfb7e8ce46edeb8",
-                "CpG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,75e0dcc1ee6e73a9988c46f16acc0c97",
-                "CpG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e75af387b8f03a6f050ed421e6d354e4",
+                "CHG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,fe2788367df996ddfc815419c142d03d",
+                "CHG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,0dfa2dfd39975959fe0a1d0e01716194",
+                "CHH_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,699f5721e4e3dd33ca0c53546412fd84",
+                "CHH_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,10a9229b78148b7dae3bf7c9e3955bf4",
+                "CpG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,c5fa79f77e93c0ec0d9030d6a79ea281",
+                "CpG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e31aacfb13934544bfb18eb6a1717cb9",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.bismark.cov.gz:md5,15d0d0f6336680449f1f49ded4a281d7",
-                "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated_splitting_report.txt:md5,3a1167440d0868b07f00dbfdb0bf03b9",
+                "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated_splitting_report.txt:md5,1dd7b72825f162b491961d8d694f6f86",
                 "bismark-methylation-dp.txt:md5,957553c545ad23c918342fd9706e5944",
                 "bismark_alignment.txt:md5,cb02571f398c2b6a8a330353816f6333",
                 "bismark_deduplication.txt:md5,40c77a45b20703674a90aa6b8f436096",
@@ -200,9 +200,9 @@
                 "fastqc_trimmed_sequence_counts_plot.txt:md5,fc223e60f1db971ac931bb887ceb4a24",
                 "fastqc_trimmed_sequence_duplication_levels_plot.txt:md5,7b28d243444c8535b78d3d5806ddef14",
                 "fastqc_trimmed_top_overrepresented_sequences_table.txt:md5,5ba53670e4119f189bacfeac39f49357",
-                "multiqc_bismark_alignment.txt:md5,eb9cc89105a4887163a4bca6fe35abaf",
+                "multiqc_bismark_alignment.txt:md5,af036aa901b8dfd255a2cd308c4c05eb",
                 "multiqc_bismark_dedup.txt:md5,eca49fa842ec9ce1cd876a95779640ac",
-                "multiqc_bismark_methextract.txt:md5,e39c5b466fa742130fcf5f49ee317459",
+                "multiqc_bismark_methextract.txt:md5,2aabdbb7f5b4b0e12a264acc70c5c3c9",
                 "multiqc_citations.txt:md5,bc6c819b07557c4cdec6938e7e126e9a",
                 "multiqc_trim_galore.txt:md5,66047b49a32acbd340f695eb9117b0c9",
                 "trim_galore_adapter_length_plot.txt:md5,456d7682ca673739000fa82696e73332",
@@ -215,7 +215,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-23T16:49:47.537886786",
+        "timestamp": "2026-11-27T16:24:27.302892909",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
@@ -225,23 +225,23 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                    "bismark": "3.5.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_COVERAGE2CYTOSINE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BWAMEM3_INDEX": {
                     "bwamem3": "0.18.0"
@@ -381,14 +381,14 @@
                 "taps_pe.cytosine_context_summary.txt:md5,cec1c590119fbb0bad099ac4e974c9a3",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.bedGraph.gz:md5,087aaf9536a1d9945f39829cf0a8d22f",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.M-bias.txt:md5,838b3367980e9c8a6f1fb4d5f5dd94f4",
-                "CHG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,4324477a0b922868c8fb3e5f1f5de43b",
-                "CHG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,6e8c207a0672b0e07c485b0d9d3458b7",
-                "CHH_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e27e8c8fe55551ad3096190d0724cf7b",
-                "CHH_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,24f56a997314018accfb7e8ce46edeb8",
-                "CpG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,75e0dcc1ee6e73a9988c46f16acc0c97",
-                "CpG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e75af387b8f03a6f050ed421e6d354e4",
+                "CHG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,fe2788367df996ddfc815419c142d03d",
+                "CHG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,0dfa2dfd39975959fe0a1d0e01716194",
+                "CHH_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,699f5721e4e3dd33ca0c53546412fd84",
+                "CHH_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,10a9229b78148b7dae3bf7c9e3955bf4",
+                "CpG_OB_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,c5fa79f77e93c0ec0d9030d6a79ea281",
+                "CpG_OT_taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.txt.gz:md5,e31aacfb13934544bfb18eb6a1717cb9",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.bismark.cov.gz:md5,15d0d0f6336680449f1f49ded4a281d7",
-                "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated_splitting_report.txt:md5,3a1167440d0868b07f00dbfdb0bf03b9",
+                "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated_splitting_report.txt:md5,1dd7b72825f162b491961d8d694f6f86",
                 "bismark-methylation-dp.txt:md5,957553c545ad23c918342fd9706e5944",
                 "bismark_alignment.txt:md5,cb02571f398c2b6a8a330353816f6333",
                 "bismark_deduplication.txt:md5,40c77a45b20703674a90aa6b8f436096",
@@ -422,9 +422,9 @@
                 "fastqc_trimmed_sequence_counts_plot.txt:md5,fc223e60f1db971ac931bb887ceb4a24",
                 "fastqc_trimmed_sequence_duplication_levels_plot.txt:md5,7b28d243444c8535b78d3d5806ddef14",
                 "fastqc_trimmed_top_overrepresented_sequences_table.txt:md5,5ba53670e4119f189bacfeac39f49357",
-                "multiqc_bismark_alignment.txt:md5,eb9cc89105a4887163a4bca6fe35abaf",
+                "multiqc_bismark_alignment.txt:md5,af036aa901b8dfd255a2cd308c4c05eb",
                 "multiqc_bismark_dedup.txt:md5,eca49fa842ec9ce1cd876a95779640ac",
-                "multiqc_bismark_methextract.txt:md5,e39c5b466fa742130fcf5f49ee317459",
+                "multiqc_bismark_methextract.txt:md5,2aabdbb7f5b4b0e12a264acc70c5c3c9",
                 "multiqc_citations.txt:md5,bc6c819b07557c4cdec6938e7e126e9a",
                 "multiqc_trim_galore.txt:md5,66047b49a32acbd340f695eb9117b0c9",
                 "trim_galore_adapter_length_plot.txt:md5,456d7682ca673739000fa82696e73332",
@@ -437,7 +437,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-23T16:51:16.251101894",
+        "timestamp": "2026-11-27T16:26:05.162182111",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
