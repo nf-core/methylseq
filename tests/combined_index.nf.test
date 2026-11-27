@@ -4,50 +4,27 @@ nextflow_pipeline {
     config "./nextflow.config"
     tag "cpu"
 
-    // Opt-in --combined_index alignment (own-genome runs, no --bismark_index, so genome
-    // prep builds the combined CT+GA reference). save_reference publishes the built index
-    // so Bisulfite_Genome/Combined/BS_combined.* is captured — proving combined mode
-    // actually engaged rather than silently falling back to the classic path (a classic
-    // run also succeeds, so workflow.success alone can't distinguish the two). The align
-    // gate is the same boolean as the genome-prep gate, so a published Combined/ reference
-    // implies the aligner ran with --combined_index. Output is concordance-gated (NOT
-    // byte-identical) vs classic; numerical correctness is inherited from Bismark's own
-    // upstream concordance gate.
+    // Combined-index alignment is the default: genome prep builds Bisulfite_Genome/Combined/ and the report names the mode
     def testScenarios = [
         [
-            name: "bismark_combined_index_directional",
-            description: "Params: bismark with combined_index (directional)",
-            params: [
-                combined_index: true,
-                save_reference: true
-            ]
+            description: "Params: bismark default combined index (directional)",
+            params: [ save_reference: true ],
+            sequential: false
         ],
         [
-            name: "bismark_combined_index_non_directional",
-            description: "Params: bismark with combined_index and non_directional",
-            params: [
-                combined_index: true,
-                non_directional: true,
-                save_reference: true
-            ]
+            description: "Params: bismark default combined index and non_directional",
+            params: [ non_directional: true, save_reference: true ],
+            sequential: true
         ],
         [
-            name: "bismark_combined_index_pbat",
-            description: "Params: bismark with combined_index and pbat",
-            params: [
-                combined_index: true,
-                pbat: true,
-                save_reference: true
-            ]
+            description: "Params: bismark default combined index and pbat",
+            params: [ pbat: true, save_reference: true ],
+            sequential: false
         ],
         [
-            name: "bismark_hisat_combined_index",
-            description: "Params: bismark_hisat with combined_index (directional)",
-            params: [
-                aligner: "bismark_hisat",
-                combined_index: true,
-                save_reference: true
-            ]
+            description: "Params: bismark_hisat default combined index (directional)",
+            params: [ aligner: "bismark_hisat", save_reference: true ],
+            sequential: false
         ]
     ]
 
@@ -64,14 +41,30 @@ nextflow_pipeline {
             bam_files.collect{ file -> [ file.getName(), bam(file.toString()).getReadsMD5() ] }
         ]
     }
+    def alignReports = { outputDir -> getAllFilesFromDir(outputDir, include: ['**/alignments/logs/*_report.txt']) }
+    def combinedReference = { outputDir -> getAllFilesFromDir(outputDir, include: ['**/Bisulfite_Genome/Combined/*']) }
+    // MultiQC's Bismark alignment mode table, as [sample: mode]
+    def alignmentModes = { outputDir ->
+        def table = getAllFilesFromDir(outputDir, include: ['multiqc/**/multiqc_bismark_alignment_mode.txt'])
+        table ? path(table[0].toString()).readLines().drop(1).collectEntries { line -> def fields = line.split('\t'); [ (fields[0]): fields[1] ] } : [:]
+    }
+    def testSamples = ['Ecoli_10K_methylated', 'SRR389222_sub1', 'SRR389222_sub2', 'SRR389222_sub3'] as Set
+    // The Bismark alignment scripts of the main route
+    def alignScripts = { workDir ->
+        def scripts = []
+        new File(workDir.toString()).eachFileRecurse { script ->
+            if (script.name == '.command.sh' && script.text.contains('bismark \\') && script.text.contains('--genome')) {
+                scripts << script.text
+            }
+        }
+        scripts
+    }
 
-    // Generate a test for each success scenario
     testScenarios.each { scenario ->
         test(scenario.description) {
             when {
                 params {
                     outdir = "${outputDir}"
-                    // Apply scenario-specific parameters
                     scenario.params.each { key, value ->
                         delegate."$key" = value
                     }
@@ -79,11 +72,14 @@ nextflow_pipeline {
             }
 
             then {
-                // Proof that combined mode engaged: the combined CT+GA reference was built
-                def combined_ref = getAllFilesFromDir(params.outdir, include: ['**/Bisulfite_Genome/Combined/*'])
+                def reports = alignReports(params.outdir)
+                def scripts = alignScripts(workDir)
                 assertAll(
                     { assert workflow.success },
-                    { assert combined_ref.size() > 0 },
+                    { assert combinedReference(params.outdir).size() > 0 },
+                    { assert reports.size() > 0 && reports.every { report -> report.text.contains('Combined-index mode') } },
+                    { assert scripts.size() > 0 && scripts.every { script -> script.contains('--combined_index') && script.contains('--combined_index_sequential') == scenario.sequential } },
+                    { assert alignmentModes(params.outdir).keySet() == testSamples && alignmentModes(params.outdir).values().every { mode -> mode == 'combined index' } },
                     { assert snapshot(
                         *getStandardAssertionData(params.outdir)
                     ).match() }
@@ -92,10 +88,65 @@ nextflow_pipeline {
         }
     }
 
-    // Loud-fail: opt-in combined_index with a pre-built index that lacks the combined
-    // reference must fail loudly at alignment (not silently produce a classic result),
-    // with Bismark's clear "build it with --combined_genome" message.
-    test("Params: combined_index with a pre-built index lacking the combined reference fails loudly") {
+    test("Params: combined_index false aligns per strand and builds no combined index") {
+        when {
+            params {
+                combined_index = false
+                save_reference = true
+                outdir         = "${outputDir}"
+            }
+        }
+
+        then {
+            def reports = alignReports(params.outdir)
+            assertAll(
+                { assert workflow.success },
+                { assert combinedReference(params.outdir).isEmpty() },
+                { assert reports.size() > 0 && reports.every { report -> (report.text =~ /(^|\s)-p 2(\s|$)/).find() && !report.text.contains('Combined-index mode') } },
+                { assert alignmentModes(params.outdir).keySet() == testSamples && alignmentModes(params.outdir).values().every { mode -> mode == 'per strand' } }
+            )
+        }
+    }
+
+    test("Params: local_alignment aligns per strand without a warning") {
+        when {
+            params {
+                local_alignment = true
+                save_reference  = true
+                outdir          = "${outputDir}"
+            }
+        }
+
+        then {
+            def reports = alignReports(params.outdir)
+            assertAll(
+                { assert workflow.success },
+                { assert combinedReference(params.outdir).isEmpty() },
+                { assert reports.size() > 0 && reports.every { report -> !report.text.contains('Combined-index mode') } },
+                { assert !file("${metaDir}/nextflow.log").text.contains('so Bismark aligns per strand') }
+            )
+        }
+    }
+
+    // A stub genome prep writes no Combined/ files, so -stub runs take the combined flag without the file check
+    test("Params: bismark default combined index - stub") {
+        options "-stub"
+        when {
+            params {
+                outdir = "${outputDir}"
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert workflow.trace.tasks().any { task -> task.name.contains('BISMARK_ALIGN') } },
+                { assert !file("${metaDir}/nextflow.log").text.contains('so Bismark aligns per strand') }
+            )
+        }
+    }
+
+    test("Params: combined_index true with a pre-built index lacking the combined set stops") {
         when {
             params {
                 combined_index = true
@@ -105,12 +156,11 @@ nextflow_pipeline {
         }
 
         then {
-            // The pipeline emits Bismark's explicit "build it with --combined_genome"
-            // guidance (verified in the alignment step's stderr). At the pipeline level we
-            // assert the loud failure itself: the test isolates the cause — a valid pre-built
-            // index that lacks only the combined reference, with combined_index=true — so the
-            // missing-combined-reference error is the sole possible failure mode here.
-            assert workflow.failed
+            assertAll(
+                { assert workflow.failed },
+                { assert (workflow.stdout + workflow.stderr).any { line -> line.contains('--combined_index true: the Bismark index') } || file("${metaDir}/nextflow.log").text.contains('--combined_index true: the Bismark index') },
+                { assert !workflow.trace.tasks().any { task -> task.name.contains('BISMARK_ALIGN') } }
+            )
         }
     }
 }

@@ -1,0 +1,67 @@
+nextflow_function {
+
+    name "Test Function combinedIndexFlag"
+    script "../main.nf"
+    function "combinedIndexFlag"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "subworkflows/utils_nfcore_methylseq_pipeline"
+
+    // Writes a Bismark index folder, with the complete Bowtie 2 combined set or none
+    def writeIndex = { String path, boolean combined ->
+        new File(path).mkdirs()
+        if (combined) {
+            new File("${path}/Bisulfite_Genome/Combined").mkdirs()
+            ['1', '2', '3', '4', 'rev.1', 'rev.2'].each { i -> new File("${path}/Bisulfite_Genome/Combined/BS_combined.${i}.bt2").text = '' }
+        }
+        return path
+    }
+
+    [
+        [ name: "auto, complete set: combined", params: [:], combined: true, expected: true ],
+        [ name: "auto, no combined set: per strand with a warning", params: [:], combined: false, expected: false, warning: true ],
+        [ name: "false, complete set: per strand", params: [ combined_index: false ], combined: true, expected: false ],
+        [ name: "true, complete set: combined", params: [ combined_index: true ], combined: true, expected: true ],
+        [ name: "auto with local_alignment: per strand", params: [ local_alignment: true ], combined: true, expected: false ],
+        [ name: "auto with another aligner: per strand", params: [ aligner: 'bwameth' ], combined: true, expected: false ],
+        [ name: "auto with illumina_5base: per strand", params: [ illumina_5base: true ], combined: true, expected: false ],
+    ].eachWithIndex { scenario, i ->
+        test(scenario.name) {
+            when {
+                params {
+                    scenario.params.each { key, value ->
+                        delegate."$key" = value
+                    }
+                }
+                function {
+                    """
+                    input[0] = file('${writeIndex("${outputDir}/index${i}", scenario.combined)}')
+                    """
+                }
+            }
+            then {
+                assert function.success
+                assert function.result == scenario.expected
+                assert file("${metaDir}/nextflow.log").text.contains('so Bismark aligns per strand') == (scenario.warning ?: false)
+            }
+        }
+    }
+
+    test("true, no combined set: stops") {
+        when {
+            params {
+                combined_index = true
+            }
+            function {
+                """
+                input[0] = file('${writeIndex("${outputDir}/index_missing", false)}')
+                """
+            }
+        }
+        then {
+            assert function.failed
+            assert (function.stdout + function.stderr).any { line -> line.contains('--combined_index true: the Bismark index') }
+        }
+    }
+}

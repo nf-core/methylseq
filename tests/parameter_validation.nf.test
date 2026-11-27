@@ -59,6 +59,21 @@ nextflow_pipeline {
             message: "--unmapped can't be combined with --illumina_5base --aligner bismark"
         ],
         [
+            description: "Params: bwameth | combined_index true - not supported",
+            params: [ aligner: "bwameth", combined_index: true ],
+            message: "--combined_index true only applies to --aligner bismark or bismark_hisat, not --aligner bwameth"
+        ],
+        [
+            description: "Params: bismark | local_alignment | combined_index true - not supported",
+            params: [ aligner: "bismark", local_alignment: true, combined_index: true ],
+            message: "--combined_index true can't be combined with --local_alignment"
+        ],
+        [
+            description: "Params: bismark | illumina_5base | combined_index true - not supported",
+            params: [ aligner: "bismark", illumina_5base: true, combined_index: true ],
+            message: "--combined_index true can't be combined with --illumina_5base --aligner bismark"
+        ],
+        [
             description: "Params: bwameth | methyl_kit | run_targeted_sequencing - not supported",
             params: [ aligner: "bwameth", methyl_kit: true, run_targeted_sequencing: true ],
             message: "--methyl_kit can't be combined with --run_targeted_sequencing"
