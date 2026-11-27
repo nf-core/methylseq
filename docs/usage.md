@@ -265,7 +265,7 @@ The two routes filter differently:
 - Bismark keeps properly paired reads at any MAPQ, and makes no call from a read base below `--five_base_baseq` (Phred, 0 by default: off). Read ends are trimmed at extraction with `--ignore_r1`, `--ignore_r2` (2 by default), `--ignore_3prime_r1` and `--ignore_3prime_r2` (2 by default); check the M-bias report (`bismark/methylation_calls/mbias/`) and adjust them. `--trim_OT`/`--trim_OB` and `--taps_caller` don't apply.
 - rastair applies its own MAPQ and base-quality filters and estimates read-end trims from each sample's M-bias (see [TAPS read-end trimming](#taps-read-end-trimming-m-bias)).
 
-Bismark always aligns 5-Base data with bwa-mem3 here; its other 5-Base engines (minimap2, Bowtie 2, HISAT2) and its duplex, consensus, variant-deconvolution and read-name UMI options are not available in the pipeline. See the Bismark docs for [5-Base](https://felixkrueger.github.io/Bismark/rust/illumina-5-base/) and [TAPS](https://felixkrueger.github.io/Bismark/rust/taps/).
+Bismark aligns 5-Base data with bwa-mem3, its only 5-Base engine; its duplex, consensus, variant-deconvolution and read-name UMI options are not available in the pipeline. See the Bismark docs for [5-Base](https://felixkrueger.github.io/Bismark/rust/illumina-5-base/) and [TAPS](https://felixkrueger.github.io/Bismark/rust/taps/).
 
 ### UMIs (optional)
 
