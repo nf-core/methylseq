@@ -223,7 +223,7 @@ def validateInputParameters() {
     }
     if (bismarkBwamem3()) {
         def unsupported = [
-            'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'combined_index', 'nomeseq', 'em_seq', 'accel',
+            'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'nomeseq', 'em_seq', 'accel',
             'local_alignment', 'relax_mismatches', 'minins', 'maxins', 'known_splices', 'run_methurator', 'with_umi', 'unmapped',
         ].findAll { option -> params[option] }.collect { option -> "--${option}" }
         if (unsupported) {
@@ -243,16 +243,16 @@ def validateInputParameters() {
     else if (params.illumina_5base) {
         log.info("--illumina_5base with --aligner ${params.aligner}: aligned and called as --taps would be (${params.aligner == 'bwamem3' ? 'bwa-mem3 --meth=taps' : params.aligner}, then --taps_caller ${params.taps_caller}).")
     }
-    // --combined_index (opt-in, nf-core/methylseq#615) launch-time sanity warnings.
-    if (params.combined_index) {
+    // --combined_index true where Bismark can't use a combined index
+    if (params.combined_index == true) {
         if (!params.aligner.startsWith('bismark')) {
-            log.warn("--combined_index only applies to the bismark aligners; it is ignored for --aligner ${params.aligner}.")
+            error("--combined_index true only applies to --aligner bismark or bismark_hisat, not --aligner ${params.aligner}.")
         }
-        else if (params.local_alignment) {
-            log.warn("--combined_index is ignored when --local_alignment is set (combined-index alignment does not support soft-clipping); using the faithful per-strand path.")
+        if (params.local_alignment) {
+            error("--combined_index true can't be combined with --local_alignment: Bismark's combined-index alignment doesn't support local alignment.")
         }
-        else if (params.bismark_index) {
-            log.warn("--combined_index with a pre-built --bismark_index: the index must have been built with 'bismark_genome_preparation --combined_genome', otherwise alignment will fail (pre-built iGenomes indexes are not compatible).")
+        if (bismarkBwamem3()) {
+            error("--combined_index true can't be combined with ${params.taps ? '--taps' : '--illumina_5base'} --aligner bismark: Bismark's 5-Base/TAPS mode aligns with bwa-mem3.")
         }
     }
     // Building a bwa-mem3 `--meth` index needs far more memory than aligning against it:
@@ -500,6 +500,42 @@ def targetPanelsMultiqcConfig(panel_names, multiqc_configs) {
         : module_order.take(position) + [other_picard.call(module_order[position])] + panel_entries + module_order.drop(position + 1).findAll { entry -> !is_picard.call(entry) }
     def hidden_columns = panel_names.collectEntries { name -> ["HsMetrics: ${name}: HsMetrics".toString(), false] }
     return groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([module_order: new_order, table_columns_visible: hidden_columns]))
+}
+
+//
+// Whether a Bismark index holds the complete combined CT+GA set, checked file by file so S3 needs no listing
+//
+def hasCombinedIndex(index, aligner) {
+    try {
+        def combined = index.resolve('Bisulfite_Genome').resolve('Combined')
+        def hisat = aligner == 'bismark_hisat'
+        def names = hisat ? (1..8).collect { i -> "BS_combined.${i}" } : ['1', '2', '3', '4', 'rev.1', 'rev.2'].collect { i -> "BS_combined.${i}" }
+        def extensions = hisat ? ['ht2', 'ht2l'] : ['bt2', 'bt2l']
+        return extensions.any { extension -> names.every { name -> combined.resolve("${name}.${extension}").exists() } }
+    }
+    catch (Exception e) {
+        log.warn("Could not check the Bismark index ${index} for a combined index: ${e.message}")
+        return false
+    }
+}
+
+//
+// The Bismark index meta flag that selects combined-index alignment (conf/modules/bismark_align.config)
+//
+def combinedIndexFlag(index) {
+    def wanted = params.combined_index != false && params.aligner.startsWith('bismark') && !params.local_alignment && !bismarkBwamem3()
+    if (!wanted) {
+        return false
+    }
+    // A stub genome preparation writes no index files
+    if (workflow.stubRun || hasCombinedIndex(index, params.aligner)) {
+        return true
+    }
+    if (params.combined_index == true) {
+        error("--combined_index true: the Bismark index ${index} has no complete Bisulfite_Genome/Combined/ set. Build it with 'bismark_genome_preparation --combined_genome', or leave --combined_index unset to align per strand.")
+    }
+    log.warn("The Bismark index ${index} has no Bisulfite_Genome/Combined/ set, so Bismark aligns per strand. An index built with 'bismark_genome_preparation --combined_genome' aligns faster.")
+    return false
 }
 
 //

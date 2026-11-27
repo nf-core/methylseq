@@ -60,12 +60,12 @@ nextflow_pipeline {
             }
 
             then {
-                // 4 cpus / 2 strand instances -> -p 2 (size guard: every{} is vacuous on an empty list)
+                // Combined index by default: 4 cpus / 1 instance -> -p 4 (size guard: every{} is vacuous on an empty list)
                 def align_reports = getAllFilesFromDir(params.outdir, include: ['**/alignments/logs/*_report.txt'])
                 assertAll(
                     { assert workflow.success },
                     { assert align_reports.size() > 0 },
-                    { assert align_reports.every { report -> report.text.contains('-p 2 --reorder') } },
+                    { assert align_reports.every { report -> (report.text =~ /(^|\s)-p 4(\s|$)/).find() && report.text.contains('Combined-index mode') } },
                     { assert snapshot(
                         *getStandardAssertionData(params.outdir)
                     ).match() }

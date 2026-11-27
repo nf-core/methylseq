@@ -193,6 +193,26 @@ workflow METHYLSEQ {
         ch_bedgraph = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_bedgraph
         ch_coverage = FASTQ_ALIGN_DEDUP_BISMARK.out.methylation_coverage
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
+        // One row per sample: the alignment mode its Bismark report records. Reports are named after the R1 file.
+        if (!bismarkBwamem3()) {
+            def report_suffix = /_bismark_(bt2|hisat2)_(SE|PE)_report\.txt$/
+            ch_report_modes = FASTQ_ALIGN_DEDUP_BISMARK.out.multiqc
+                .flatten()
+                .filter { report -> report.name =~ report_suffix }
+                .map { report -> [report.name.replaceFirst(report_suffix, ''), report.text.contains('Combined-index mode') ? 'combined index' : 'per strand'] }
+            ch_aligner_mqc = ch_aligner_mqc.mix(
+                ch_bismark_inputs.reads
+                    .map { meta, reads -> [[reads].flatten()[0].name.replaceFirst(/\.(fq|fastq)(\.gz)?$/, ''), meta.id] }
+                    .join(ch_report_modes)
+                    .map { _stem, id, mode -> "${id}\t${mode}" }
+                    .collectFile(
+                        name: 'bismark_alignment_mode_mqc.tsv',
+                        newLine: true,
+                        sort: true,
+                        seed: "# id: 'bismark_alignment_mode'\n# section_name: 'Bismark alignment mode'\n# description: 'Whether Bismark aligned each sample against the combined CT+GA index or per strand (--combined_index).'\n# plot_type: 'table'\nSample\tAlignment mode",
+                    )
+            )
+        }
 
         //
         // SUBWORKFLOW: Align the first reads to the spike-in controls of --control_fasta, for the methylation summary

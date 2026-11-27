@@ -393,9 +393,9 @@
                     "fa_icon": "fas fa-search"
                 },
                 "combined_index": {
-                    "type": "boolean",
-                    "description": "Align against a single combined (CT+GA) Bismark index instead of the classic per-strand model.",
-                    "help_text": "Runs Bismark 3.1.0+ combined-index alignment: directional/PBAT use `--combined_index`, non-directional adds `--combined_index_sequential`. Parallelism is driven by Bowtie 2/HISAT2 threads (`-p`) rather than `--multicore`. Generally faster and lighter (one index load). Results are concordance-gated (not byte-identical) to the classic model. **Requires an index built with `bismark_genome_preparation --combined_genome`** — the pipeline builds this automatically when it generates the index, but pre-built indexes (e.g. AWS iGenomes via `--genome`, or a `--bismark_index` that lacks a `Bisulfite_Genome/Combined/` directory) are not compatible and the run will fail with a clear message. Applies to the `bismark` and `bismark_hisat` aligners only (ignored for bwameth/bwamem). Ignored when `--local_alignment` is set.",
+                    "type": ["boolean", "null"],
+                    "description": "Bismark combined-index alignment: auto (default) uses it when the index has a combined CT+GA set; `true` requires it; `false` aligns per strand.",
+                    "help_text": "With `--aligner bismark` or `bismark_hisat`, Bismark aligns against one combined CT+GA index (`--combined_index`; non-directional libraries add `--combined_index_sequential`). This is faster and lighter than per-strand alignment, and places about 1 read in 10,000 differently. By default the pipeline uses it when it builds the index itself, or when the index has a complete `Bisulfite_Genome/Combined/` set, and otherwise aligns per strand with a warning. `--local_alignment` and Bismark's 5-Base/TAPS mode always align per strand. Set `--combined_index true` to stop instead of falling back, or `false` to align per strand and skip building the combined index.",
                     "fa_icon": "fas fa-layer-group"
                 },
                 "minins": {

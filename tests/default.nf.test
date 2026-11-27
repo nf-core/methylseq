@@ -20,12 +20,12 @@ nextflow_pipeline {
             def stable_path = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             // bam_files: All bam files
             def bam_files  = getAllFilesFromDir(params.outdir, include: ['**/*.bam'])
-            // 4 cpus / 2 strand instances -> -p 2 (size guard: every{} is vacuous on an empty list)
+            // Combined index by default: 4 cpus / 1 instance -> -p 4 (size guard: every{} is vacuous on an empty list)
             def align_reports = getAllFilesFromDir(params.outdir, include: ['**/alignments/logs/*_report.txt'])
             assertAll(
                 { assert workflow.success},
                 { assert align_reports.size() > 0 },
-                { assert align_reports.every { report -> report.text.contains('-p 2 --reorder') } },
+                { assert align_reports.every { report -> (report.text =~ /(^|\s)-p 4(\s|$)/).find() && report.text.contains('Combined-index mode') } },
                 // Trim Galore writes the raw and trimmed FastQC reports
                 { assert !workflow.trace.tasks().any { task -> task.name.contains(':FASTQC (') } },
                 { assert snapshot(
@@ -51,7 +51,14 @@ nextflow_pipeline {
         }
 
         then {
-            assert workflow.success
+            // The index has no Bisulfite_Genome/Combined/ set: per-strand alignment with a warning
+            def align_reports = getAllFilesFromDir(params.outdir, include: ['**/alignments/logs/*_report.txt'])
+            assertAll(
+                { assert workflow.success },
+                { assert file("${metaDir}/nextflow.log").text.contains('has no Bisulfite_Genome/Combined/ set, so Bismark aligns per strand') },
+                { assert align_reports.size() > 0 },
+                { assert align_reports.every { report -> (report.text =~ /(^|\s)-p 2(\s|$)/).find() && !report.text.contains('Combined-index mode') } }
+            )
         }
     }
 

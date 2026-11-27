@@ -1,0 +1,63 @@
+nextflow_function {
+
+    name "Test Function hasCombinedIndex"
+    script "../main.nf"
+    function "hasCombinedIndex"
+
+    tag "subworkflows"
+    tag "subworkflows_local"
+    tag "subworkflows/utils_nfcore_methylseq_pipeline"
+
+    // Writes a Bismark index folder with the given files under Bisulfite_Genome/Combined/ (none: no Combined/ folder)
+    def writeIndex = { String path, List files ->
+        new File(path).mkdirs()
+        if (files != null) {
+            new File("${path}/Bisulfite_Genome/Combined").mkdirs()
+            files.each { name -> new File("${path}/Bisulfite_Genome/Combined/${name}").text = '' }
+        }
+        return path
+    }
+    def bowtie2 = { String extension -> ['1', '2', '3', '4', 'rev.1', 'rev.2'].collect { i -> "BS_combined.${i}.${extension}" } }
+    def hisat2 = { String extension -> (1..8).collect { i -> "BS_combined.${i}.${extension}" } }
+
+    [
+        [ name: "complete Bowtie 2 set", files: bowtie2('bt2'), aligner: 'bismark', expected: true ],
+        [ name: "complete large Bowtie 2 set (.bt2l)", files: bowtie2('bt2l'), aligner: 'bismark', expected: true ],
+        [ name: "complete HISAT2 set (.ht2)", files: hisat2('ht2'), aligner: 'bismark_hisat', expected: true ],
+        [ name: "complete large HISAT2 set (.ht2l)", files: hisat2('ht2l'), aligner: 'bismark_hisat', expected: true ],
+        [ name: "a Bowtie 2 set for bismark_hisat", files: bowtie2('bt2'), aligner: 'bismark_hisat', expected: false ],
+        [ name: "a partial Bowtie 2 set", files: bowtie2('bt2').take(5), aligner: 'bismark', expected: false ],
+        [ name: "a set mixing .bt2 and .bt2l", files: bowtie2('bt2').take(3) + bowtie2('bt2l').drop(3), aligner: 'bismark', expected: false ],
+        [ name: "no Combined/ folder", files: null, aligner: 'bismark', expected: false ],
+    ].eachWithIndex { scenario, i ->
+        test(scenario.name) {
+            when {
+                function {
+                    """
+                    input[0] = file('${writeIndex("${outputDir}/index${i}", scenario.files)}')
+                    input[1] = '${scenario.aligner}'
+                    """
+                }
+            }
+            then {
+                assert function.success
+                assert function.result == scenario.expected
+            }
+        }
+    }
+
+    test("a path that throws: no combined index") {
+        when {
+            function {
+                """
+                input[0] = null
+                input[1] = 'bismark'
+                """
+            }
+        }
+        then {
+            assert function.success
+            assert function.result == false
+        }
+    }
+}

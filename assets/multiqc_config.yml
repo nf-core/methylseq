@@ -30,3 +30,4 @@ custom_content:
     - methyldackel_beta_hist
     - bismark_contigs
     - bismark_beta_hist
+    - bismark_alignment_mode

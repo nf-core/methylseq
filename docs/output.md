@@ -131,7 +131,7 @@ Unless you give a pre-built index, the pipeline builds the reference files for y
 
 **Output directory: `results/<aligner>/reference_genome/`**
 
-- This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark, `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3 (also under `results/bismark/reference_genome/` for Bismark's 5-Base/TAPS mode, which builds no `BismarkIndex/`). The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
+- This directory contains the aligner-specific index files: `BismarkIndex/` for Bismark (with the combined CT+GA index in `BismarkIndex/Bisulfite_Genome/Combined/` unless `--combined_index false` or `--local_alignment`), `BwamethIndex/` for bwa-meth, `bwa/` for bwa-mem and `bwamem3/` for bwa-mem3 (also under `results/bismark/reference_genome/` for Bismark's 5-Base/TAPS mode, which builds no `BismarkIndex/`). The bwa-mem3 index is a `bwa-mem3 index --meth` index: `genome.fa.{amb,ann,pac}` and the converted seed index `genome.fa.meth.{amb,ann,bwt.2bit.64,pac}`, which serves both TAPS and bisulfite data.
 
 > **NB:** These files are only built when no pre-built index is given, and only saved with `--save_reference`.
 
@@ -193,7 +193,7 @@ _With `--illumina_5base` or `--taps` and `--aligner bismark`, Bismark aligns wit
   - Aligned reads in a sorted BAM file.
   - **NB:** Only saved if `--skip_deduplication` or `--rrbs` is specified.
 - `logs/sample_PE_report.txt`
-  - Log file giving summary statistics about alignment.
+  - Log file giving summary statistics about alignment. With combined-index alignment it has a `Combined-index mode` line, and the MultiQC report's "Bismark alignment mode" table lists the mode of each sample.
 - `unmapped/<input>_unmapped_reads.fq.gz` (single-end) or `unmapped/<input>_unmapped_reads_1.fq.gz`, `unmapped/<input>_unmapped_reads_2.fq.gz` (paired-end), each named after the FastQ file given to Bismark, e.g. `sample_1_val_1.fq.gz_unmapped_reads_1.fq.gz` and `sample_2_val_2.fq.gz_unmapped_reads_2.fq.gz`
   - Unmapped reads in FastQ format.
   - Only saved if `--unmapped` specified when running the pipeline.

@@ -22,6 +22,7 @@ include { PIPELINE_COMPLETION       } from './subworkflows/local/utils_nfcore_me
 include { getGenomeAttribute        } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { bwamem3IndexChannel       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { bismarkBwamem3            } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { combinedIndexFlag         } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { METHYLSEQ                 } from './workflows/methylseq/'
 
 /*
@@ -84,6 +85,11 @@ workflow NFCORE_METHYLSEQ {
         params.use_mem2
     )
 
+    // meta.combined_index selects combined-index alignment
+    ch_bismark_index = FASTA_INDEX_METHYLSEQ.out.bismark_index.map { meta, index ->
+        [meta + [combined_index: combinedIndexFlag(index)], index]
+    }
+
     //
     // WORKFLOW: Run pipeline
     //
@@ -93,7 +99,7 @@ workflow NFCORE_METHYLSEQ {
         ch_versions,
         FASTA_INDEX_METHYLSEQ.out.fasta,
         FASTA_INDEX_METHYLSEQ.out.fasta_index,
-        FASTA_INDEX_METHYLSEQ.out.bismark_index,
+        ch_bismark_index,
         FASTA_INDEX_METHYLSEQ.out.bwameth_index,
         FASTA_INDEX_METHYLSEQ.out.bwamem_index,
     )
