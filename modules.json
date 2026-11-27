@@ -12,7 +12,7 @@
                     },
                     "bismark/align": {
                         "branch": "master",
-                        "git_sha": "184af74970d19cb8b9cfd19d26edd2a6be9b86a8",
+                        "git_sha": "10947bbc3c4d7fe1e285b4d1db90ab36a3b705df",
                         "installed_by": ["fastq_align_dedup_bismark"]
                     },
                     "bismark/coverage2cytosine": {
