@@ -53,7 +53,6 @@ nextflow_pipeline {
             message: "--local_alignment can't be combined with --taps --aligner bismark"
         ],
         [
-            // Bismark's 5-Base/TAPS mode writes no unmapped reads
             description: "Params: bismark | illumina_5base | unmapped - not supported",
             params: [ aligner: "bismark", illumina_5base: true, unmapped: true ],
             message: "--unmapped can't be combined with --illumina_5base --aligner bismark"

@@ -286,23 +286,23 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                    "bismark": "3.5.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "GUNZIP": {
                     "gunzip": 1.13
@@ -511,7 +511,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-23T09:58:46.275563",
+        "timestamp": "2026-11-27T16:35:48.915256851",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"

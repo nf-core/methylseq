@@ -229,7 +229,7 @@ def validateInputParameters() {
         if (unsupported) {
             error(
                 "${unsupported.join(', ')} can't be combined with ${params.taps ? '--taps' : '--illumina_5base'} --aligner bismark: Bismark's 5-Base/TAPS mode " +
-                "takes paired-end, directional libraries, aligns with bwa-mem3 and writes no unmapped reads. " +
+                "takes paired-end, directional libraries and aligns with bwa-mem3. " +
                 "The rastair route (--aligner bwamem3) is the alternative where it supports the option."
             )
         }

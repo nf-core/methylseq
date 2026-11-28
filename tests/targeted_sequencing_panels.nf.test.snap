@@ -67,23 +67,23 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                    "bismark": "3.5.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "FASTQC": {
                     "fastqc": "0.12.1"
@@ -123,7 +123,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-25T09:43:40.431088",
+        "timestamp": "2026-11-27T17:02:15.727747857",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
@@ -289,23 +289,23 @@
         "content": [
             {
                 "BISMARK_ALIGN": {
-                    "bismark": "3.4.0",
+                    "bismark": "3.5.0",
                     "bwamem3": "0.18.0"
                 },
                 "BISMARK_DEDUPLICATE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_GENOMEPREPARATION_BOWTIE": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_METHYLATIONEXTRACTOR": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_REPORT": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "BISMARK_SUMMARY": {
-                    "bismark": "3.4.0"
+                    "bismark": "3.5.0"
                 },
                 "FILTER_BEDGRAPH_TARGETS": {
                     "bedtools": "2.31.1"
@@ -357,7 +357,7 @@
                 }
             }
         ],
-        "timestamp": "2026-11-23T11:17:39.885135",
+        "timestamp": "2026-11-27T16:44:09.735504886",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.5"
