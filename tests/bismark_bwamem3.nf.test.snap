@@ -48,6 +48,9 @@
                 "bismark/alignments",
                 "bismark/alignments/logs",
                 "bismark/alignments/logs/taps_pe_1_val_1_bismark_bwamem3_PE_report.txt",
+                "bismark/alignments/unmapped",
+                "bismark/alignments/unmapped/taps_pe_1_val_1.fq.gz_unmapped_reads_1.fq.gz",
+                "bismark/alignments/unmapped/taps_pe_2_val_2.fq.gz_unmapped_reads_2.fq.gz",
                 "bismark/coverage2cytosine",
                 "bismark/coverage2cytosine/coverage",
                 "bismark/coverage2cytosine/reports",
@@ -155,6 +158,8 @@
                 "trimgalore/logs/taps_pe_2.fastq.gz_trimming_report.txt"
             ],
             [
+                "taps_pe_1_val_1.fq.gz_unmapped_reads_1.fq.gz:md5,d57ba46639e979137760a85a401bd5e7",
+                "taps_pe_2_val_2.fq.gz_unmapped_reads_2.fq.gz:md5,11093050082829d94222fa5ebca1454f",
                 "taps_pe.CpG_report.txt.gz:md5,aaa0683129b435ae58830540cb0a568d",
                 "taps_pe.cytosine_context_summary.txt:md5,cec1c590119fbb0bad099ac4e974c9a3",
                 "taps_pe_1_val_1_bismark_bwamem3_pe.deduplicated.bedGraph.gz:md5,087aaf9536a1d9945f39829cf0a8d22f",
@@ -215,7 +220,7 @@
                 ]
             ]
         ],
-        "timestamp": "2026-11-27T16:24:27.302892909",
+        "timestamp": "2026-11-28T10:42:32.96554546",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

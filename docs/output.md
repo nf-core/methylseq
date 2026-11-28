@@ -184,7 +184,7 @@ Bismark and bwa-meth convert all Cytosines contained within the sequenced reads 
 
 **Bismark output directory: `results/bismark/alignments/`**
 _Note that bismark can use either use Bowtie2 (default) or HISAT2 as alignment tool and the output file names will not differ between the options._
-_With `--illumina_5base` or `--taps` and `--aligner bismark`, Bismark aligns with bwa-mem3: the files are named `*_bismark_bwamem3_pe*`, the report names the bwa-mem3 version (and `Library chemistry: TAPS (mC->T)` for `--taps`), and no unmapped reads are written._
+_With `--illumina_5base` or `--taps` and `--aligner bismark`, Bismark aligns with bwa-mem3: the alignment files are named `*_bismark_bwamem3_pe*`, the report names the bwa-mem3 version (and `Library chemistry: TAPS (mC->T)` for `--taps`), and `--unmapped` saves the pairs Bismark counts as having no alignment, keeping their read names as in the input._
 
 - `sample.bam`
   - Aligned reads in BAM format.

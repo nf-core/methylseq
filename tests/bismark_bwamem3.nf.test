@@ -9,8 +9,8 @@ nextflow_pipeline {
     def testScenarios = [
         [
             description: "Params: bismark | illumina_5base",
-            // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's
-            params: [ illumina_5base: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz", control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
+            // trim_OT and bismark_index are ignored in this mode, so the outputs stay equal to the taps scenario's, plus the unmapped reads
+            params: [ illumina_5base: true, unmapped: true, trim_OT: "0,0,10,0", bismark_index: "https://github.com/nf-core/test-datasets/raw/methylseq/reference/Bowtie2_Index.tar.gz", control_fasta: "https://raw.githubusercontent.com/nf-core/test-datasets/methylseq/reference/controls_test.fa" ],
             log_has: [ '--illumina_5base with --aligner bismark: Bismark aligns with bwa-mem3', '--trim_OT/--trim_OB only apply to rastair calls', "--bismark_index is not used by Bismark's 5-Base/TAPS mode", "--control_fasta is not supported in Bismark's 5-Base/TAPS mode" ],
             log_lacks: [ '--taps_caller only applies' ],
             flag_has: '--illumina_5base --bwamem3',
@@ -64,10 +64,24 @@ nextflow_pipeline {
                     }
                 def alignment_stats = path("$outputDir/multiqc/bismark/multiqc_data/multiqc_bismark_alignment.txt").readLines().collect { line -> line.split('\t') }
                 def summary_text    = path("$outputDir/bismark/summary/bismark_summary_report.txt").text
+                def unmapped        = scenario.params.unmapped ?: false
+                def unmapped_fq     = getAllFilesFromDir(params.outdir, include: ['bismark/alignments/unmapped/*.fq.gz'])
+                // First header token of each record in the R1 or R2 unmapped FASTQ
+                def unmapped_names  = { suffix ->
+                    unmapped_fq.findAll { fq -> fq.getName().endsWith(suffix) }
+                        .collectMany { fq -> path(fq.toString()).linesGzip.collate(4).collect { record -> record[0].split(/\s+/)[0] } }
+                }
+                def r1_names        = unmapped_names('_unmapped_reads_1.fq.gz')
+                def r2_names        = unmapped_names('_unmapped_reads_2.fq.gz')
                 assertAll(
                     { assert workflow.success },
                     { assert !align_scripts.isEmpty() },
                     { assert align_scripts.every { script -> script.contains(scenario.flag_has) && !script.contains(scenario.flag_lacks) } },
+                    { assert align_scripts.every { script -> script.contains('--unmapped') == unmapped } },
+                    { assert unmapped_fq.size() == (unmapped ? 2 : 0) },
+                    // Bismark writes exactly the pairs its report counts as having no alignments
+                    { assert !unmapped || (!r1_names.isEmpty() && r1_names == r2_names) },
+                    { if (unmapped) { def column = alignment_stats[0].toList().indexOf('no_alignments'); assert column >= 0 && (alignment_stats[1][column] as double) == r1_names.size() } },
                     // methylated C reads as T: the methylated lambda spike-in should be high and the unmodified one low
                     { assert methylation.keySet().containsAll(['bacteriophage_lambda_CpG', '2kb_3_Unmodified']) },
                     { assert methylation['bacteriophage_lambda_CpG'] > 0.8 },

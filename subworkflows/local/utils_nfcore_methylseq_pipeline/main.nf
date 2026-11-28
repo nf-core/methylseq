@@ -224,7 +224,7 @@ def validateInputParameters() {
     if (bismarkBwamem3()) {
         def unsupported = [
             'non_directional', 'pbat', 'zymo', 'single_cell', 'rrbs', 'combined_index', 'nomeseq', 'em_seq', 'accel',
-            'local_alignment', 'relax_mismatches', 'minins', 'maxins', 'known_splices', 'run_methurator', 'with_umi', 'unmapped',
+            'local_alignment', 'relax_mismatches', 'minins', 'maxins', 'known_splices', 'run_methurator', 'with_umi',
         ].findAll { option -> params[option] }.collect { option -> "--${option}" }
         if (unsupported) {
             error(

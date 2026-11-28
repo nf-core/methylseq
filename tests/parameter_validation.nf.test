@@ -53,11 +53,6 @@ nextflow_pipeline {
             message: "--local_alignment can't be combined with --taps --aligner bismark"
         ],
         [
-            description: "Params: bismark | illumina_5base | unmapped - not supported",
-            params: [ aligner: "bismark", illumina_5base: true, unmapped: true ],
-            message: "--unmapped can't be combined with --illumina_5base --aligner bismark"
-        ],
-        [
             description: "Params: bwameth | methyl_kit | run_targeted_sequencing - not supported",
             params: [ aligner: "bwameth", methyl_kit: true, run_targeted_sequencing: true ],
             message: "--methyl_kit can't be combined with --run_targeted_sequencing"
