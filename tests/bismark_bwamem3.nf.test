@@ -66,10 +66,10 @@ nextflow_pipeline {
                 def summary_text    = path("$outputDir/bismark/summary/bismark_summary_report.txt").text
                 def unmapped        = scenario.params.unmapped ?: false
                 def unmapped_fq     = getAllFilesFromDir(params.outdir, include: ['bismark/alignments/unmapped/*.fq.gz'])
-                // Read names of the R1 or R2 unmapped FASTQ: first header token, mate suffix removed
+                // First header token of each record in the R1 or R2 unmapped FASTQ
                 def unmapped_names  = { suffix ->
                     unmapped_fq.findAll { fq -> fq.getName().endsWith(suffix) }
-                        .collectMany { fq -> path(fq.toString()).linesGzip.collate(4).collect { record -> record[0].split(/\s+/)[0].replaceFirst(/\/[12]$/, '') } }
+                        .collectMany { fq -> path(fq.toString()).linesGzip.collate(4).collect { record -> record[0].split(/\s+/)[0] } }
                 }
                 def r1_names        = unmapped_names('_unmapped_reads_1.fq.gz')
                 def r2_names        = unmapped_names('_unmapped_reads_2.fq.gz')
